@@ -1,0 +1,22 @@
+{
+  "name": "osm-gamification-components",
+  "version": "0.0.1",
+  "description": "User page and Leaderboard page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/developmentseed/osm-gamification-components.git"
+  },
+  "author": "Development Seed",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/developmentseed/osm-gamification-components/issues"
+  },
+  "homepage": "https://github.com/developmentseed/osm-gamification-components",
+  "devDependencies": {
+    "budo": "^7.1.0"
+  }
+}
