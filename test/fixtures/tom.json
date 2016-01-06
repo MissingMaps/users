@@ -1,0 +1,47 @@
+{
+  "id": 1,
+  "name": "Tom",
+  "stats":{
+    "road_count":15,
+    "building_count":30,
+    "waterway_count":6,
+    "poi_count":10,
+    "road_km":102,
+    "waterway_km":93,
+    "hashtags":["#hotosm-project-1075",
+                "#Bamako",
+                "#Mali",
+                "#Map4mali",
+                "@osm-Mali"],
+    "countries":["Mali"],
+    "software":["JOSM/1.5 (8969 fr)"],
+    "footprint":(data)
+  },
+  "badges": {
+    "Road Builder":1,
+    "Node Builder":2,
+    "Building Builder":1,
+    "GPS trace Creator":2,
+    "Long & Winding Road":1,
+    "Waterway Creator":1,
+    "World Renown":1,
+    "TaskMan Square Champion":2,
+    "TaskMan Scrutinizer":1,
+    "JOSM User":3,
+    "Mapathoner":1,
+    "Consistentency":2,
+    "Year long Mapper":1
+  },
+  "edit_times":[
+    "2015-12-18T11:46:14+00:00",
+    "2015-12-18T23:49:57+00:00",
+    "2015-12-19T06:50:16+00:00",
+    "2015-12-19T10:31:29+00:00",
+    "2015-12-19T12:14:43+00:00",
+    "2015-12-19T18:43:54+00:00",
+    "2015-12-21T09:14:16+00:00",
+    "2015-12-21T11:34:29+00:00",
+    "2015-12-21T16:11:43+00:00",
+    "2015-12-11T22:56:54+00:00"
+  ]
+}
