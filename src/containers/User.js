@@ -1,8 +1,20 @@
 import React from 'react';
+import fetch from 'isomorphic-fetch';
 
 export default React.createClass({
-  componentWillMount: function () {
-    // get user json from api
+  componentDidMount: function () {
+    if (process.env.NODE_ENV === 'development') {
+      fetch('/test/fixtures/db.json')
+      .then(function (response) {
+        if (response.status >= 400) {
+          throw new Error('Bad response');
+        }
+        return response.json();
+      })
+      .then(function (db) {
+        console.log(db);
+      });
+    }
   },
   render: function () {
     return (

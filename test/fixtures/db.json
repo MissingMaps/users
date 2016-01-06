@@ -15,7 +15,7 @@
                 "@osm-Mali"],
     "countries":["Mali"],
     "software":["JOSM/1.5 (8969 fr)"],
-    "footprint":(data)
+    "footprint": ""
   },
   "badges": {
     "Road Builder":1,
