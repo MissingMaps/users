@@ -26,11 +26,33 @@ export default React.createClass({
     }
   },
   render: function () {
-    console.log(this.state);
     return (
       <div>
-        <div>Hello, {this.props.params.id}!</div>
-        <BadgeBox badges={this.state.badges} />
+      	<div id = "User-Container">
+      		<div id = "Subhead-Container">
+      			<div id = "Subhead-Content">
+	      			<div className = "ProfilePicture">
+	      				<img src="assets/graphics/circle.svg" width="150px"></img>
+	      			</div>
+	      			<div className = "Username">
+	      				{this.props.params.id} twitr
+	      			</div>
+	      			<div className = "Subhead-Nav">
+	      				<a href="">Badges</a>
+	      				<a href="">Stats</a>
+	      			</div>
+	      		</div>
+      		</div>
+      		<div id = "Main-User-Container">
+      			<div className = "Recent-Badges-Container">
+      			</div>
+      			<div className = "Quick-User-Stats-Container">
+      			</div>
+      			<div className = "Contribute-Timeline-Container">
+      			</div>
+      		</div>
+	        <BadgeBox badges={this.state.badges} />
+	    </div>
       </div>
     );
   }
