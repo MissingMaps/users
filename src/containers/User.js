@@ -4,7 +4,6 @@ import fetch from 'isomorphic-fetch';
 
 export default React.createClass({
   getInitialState: function () {
-    console.log('here');
     return {
       badges: []
     };
@@ -21,7 +20,6 @@ export default React.createClass({
       })
       .then(function (db) {
         if (component.isMounted()) {
-          console.log('here');
           component.setState(db);
         }
       });
