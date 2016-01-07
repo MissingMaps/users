@@ -30,11 +30,13 @@ export default (props) => {
   });
   return (
       <div className = "Recent-Badges-Container">
-        <div className = "sub-head">
+        <div className = "badgeheader">
           Recently Earned Badges
         </div>
-        <div className = "Badge-Roll">
-          {list}
+        <div className = "Badge-Box-Content">
+          <div className = "Badge-Roll">
+            {list}
+          </div>
         </div>
       </div>
   );

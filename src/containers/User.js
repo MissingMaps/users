@@ -2,6 +2,7 @@ import React from 'react';
 import UserSubHead from '../components/UserSubHead';
 import BadgeBox from '../components/BadgeBox';
 import QuickStatsBox from '../components/QuickStatsBox';
+import ContributionBox from '../components/ContributionBox';
 import fetch from 'isomorphic-fetch';
 
 export default React.createClass({
@@ -35,8 +36,7 @@ export default React.createClass({
       				<UserSubHead username={this.props.params.id}/>
       				<BadgeBox badges={this.state.badges} />
       				<QuickStatsBox />
-      			<div className = "Contribute-Timeline-Container">
-      			</div>
+      				<ContributionBox />
       		</div>
 	    </div>
       </div>

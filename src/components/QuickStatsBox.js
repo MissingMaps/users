@@ -4,10 +4,12 @@ export default function mrrr(props) {
   console.log("wow!");
   return(
     <div className = "Quick-User-Stats-Container">
-      <div className = "sub-head">
+      <div className = "badgeheader">
         Quick Stats
       </div>
-      <div className = ""></div>
+      <div className = "Quick-User-Stats-Content">
+        
+      </div>
     </div>
   );
 };
