@@ -1,35 +1,426 @@
-body{
-	background-color: pink;
-	margin: 0;
-}
+/*----------------------------------------------*/
+/*Variables*/
+/*----------------------------------------------*/
+/* In Context */
+/*----------------------------------------------*/
+body {
+  background-color: rgba(0, 0, 0, 0.08);
+  margin: 0; }
 
-#User-Container{
-	width: 100%;
-	height: 100%;
-	background-color: rgba(30,30,30,0.2);
-}
+li {
+  list-style-type: none;
+  display: inline-block; }
 
-#Subhead-Container{
-	background-color: rgba(30,30,30,0.4);
-	height: 160px;
-}
+#User-Container {
+  background-color: rgba(0, 0, 0, 0.08);
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto; }
 
-#Subhead-Content{
-	position: absolute;
-	top:40px;
-}
+#Subhead-Container {
+  background-color: rgba(0, 0, 0, 0.08);
+  height: 160px; }
 
-.ProfilePicture{
-	padding-left: 100px;
-	display: inline-block;
-}
+#Subhead-Content {
+  position: absolute;
+  top: 52px;
+  width: 100%; }
 
-.Username{
-	display: inline-block;
-}
+.ProfilePicture {
+  display: inline-block;
+  padding-left: 32px; }
+  @media screen and (max-width: 1100px) {
+    .ProfilePicture {
+      margin-left: auto;
+      margin-right: auto; } }
 
-#Main-User-Container{
-	background-color: rgba(30,30,30,0.2);
-	height: 400px;
-}
+.Username {
+  display: inline-block;
+  position: absolute;
+  top: 60px;
+  padding-left: 14px; }
+  .Username img {
+    width: 0px;
+    padding-left: 8px;
+    padding-bottom: 2px; }
 
+.Subhead-Nav {
+  float: right;
+  padding-right: 24px;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 124px; }
+  .Subhead-Nav a {
+    padding: 16px 20px;
+    margin-left: 10px;
+    margin-right: 10px; }
+    .Subhead-Nav a:hover {
+      background-color: #dbdbda;
+      color: #9dcf80; }
+  @media screen and (max-width: 1100px) {
+    .Subhead-Nav {
+      right: auto;
+      left: 53.1%;
+      transform: translate(-50%, 0);
+      margin-left: auto;
+      margin-right: auto; } }
+
+#Main-User-Container {
+  height: 500px;
+  position: relative; }
+
+.Recent-Badges-Container {
+  position: absolute;
+  max-width: 584px;
+  min-width: 300px;
+  padding: 10px;
+  margin: 50px 24px;
+  background-color: white;
+  border: solid 1px #CCC;
+  box-shadow: 1px 1px 1px rgba(55, 55, 55, 0.1); }
+  @media screen and (max-width: 1100px) {
+    .Recent-Badges-Container {
+      position: relative;
+      margin: 50px 10px;
+      max-width: 70%;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center; } }
+
+.Badge-Roll {
+  position: relative;
+  display: inline; }
+  .Badge-Roll li {
+    padding: 8px; }
+
+.Quick-User-Stats-Container {
+  position: absolute;
+  width: 400px;
+  height: 347px;
+  right: 0px;
+  padding: 10px;
+  margin: 50px 24px;
+  background-color: white;
+  border: solid 1px #CCC;
+  box-shadow: 1px 1px 1px rgba(55, 55, 55, 0.1); }
+  @media screen and (max-width: 1100px) {
+    .Quick-User-Stats-Container {
+      position: relative;
+      width: 70%;
+      margin-left: auto;
+      margin-right: auto; } }
+
+/*----------------------------------------------*/
+/*Base Style from MM*/
+/*----------------------------------------------*/
+.lt-ie10 #site-canvas {
+  display: none; }
+.lt-ie10 #nocando {
+  margin: 200px auto;
+  padding: 32px;
+  max-width: 440px;
+  background: #fff; }
+  .lt-ie10 #nocando h1 {
+    font-size: 24px;
+    line-height: 1.1;
+    margin-bottom: 32px; }
+
+/*----------------------------------------------*/
+/*Fixing Default CSS*/
+/*----------------------------------------------*/
+body, ul, li {
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Lato', sans-serif;
+  color: #6e6f71; }
+
+ul, li {
+  list-style: none; }
+
+h1 {
+  font-weight: 500;
+  display: inline; }
+
+::-moz-selection {
+  /* Code for Firefox */
+  background: #9dcf80; }
+
+::selection {
+  background: #9dcf80; }
+
+.site-canvas {
+  z-index: -1; }
+
+/*----------------------------------------------*/
+/*Nav Bar Style*/
+/*----------------------------------------------*/
+header {
+  background-color: white;
+  position: fixed;
+  z-index: 100;
+  top: 0px;
+  width: 100%;
+  min-height: 50px;
+  color: #dbdbda;
+  display: none;
+  border-bottom: 2px #dbdbda solid; }
+  header ul {
+    display: inline-block; }
+  header li {
+    display: inline-block;
+    margin: 0px; }
+  header focus {
+    outline: none; }
+
+.headerwidth {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto; }
+
+.nav-icon {
+  padding: 5px;
+  float: left; }
+  @media screen and (max-width: 700px) {
+    .nav-icon {
+      display: block;
+      width: 100%;
+      float: none;
+      text-align: center; }
+      .nav-icon img {
+        margin-top: 4px;
+        width: 150px; } }
+
+.nav-list {
+  float: right;
+  position: relative;
+  margin-top: 20px;
+  display: inline-block; }
+  @media screen and (max-width: 700px) {
+    .nav-list {
+      display: block;
+      height: 70px;
+      width: 100%;
+      margin: 0px auto 0px auto;
+      text-align: center; } }
+
+.nav-input {
+  float: right;
+  display: inline-block;
+  position: relative;
+  bottom: 3px;
+  padding: 0px 16px 0px 40px; }
+  @media screen and (max-width: 700px) {
+    .nav-input {
+      display: block;
+      width: 100%;
+      top: 14px;
+      padding-bottom: 10px; } }
+
+.nav-item {
+  padding: 0px 10px 0px 10px; }
+
+.nav-links {
+  float: center; }
+
+/*----------------------------------------------*/
+/* Text  Styles*/
+/* weights: 300 thin, 400 regular, 700 bold, 900 black */
+/*----------------------------------------------*/
+a {
+  text-decoration: none;
+  color: #38803D; }
+  a:hover {
+    color: #9dcf80; }
+  a:focus {
+    color: #9dcf80; }
+
+.titleheader {
+  font-weight: 900;
+  font-size: 2em;
+  color: #38803D; }
+
+.sub-head {
+  font-weight: 400;
+  font-size: 1.4em;
+  padding: 2px 0px 8px 0px;
+  color: #38803D; }
+
+.textbox {
+  padding-bottom: 4px;
+  font-weight: 400;
+  font-size: 1.1em;
+  line-height: 1.4; }
+
+/*----------------------------------------------*/
+/*Interactive Buttons*/
+/*----------------------------------------------*/
+button {
+  border-radius: 2px;
+  border: none;
+  box-shadow: 0px 3px #7F181C;
+  color: white;
+  z-index: 99; }
+
+input[type="text"] {
+  border: 0px solid #dbdbda;
+  box-sizing: none;
+  width: auto;
+  height: auto;
+  margin: none;
+  color: #6e6f71;
+  -webkit-border-radius: 5px;
+  background-color: #f4f4f4;
+  box-shadow: -1px -2px #dbdbda;
+  padding: 2px 6px 4px 6px;
+  outline: none; }
+  input[type="text"]:focus {
+    background-color: #efefef; }
+
+.button {
+  background-color: #9dcf80;
+  -moz-border-radius: 18px;
+  -webkit-border-radius: 18px;
+  border-radius: 6px;
+  border: 0px;
+  /*  border:1px solid $darkgreen;
+  */
+  box-shadow: 0px 2px #38803D;
+  display: inline-block;
+  cursor: pointer;
+  transition: active 0.25s;
+  color: #ffffff;
+  padding: 6px 10px;
+  text-decoration: none; }
+  .button:hover {
+    background-color: #72ba48; }
+  .button:active {
+    position: relative;
+    background-color: #9dcf80;
+    top: 4px;
+    box-shadow: none; }
+  .button:focus {
+    background-color: #8fc86d;
+    padding: 4px 8px;
+    border: 2px solid #c8e4b8; }
+  .button a {
+    text-decoration: none;
+    color: white; }
+    .button a:hover {
+      color: white; }
+    .button a:visited {
+      color: white; }
+
+::-webkit-input-placeholder {
+  color: #bbbcbd; }
+
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: #828386; }
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #828386; }
+
+:-ms-input-placeholder {
+  color: #828386; }
+
+/* vvvv   This bit adds a halo. Still under consideration.   vvvv*/
+/*input[type=text], textarea {
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+}*/
+/* vvvv   This styles it find, less overwriting of Foundations base.   vvvv*/
+/*input{
+  padding: 3px;
+  border:0px solid $lightgrey; 
+  -webkit-border-radius: 5px;
+    background-color: lighten($lightgrey, 10);
+    box-shadow: -1px -2px $lightgrey;
+    padding: 2px 6px 6px 6px;
+    &:focus{
+      background-color: lighten($lightgrey, 8);
+    }
+  outline: none;
+}*/
+/*----------------------------------------------*/
+/*Leaderboard*/
+/*----------------------------------------------*/
+.hashtag-title {
+  font-weight: 900;
+  font-size: 1.8em; }
+
+.user-roll {
+  width: 240px; }
+  .user-roll li {
+    padding-bottom: 4px; }
+
+.usertot {
+  font-weight: 700;
+  font-size: 1em;
+  color: #595a5a;
+  position: relative;
+  display: inline-block;
+  float: right; }
+
+/*----------------------------------------------*/
+/*Badge Box*/
+/*----------------------------------------------*/
+.badgehome {
+  width: 100%;
+  height: 160px;
+  padding: 12px 0px 10px 0px; }
+
+.badgeicon {
+  position: relative;
+  float: left;
+  pointer-events: none; }
+
+.badgetext {
+  top: 18px;
+  position: relative;
+  float: right;
+  height: 80px;
+  width: 226px; }
+
+.badgeheader {
+  font-weight: 300;
+  font-size: 1.4em; }
+
+/*----------------------------------------------*/
+/*Container Styles*/
+/*----------------------------------------------*/
+.container {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto; }
+
+.sub-container {
+  border: #dbdbda solid 1px; }
+
+.sectionheader {
+  padding-bottom: 32px; }
+
+.text-box {
+  padding: 14px;
+  width: 400px; }
+
+.badge-box {
+  padding: 14px;
+  width: 400px;
+  height: 100%; }
+
+.line-break {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  height: 2px;
+  width: 60%;
+  background-color: #dbdbda; }
+
+.center-text {
+  text-align: center; }
+
+/*# sourceMappingURL=main.css.map */
