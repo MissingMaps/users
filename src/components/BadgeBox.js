@@ -3,6 +3,7 @@ import React from 'react';
 function mapBadgeToImage (badge) {
   var map = {
     'Road Builder': 'assets/graphics/test.svg',
+    'Building Builder': 'assets/graphics/test.svg',
     'Consistentency': 'assets/graphics/test2.svg',
     'GPS trace Creator': 'assets/graphics/test3.svg',
     'JOSM User': 'assets/graphics/test.svg',
@@ -17,11 +18,15 @@ function mapBadgeToImage (badge) {
   return map[badge];
 }
 
+// Strips whitespace
+function stripWS (text) {
+  return text.replace(/ /g, '');
+}
+
 export default (props) => {
   var list = Object.keys(props.badges).map((badge) => {
     return (
-      // <li key={badge}>{badge}: {props.badges[badge]}</li>
-      <li><img src={mapBadgeToImage(badge)} width="100px"></img></li>
+      <li key={stripWS(badge)}><img src={mapBadgeToImage(badge)} width="100px"></img></li>
     );
   });
   return (
@@ -30,9 +35,9 @@ export default (props) => {
         Recently Earned Badges
       </div>
       <div className = "Badge-Box-Content">
-        <div className = "Badge-Roll">
+        <ul className = "Badge-Roll">
           {list}
-        </div>
+        </ul>
       </div>
     </div>
   );

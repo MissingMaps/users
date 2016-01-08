@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default (username) => {
+export default (props) => {
   return (
     <div id = "Subhead-Container">
       <div id = "Subhead-Content">
@@ -8,7 +8,7 @@ export default (username) => {
           <img src="assets/graphics/circle.svg" width="120px"></img>
         </div>
         <div className = "Username titleheader">
-          {username.username} <img src="assets/graphics/twitter.svg"></img>
+          {props.username} <img src="assets/graphics/twitter.svg"></img>
         </div>
         <div className = "Subhead-Nav">
           <a href="">Overview</a>
