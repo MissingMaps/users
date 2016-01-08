@@ -1,8 +1,6 @@
 import React from 'react';
 
 export default (username) => {
-  console.log("wow!");
-
   return(
 	<div id = "Subhead-Container">
 		<div id = "Subhead-Content">
