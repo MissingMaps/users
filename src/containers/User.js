@@ -31,14 +31,14 @@ export default React.createClass({
   render: function () {
     return (
       <div>
-      	<div id = "User-Container">
-      		<div id = "Main-User-Container">
-      				<UserSubHead username={this.props.params.id}/>
-      				<BadgeBox badges={this.state.badges} />
-      				<QuickStatsBox />
-      				<ContributionBox />
-      		</div>
-	    </div>
+        <div id = "User-Container">
+          <div id = "Main-User-Container">
+            <UserSubHead username={this.props.params.id}/>
+            <BadgeBox badges={this.state.badges} />
+            <QuickStatsBox />
+            <ContributionBox />
+          </div>
+        </div>
       </div>
     );
   }
