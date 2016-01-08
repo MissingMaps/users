@@ -1,0 +1,563 @@
+/*----------------------------------------------*/
+/*Variables*/
+/*----------------------------------------------*/
+$osmgreen: #9dcf80;
+$darkgreen: #38803D;
+$lightgrey: #dbdbda;
+$darkgrey: #6e6f71;
+$darkestgrey: #595a5a;
+
+$mmred: #e23d3d;
+$mmgreen: #8BBF3F;
+$mmblue: #1E9FCC;
+$badgeyellow: #FEF387;
+$badgeborder: #D2C02B;
+
+$debug: rgba(0,0,0,0.08);
+
+/* In Context */
+/*----------------------------------------------*/
+$text-color: $darkgrey;
+$border-color: $darkgrey;
+$border-color-darken: darken($border-color, 5%);
+$border-color-lighten: lighten($border-color, 5%);
+
+
+body{
+	margin: 0;
+	background-color: $debug;
+}
+
+li{
+	list-style-type: none;
+	display: inline-block;
+}
+
+#User-Container{
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+	border: solid 1px #EEE;	
+	background-color: white;
+  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);	
+}
+
+#Subhead-Container{
+	background-color: white;
+	height: 160px;
+  	box-shadow: 0px 2px 2px rgba( 55, 55, 55, 0.2);	
+}
+
+#Subhead-Content{
+	position: absolute;
+	top:52px;
+	width: 100%;
+}
+
+.ProfilePicture{
+	z-index: 10;
+	display: inline-block;
+	padding-left: 32px;
+    @media screen and (max-width: 1100px){
+	margin-left: auto;
+	margin-right: auto;
+	}
+}
+
+.Username{
+	display: inline-block;
+	position: absolute;
+	top:60px;
+	padding-left: 14px;
+	img{
+		width: 0px;
+		padding-left: 8px;
+		padding-bottom: 2px;
+	}
+};
+
+.Subhead-Nav{
+	float: right;
+	padding-right: 24px;
+	display: inline-block;
+	position: absolute;
+	right: 0;
+	top: 73px;
+	a{
+		padding: 16px 20px;
+		margin-left: 10px;
+		margin-right: 10px;
+		border: 1px solid #DDD;
+	  &:hover{
+	  	background-color: $darkgreen;
+	    color: $osmgreen;  
+	  }
+	}
+    @media screen and (max-width: 700px){
+   	top: 125px;
+    right: auto;
+    left: 53.1%;
+    transform: translate(-50%, 0);
+	margin-left: auto;
+	margin-right: auto;
+	}	
+}
+
+#Main-User-Container{
+	position: relative;
+	height: 870px;
+    @media screen and (max-width: 1100px){
+	height: auto;
+	}
+}
+
+.Recent-Badges-Container{
+	position: absolute;
+	max-width: 584px;
+	min-width: 300px;
+	margin: 34px 24px;
+    @media screen and (max-width: 1100px){
+    	position: relative;
+		margin: 50px 10px 0px 10px;
+		max-width: 75%;
+		margin-left: auto;
+		margin-right: auto;
+    }
+}
+
+.Badge-Box-Content{
+	border: solid 1px #CCC;
+  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+  	padding: 10px;
+	text-align: center;
+}
+
+.Badge-Roll{
+	position: relative;
+	display: inline;
+	li{
+		padding: 8px;
+	}
+}
+
+.Quick-User-Stats-Container{
+	position: absolute;
+	width: 400px;
+	height: 347px;
+	right: 0px;
+	margin: 34px 24px;
+	background-color: white;
+    @media screen and (max-width: 1100px){
+    	position: relative;
+    	width: 75%;
+    	margin-left: auto;
+    	margin-right: auto;
+    }
+};
+
+.Quick-User-Stats-Content{
+	border: solid 1px #CCC;
+  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+  	width:100%;
+  	height: 100%;
+};
+
+.Contribute-Timeline-Container{
+	position: absolute;
+	top: 590px;
+	width: 1030px;
+	height: 180px;
+	padding: 10px;
+	margin: 50px 24px;
+    @media screen and (max-width: 1100px){
+    	top: auto;
+    	width: 75%;
+    	position: relative;
+    	margin-left: auto;
+    	margin-right: auto;
+    }
+};
+
+.Contribute-Timeline-Content{
+	background-color: white;
+	border: solid 1px #CCC;
+  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+  	height: 140px;
+}
+
+
+/*----------------------------------------------*/
+/*Base Style from MM*/
+/*----------------------------------------------*/
+
+// IE < 10
+// Don't delete.
+.lt-ie10 {
+  #site-canvas {
+    display: none;
+  }
+  #nocando {
+    margin: 200px auto;
+    padding: 32px;
+    max-width: 440px;
+    background: #fff;
+    h1 {
+      font-size: 24px;
+      line-height: 1.1;
+      margin-bottom: 32px;
+    }
+  }
+}
+
+/*----------------------------------------------*/
+/*Fixing Default CSS*/
+/*----------------------------------------------*/
+body, ul, li{
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Lato', sans-serif;
+  color: $darkgrey;
+}
+
+ul, li{
+  list-style: none;
+}
+
+h1{
+    font-weight: 500;
+    display: inline;
+}
+
+::-moz-selection { /* Code for Firefox */
+    background: $osmgreen;
+}
+
+::selection {
+    background: $osmgreen;
+}
+
+.site-canvas{
+  z-index: -1;
+}
+
+/*----------------------------------------------*/
+/*Nav Bar Style*/
+/*----------------------------------------------*/
+header{
+  background-color:white;
+  position: fixed;
+  z-index: 100;
+  top:0px;
+  width: 100%;
+  min-height: 50px;
+  color: $lightgrey;
+  display: none;
+  border-bottom: 2px $lightgrey solid;
+  input{
+  }
+  ul{
+    display: inline-block;
+  }
+  li{
+    display: inline-block;
+    margin: 0px;
+  }
+  focus{
+    outline: none;
+  }
+}
+
+.headerwidth{
+  max-width:1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav-icon{
+  padding: 5px;
+  float: left;
+  @media screen and (max-width: 700px){
+      display: block;
+      width: 100%;
+      float: none;
+      text-align: center;
+      img{
+        margin-top: 4px;
+        width: 150px;
+      }
+  }
+}
+
+.nav-list{
+  float: right;
+  position: relative;
+  margin-top:20px;
+  display: inline-block;
+  @media screen and (max-width: 700px){
+      display: block;
+      height: 70px;
+      width: 100%;
+      margin: 0px auto 0px auto;
+      text-align: center;
+  }
+}
+
+.nav-input{
+    float: right;
+    display: inline-block;
+    position: relative;
+    bottom:3px;
+    padding: 0px 16px 0px 40px;
+  @media screen and (max-width: 700px){
+      display: block;
+      width: 100%;
+      top:14px;
+      padding-bottom:10px;
+  }
+}
+
+.nav-item{
+  padding:0px 10px 0px 10px;
+  @media screen and (max-width: 700px){
+  }
+}
+
+.nav-links{
+  float:center;
+}
+
+/*----------------------------------------------*/
+/* Text  Styles*/
+/* weights: 300 thin, 400 regular, 700 bold, 900 black */
+/*----------------------------------------------*/
+a{
+  text-decoration: none;
+  color: $darkgreen;
+  &:hover{
+    color: $osmgreen;   
+  }
+  &:focus{
+    color: $osmgreen;
+  }
+}
+
+.titleheader{
+  font-weight: 900;
+  font-size: 2em;
+  color: $darkgreen;
+}
+
+.sub-head{
+  font-weight: 400;
+  font-size: 1.4em;
+  padding: 2px 0px 8px 0px;
+  color: $darkgreen;
+}
+
+.textbox{
+  padding-bottom: 4px;
+  font-weight: 400;
+  font-size: 1.1em;
+  line-height: 1.4;
+}
+
+/*----------------------------------------------*/
+/*Interactive Buttons*/ 
+/*----------------------------------------------*/
+button{
+  border-radius: 2px;
+  border: none;
+  box-shadow: 0px 3px #7F181C;
+  color: white;
+  z-index: 99;
+}
+
+input[type="text"]{
+  border:0px solid $lightgrey;
+  box-sizing: none;
+  width: auto;
+  height: auto;
+  margin: none;
+  color: $darkgrey;
+  -webkit-border-radius: 5px;
+    background-color: lighten($lightgrey, 10);
+    box-shadow: -1px -2px $lightgrey;
+    padding: 2px 6px 4px 6px;
+    &:focus{
+      background-color: lighten($lightgrey, 8);
+    }
+  outline: none;
+}
+
+.button{
+    background-color: $osmgreen;
+  -moz-border-radius:18px;
+  -webkit-border-radius:18px;
+  border-radius:6px;
+  border: 0px;
+/*  border:1px solid $darkgreen;
+*/  box-shadow: 0px 2px $darkgreen;
+  display:inline-block;
+  cursor:pointer;
+  transition: active 0.25s;
+  color:#ffffff;
+  padding:6px 10px;
+  text-decoration:none;
+  &:hover{
+    background-color: darken($osmgreen, 15%);
+  }
+  &:active{
+    position:relative;
+    background-color:$osmgreen;
+    top:4px;
+    box-shadow: none;
+  }
+  &:focus{
+    background-color: darken($osmgreen, 5%);
+    padding: 4px 8px;
+    border: 2px solid lighten($osmgreen, 15%);
+  }
+  a{
+    text-decoration: none;
+    color: white;
+    &:hover{
+      color: white;   
+    }
+    &:visited{
+      color: white;
+    }
+  }
+}
+
+::-webkit-input-placeholder {
+   color: lighten($darkgrey, 30);
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: lighten($darkgrey, 8);  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: lighten($darkgrey, 8);  
+}
+
+:-ms-input-placeholder {  
+   color: lighten($darkgrey, 8);  
+}
+
+/* vvvv   This bit adds a halo. Still under consideration.   vvvv*/
+/*input[type=text], textarea {
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+}*/
+
+/* vvvv   This styles it find, less overwriting of Foundations base.   vvvv*/
+/*input{
+  padding: 3px;
+  border:0px solid $lightgrey; 
+  -webkit-border-radius: 5px;
+    background-color: lighten($lightgrey, 10);
+    box-shadow: -1px -2px $lightgrey;
+    padding: 2px 6px 6px 6px;
+    &:focus{
+      background-color: lighten($lightgrey, 8);
+    }
+  outline: none;
+}*/
+
+/*----------------------------------------------*/
+/*Leaderboard*/ 
+/*----------------------------------------------*/
+.hashtag-title{
+  font-weight: 900;
+  font-size: 1.8em;
+}
+
+.user-roll{
+  width: 240px;
+  li{
+    padding-bottom:4px;
+  }
+}
+
+.usertot{
+  font-weight: 700;
+  font-size: 1em;
+  color: $darkestgrey;
+  position: relative;
+  display: inline-block;
+  float: right;
+}
+
+/*----------------------------------------------*/
+/*Badge Box*/ 
+/*----------------------------------------------*/
+.badgehome{
+  width: 100%;
+  height: 160px;
+  padding: 12px 0px 10px 0px;
+}
+
+.badgeicon {
+  position: relative; 
+  float: left;
+  pointer-events: none;
+}
+
+.badgetext{
+  top: 18px;
+  position: relative;
+  float: right;
+  height: 80px;
+  width: 226px;
+}
+
+.badgeheader{
+  padding-top: 14px;
+  margin-bottom: 8px;
+  font-weight: 300;
+  font-size: 1.4em;
+}
+
+/*----------------------------------------------*/
+/*Container Styles*/ 
+/*----------------------------------------------*/
+.container{
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sub-container{
+  border: $lightgrey solid 1px;
+}
+
+.sectionheader{
+  padding-bottom: 32px;
+}
+
+.text-box{
+  padding: 14px;
+  width: 400px;
+}
+
+.badge-box {
+  padding: 14px;
+  width: 400px;
+  height: 100%;
+}
+
+.line-break{
+  margin-top: 4px;
+  margin-bottom: 8px;
+  height: 2px;
+  width: 60%;
+  background-color: $lightgrey;
+}
+
+.center-text{
+  text-align: center;
+}

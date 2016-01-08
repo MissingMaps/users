@@ -9,8 +9,8 @@ var history = createHashHistory({
   queryKey: false
 });
 
-ReactDOM.render(
-  (<Router history={history}>
+ReactDOM.render((
+  <Router history={history}>
     <Route path="/">
       <IndexRoute component={Users} />
       <Route path=":id" component={User} />
