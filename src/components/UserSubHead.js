@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link, IndexLink} from 'react-router';
 
 export default (props) => {
   return (
@@ -11,9 +12,9 @@ export default (props) => {
           {props.username} <img src="assets/graphics/twitter.svg"></img>
         </div>
         <div className = "Subhead-Nav">
-          <a href="">Overview</a>
-          <a href="">Badges</a>
-          <a href="">Stats</a>
+          <IndexLink to={`/${props.username}`}>Overview</IndexLink>
+          <Link to={`/${props.username}/badges`}>Badges</Link>
+          <Link to={`/${props.username}/stats`}>Stats</Link>
         </div>
       </div>
     </div>
