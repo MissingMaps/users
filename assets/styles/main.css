@@ -5,7 +5,7 @@
 /*----------------------------------------------*/
 body {
   margin: 0;
-  background-color: rgba(0, 0, 0, 0.08); }
+  background-color: white; }
 
 li {
   list-style-type: none;
@@ -17,12 +17,12 @@ li {
   margin-right: auto;
   border: solid 1px #EEE;
   background-color: white;
-  box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1); }
+  box-shadow: 0px 0px 12px #dbdbda; }
 
 #Subhead-Container {
   background-color: white;
   height: 160px;
-  box-shadow: 0px 2px 2px rgba(55, 55, 55, 0.2); }
+  box-shadow: 0px 1px 1px rgba(55, 55, 55, 0.2); }
 
 #Subhead-Content {
   position: absolute;
@@ -83,7 +83,7 @@ li {
   position: absolute;
   max-width: 584px;
   min-width: 300px;
-  margin: 34px 24px; }
+  margin: 20px 24px; }
   @media screen and (max-width: 1100px) {
     .Recent-Badges-Container {
       position: relative;
@@ -106,10 +106,10 @@ li {
 
 .Quick-User-Stats-Container {
   position: absolute;
-  width: 400px;
-  height: 347px;
+  width: 430px;
+  height: 384px;
   right: 0px;
-  margin: 34px 24px;
+  margin: 20px 24px;
   background-color: white; }
   @media screen and (max-width: 1100px) {
     .Quick-User-Stats-Container {
@@ -126,10 +126,9 @@ li {
 
 .Contribute-Timeline-Container {
   position: absolute;
-  top: 590px;
-  width: 1030px;
+  top: 570px;
+  width: 1055px;
   height: 180px;
-  padding: 10px;
   margin: 50px 24px; }
   @media screen and (max-width: 1100px) {
     .Contribute-Timeline-Container {
@@ -137,7 +136,8 @@ li {
       width: 75%;
       position: relative;
       margin-left: auto;
-      margin-right: auto; } }
+      margin-right: auto;
+      margin-top: 64px; } }
 
 .Contribute-Timeline-Content {
   background-color: white;
@@ -189,7 +189,7 @@ h1 {
 /*----------------------------------------------*/
 /*Nav Bar Style*/
 /*----------------------------------------------*/
-header {
+#header {
   background-color: white;
   position: fixed;
   z-index: 100;
@@ -199,36 +199,34 @@ header {
   color: #dbdbda;
   display: none;
   border-bottom: 2px #dbdbda solid; }
-  header ul {
+  #header ul {
     display: inline-block; }
-  header li {
+  #header li {
     display: inline-block;
     margin: 0px; }
-  header focus {
+  #header focus {
     outline: none; }
 
 .headerwidth {
-  max-width: 1000px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto; }
 
 .nav-icon {
-  padding: 5px;
+  padding-left: 8px;
+  padding-top: 7px;
   float: left; }
   @media screen and (max-width: 700px) {
     .nav-icon {
       display: block;
-      width: 100%;
-      float: none;
-      text-align: center; }
+      width: 100%; }
       .nav-icon img {
-        margin-top: 4px;
-        width: 150px; } }
+        margin-top: 4px; } }
 
 .nav-list {
   float: right;
   position: relative;
-  margin-top: 20px;
+  margin-top: 18px;
   display: inline-block; }
   @media screen and (max-width: 700px) {
     .nav-list {
@@ -289,13 +287,6 @@ a {
 /*----------------------------------------------*/
 /*Interactive Buttons*/
 /*----------------------------------------------*/
-button {
-  border-radius: 2px;
-  border: none;
-  box-shadow: 0px 3px #7F181C;
-  color: white;
-  z-index: 99; }
-
 input[type="text"] {
   border: 0px solid #dbdbda;
   box-sizing: none;
@@ -331,7 +322,6 @@ input[type="text"] {
   .button:active {
     position: relative;
     background-color: #9dcf80;
-    top: 4px;
     box-shadow: none; }
   .button:focus {
     background-color: #8fc86d;
