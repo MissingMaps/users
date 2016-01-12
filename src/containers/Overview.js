@@ -21,7 +21,7 @@ export default React.createClass({
       return (
         <div id="overview">
           <BadgeBox badges={this.state.user.badges} />
-          <QuickStatsBox />
+          <QuickStatsBox badges={this.state.user.stats} />
           <ContributionBox />
         </div>
       );
