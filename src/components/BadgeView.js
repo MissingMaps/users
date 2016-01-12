@@ -43,7 +43,6 @@ function stripWS (text) {
 
 export default (props) => {
   var list = Object.keys(props.badges).map((badge) => {
-    console.log(props);
     return (
       <li key={stripWS(badge)}>
         <div className = "badge-home">

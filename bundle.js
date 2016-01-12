@@ -1019,7 +1019,7 @@
 
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":222}],3:[function(require,module,exports){
+},{"_process":225}],3:[function(require,module,exports){
 /**
  * Indicates that navigation was caused by a call to history.push.
  */
@@ -1149,7 +1149,7 @@ function readState(key) {
   return null;
 }
 }).call(this,require('_process'))
-},{"_process":222,"warning":25}],6:[function(require,module,exports){
+},{"_process":225,"warning":25}],6:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1279,7 +1279,7 @@ function createDOMHistory(options) {
 exports['default'] = createDOMHistory;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./DOMUtils":6,"./ExecutionEnvironment":7,"./createHistory":10,"_process":222,"invariant":22}],9:[function(require,module,exports){
+},{"./DOMUtils":6,"./ExecutionEnvironment":7,"./createHistory":10,"_process":225,"invariant":22}],9:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1530,7 +1530,7 @@ function createHashHistory() {
 exports['default'] = createHashHistory;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./Actions":3,"./DOMStateStorage":5,"./DOMUtils":6,"./ExecutionEnvironment":7,"./createDOMHistory":8,"./parsePath":15,"_process":222,"invariant":22,"warning":25}],10:[function(require,module,exports){
+},{"./Actions":3,"./DOMStateStorage":5,"./DOMUtils":6,"./ExecutionEnvironment":7,"./createDOMHistory":8,"./parsePath":15,"_process":225,"invariant":22,"warning":25}],10:[function(require,module,exports){
 //import warning from 'warning'
 'use strict';
 
@@ -2035,7 +2035,7 @@ function createMemoryHistory() {
 exports['default'] = createMemoryHistory;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./Actions":3,"./createHistory":10,"./parsePath":15,"_process":222,"invariant":22,"warning":25}],13:[function(require,module,exports){
+},{"./Actions":3,"./createHistory":10,"./parsePath":15,"_process":225,"invariant":22,"warning":25}],13:[function(require,module,exports){
 //import warning from 'warning'
 
 "use strict";
@@ -2112,7 +2112,7 @@ function parsePath(path) {
 exports['default'] = parsePath;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./extractPath":14,"_process":222,"warning":25}],16:[function(require,module,exports){
+},{"./extractPath":14,"_process":225,"warning":25}],16:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -2139,7 +2139,7 @@ function runTransitionHook(hook, location, callback) {
 exports['default'] = runTransitionHook;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"_process":222,"warning":25}],17:[function(require,module,exports){
+},{"_process":225,"warning":25}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2455,7 +2455,7 @@ function useQueries(createHistory) {
 exports['default'] = useQueries;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./deprecate":13,"./parsePath":15,"./runTransitionHook":16,"_process":222,"query-string":23,"warning":25}],19:[function(require,module,exports){
+},{"./deprecate":13,"./parsePath":15,"./runTransitionHook":16,"_process":225,"query-string":23,"warning":25}],19:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -3373,7 +3373,7 @@ IndexRedirect.createRouteFromReactElement = function (element, parentRoute) {
 exports['default'] = IndexRedirect;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":37,"./Redirect":38,"_process":222,"invariant":53,"react":213,"warning":54}],33:[function(require,module,exports){
+},{"./PropTypes":37,"./Redirect":38,"_process":225,"invariant":53,"react":213,"warning":54}],33:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -3446,7 +3446,7 @@ IndexRoute.createRouteFromReactElement = function (element, parentRoute) {
 exports['default'] = IndexRoute;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":37,"./RouteUtils":41,"_process":222,"invariant":53,"react":213,"warning":54}],34:[function(require,module,exports){
+},{"./PropTypes":37,"./RouteUtils":41,"_process":225,"invariant":53,"react":213,"warning":54}],34:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -3513,7 +3513,7 @@ var Lifecycle = {
 exports['default'] = Lifecycle;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"_process":222,"invariant":53,"react":213}],35:[function(require,module,exports){
+},{"_process":225,"invariant":53,"react":213}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3907,7 +3907,7 @@ function formatPattern(pattern, params) {
   return pathname.replace(/\/+/g, '/');
 }
 }).call(this,require('_process'))
-},{"_process":222,"invariant":53}],37:[function(require,module,exports){
+},{"_process":225,"invariant":53}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4071,7 +4071,7 @@ Redirect.propTypes = {
 exports['default'] = Redirect;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PatternUtils":36,"./PropTypes":37,"./RouteUtils":41,"_process":222,"invariant":53,"react":213}],39:[function(require,module,exports){
+},{"./PatternUtils":36,"./PropTypes":37,"./RouteUtils":41,"_process":225,"invariant":53,"react":213}],39:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -4141,7 +4141,7 @@ Route.propTypes = {
 exports['default'] = Route;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":37,"./RouteUtils":41,"_process":222,"invariant":53,"react":213}],40:[function(require,module,exports){
+},{"./PropTypes":37,"./RouteUtils":41,"_process":225,"invariant":53,"react":213}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4297,7 +4297,7 @@ function createRoutes(routes) {
   return routes;
 }
 }).call(this,require('_process'))
-},{"_process":222,"react":213,"warning":54}],42:[function(require,module,exports){
+},{"_process":225,"react":213,"warning":54}],42:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -4465,7 +4465,7 @@ Router.defaultProps = {
 exports['default'] = Router;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":37,"./RouteUtils":41,"./RoutingContext":43,"./useRoutes":52,"_process":222,"history/lib/createHashHistory":9,"react":213,"warning":54}],43:[function(require,module,exports){
+},{"./PropTypes":37,"./RouteUtils":41,"./RoutingContext":43,"./useRoutes":52,"_process":225,"history/lib/createHashHistory":9,"react":213,"warning":54}],43:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -4608,7 +4608,7 @@ RoutingContext.childContextTypes = {
 exports['default'] = RoutingContext;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./RouteUtils":41,"./getRouteParams":47,"_process":222,"invariant":53,"react":213}],44:[function(require,module,exports){
+},{"./RouteUtils":41,"./getRouteParams":47,"_process":225,"invariant":53,"react":213}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5092,7 +5092,7 @@ function match(_ref, callback) {
 exports['default'] = match;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./RouteUtils":41,"./useRoutes":52,"_process":222,"history/lib/createMemoryHistory":12,"history/lib/useBasename":17,"invariant":53}],51:[function(require,module,exports){
+},{"./RouteUtils":41,"./useRoutes":52,"_process":225,"history/lib/createMemoryHistory":12,"history/lib/useBasename":17,"invariant":53}],51:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -5283,7 +5283,7 @@ function matchRoutes(routes, location, callback) {
 exports['default'] = matchRoutes;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./AsyncUtils":29,"./PatternUtils":36,"./RouteUtils":41,"_process":222,"warning":54}],52:[function(require,module,exports){
+},{"./AsyncUtils":29,"./PatternUtils":36,"./RouteUtils":41,"_process":225,"warning":54}],52:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -5577,7 +5577,7 @@ function useRoutes(createHistory) {
 exports['default'] = useRoutes;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./TransitionUtils":44,"./computeChangedRoutes":45,"./getComponents":46,"./isActive":49,"./matchRoutes":51,"_process":222,"history/lib/Actions":3,"history/lib/useQueries":18,"warning":54}],53:[function(require,module,exports){
+},{"./TransitionUtils":44,"./computeChangedRoutes":45,"./getComponents":46,"./isActive":49,"./matchRoutes":51,"_process":225,"history/lib/Actions":3,"history/lib/useQueries":18,"warning":54}],53:[function(require,module,exports){
 module.exports=require(22)
 },{"/Users/marcfarra/code/devseed/osm-gamification-users/node_modules/history/node_modules/invariant/browser.js":22}],54:[function(require,module,exports){
 module.exports=require(25)
@@ -24747,6 +24747,171 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function mapBadgeToImage(badge) {
+  var map = {
+    'Road Builder': 'assets/graphics/test.svg',
+    'Building Builder': 'assets/graphics/test.svg',
+    'Consistentency': 'assets/graphics/test2.svg',
+    'GPS trace Creator': 'assets/graphics/test3.svg',
+    'JOSM User': 'assets/graphics/test.svg',
+    'Long & Winding Road': 'assets/graphics/test2.svg',
+    'Mapathoner': '/assets/graphics/test3.svg',
+    'Node Builder': '/assets/graphics/test.svg',
+    'TaskMan Scrutinizer': '/assets/graphics/test3.svg',
+    'TaskMan Square Champion': '/assets/graphics/test.svg',
+    'Waterway Creator': '/assets/graphics/test2.svg',
+    'World Renown': '/assets/graphics/test3.svg'
+  };
+  return map[badge];
+}
+
+function mapBadgeToDescrip(badge) {
+  var map = {
+    'Road Builder': 'Wowie zomie bam sham!',
+    'Building Builder': 'Built 15 buildings',
+    'Consistentency': 'Mapped every day, wow!',
+    'GPS trace Creator': 'Traced some real good GPS imagery',
+    'JOSM User': 'Used JSOM to map an area',
+    'Long & Winding Road': 'Mapping many, many roads.',
+    'Mapathoner': 'Just cant stop mapping- mapped 10 days in a row.',
+    'Node Builder': 'Wrote a truckful of nodes.',
+    'TaskMan Scrutinizer': 'Scrutinize tasks with the vigilance of a nun with a ruler',
+    'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
+    'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
+    'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.'
+  };
+  return map[badge];
+}
+
+// Strips whitespace
+function stripWS(text) {
+  return text.replace(/ /g, '');
+}
+
+exports.default = function (props) {
+  var list = Object.keys(props.badges).map(function (badge) {
+    return _react2.default.createElement(
+      'li',
+      { key: stripWS(badge) },
+      _react2.default.createElement(
+        'div',
+        { className: 'badge-home' },
+        _react2.default.createElement('img', { src: mapBadgeToImage(badge), width: '150px' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'badge-Details' },
+          _react2.default.createElement(
+            'div',
+            { className: 'badge-Name' },
+            badge
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'badge-Description' },
+            _react2.default.createElement('div', { className: 'line-break' }),
+            mapBadgeToDescrip(badge)
+          )
+        )
+      )
+    );
+  });
+  return _react2.default.createElement(
+    'div',
+    { id: 'Badge-Container' },
+    _react2.default.createElement(
+      'div',
+      { className: 'badgeheader' },
+      'Earned Badges'
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'Badge-Box-Content' },
+      _react2.default.createElement(
+        'ul',
+        { className: 'Badge-Roll' },
+        list
+      )
+    )
+  );
+};
+
+},{"react":213}],216:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (username) {
+  return _react2.default.createElement(
+    "div",
+    null,
+    _react2.default.createElement(
+      "div",
+      { className: "Contribute-Timeline-Container" },
+      _react2.default.createElement(
+        "div",
+        { className: "badgeheader" },
+        "Contribution Timeline"
+      ),
+      _react2.default.createElement("div", { className: "Contribute-Timeline-Content" })
+    )
+  );
+};
+
+},{"react":213}],217:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = QuickStatsBox;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function stripWS(text) {
+  return text.replace(/ /g, '');
+}
+
+function QuickStatsBox(props) {
+  Object.keys(props.badges).map(function (badge) {
+    return _react2.default.createElement('li', { key: stripWS(badge) });
+  });
+  return _react2.default.createElement(
+    'div',
+    { className: 'Quick-User-Stats-Container' },
+    _react2.default.createElement(
+      'div',
+      { className: 'badgeheader' },
+      'Quick Stats'
+    ),
+    _react2.default.createElement('div', { className: 'Quick-User-Stats-Content' })
+  );
+}
+
+},{"react":213}],218:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 var _reactRouter = require('react-router');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -24793,7 +24958,7 @@ exports.default = function (props) {
   );
 };
 
-},{"react":213,"react-router":48}],216:[function(require,module,exports){
+},{"react":213,"react-router":48}],219:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24804,13 +24969,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _isomorphicFetch = require('isomorphic-fetch');
+var _BadgeView = require('../components/BadgeView.js');
 
-var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
-
-var _BadgeBox = require('../components/BadgeBox.js');
-
-var _BadgeBox2 = _interopRequireDefault(_BadgeBox);
+var _BadgeView2 = _interopRequireDefault(_BadgeView);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24819,30 +24980,20 @@ exports.default = _react2.default.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      badges: []
+      badges: this.props.user.badges || []
     };
   },
-  componentDidMount: function componentDidMount() {
-    var component = this;
-    if ("production" === 'development') {
-      (0, _isomorphicFetch2.default)('/test/fixtures/db.json').then(function (response) {
-        if (response.status >= 400) {
-          throw new Error('Bad response');
-        }
-        return response.json();
-      }).then(function (db) {
-        if (component.isMounted()) {
-          component.setState(db);
-        }
-      });
-    }
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.setState({
+      badges: nextProps.user.badges
+    });
   },
   render: function render() {
-    return _react2.default.createElement(_BadgeBox2.default, { badges: this.state.badges });
+    return _react2.default.createElement(_BadgeView2.default, { badges: this.state.badges });
   }
 });
 
-},{"../components/BadgeBox.js":214,"isomorphic-fetch":26,"react":213}],217:[function(require,module,exports){
+},{"../components/BadgeView.js":215,"react":213}],220:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24853,21 +25004,53 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _BadgeBox = require('../components/BadgeBox.js');
+
+var _BadgeBox2 = _interopRequireDefault(_BadgeBox);
+
+var _QuickStatsBox = require('../components/QuickStatsBox.js');
+
+var _QuickStatsBox2 = _interopRequireDefault(_QuickStatsBox);
+
+var _ContributionBox = require('../components/ContributionBox.js');
+
+var _ContributionBox2 = _interopRequireDefault(_ContributionBox);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
   displayName: 'Overview',
 
+  getInitialState: function getInitialState() {
+    return {
+      user: this.props.user || {}
+    };
+  },
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.setState({
+      user: nextProps.user
+    });
+  },
   render: function render() {
-    return _react2.default.createElement(
-      'div',
-      null,
-      'Yay overview!'
-    );
+    if (Object.keys(this.state.user).length === 0) {
+      return _react2.default.createElement(
+        'div',
+        null,
+        'Loading...'
+      );
+    } else {
+      return _react2.default.createElement(
+        'div',
+        { id: 'overview' },
+        _react2.default.createElement(_BadgeBox2.default, { badges: this.state.user.badges }),
+        _react2.default.createElement(_QuickStatsBox2.default, { badges: this.state.user.stats }),
+        _react2.default.createElement(_ContributionBox2.default, null)
+      );
+    }
   }
 });
 
-},{"react":213}],218:[function(require,module,exports){
+},{"../components/BadgeBox.js":214,"../components/ContributionBox.js":216,"../components/QuickStatsBox.js":217,"react":213}],221:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24892,7 +25075,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"react":213}],219:[function(require,module,exports){
+},{"react":213}],222:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24907,11 +25090,37 @@ var _UserSubHead = require('../components/UserSubHead');
 
 var _UserSubHead2 = _interopRequireDefault(_UserSubHead);
 
+var _isomorphicFetch = require('isomorphic-fetch');
+
+var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
   displayName: 'User',
 
+  getInitialState: function getInitialState() {
+    return {
+      user: {}
+    };
+  },
+  componentDidMount: function componentDidMount() {
+    var component = this;
+    if ("production" === 'development') {
+      (0, _isomorphicFetch2.default)('/test/fixtures/db.json').then(function (response) {
+        if (response.status >= 400) {
+          throw new Error('Bad response');
+        }
+        return response.json();
+      }).then(function (db) {
+        if (component.isMounted()) {
+          component.setState({
+            user: db
+          });
+        }
+      });
+    }
+  },
   render: function render() {
     return _react2.default.createElement(
       'div',
@@ -24923,14 +25132,20 @@ exports.default = _react2.default.createClass({
           'div',
           { id: 'Main-User-Container' },
           _react2.default.createElement(_UserSubHead2.default, { username: this.props.params.id }),
-          this.props.children
+          typeof this.state.user !== 'undefined' ? this.props.children && _react2.default.cloneElement(this.props.children, {
+            user: this.state.user
+          }) : _react2.default.createElement(
+            'div',
+            null,
+            'Loading...'
+          )
         )
       )
     );
   }
 });
 
-},{"../components/UserSubHead":215,"react":213}],220:[function(require,module,exports){
+},{"../components/UserSubHead":218,"isomorphic-fetch":26,"react":213}],223:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24972,7 +25187,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"react":213,"react-search-bar":55}],221:[function(require,module,exports){
+},{"react":213,"react-search-bar":55}],224:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -25032,7 +25247,7 @@ _reactDom2.default.render(_react2.default.createElement(
   )
 ), document.getElementById('app'));
 
-},{"./containers/BadgeView.js":216,"./containers/Overview.js":217,"./containers/StatsView.js":218,"./containers/User":219,"./containers/Users":220,"history/lib/createHashHistory":9,"react":213,"react-dom":28,"react-router":48}],222:[function(require,module,exports){
+},{"./containers/BadgeView.js":219,"./containers/Overview.js":220,"./containers/StatsView.js":221,"./containers/User":222,"./containers/Users":223,"history/lib/createHashHistory":9,"react":213,"react-dom":28,"react-router":48}],225:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -25120,4 +25335,4 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}]},{},[221]);
+},{}]},{},[224]);
