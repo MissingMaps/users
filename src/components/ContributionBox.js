@@ -79,7 +79,7 @@ export default React.createClass({
     return (
       <div>
         <div className = "Contribute-Timeline-Container">
-          <div className = "badgeheader">Contribution Timeline</div>
+          <div className = "Block-header">Contribution Timeline</div>
           <div className = {this.state.tallerDiv ? 'Contribute-Timeline-Content taller' : 'Contribute-Timeline-Content'}>
           <div id="cal-heatmap"></div>
           </div>

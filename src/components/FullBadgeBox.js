@@ -33,7 +33,7 @@ function mapBadgeToDescrip (badge) {
     'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
     'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
     'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
-    'Year long Mapper': 'Wow maps so much'
+    'Year long Mapper': 'You are so very dedicated. You have mapped for an entire year.'
   };
   return map[badge];
 }
@@ -64,13 +64,17 @@ export default (props) => {
   });
   return (
     <div id = "Badge-Container">
-      <div className = "badgeheader">
+      <div className = "Block-header">
         Earned Badges
       </div>
       <div className = "Badge-Box-Content">
-        <ul className = "Badge-Roll">
-          {list}
-        </ul>
+        <div className = "badgeroll-frame">
+          <div className = "badgeroll-center">
+            <ul className = "Badge-Roll">
+              {list}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
