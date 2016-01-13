@@ -14,7 +14,6 @@ function mapBadgeToImage (badge) {
     'TaskMan Square Champion': '/assets/graphics/test.svg',
     'Waterway Creator': '/assets/graphics/test2.svg',
     'World Renown': '/assets/graphics/test3.svg',
-
     'Year long Mapper': '/assets/graphics/test3.svg'
   };
   return map[badge];
@@ -34,9 +33,8 @@ function mapBadgeToDescrip (badge) {
     'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
     'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
     'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
-    'Year long Mapper': 'Wow maps so much'
+    'Year long Mapper': 'You are so very dedicated. You have mapped for an entire year.'
   };
-  console.log(badge, map[badge]);
   return map[badge];
 }
 

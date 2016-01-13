@@ -16,7 +16,11 @@ li {
   margin-left: auto;
   margin-right: auto;
   border: solid 1px #EEE;
+<<<<<<< HEAD
   background-color: white;
+=======
+  background-color: #EEE;
+>>>>>>> 77443f4c5d549c6a6a9e02fb2d0246802eb477f8
   /*  box-shadow: 0px 0px 12px $lightgrey;*/ }
 
 #Subhead-Container {
@@ -132,6 +136,12 @@ li {
   .Quick-User-Stats-Content p {
     margin: 0px;
     margin-bottom: 8px; }
+<<<<<<< HEAD
+=======
+  @media screen and (max-width: 1100px) {
+    .Quick-User-Stats-Content {
+      height: auto; } }
+>>>>>>> 77443f4c5d549c6a6a9e02fb2d0246802eb477f8
 
 .Quick-User-Stats-Block {
   width: 213px;
