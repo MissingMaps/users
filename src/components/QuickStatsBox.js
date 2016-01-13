@@ -5,9 +5,7 @@ function stripWS (text) {
 }
 
 export default function QuickStatsBox (props) {
-	console.log(props);
-  var list = Object.keys(props.badges).map((badge) => {
-    console.log(props);
+  Object.keys(props.badges).map((badge) => {
     return (
       <li key={stripWS(badge)}>
       </li>
