@@ -13,7 +13,8 @@ function mapBadgeToImage (badge) {
     'TaskMan Scrutinizer': '/assets/graphics/test3.svg',
     'TaskMan Square Champion': '/assets/graphics/test.svg',
     'Waterway Creator': '/assets/graphics/test2.svg',
-    'World Renown': '/assets/graphics/test3.svg'
+    'World Renown': '/assets/graphics/test3.svg',
+    'Year long Mapper': '/assets/graphics/test.svg'
   };
   return map[badge];
 }
@@ -31,7 +32,8 @@ function mapBadgeToDescrip (badge) {
     'TaskMan Scrutinizer': 'Scrutinize tasks with the vigilance of a nun with a ruler',
     'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
     'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
-    'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.'
+    'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
+    'Year long Mapper': 'You are so very dedicated. You have mapped for an entire year.'
   };
   return map[badge];
 }
@@ -43,7 +45,6 @@ function stripWS (text) {
 
 export default (props) => {
   var list = Object.keys(props.badges).map((badge) => {
-    console.log(props);
     return (
       <li key={stripWS(badge)}>
         <div className = "badge-home">
@@ -67,9 +68,13 @@ export default (props) => {
         Earned Badges
       </div>
       <div className = "Badge-Box-Content">
-        <ul className = "Badge-Roll">
-          {list}
-        </ul>
+        <div className = "dootdoot">
+          <div className = "booboo">
+            <ul className = "Badge-Roll">
+              {list}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
