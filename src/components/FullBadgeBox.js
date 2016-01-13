@@ -35,7 +35,6 @@ function mapBadgeToDescrip (badge) {
     'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
     'Year long Mapper': 'Wow maps so much'
   };
-  console.log(badge, map[badge]);
   return map[badge];
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import BadgeView from '../components/BadgeView.js';
+import BadgeView from '../components/FullBadgeBox.js';
 
 export default React.createClass({
   getInitialState: function () {

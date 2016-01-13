@@ -48,6 +48,7 @@
     "babel-core": "^5.8.34",
     "babel-eslint": "^4.1.6",
     "browserify": "^12.0.1",
+    "cal-heatmap": "^3.5.4",
     "classnames": "^2.2.3",
     "es6-promise": "^3.0.2",
     "eslint": "^1.10.3",

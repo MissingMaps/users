@@ -22,7 +22,7 @@ export default React.createClass({
         <div id="overview">
           <BadgeBox badges={this.state.user.badges} />
           <QuickStatsBox badges={this.state.user.stats} />
-          <ContributionBox />
+          <ContributionBox timestamps={this.state.user.edit_times} />
         </div>
       );
     }
