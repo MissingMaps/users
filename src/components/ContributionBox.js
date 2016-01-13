@@ -12,16 +12,22 @@ export default React.createClass({
       rowLimit: 7,
       domainLabelFormat: '%b',
       cellSize: 12,
+      displayLegend: false,
       cal: new CalHeatMap()
     };
   },
   handleResize: function (e) {
+    this.setState({windowWidth: window.innerWidth});
+
     // Set the number of calendar months to display at the
     // smaller of (horizontal resolution + 30) / 100 and 12.
-    this.setState({windowWidth: window.innerWidth});
-    var months = ~~((this.state.windowWidth + 30) / 100);
-    if (months > 12) months = 12;
-    this.setState({range: months});
+    if (this.state.windowWidth >= 1100) {
+      this.setState({cellSize: 14.85, range: 12});
+    } else {
+      var months = ~~((this.state.windowWidth + 30) / 100);
+      if (months > 12) months = 12;
+      this.setState({cellSize: 12, range: months});
+    }
 
     var cal = this.state.cal;
     cal.destroy();
@@ -51,6 +57,7 @@ export default React.createClass({
       rowLimit: this.state.rowLimit,
       domainLabelFormat: this.state.domainLabelFormat,
       cellSize: this.state.cellSize,
+      displayLegend: this.state.displayLegend,
       start: new Date(data[0]),
       data: data,
       dataType: 'json',
