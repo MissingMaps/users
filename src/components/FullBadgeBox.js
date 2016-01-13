@@ -64,7 +64,7 @@ export default (props) => {
   });
   return (
     <div id = "Badge-Container">
-      <div className = "badgeheader">
+      <div className = "Block-header">
         Earned Badges
       </div>
       <div className = "Badge-Box-Content">

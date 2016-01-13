@@ -31,7 +31,7 @@ export default (props) => {
   });
   return (
     <div className = "Recent-Badges-Container">
-      <div className = "badgeheader">
+      <div className = "Block-header">
         Recently Earned Badges
       </div>
       <div className = "Badge-Box-Content">

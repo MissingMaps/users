@@ -3,11 +3,11 @@ import React from 'react';
 export default function QuickStatsBox (props) {
   return (
     <div className = "Quick-User-Stats-Container">
-      <div className = "badgeheader">
+      <div className = "Block-header">
         Quick Stats
       </div>
       <div className = "Quick-User-Stats-Content">
-		<div className = "centerme">
+		<div className = "center-text">
 			<div className = "Quick-User-Stats-Block">
 				<p><h1>Buildings </h1>{props.badges.building_count}</p>
 				<p><h1></h1></p>
