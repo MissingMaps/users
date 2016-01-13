@@ -3,15 +3,26 @@ import CalHeatMap from 'cal-heatmap';
 
 export default React.createClass({
   getInitialState: function () {
+    // Set the number of calendar months to display at the
+    // smaller of (horizontal resolution + 30) / 100 and 12.
+    var chartSize = {};
+    if (window.innerWidth >= 1100) {
+      chartSize = {tallerDiv: true, cellSize: 14.85, range: 12};
+    } else {
+      var months = ~~((window.innerWidth + 30) / 100);
+      if (months > 12) months = 12;
+      chartSize = {tallerDiv: false, cellSize: 12, range: months};
+    }
     return {
       timestamps: this.props.timestamps || {},
       windowWidth: window.innerWidth,
+      tallerDiv: chartSize.tallerDiv,
       domain: 'month',
-      range: 12,
+      range: chartSize.range,
       subDomain: 'day',
       rowLimit: 7,
       domainLabelFormat: '%b',
-      cellSize: 12,
+      cellSize: chartSize.cellSize,
       displayLegend: false,
       cal: new CalHeatMap()
     };
@@ -22,11 +33,11 @@ export default React.createClass({
     // Set the number of calendar months to display at the
     // smaller of (horizontal resolution + 30) / 100 and 12.
     if (this.state.windowWidth >= 1100) {
-      this.setState({cellSize: 14.85, range: 12});
+      this.setState({tallerDiv: true, cellSize: 14.85, range: 12});
     } else {
       var months = ~~((this.state.windowWidth + 30) / 100);
       if (months > 12) months = 12;
-      this.setState({cellSize: 12, range: months});
+      this.setState({tallerDiv: false, cellSize: 12, range: months});
     }
 
     var cal = this.state.cal;
@@ -68,8 +79,8 @@ export default React.createClass({
     return (
       <div>
         <div className = "Contribute-Timeline-Container">
-          <div className = "badgeheader">Contribution Timeline Current window width: {this.state.windowWidth}</div>
-          <div className = "Contribute-Timeline-Content">
+          <div className = "badgeheader">Contribution Timeline</div>
+          <div className = {this.state.tallerDiv ? 'Contribute-Timeline-Content taller' : 'Contribute-Timeline-Content'}>
           <div id="cal-heatmap"></div>
           </div>
         </div>
