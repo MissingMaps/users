@@ -39,7 +39,7 @@ li{
 	margin-right: auto;
 	border: solid 1px #EEE;	
 	background-color: white;
-  box-shadow: 0px 0px 12px $lightgrey;
+/*  box-shadow: 0px 0px 12px $lightgrey;*/
 }
 
 #Subhead-Container{
@@ -83,6 +83,7 @@ li{
 	position: absolute;
 	right: 0;
 	top: 73px;
+  background-color: white;
 	a{
 		padding: 16px 20px;
 		margin-left: 10px;
@@ -105,7 +106,7 @@ li{
 
 #Main-User-Container{
 	position: relative;
-	height: 870px;
+	height: 1790px;
     @media screen and (max-width: 1100px){
 	height: auto;
 	}
@@ -116,7 +117,7 @@ li{
 	max-width: 584px;
 	min-width: 300px;
 	margin: 20px 24px;
-    @media screen and (max-width: 1100px){
+  @media screen and (max-width: 1100px){
     position: relative;
 		margin: 50px 10px 0px 10px;
 		max-width: 75%;
@@ -127,9 +128,9 @@ li{
 
 .Badge-Box-Content{
 	border: solid 1px #CCC;
-  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
-  	padding: 10px;
-	text-align: center;
+	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+	padding: 10px;
+  background-color: white;
 }
 
 .Badge-Roll{
@@ -146,7 +147,6 @@ li{
 	height: 384px;
 	right: 0px;
 	margin: 20px 24px;
-	background-color: white;
     @media screen and (max-width: 1100px){
     	position: relative;
     	width: 75%;
@@ -157,10 +157,36 @@ li{
 
 .Quick-User-Stats-Content{
 	border: solid 1px #CCC;
-  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
-  	width:100%;
-  	height: 100%;
+	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+	width:100%;
+	height: 374px;
+  font-weight: 300;
+  padding-top: 10px;
+  background-color: white;
+  h1{
+    padding-left: 20px;
+    font-size: 1em;
+  }
+  p{
+    margin: 0px;
+    margin-bottom: 8px;
+  }
 };
+
+.Quick-User-Stats-Block{
+  width: 213px;
+  height: 180px;
+  border: solid 1px $debug;
+  display: inline-block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.centerme{
+  text-align: center;
+}
+
 
 .Contribute-Timeline-Container{
 	position: absolute;
@@ -176,13 +202,16 @@ li{
     	margin-right: auto;
       margin-top: 64px;
     }
+    @media screen and (max-width: 575px){
+      margin-top: 420px;
+    }
 };
 
 .Contribute-Timeline-Content{
 	background-color: white;
 	border: solid 1px #CCC;
-  	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
-  	height: 140px;
+	box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+	height: 140px;
 }
 
 
@@ -484,12 +513,6 @@ input[type="text"]{
 /*----------------------------------------------*/
 /*Badge Box*/ 
 /*----------------------------------------------*/
-.badgehome{
-  width: 100%;
-  height: 160px;
-  padding: 12px 0px 10px 0px;
-}
-
 .badgeicon {
   position: relative; 
   float: left;
@@ -499,7 +522,7 @@ input[type="text"]{
 .badgetext{
   top: 18px;
   position: relative;
-  float: right;
+  text-align: right;
   height: 80px;
   width: 226px;
 }
@@ -509,6 +532,74 @@ input[type="text"]{
   margin-bottom: 8px;
   font-weight: 300;
   font-size: 1.4em;
+}
+
+.badge-home{
+  width: 400px;
+  height: 200px;
+  img{
+    float: left;
+    margin: 20px;
+  }
+  hr{
+    max-width: 80%;
+  }
+  @media screen and (max-width: 630px){
+    width: auto;
+    height: auto;
+  }
+}
+
+.badge-Details{
+  text-align: left;
+  position: relative;
+  float: right;
+  width: 210px;
+  @media screen and (max-width: 630px){
+    text-align: center;
+    float: initial;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.badge-Name{
+  padding-top: 40px;
+  margin-bottom: 2px;
+  font-weight: 500;
+  font-size: 1.4em;
+}
+
+.Badge-Description{
+}
+
+.line-break{
+  background-color: lighten($lightgrey, 8%);
+  height: 3px;
+  width: 190px;
+  float: right;
+  margin-right: 20px;
+  margin-bottom: 18px;
+  @media screen and (max-width: 600px){
+  }
+}
+
+
+/*----------------------------------------------*/
+/*Badgeview */ 
+/*----------------------------------------------*/
+#Badge-Container{
+  position: absolute;
+  max-width: 100%;
+  min-width: 300px;
+  margin: 20px 24px;
+  @media screen and (max-width: 1100px){
+    position: relative;
+    margin: 50px 10px 0px 10px;
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    }
 }
 
 /*----------------------------------------------*/
@@ -539,12 +630,17 @@ input[type="text"]{
   height: 100%;
 }
 
-.line-break{
-  margin-top: 4px;
-  margin-bottom: 8px;
-  height: 2px;
-  width: 60%;
-  background-color: $lightgrey;
+.badgeroll-frame{
+  width: 100%;
+  @media screen and (max-width: 630px){
+    text-align: center;
+  }
+}
+
+.badgeroll-center{
+  width: 84%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .center-text{
