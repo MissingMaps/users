@@ -20,9 +20,11 @@ export default React.createClass({
     } else {
       return (
         <div id="overview">
-          <BadgeBox badges={this.state.user.badges} />
-          <QuickStatsBox badges={this.state.user.stats} />
-          <ContributionBox timestamps={this.state.user.edit_times} />
+          <div className = "box">
+            <BadgeBox badges={this.state.user.badges} />
+            <QuickStatsBox badges={this.state.user.stats} />
+            <ContributionBox timestamps={this.state.user.edit_times} />
+          </div>
         </div>
       );
     }
