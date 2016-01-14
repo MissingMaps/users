@@ -369,9 +369,8 @@ input[type="text"] {
   border: solid 1px #CCC;
   box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1);
   height: 130px; }
-
-.Contribute-Timeline-Content.taller {
-  height: 155px; }
+  .Contribute-Timeline-Content .taller {
+    height: 155px; }
 
 /*----------------------------------------------*/
 /*              Overview Styles     */
