@@ -9,7 +9,7 @@ export default React.createClass({
     if (window.innerWidth >= 1100) {
       chartSize = {tallerDiv: true, cellSize: 14.85, range: 12};
     } else {
-      var months = ~~((window.innerWidth + 30) / 100);
+      var months = ~~((window.innerWidth + 15) / 100);
       if (months > 12) months = 12;
       chartSize = {tallerDiv: false, cellSize: 12, range: months};
     }
@@ -21,7 +21,7 @@ export default React.createClass({
       range: chartSize.range,
       subDomain: 'day',
       rowLimit: 7,
-      domainLabelFormat: '%b',
+      domainLabelFormat: '%B',
       cellSize: chartSize.cellSize,
       displayLegend: false,
       cal: new CalHeatMap()
@@ -35,7 +35,7 @@ export default React.createClass({
     if (this.state.windowWidth >= 1100) {
       this.setState({tallerDiv: true, cellSize: 14.85, range: 12});
     } else {
-      var months = ~~((this.state.windowWidth + 30) / 100);
+      var months = ~~((this.state.windowWidth + 15) / 100);
       if (months > 12) months = 12;
       this.setState({tallerDiv: false, cellSize: 12, range: months});
     }
@@ -80,7 +80,7 @@ export default React.createClass({
       <div>
         <div className = "Contribute-Timeline-Container">
           <div className = "Block-header">Contribution Timeline</div>
-          <div className = {this.state.tallerDiv ? 'Contribute-Timeline-Content taller' : 'Contribute-Timeline-Content'}>
+          <div className = {this.state.tallerDiv ? 'Contribute-Timeline-Content tall' : 'Contribute-Timeline-Content'}>
           <div id="cal-heatmap"></div>
           </div>
         </div>
