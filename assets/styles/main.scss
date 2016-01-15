@@ -620,7 +620,7 @@ input[type="text"]{
   }
 }
 
-#Badge-Container{
+.Badge-Container{
   max-width: 100%;
   min-width: 300px;
   margin: 20px 24px;
@@ -732,7 +732,6 @@ input[type="text"]{
   width: 100%;
   box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   height: 100%;
-  background-color: red;
 }
 
 #map1{
@@ -857,6 +856,7 @@ input[type="text"]{
 }
 
 .Card-Badge-Name{
+  position:relative;
   padding-top: 10px;
 }
 
@@ -936,9 +936,15 @@ th, td {
   &.search-bar-submit{
     width: 100px;
     border-radius: 4px;
+    padding-left: 0px;
     background-color: lighten($lightgrey, 10);
     border: 1px solid lighten($lightgrey, 0);
     color: $darkgrey;
+    outline: none;
+    transition: background-color 0.1s;
+    &:active{
+        background-color: lighten($lightgrey, 20);
+      }
     }
   }
   img{
@@ -970,3 +976,61 @@ th, td {
   }
 }
 
+.Pie-Tin{
+  text-align: center;
+  margin: 10px 0px;
+  font-family: 'Lato', sans-serif;
+}
+
+.ChartControls{
+  font-family: 'Lato', sans-serif;
+  text-align: center;
+  input{
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor:pointer;
+    text-decoration:none;
+    transition: background-color 0.3s;
+    border: 1px solid 1px;
+    border-radius: 2px;
+    background-color: $lightgrey;
+    border: 1px solid lighten($darkgrey, 10%);
+    &:active{
+      background-color: white;
+      border-color: lighten($darkgrey, 20%);
+    }
+    &:focus{
+      outline: none;
+    }
+    &:hover{
+      background-color: lighten($lightgrey, 14);
+      border-color: lighten($darkgrey, 25%);
+    }
+  }
+}
+
+.next-badge-overlay{
+  position:absolute;
+  font-size: 2em;
+  font-weight: 800;
+  color: white;
+}
+
+.next-badge-overlay{
+    height:auto;
+    margin: auto;
+    text-align:center;
+    position:relative;
+}
+
+.nextBadgeHome{
+    width: 140px;
+    margin-left: auto;
+    margin-right: auto;
+    position:relative;
+    p{
+      top: 36px;
+      left: 38px;
+      position: absolute;
+    }
+}

@@ -80,10 +80,12 @@ export default React.createClass({
 
   render: function () {
     return <div>
-      <PieChart data={this.state.chartData} options={this.state.chartOptions} width='250' height='155' />
+      <div className = "Pie-Tin">
+        <PieChart data={this.state.chartData} options={this.state.chartOptions} width='250' height='155' />
+      </div>
       <div className = "ChartControls">
-        <input type="button" onClick={this.loadCounts} value="Show Number of Edits" />
-        <input type="button" onClick={this.loadDist} value="Show Distance of Edits" />
+        <input type="button" onClick={this.loadCounts} value="By Quantity" />
+        <input type="button" onClick={this.loadDist} value="By Distance" />
       </div>
     </div>;
   }
