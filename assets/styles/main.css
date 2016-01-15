@@ -595,10 +595,10 @@ input[type="text"] {
   background-color: white;
   height: 360px; }
 
-#Map {
+#map {
   border: solid 1px #CCC;
+  width: 100%;
   box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1);
-  width: 66%;
   height: 100%;
   background-color: red; }
 
