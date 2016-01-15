@@ -7,9 +7,9 @@ export default React.createClass({
     // smaller of (horizontal resolution + 30) / 100 and 12.
     var chartSize = {};
     if (window.innerWidth >= 1100) {
-      chartSize = {tallerDiv: true, cellSize: 14.85, range: 12};
+      chartSize = {tallerDiv: true, cellSize: 13.9, range: 12};
     } else {
-      var months = ~~((window.innerWidth + 15) / 100);
+      var months = ~~((window.innerWidth + 100) / 100);
       if (months > 12) months = 12;
       chartSize = {tallerDiv: false, cellSize: 12, range: months};
     }
@@ -29,13 +29,15 @@ export default React.createClass({
   },
   handleResize: function (e) {
     this.setState({windowWidth: window.innerWidth});
+    var containerWidth = document.getElementsByClassName(
+      'Contribute-Timeline-Container')[0].offsetWidth;
 
     // Set the number of calendar months to display at the
     // smaller of (horizontal resolution + 30) / 100 and 12.
-    if (this.state.windowWidth >= 1100) {
-      this.setState({tallerDiv: true, cellSize: 14.85, range: 12});
+    if (containerWidth >= 985) {
+      this.setState({tallerDiv: true, cellSize: 13.9, range: 12});
     } else {
-      var months = ~~((this.state.windowWidth + 15) / 100);
+      var months = ~~((this.state.windowWidth * 1.2 - 25) / 100);
       if (months > 12) months = 12;
       this.setState({tallerDiv: false, cellSize: 12, range: months});
     }

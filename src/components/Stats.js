@@ -8,7 +8,7 @@ export default (data) => {
     <div id = "Stats-Container">
       <div className = "Card">
 		<div className = "Card-title">{data.data.name}''s Statistics</div>
-            <ContributionBox timestamps={data.edit_times} />
+            <ContributionBox timestamps={data.data.edit_times} />
 			<div id = "MapContainer">
 			</div>
 		</div>
