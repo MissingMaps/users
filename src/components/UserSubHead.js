@@ -14,8 +14,8 @@ export default (props) => {
             <p>Mapping Maestro</p>
           </div>
           <div className = "Subhead-Nav">
-            <IndexLink to={`/${props.user.id}`}>Overview</IndexLink>
-            <Link to={`/${props.user.id}/badges`}>Badges</Link>
+            <IndexLink to={`/${props.user.id}`} activeClassName="activeLink">Overview</IndexLink>
+            <Link to={`/${props.user.id}/badges`} activeClassName="activeLink">Badges</Link>
           </div>
         </div>
       </div>

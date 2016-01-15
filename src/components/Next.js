@@ -26,7 +26,7 @@ export default (props) => {
           {
             // This should be changed to grabbing from hashtags endpoint
             // and not the users hashtags
-            R.take(3, Object.keys(props.data.hashtags)).map(function (hashtag) {
+            R.take(2, Object.keys(props.data.hashtags)).map(function (hashtag) {
               return <p key={hashtag}>#{hashtag}</p>;
             })
           }

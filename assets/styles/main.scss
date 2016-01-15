@@ -147,6 +147,7 @@ a{
   }
 }
 
+
 .headerwidth{
   max-width:1200px;
   margin-left: auto;
@@ -236,6 +237,7 @@ header{
 .nav-links{
   float:center;
 }
+
 
 /*----------------------------------------------*/
 /*Interactive Buttons*/ 
@@ -371,11 +373,16 @@ input[type="text"]{
     margin-left: 10px;
     margin-right: 10px;
     border: 1px solid #DDD;
+    border-bottom: 0px;
     &:hover{
-      background-color: lighten($darkgrey, 5);
-      color: black;  
+      background-color: #DDD;
+      color: #999;  
     }
   }
+    .activeLink {
+      border: none;
+      background-color: #eee;
+    }
     @media screen and (max-width: 700px){
     top: 125px;
     right: auto;
@@ -385,7 +392,6 @@ input[type="text"]{
   margin-right: auto;
   } 
 }
-
 /*----------------------------------------------*/
 /*              Overview Styles   */
 /*                 Containers      */              
@@ -600,6 +606,7 @@ input[type="text"]{
 
 .Badge-Description{
   font-weight: 300;
+  margin-bottom: 10px;
 }
 
 .line-break{
@@ -950,6 +957,7 @@ th, td {
   margin-left: auto;
   margin-right: auto;
 }
+
 
 .search-bar-suggestions{
   text-align: left;
