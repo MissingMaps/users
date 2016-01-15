@@ -11,7 +11,7 @@ export default React.createClass({
         color: '#F9E698',
         highlight: '#F7EEC1',
         label: 'Roads'
-      },      
+      },
       {
         value: Math.floor(stats.total_waterway_count_add),
         color: '#91B7FF',
