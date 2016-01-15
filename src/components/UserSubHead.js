@@ -10,7 +10,8 @@ export default (props) => {
             <img src="assets/graphics/dummy.png" width="120px"></img>
           </div>
           <div className = "Username titleheader">
-            {props.username} <img src="assets/graphics/twitter.svg"></img>
+            {props.username}
+            <p>Mapping Maestro</p>
           </div>
           <div className = "Subhead-Nav">
             <IndexLink to={`/${props.username}`}>Overview</IndexLink>

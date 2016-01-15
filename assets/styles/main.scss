@@ -338,10 +338,12 @@ input[type="text"]{
   position: absolute;
   top:90px;
   padding-left: 14px;
-  img{
-    width: 0px;
-    padding-left: 8px;
-    padding-bottom: 2px;
+  p{
+    font-size: 0.5em;
+    color: $darkgrey;
+    font-weight: 300;
+    margin:0;
+    margin-top: 6px;
   }
 };
 
@@ -425,16 +427,6 @@ input[type="text"]{
     }
 }
 
-.Badge-Box-Content{
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
-  padding: 10px;
-  background-color: white;
-  &.front{
-      text-align: center;
-  }
-}
-
 .Quick-User-Stats-Container{
   position: absolute;
   width: 430px;
@@ -493,22 +485,10 @@ input[type="text"]{
 }
 
 .Contribute-Timeline-Container{
-  position: absolute;
-  top: 570px;
-  width: 1055px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 96%;
   height: 180px;
-  margin: 50px 24px;
-    @media screen and (max-width: 1100px){
-      top: auto;
-      width: 75%;
-      position: relative;
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: 64px;
-    }
-    @media screen and (max-width: 575px){
-      margin-top: 420px;
-    }
 };
 
 .Contribute-Timeline-Content{
@@ -618,7 +598,7 @@ input[type="text"]{
 }
 
 .line-break{
-  background-color: lighten($lightgrey, 8%);
+  background-color: darken($lightgrey, 8%);
   height: 3px;
   width: 190px;
   float: right;
@@ -678,9 +658,12 @@ input[type="text"]{
 }
 
 .badgeroll-center{
-  width: 84%;
+  max-width: 832px;
   margin-left: auto;
   margin-right: auto;
+  @media screen and (max-width: 1101px){
+    max-width: 400px;
+  }
 }
 
 
@@ -688,11 +671,13 @@ input[type="text"]{
 /*FullStats Sytling*/ 
 /*----------------------------------------------*/
 #MapContainer{
-  position: absolute;
-  max-width: 500px;
-  width: 100%;
+  width: 96%;
   min-width: 300px;
-  margin: 20px 24px;
+  height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: red;
+  margin-top: 60px;
   @media screen and (max-width: 1100px){
     position: relative;
     margin: 50px 10px 0px 10px;
@@ -753,7 +738,8 @@ input[type="text"]{
 
 #Recent-Container{
   width: 500px;
-  height: 240px;
+  max-width: 90%;
+  height: 260px;
   margin: 20px;
   padding: 0px;
   display: inline-block;
@@ -776,12 +762,42 @@ input[type="text"]{
     }
 }
 
+.Badge-Box-Content{
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  &.front{
+      text-align: center;
+  }
+}
+
+#Badge-Container{
+  max-width: 100%;
+  min-width: 300px;
+  padding-top: 30px;
+  @media screen and (max-width: 1100px){
+    position: relative;
+    margin: 50px 10px 0px 10px;
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    }
+}
+
+
 #Stats-Container{
-  width: 1042px;
+  width: 1040px;
+  max-width: 100%;
   height: 500px;
   padding: 0px;
-  display: inline-block;
   margin: 20px;
+  display: inline-block;
+  @media screen and (max-width: 1134px){
+    max-width: 95%;
+  }
+  @media screen and (max-width: 600px){
+    max-width: 90%;
+  }
 }
 
 .card{
@@ -808,6 +824,7 @@ input[type="text"]{
 .Card-Content{
   padding: 20px;
   padding-top: 10px;
+  word-wrap: break-word;
   p{
     margin: 4px 0px;
   }

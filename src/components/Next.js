@@ -9,29 +9,30 @@ export default (data) => {
       <div className = "Card-Left">
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Total Edits
+          Next Badge
           </div>
-          <h3>515</h3>
+          <p>You''re really close to earning the ____ badge!</p>
+          <p>Here are some projects you can help out with to get it!</p>
         </div>
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Last Edit
+          Trending Projects
           </div>
-          <p>122 contributions</p>
-          <p>To #JapanRoadImprovement</p>
-          <p>In United States</p>
+          <p>#JapanRoadImrovement</p>
+          <p>#ChineseWaterwayFix</p>
+          <p>#KoreanBuildingBuild</p>
         </div>
       </div>
       <div className = "Card-Right">
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Last Badge Earned
+          Next Badge...
           </div>
           <div className = "Card-Badge>">
           <img src="assets/graphics/test2.svg" width = "100px"></img>
           </div>
           <div className = "Card-Badge-Name">
-          Eskimo Hunter Badge
+          Get HOT mapping all volcanoes in the world
           </div>
         </div>
       </div>
