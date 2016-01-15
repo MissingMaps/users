@@ -789,4 +789,6 @@ th, td {
 
 .search-bar-suggestions {
   text-align: left;
-  margin: 6px; }
+  margin-top: 6px; }
+  .search-bar-suggestions li {
+    display: block; }
