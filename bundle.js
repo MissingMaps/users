@@ -56278,7 +56278,7 @@ exports.default = function (props) {
                   _react2.default.createElement(
                     'p',
                     null,
-                    mostAttainableBadge.points.percentage,
+                    Math.floor(mostAttainableBadge.points.percentage),
                     '%'
                   )
                 )
@@ -56318,25 +56318,25 @@ exports.default = _react2.default.createClass({
     var stats = this.props.user || [];
 
     var chartDataCount = [{
-      value: Math.floor(stats.total_building_count_add),
-      color: '#BEBFBF',
-      highlight: '#D2D3D3',
-      label: 'Buildings'
-    }, {
       value: Math.floor(stats.total_road_count_add),
-      color: '#E1E300',
-      highlight: '#E8EA6B',
+      color: '#F9E698',
+      highlight: '#F7EEC1',
       label: 'Roads'
-    }, {
-      value: Math.floor(stats.total_poi_count_add),
-      color: '#FFA3A2',
-      highlight: '#FFC6C5',
-      label: 'Points of Interest'
     }, {
       value: Math.floor(stats.total_waterway_count_add),
       color: '#91B7FF',
       highlight: '#BDD4FF',
       label: 'Waterways'
+    }, {
+      value: Math.floor(stats.total_building_count_add),
+      color: '#FFA3A2',
+      highlight: '#FFC6C5',
+      label: 'Buildings'
+    }, {
+      value: Math.floor(stats.total_poi_count_add),
+      color: '#C6EAA7',
+      highlight: '#DDEDCE',
+      label: 'Points of Interest'
     }];
     var chartDataDist = [{
       value: Math.floor(stats.total_road_km_add),
@@ -56344,11 +56344,6 @@ exports.default = _react2.default.createClass({
       highlight: '#E8EA6B',
       label: 'Roads'
     }, {
-      value: Math.floor(stats.total_waterway_count_add),
-      color: '#91B7FF',
-      highlight: '#BDD4FF',
-      label: 'Waterways'
-    }, {
       value: 0,
       color: '#BEBFBF',
       highlight: '#D2D3D3',
@@ -56358,6 +56353,11 @@ exports.default = _react2.default.createClass({
       color: '#FFA3A2',
       highlight: '#FFC6C5',
       label: 'Points of Interest'
+    }, {
+      value: Math.floor(stats.total_waterway_count_add),
+      color: '#91B7FF',
+      highlight: '#BDD4FF',
+      label: 'Waterways'
     }];
     return {
       chartOptions: {
@@ -56565,7 +56565,7 @@ exports.default = _react2.default.createClass({
   componentDidMount: function componentDidMount() {
     var map = _leaflet2.default.map('map').setView(this.state.position, 2);
 
-    _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    _leaflet2.default.tileLayer('http://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoic3RhdGVvZnNhdGVsbGl0ZSIsImEiOiJlZTM5ODI5NGYwZWM2MjRlZmEyNzEyMWRjZWJlY2FhZiJ9.omsA8QDSKggbxiJjumiA_w.', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
@@ -56585,7 +56585,7 @@ exports.default = _react2.default.createClass({
           'div',
           { className: 'Card-title' },
           user.name,
-          '\'\'s Statistics'
+          '\'s Statistics'
         ),
         _react2.default.createElement(
           'div',

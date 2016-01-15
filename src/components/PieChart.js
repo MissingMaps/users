@@ -79,7 +79,6 @@ export default React.createClass({
   },
 
   render: function () {
-    console.log(this.state.chartData)
     return <div>
       <div className = "Pie-Tin">
         <PieChart data={this.state.chartData} options={this.state.chartOptions} width='250' height='155' />
