@@ -109,32 +109,31 @@ export default (props) => {
 
   })
   return (
-    <div>
-      <div id = "Badge-Container">
-        <div className = "Badge-Box-Content">
-          <div className = "badgeroll-frame">
-            <div className = "badgeroll-center card">
-              <div className = "Card-title">
-                EARNED BADGES
-              </div>
-              <ul className = "Badge-Roll">
-                {list}
-              </ul>
+  <div>
+    <div id = "Badge-Container">
+      <div className = "Badge-Box-Content">
+        <div className = "badgeroll-frame">
+          <div className = "badgeroll-center card">
+            <div className = "Card-title">
+            EARNED BADGES
             </div>
+            <ul className = "Badge-Roll">
+              {list}
+            </ul>
           </div>
         </div>
       </div>
-      <div id = "Badge-Container">
-        <div className = "Badge-Box-Content">
-          <div className = "badgeroll-frame">
-            <div className = "badgeroll-center card">
-              <div className = "Card-title">
-                BADGE PROGRESS
-              </div>
-              <ul className = "Badge-Roll">
-                {progressList}
-              </ul>
+    </div>
+    <div id = "Badge-Container">
+      <div className = "Badge-Box-Content">
+        <div className = "badgeroll-frame">
+          <div className = "badgeroll-center card">
+            <div className = "Card-title">
+              BADGE PROGRESS
             </div>
+            <ul className = "Badge-Roll">
+              {progressList}
+            </ul>
           </div>
         </div>
       </div>
