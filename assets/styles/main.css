@@ -491,7 +491,8 @@ input[type="text"] {
   font-size: 1.4em; }
 
 .Badge-Description {
-  font-weight: 300; }
+  font-weight: 300;
+  margin-bottom: 10px; }
 
 .line-break {
   background-color: #c7c7c5;
