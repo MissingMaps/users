@@ -30,13 +30,14 @@ export default React.createClass({
     }
   },
   render: function () {
+    console.log(this.state);
     return (
       <div>
       <Header />
         <div className = "white"></div>
         <div id = "User-Container">
           <div id = "Main-User-Container">
-            <UserSubHead username={this.state.user.name}/>
+            <UserSubHead user={this.state.user}/>
             {(
               (typeof this.state.user !== 'undefined')
               ? this.props.children && React.cloneElement(this.props.children, {

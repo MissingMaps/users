@@ -6,7 +6,6 @@ import Users from './containers/Users';
 import User from './containers/User';
 import Overview from './containers/Overview.js';
 import BadgeView from './containers/BadgeView.js';
-import StatsView from './containers/StatsView.js';
 
 var history = createHashHistory({
   queryKey: false
