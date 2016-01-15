@@ -1,4 +1,5 @@
 import ContributionBox from '../components/ContributionBox.js';
+import PieChart from '../components/PieChart.js';
 import React from 'react';
 import R from 'ramda';
 
@@ -69,6 +70,7 @@ export default (props) => {
               <div className = "Card-Section-Title">
                 Edits by Type
               </div>
+              <PieChart user={user} />
             </div>
           </div>
         </div>
