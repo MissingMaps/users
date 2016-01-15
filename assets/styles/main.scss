@@ -151,7 +151,40 @@ a{
   max-width:1200px;
   margin-left: auto;
   margin-right: auto;
+  height: 52px;
 }
+
+header{
+  background-color:white;
+  position: fixed;
+  z-index: 100;
+  top:0px;
+  width: 100%;
+  min-height: 50px;
+  color: $lightgrey;
+  border-bottom: 2px $lightgrey solid;
+  z-index: 100;
+}
+
+.footer-container{
+  padding-top: 24px;
+  background-color: lighten($lightgrey, 8);
+  width: 100%;
+  .sectionheader{
+    padding-bottom: 36px;
+  }
+}
+
+.footer-mm{
+  margin-top:32px;
+  height: 30px;
+  width: 100%;
+  line-height: 32px;
+  color: white;
+  background-color: $darkestgrey;
+}
+
+
 
 .nav-icon{
   padding-left: 8px;
@@ -287,20 +320,23 @@ input[type="text"]{
 /*----------------------------------------------*/
 #Subhead-Container{
   background-color: white;
-  height: 160px;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+  height: 150px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #Subhead-Content{
   position: absolute;
-  top:52px;
+  top:20px;
+  max-width: 1100px;
   width: 100%;
 }
 
 .Username{
   display: inline-block;
   position: absolute;
-  top:60px;
+  top:90px;
   padding-left: 14px;
   img{
     width: 0px;
@@ -310,8 +346,9 @@ input[type="text"]{
 };
 
 .ProfilePicture{
-  z-index: 10;
+  z-index: 100;
   display: inline-block;
+  padding-top: 50px;
   padding-left: 32px;
     @media screen and (max-width: 1100px){
   margin-left: auto;
@@ -325,7 +362,7 @@ input[type="text"]{
   display: inline-block;
   position: absolute;
   right: 0;
-  top: 73px;
+  top: 95px;
   background-color: white;
   a{
     padding: 16px 20px;
@@ -352,19 +389,26 @@ input[type="text"]{
 /*                 Containers      */              
 /*----------------------------------------------*/
 #User-Container{
-  max-width: 1100px;
+  width:100%;
   margin-left: auto;
   margin-right: auto;
-  border: solid 1px #EEE; 
-  background-color: white;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+  background-color: #EEE;
 }
 
 #Main-User-Container{
   position: relative;
+  margin-left:20px;
+  margin-right:20px;
     @media screen and (max-width: 1100px){
   height: auto;
   }
+}
+
+.white{
+  background-color: white;
+  width: 100%;
+  position: absolute;
+  height: 150px;
 }
 
 .Recent-Badges-Container{
@@ -386,6 +430,9 @@ input[type="text"]{
   box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   padding: 10px;
   background-color: white;
+  &.front{
+      text-align: center;
+  }
 }
 
 .Quick-User-Stats-Container{
@@ -411,23 +458,38 @@ input[type="text"]{
   padding-top: 10px;
   background-color: white;
   h1{
-    padding-left: 20px;
-    font-size: 1em;
+    font-size: 2.5em;
+    display: inline;
+  }
+  h2{
+    font-size: 1.4em;
+    font-weight: 300;
+    margin: 0px;
+    display: inline;
+    float: right;
+    line-height: 2.8;
   }
   p{
+    font-size: 1.4em;
     margin: 0px;
     margin-bottom: 8px;
+    b{
+      font-size: 1em;
+      font-weight: 300;
+      float: right;
+    }
   }
 };
 
 .Quick-User-Stats-Block{
-  width: 213px;
-  height: 180px;
+  width: 90%;
   border: solid 1px $debug;
   display: inline-block;
   margin-left: auto;
   margin-right: auto;
   text-align: left;
+  padding-top: 20px;
+  padding-left: 30px;
 }
 
 .Contribute-Timeline-Container{
@@ -567,10 +629,10 @@ input[type="text"]{
 }
 
 #Badge-Container{
-  position: absolute;
   max-width: 100%;
   min-width: 300px;
   margin: 20px 24px;
+  margin-bottom: 0px;
   @media screen and (max-width: 1100px){
     position: relative;
     margin: 50px 10px 0px 10px;
@@ -678,4 +740,101 @@ input[type="text"]{
 
 #map1{
   height: 100%;
+}
+
+.box{
+  padding-top: 40px;
+  max-width: 1100px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+#Recent-Container{
+  width: 500px;
+  height: 240px;
+  margin: 20px;
+  padding: 0px;
+  display: inline-block;
+  margin: 20px;
+  @media screen and (max-width: 100px){
+    margin-left: auto;
+    margin-right: auto;
+    }
+}
+
+#Next-Container{
+  width: 500px;
+  height: 240px;
+  padding: 0px;
+  display: inline-block;
+  margin: 20px;
+  @media screen and (max-width: 100px){
+    margin-left: auto;
+    margin-right: auto;
+    }
+}
+
+#Stats-Container{
+  width: 1042px;
+  height: 500px;
+  padding: 0px;
+  display: inline-block;
+  margin: 20px;
+}
+
+.card{
+  width: 100%;
+  height: inherit;
+  background-color: #DDD;
+  border: 1px solid #BBB;
+  border-radius: 6px;
+  box-shadow: 0px 2px 3px lightgrey;
+}
+
+.Card-title{
+  width: 100%;
+  text-align: center;
+  padding-top: 16px;
+  font-size: 1.4em;
+  font-weight: 800;
+  color: #BBB;
+}
+
+/*----------------------------------------------*/
+/* Card Styling */ 
+/*----------------------------------------------*/
+.Card-Content{
+  padding: 20px;
+  padding-top: 10px;
+  p{
+    margin: 4px 0px;
+  }
+}
+
+.Card-Left{
+  width: 49%;
+  float:left;
+}
+
+.Card-Right{
+  width: 47%;
+  float:right;
+  text-align: center;
+  img{
+    padding-top: 10px;
+  }
+}
+
+.Card-Badge-Name{
+  padding-top: 10px;
+}
+
+h3{
+  margin: 4px 0px 6px;  
+  font-size: 2em;
+}
+
+.Card-Section-Title{
 }

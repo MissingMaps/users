@@ -34,7 +34,7 @@ export default (props) => {
       <div className = "Block-header">
         Recently Earned Badges
       </div>
-      <div className = "Badge-Box-Content">
+      <div className = "Badge-Box-Content front">
         <ul className = "Badge-Roll">
           {list}
         </ul>

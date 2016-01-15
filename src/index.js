@@ -19,9 +19,7 @@ ReactDOM.render((
       <Route path=":id" component={User}>
         <IndexRoute component={Overview} />
         <Route path="/:id/badges" component={BadgeView} />
-        <Route path="/:id/stats" component={StatsView} />
       </Route>
-
     </Route>
   </Router>),
   document.getElementById('app')

@@ -30,7 +30,7 @@ export default (props) => {
 				{props.stats.building_count}
 			</div>
 		</div>
-		<ContributionBox />
-    </div>
+	 <ContributionBox timestamps={props.times} />
+   </div>
   );
 };
