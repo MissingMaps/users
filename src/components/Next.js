@@ -1,6 +1,7 @@
 import React from 'react';
 import R from 'ramda';
 import { getBadgeProgress } from '../badge_logic/badge_cruncher.js';
+import { descriptions } from '../components/FullBadgeBox.js';
 
 export default (props) => {
   var progress = getBadgeProgress(props.data);
@@ -37,10 +38,11 @@ export default (props) => {
           Next Badge...
           </div>
           <div className = "Card-Badge>">
-          <img src="assets/graphics/test2.svg" width = "100px"></img>
+            <img src="assets/graphics/test.svg" width = "100px"></img>
+            <div class="next-badge-overlay">{mostAttainableBadge.points.percentage}%</div>
           </div>
           <div className = "Card-Badge-Name">
-          Get HOT mapping all volcanoes in the world
+            {descriptions(mostAttainableBadge.name)}
           </div>
         </div>
       </div>
