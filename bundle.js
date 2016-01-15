@@ -55909,14 +55909,14 @@ function mapBadgeToImage(badge) {
     'JOSM User': 'assets/graphics/test.svg',
     'Long & Winding Road': 'assets/graphics/test2.svg',
     'Long & Winding Road Maintainer': 'assets/graphics/test2.svg',
-    'Mapathoner': '/assets/graphics/test3.svg',
-    'Node Builder': '/assets/graphics/test.svg',
-    'TaskMan Scrutinizer': '/assets/graphics/test3.svg',
-    'TaskMan Square Champion': '/assets/graphics/test.svg',
-    'Waterway Creator': '/assets/graphics/test2.svg',
-    'World Renown': '/assets/graphics/test3.svg',
-    'Year-long Mapper': '/assets/graphics/test3.svg',
-    'Point Creator': '/assets/graphics/test3.svg'
+    'Mapathoner': 'assets/graphics/test3.svg',
+    'Node Builder': 'assets/graphics/test.svg',
+    'TaskMan Scrutinizer': 'assets/graphics/test3.svg',
+    'TaskMan Square Champion': 'assets/graphics/test.svg',
+    'Waterway Creator': 'assets/graphics/test2.svg',
+    'World Renown': 'assets/graphics/test3.svg',
+    'Year-long Mapper': 'assets/graphics/test3.svg',
+    'Point Creator': 'assets/graphics/test3.svg'
   };
   return map[badge];
 }
