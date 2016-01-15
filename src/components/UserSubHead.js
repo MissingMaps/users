@@ -7,7 +7,7 @@ export default (props) => {
       <div id = "Subhead-Container">
         <div id = "Subhead-Content">
           <div className = "ProfilePicture">
-            <img src="assets/graphics/dummy.png" width="120px"></img>
+            <img src="assets/graphics/dummy.svg" width="120px"></img>
           </div>
           <div className = "Username titleheader">
             {props.user.name}

@@ -787,6 +787,14 @@ th, td {
 
 .search-bar-suggestions {
   text-align: left;
-  margin-top: 6px; }
+  margin-top: 10px; }
   .search-bar-suggestions li {
-    display: block; }
+    margin-top: 4px;
+    padding: 4px;
+    display: block;
+    width: 194px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background-color: #f4f4f4; }
+    .search-bar-suggestions li:hover {
+      background-color: white; }

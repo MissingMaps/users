@@ -947,9 +947,18 @@ th, td {
 
 .search-bar-suggestions{
   text-align: left;
-  margin-top: 6px;
+  margin-top: 10px;
   li {
+    margin-top: 4px;
+    padding: 4px;
     display: block;
+    width: 194px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background-color: lighten($lightgrey, 10);
+    &:hover{
+      background-color: lighten($lightgrey, 20);
+    };
   }
 }
 
