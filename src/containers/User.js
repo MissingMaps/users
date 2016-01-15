@@ -13,7 +13,7 @@ export default React.createClass({
   componentDidMount: function () {
     let component = this;
     if (process.env.NODE_ENV === 'development') {
-      fetch('/test/fixtures/db.json')
+      fetch(`http://104.236.25.175:3000/users/${this.props.params.id}`)
       .then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response');
@@ -32,11 +32,11 @@ export default React.createClass({
   render: function () {
     return (
       <div>
-      <Header />   
+      <Header />
         <div className = "white"></div>
         <div id = "User-Container">
           <div id = "Main-User-Container">
-            <UserSubHead username={this.props.params.id}/>
+            <UserSubHead username={this.state.user.name}/>
             {(
               (typeof this.state.user !== 'undefined')
               ? this.props.children && React.cloneElement(this.props.children, {
