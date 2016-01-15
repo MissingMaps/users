@@ -26,7 +26,7 @@ export default (props) => {
           {
             // This should be changed to grabbing from hashtags endpoint
             // and not the users hashtags
-            R.take(3, Object.keys(props.data.hashtags)).map(function (hashtag) {
+            R.take(2, Object.keys(props.data.hashtags)).map(function (hashtag) {
               return <p key={hashtag}>#{hashtag}</p>;
             })
           }
@@ -39,7 +39,7 @@ export default (props) => {
           </div>
           <div className = "Card-Badge>">
             <img src="assets/graphics/test.svg" width = "100px"></img>
-            <div className="next-badge-overlay">{mostAttainableBadge.points.percentage}%</div>
+            <div className="next-badge-overlay">{Math.floor(mostAttainableBadge.points.percentage)}%</div>
           </div>
           <div className = "Card-Badge-Name">
             {descriptions(mostAttainableBadge.name)}
