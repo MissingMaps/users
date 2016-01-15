@@ -50,7 +50,11 @@ export default (props) => {
                 <img src="assets/graphics/test2.svg" width = "100px"></img>
               </div>
               <div className = "Card-Badge-Name">
-                Eskimo Hunter Badge
+                {
+                  (data.badges.length > 0)
+                  ? data.badges[0].name
+                  : <div>No badges! Go map!</div>
+                }
               </div>
             </div>
           </div>
