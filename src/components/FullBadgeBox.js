@@ -25,19 +25,19 @@ function mapBadgeToImage (badge) {
 
 function mapBadgeToDescrip (badge) {
   var map = {
-    'Road Builder': 'Wowie zomie bam sham!',
-    'Road Maintainer': 'Maintained all the roads!',
-    'Building Builder': 'Built 15 buildings',
-    'Consistentency': 'Mapped every day, wow!',
-    'GPS Trace Creator': 'Traced some real good GPS imagery',
+    'Road Builder': 'Map many roads across the land.',
+    'Road Maintainer': 'Update and correct misplaced roads.',
+    'Building Builder': 'Build 15 buildings.',
+    'Consistentency': 'Mapped every day for a week!',
+    'GPS Trace Creator': 'Uploaded GPS traces through their OSM',
     'JOSM User': 'Used JSOM to map an area',
-    'Long & Winding Road': 'Mapping many, many roads.',
-    'Long & Winding Road Maintainer': 'Maintaining long, long roads.',
-    'Mapathoner': 'Just cant stop mapping- mapped 10 days in a row.',
-    'Node Builder': 'Wrote a truckful of nodes.',
-    'TaskMan Scrutinizer': 'Scrutinize tasks with the vigilance of a nun with a ruler',
-    'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
-    'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
+    'Long & Winding Road': 'Add 50km of roads.',
+    'Long & Winding Road Maintainer': 'Maintaining those long, long roads.',
+    'Mapathoner': 'Unstoppable mapping mahcine. Map 10 days in a row.',
+    'Node Builder': 'Added a truckful of nodes.',
+    'TaskMan Scrutinizer': 'Scrutinize tasks with great vigilance',
+    'TaskMan Square Champion': 'Mapped out 10 HOT task squares.',
+    'Waterway Creator': 'A regular mapping Poseidian, mapping many waterways.',
     'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
     'Year-long Mapper': 'You are so very dedicated. You have mapped for an entire year.',
     'Point Creator': "You must really love points!"
@@ -81,7 +81,7 @@ export default (props) => {
     var badge = props.progress.all[val];
     return {
       'description': mapBadgeToDescrip(badge.name),
-      'progress': "You're " + Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel,
+      'progress': Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel,
       'name': badge.name
     }
   });
