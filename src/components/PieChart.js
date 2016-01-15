@@ -7,28 +7,28 @@ export default React.createClass({
 
     var chartDataCount = [
       {
-        value: Math.floor(stats.total_building_count_add),
-        color: '#BEBFBF',
-        highlight: '#D2D3D3',
-        label: 'Buildings'
-      },
-      {
         value: Math.floor(stats.total_road_count_add),
-        color: '#E1E300',
-        highlight: '#E8EA6B',
+        color: '#F9E698',
+        highlight: '#F7EEC1',
         label: 'Roads'
-      },
-      {
-        value: Math.floor(stats.total_poi_count_add),
-        color: '#FFA3A2',
-        highlight: '#FFC6C5',
-        label: 'Points of Interest'
-      },
+      },      
       {
         value: Math.floor(stats.total_waterway_count_add),
         color: '#91B7FF',
         highlight: '#BDD4FF',
         label: 'Waterways'
+      },
+      {
+        value: Math.floor(stats.total_building_count_add),
+        color: '#FFA3A2',
+        highlight: '#FFC6C5',
+        label: 'Buildings'
+      },
+      {
+        value: Math.floor(stats.total_poi_count_add),
+        color: '#C6EAA7',
+        highlight: '#DDEDCE',
+        label: 'Points of Interest'
       }
     ];
     var chartDataDist = [
