@@ -55923,26 +55923,73 @@ function mapBadgeToImage(badge) {
 
 function mapBadgeToDescrip(badge) {
   var map = {
-    'Road Builder': 'Wowie zomie bam sham!',
-    'Road Maintainer': 'Maintained all the roads!',
-    'Building Builder': 'Built 15 buildings',
-    'Consistentency': 'Mapped every day, wow!',
-    'GPS Trace Creator': 'Traced some real good GPS imagery',
+    'Road Builder': 'Map many roads across the land.',
+    'Road Maintainer': 'Updated and corrected misplaced roads.',
+    'Building Builder': 'Built all those buildings!',
+    'Consistentency': 'Mapped every day for a week!',
+    'GPS Trace Creator': 'Uploaded GPS traces through their OSM',
     'JOSM User': 'Used JSOM to map an area',
-    'Long & Winding Road': 'Mapping many, many roads.',
-    'Long & Winding Road Maintainer': 'Maintaining long, long roads.',
-    'Mapathoner': 'Just cant stop mapping- mapped 10 days in a row.',
-    'Node Builder': 'Wrote a truckful of nodes.',
-    'TaskMan Scrutinizer': 'Scrutinize tasks with the vigilance of a nun with a ruler',
-    'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
-    'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
+    'Long & Winding Road': 'Created lots of roads.',
+    'Long & Winding Road Maintainer': 'Maintaining those long, long roads.',
+    'Mapathoner': 'Unstoppable mapping machine.',
+    'Node Builder': 'Added a truckful of nodes.',
+    'TaskMan Scrutinizer': 'Scrutinize tasks with great vigilance',
+    'TaskMan Square Champion': 'Mapped out 10 HOT task squares.',
+    'Waterway Creator': 'A regular mapping Poseidon, mapping many waterways.',
     'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
     'Year-long Mapper': 'You are so very dedicated. You have mapped for an entire year.',
-    'Point Creator': "You must really love points!"
+    'Point Creator': 'You must really love points!'
   };
   return map[badge];
 }
 
+function mapBadgeToTask(badge, x) {
+  var map = {
+    'Road Builder': function RoadBuilder(x) {
+      return 'Add ' + x + ' roads.';
+    },
+    'Road Maintainer': function RoadMaintainer(x) {
+      return 'Modify ' + x + ' roads.';
+    },
+    'Building Builder': function BuildingBuilder(x) {
+      return 'Build ' + x + ' buildings.';
+    },
+    'Consistentency': function Consistentency(x) {
+      return 'Map every day for a week.';
+    },
+    'GPS Trace Creator': function GPSTraceCreator(x) {
+      return 'Upload more GPS traces through OSM';
+    },
+    'JOSM User': function JOSMUser(x) {
+      return 'Use JSOM to map an area';
+    },
+    'Long & Winding Road': function LongWindingRoad(x) {
+      return 'Add ' + x + ' km of roads.';
+    },
+    'Long & Winding Road Maintainer': function LongWindingRoadMaintainer(x) {
+      return 'Modify ' + x + ' km of roads.';
+    },
+    'Mapathoner': function Mapathoner(x) {
+      return 'Participate in ' + x + ' in a row.';
+    },
+    'Node Builder': function NodeBuilder(x) {
+      return 'Add ' + x + ' nodes.';
+    },
+    'Waterway Creator': function WaterwayCreator(x) {
+      return 'Add ' + x + ' km of waterways';
+    },
+    'World Renown': function WorldRenown(x) {
+      return 'Map in ' + x + ' different countries';
+    },
+    'Year-long Mapper': function YearLongMapper(x) {
+      return 'Map ' + x + ' days.';
+    },
+    'Point Creator': function PointCreator(x) {
+      return 'Add ' + x + ' points of interests';
+    }
+  };
+  return map[badge](x);
+}
 module.exports.descriptions = mapBadgeToDescrip;
 
 // Strips whitespace
@@ -55991,7 +56038,7 @@ exports.default = function (props) {
     var badge = props.progress.all[val];
     return {
       'description': mapBadgeToDescrip(badge.name),
-      'progress': "You're " + Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel,
+      'progress': Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel + '. ' + mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
       'name': badge.name
     };
   });
@@ -56119,7 +56166,7 @@ exports.default = function () {
 						{ className: "nav-item" },
 						_react2.default.createElement(
 							"a",
-							{ href: "{{site.baseurl}}/contribute/" },
+							{ href: "" },
 							"contribute"
 						)
 					),
@@ -56128,7 +56175,7 @@ exports.default = function () {
 						{ className: "nav-item" },
 						_react2.default.createElement(
 							"a",
-							{ href: "{{site.baseurl}}/events/" },
+							{ href: "" },
 							"events"
 						)
 					),
@@ -56137,7 +56184,7 @@ exports.default = function () {
 						{ className: "nav-item" },
 						_react2.default.createElement(
 							"a",
-							{ href: "{{site.baseurl}}/about/" },
+							{ href: "" },
 							"about"
 						)
 					),
@@ -56319,43 +56366,43 @@ exports.default = _react2.default.createClass({
 
     var chartDataCount = [{
       value: Math.floor(stats.total_road_count_add),
-      color: '#F9E698',
-      highlight: '#F7EEC1',
+      color: '#eaeaea',
+      highlight: '#f2f2f2',
       label: 'Roads'
     }, {
       value: Math.floor(stats.total_waterway_count_add),
-      color: '#91B7FF',
-      highlight: '#BDD4FF',
+      color: '#cccccc',
+      highlight: '#dddddd',
       label: 'Waterways'
     }, {
       value: Math.floor(stats.total_building_count_add),
-      color: '#FFA3A2',
-      highlight: '#FFC6C5',
+      color: '#969696',
+      highlight: '#aaaaaa',
       label: 'Buildings'
     }, {
       value: Math.floor(stats.total_poi_count_add),
-      color: '#C6EAA7',
-      highlight: '#DDEDCE',
+      color: '#6b6b6b',
+      highlight: '#8e8e8e',
       label: 'Points of Interest'
     }];
     var chartDataDist = [{
       value: Math.floor(stats.total_road_km_add),
-      color: '#E1E300',
+      color: '##f7f7f7',
       highlight: '#E8EA6B',
       label: 'Roads'
     }, {
       value: Math.floor(stats.total_waterway_count_add),
-      color: '#91B7FF',
+      color: '#cccccc',
       highlight: '#BDD4FF',
       label: 'Waterways'
     }, {
       value: 0,
-      color: '#BEBFBF',
+      color: '#969696',
       highlight: '#D2D3D3',
       label: 'Buildings'
     }, {
       value: 0,
-      color: '#FFA3A2',
+      color: '#525252',
       highlight: '#FFC6C5',
       label: 'Points of Interest'
     }];
