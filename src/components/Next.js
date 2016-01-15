@@ -39,7 +39,7 @@ export default (props) => {
           </div>
           <div className = "Card-Badge>">
             <img src="assets/graphics/test.svg" width = "100px"></img>
-            <div class="next-badge-overlay">{mostAttainableBadge.points.percentage}%</div>
+            <div className="next-badge-overlay">{mostAttainableBadge.points.percentage}%</div>
           </div>
           <div className = "Card-Badge-Name">
             {descriptions(mostAttainableBadge.name)}
