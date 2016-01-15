@@ -3,27 +3,22 @@ import React from 'react';
 export default function QuickStatsBox (props) {
   return (
     <div className = "Quick-User-Stats-Container">
-      <div className = "badgeheader">
+      <div className = "Block-header">
         Quick Stats
       </div>
       <div className = "Quick-User-Stats-Content">
-		<div className = "centerme">
-			<div className = "Quick-User-Stats-Block">
-				<p><h1>Buildings </h1>{props.badges.building_count}</p>
-				<p><h1></h1></p>
-			</div>
-			<div className = "Quick-User-Stats-Block">
-				<p><h1>Road Count </h1>{props.badges.road_count}</p>
-				<p><h1>km of Roads </h1>{props.badges.road_km}</p>
-			</div>
-			<div className = "Quick-User-Stats-Block">
-				<p><h1>Waterway </h1>{props.badges.waterway_km}</p>
-				<p><h1>km of Waterways </h1>{props.badges.waterway_count}</p>
-			</div>
-			<div className = "Quick-User-Stats-Block">
-				<p><h1>Country Last Mapped </h1>{props.badges.countries}</p>
-				<p><h1>Recent Hashtags</h1></p>
-			</div>
+		<div className = "Quick-User-Stats-Block">
+			<h1>1,002,140</h1>
+			<h2>Total Edits</h2>
+		</div>
+		<div className = "Quick-User-Stats-Block">
+			<p>{props.badges.road_count} <b>of roads</b></p>
+			<p>{props.badges.road_km} <b>km of roads</b></p>
+			<p>{props.badges.countries} <b>Last Country mapped</b></p>
+		</div>
+		<div className = "Quick-User-Stats-Block">
+			<p>Most recent project contributed to:</p>
+			<p>#JapanRoadImprovement</p>
 		</div>
       </div>
     </div>

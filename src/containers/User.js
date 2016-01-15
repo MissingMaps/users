@@ -1,5 +1,7 @@
 import React from 'react';
 import UserSubHead from '../components/UserSubHead';
+import Header from '../components/Header.js';
+import Footer from '../components/Footer.js';
 import fetch from 'isomorphic-fetch';
 
 export default React.createClass({
@@ -30,6 +32,8 @@ export default React.createClass({
   render: function () {
     return (
       <div>
+      <Header />   
+        <div className = "white"></div>
         <div id = "User-Container">
           <div id = "Main-User-Container">
             <UserSubHead username={this.props.params.id}/>
@@ -42,6 +46,7 @@ export default React.createClass({
             }
           </div>
         </div>
+        <Footer />
       </div>
     );
   }

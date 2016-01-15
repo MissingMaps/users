@@ -1,4 +1,31 @@
-{
+dateCheckSequential = require('./date_check_sequential');
+dateCheckTotal = require('./date_check_total');
+sumCheck = require('./sum_check');
+
+
+
+badgeCruncher function (input) {
+  var stats = input
+  console.log(stats)
+  var sumBadges = sumCheck({
+    roads: stats.road_count,
+    roadMods: stats.building_count,
+    pois: stats.poi_count,
+    buildings: stats.building_count,
+    // gpsTraces: stats.gps_traces,
+    roadKms: stats.road_km,
+    roadKmMods: stats.road_km_mod,
+    waterways: stats.waterway_count,
+    // countries: stats.countries,
+    // tasks: stats.tasks,
+    // taskEdits: stats.task_edits,
+    // josm: stats.josm,
+    // hashtags: stats.hashtags
+  });
+  console.log(sumBadges)
+}
+
+var data = {
   "id": 1,
   "name": "Tom",
   "stats":{
@@ -49,16 +76,8 @@
     "2015-12-21T09:14:16+00:00",
     "2015-12-21T11:34:29+00:00",
     "2015-12-21T16:11:43+00:00",
-    "2015-12-11T22:56:54+00:00",
-    "2016-01-11T11:46:14+00:00",
-    "2016-01-11T23:49:57+00:00",
-    "2016-01-22T06:50:16+00:00",
-    "2016-01-22T10:31:29+00:00",
-    "2016-01-22T01:14:43+00:00",
-    "2016-01-24T18:43:54+00:00",
-    "2016-01-25T09:14:16+00:00",
-    "2016-01-26T11:34:29+00:00",
-    "2016-01-26T16:11:43+00:00",
-    "2016-01-27T22:56:54+00:00"
+    "2015-12-11T22:56:54+00:00"
   ]
 }
+
+badgeCruncher()

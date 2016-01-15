@@ -64,12 +64,13 @@ export default (props) => {
   });
   return (
     <div id = "Badge-Container">
-      <div className = "badgeheader">
-        Earned Badges
-      </div>
       <div className = "Badge-Box-Content">
         <div className = "badgeroll-frame">
-          <div className = "badgeroll-center">
+          <div className = "badgeroll-center card">
+        <div className = "Card-title">
+          EARNED BADGES
+        </div>
+
             <ul className = "Badge-Roll">
               {list}
             </ul>

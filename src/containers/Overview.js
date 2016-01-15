@@ -1,7 +1,7 @@
 import React from 'react';
-import BadgeBox from '../components/BadgeBox.js';
-import QuickStatsBox from '../components/QuickStatsBox.js';
-import ContributionBox from '../components/ContributionBox.js';
+import Recent from '../components/Recent.js';
+import Next from '../components/Next.js';
+import Stats from '../components/Stats.js';
 
 export default React.createClass({
   getInitialState: function () {
@@ -20,9 +20,11 @@ export default React.createClass({
     } else {
       return (
         <div id="overview">
-          <BadgeBox badges={this.state.user.badges} />
-          <QuickStatsBox badges={this.state.user.stats} />
-          <ContributionBox />
+          <div className = "box">
+            <Recent data = {this.state.user}/>
+            <Next data = {this.state.user}/>
+            <Stats data = {this.state.user}/>
+          </div>
         </div>
       );
     }
