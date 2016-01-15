@@ -292,10 +292,14 @@ input[type="text"] {
     padding: 16px 20px;
     margin-left: 10px;
     margin-right: 10px;
-    border: 1px solid #DDD; }
+    border: 1px solid #DDD;
+    border-bottom: 0px; }
     .Subhead-Nav a:hover {
-      background-color: #7b7c7e;
-      color: black; }
+      background-color: #DDD;
+      color: #999; }
+  .Subhead-Nav .activeLink {
+    border: none;
+    background-color: #eee; }
   @media screen and (max-width: 700px) {
     .Subhead-Nav {
       top: 125px;
