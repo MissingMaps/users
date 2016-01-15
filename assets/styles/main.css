@@ -294,8 +294,8 @@ input[type="text"] {
     margin-right: 10px;
     border: 1px solid #DDD; }
     .Subhead-Nav a:hover {
-      background-color: #38803D;
-      color: #9dcf80; }
+      background-color: #7b7c7e;
+      color: black; }
   @media screen and (max-width: 700px) {
     .Subhead-Nav {
       top: 125px;

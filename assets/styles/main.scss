@@ -372,7 +372,7 @@ input[type="text"]{
     margin-right: 10px;
     border: 1px solid #DDD;
     &:hover{
-      background-color: $lighten(darkgrey, 5);
+      background-color: lighten($darkgrey, 5);
       color: black;  
     }
   }
