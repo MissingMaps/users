@@ -1,7 +1,10 @@
 import React from 'react';
 import R from 'ramda';
+import { getBadgeProgress } from '../badge_logic/badge_cruncher.js';
 
 export default (props) => {
+  var progress = getBadgeProgress(props.data);
+  var mostAttainableBadge = progress.mostAttainable;
   return (
     <div id = "Recent-Container">
       <div className = "Card">

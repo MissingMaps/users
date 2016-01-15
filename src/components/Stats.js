@@ -1,4 +1,5 @@
 import ContributionBox from '../components/ContributionBox.js';
+import PieChart from '../components/PieChart.js';
 import React from 'react';
 import R from 'ramda';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
@@ -71,6 +72,7 @@ export default (props) => {
               <div className = "Card-Section-Title">
                 TYPE OF EDITS
               </div>
+              <PieChart user={user} />
             </div>
           </div>
         </div>
