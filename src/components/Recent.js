@@ -4,7 +4,7 @@ export default (data) => {
   return (
     <div id = "Recent-Container">
       <div className = "Card">
-		<div className = "Card-title">Recent Contributions</div>
+		<div className = "Card-title">RECENT CONTRIBUTIONS</div>
 		<div className = "Card-Content">
 			<div className = "Card-Left">
 				<div className = "Card-Textbox">
@@ -20,6 +20,7 @@ export default (data) => {
 					<p>122 contributions</p>
 					<p>To #JapanRoadImprovement</p>
 					<p>In United States</p>
+					<p>on 10/22/1990</p>
 				</div>
 			</div>
 			<div className = "Card-Right">
