@@ -1,4 +1,5 @@
 import ContributionBox from '../components/ContributionBox.js';
+import PieChart from '../components/PieChart.js';
 import React from 'react';
 import R from 'ramda';
 import L from 'leaflet';
@@ -99,6 +100,7 @@ export default React.createClass({
               <div className = "MapContent">
                 <div id="map"></div>
               </div>
+              <PieChart user={user} />
             </div>
           </div>
         </div>
