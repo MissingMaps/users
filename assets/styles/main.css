@@ -790,5 +790,11 @@ th, td {
 
 .search-bar-suggestions {
   text-align: left;
+<<<<<<< HEAD
   margin: 10px;
   display: block; }
+=======
+  margin-top: 6px; }
+  .search-bar-suggestions li {
+    display: block; }
+>>>>>>> 8a1b2d8a971f516b5ea2e3d860fa2ce1c4a048a9

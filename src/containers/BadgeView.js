@@ -13,6 +13,7 @@ export default React.createClass({
     });
   },
   render: function () {
+    console.log(this.props);
     return <BadgeView badges={this.state.badges} />;
   }
 });
