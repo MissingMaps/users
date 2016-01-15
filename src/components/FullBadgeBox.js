@@ -24,6 +24,7 @@ function mapBadgeToImage (badge) {
 function mapBadgeToDescrip (badge) {
   var map = {
     'Road Builder': 'Wowie zomie bam sham!',
+    'Road Maintainer': 'Maintained all the roads!',
     'Building Builder': 'Built 15 buildings',
     'Consistentency': 'Mapped every day, wow!',
     'GPS trace Creator': 'Traced some real good GPS imagery',
@@ -40,6 +41,8 @@ function mapBadgeToDescrip (badge) {
   };
   return map[badge];
 }
+
+module.exports.descriptions = mapBadgeToDescrip;
 
 // Strips whitespace
 function stripWS (text) {
