@@ -1,6 +1,7 @@
 import React from 'react';
+import R from 'ramda';
 
-export default (data) => {
+export default (props) => {
   return (
     <div id = "Recent-Container">
       <div className = "Card">
@@ -18,9 +19,13 @@ export default (data) => {
           <div className = "Card-Section-Title">
           Trending Projects
           </div>
-          <p>#JapanRoadImrovement</p>
-          <p>#ChineseWaterwayFix</p>
-          <p>#KoreanBuildingBuild</p>
+          {
+            // This should be changed to grabbing from hashtags endpoint
+            // and not the users hashtags
+            R.take(3, props.data.hashtags).map(function (hashtag) {
+              return <p>#{hashtag}</p>;
+            })
+          }
         </div>
       </div>
       <div className = "Card-Right">
