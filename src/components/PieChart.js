@@ -8,51 +8,51 @@ export default React.createClass({
     var chartDataCount = [
       {
         value: Math.floor(stats.total_road_count_add),
-        color: '#F9E698',
-        highlight: '#F7EEC1',
+        color: '#eaeaea',
+        highlight: '#f2f2f2',
         label: 'Roads'
       },
       {
         value: Math.floor(stats.total_waterway_count_add),
-        color: '#91B7FF',
-        highlight: '#BDD4FF',
+        color: '#cccccc',
+        highlight: '#dddddd',
         label: 'Waterways'
       },
       {
         value: Math.floor(stats.total_building_count_add),
-        color: '#FFA3A2',
-        highlight: '#FFC6C5',
+        color: '#969696',
+        highlight: '#aaaaaa',
         label: 'Buildings'
       },
       {
         value: Math.floor(stats.total_poi_count_add),
-        color: '#C6EAA7',
-        highlight: '#DDEDCE',
+        color: '#6b6b6b',
+        highlight: '#8e8e8e',
         label: 'Points of Interest'
       }
     ];
     var chartDataDist = [
       {
         value: Math.floor(stats.total_road_km_add),
-        color: '#E1E300',
+        color: '##f7f7f7',
         highlight: '#E8EA6B',
         label: 'Roads'
       },
       {
         value: Math.floor(stats.total_waterway_count_add),
-        color: '#91B7FF',
+        color: '#cccccc',
         highlight: '#BDD4FF',
         label: 'Waterways'
       },
       {
         value: 0,
-        color: '#BEBFBF',
+        color: '#969696',
         highlight: '#D2D3D3',
         label: 'Buildings'
       },
       {
         value: 0,
-        color: '#FFA3A2',
+        color: '#525252',
         highlight: '#FFC6C5',
         label: 'Points of Interest'
       }
