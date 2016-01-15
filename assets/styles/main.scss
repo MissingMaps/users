@@ -147,6 +147,7 @@ a{
   }
 }
 
+
 .headerwidth{
   max-width:1200px;
   margin-left: auto;
@@ -236,6 +237,7 @@ header{
 .nav-links{
   float:center;
 }
+
 
 /*----------------------------------------------*/
 /*Interactive Buttons*/ 
@@ -376,6 +378,10 @@ input[type="text"]{
       color: black;  
     }
   }
+    .activeLink {
+      border: none;
+      background-color: #eee;
+    }
     @media screen and (max-width: 700px){
     top: 125px;
     right: auto;
@@ -385,7 +391,6 @@ input[type="text"]{
   margin-right: auto;
   } 
 }
-
 /*----------------------------------------------*/
 /*              Overview Styles   */
 /*                 Containers      */              
@@ -944,6 +949,7 @@ th, td {
   margin-left: auto;
   margin-right: auto;
 }
+
 
 .search-bar-suggestions{
   text-align: left;
