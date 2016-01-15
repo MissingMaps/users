@@ -1,12 +1,16 @@
 import React from 'react';
 import BadgeView from '../components/FullBadgeBox.js';
-import {getBadgeProgress} from '../badge_logic/badge_cruncher'
+import {getBadgeProgress} from '../badge_logic/badge_cruncher';
 
 export default React.createClass({
   getInitialState: function () {
+    var progress = {};
+    if (this.props.user) {
+      progress = getBadgeProgress(this.props.user);
+    }
     return {
       earnedBadges: this.props.user.badges || [],
-      progress: {}
+      progress: progress
     };
   },
   componentWillReceiveProps: function (nextProps) {
@@ -19,7 +23,6 @@ export default React.createClass({
     });
   },
   render: function () {
-    console.log(this.props);
     return <BadgeView badges={this.state.earnedBadges} progress={this.state.progress}/>;
   }
 });
