@@ -27,7 +27,7 @@ export default React.createClass({
     return (
       <div id = "Stats-Container">
         <div className = "Card">
-          <div className = "Card-title">{user.name}''s Statistics</div>
+          <div className = "Card-title">{user.name}'s Statistics</div>
           <div className = "Card-Content">
             <div className = "Split-3">
               <div className = "Card-Content Split-Content">
