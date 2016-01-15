@@ -75,20 +75,35 @@ module.exports = function (data) {
     } else if (userTotal >= badge.tiers[3]) {
       return 3;
     } else {
-      return null;
+      return 0;
     }
   }
 
-  var earnedBadges = {};
+  var userBadges = {};
   Object.keys(data).forEach(function (key) {
     var userTotal = data[key];
     var badge = badges[key];
 
     var badgeLevel = checkBadgeLevel(userTotal, badge);
-    if (badgeLevel !== null) {
-      earnedBadges[key] = {category: badge.id, level: badgeLevel};
+    if (badgeLevel < 3) {
+      var nextBadgeLevel = badgeLevel + 1;
+      var currentPoints = Number(userTotal);
+      var lastPoints = 0;
+      if (badgeLevel > 0) lastPoints = badge.tiers[badgeLevel];
+      var nextPoints = badge.tiers[nextBadgeLevel];
+      var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
+      userBadges[key] = {
+        name: badge.name,
+        badgeLevel: badgeLevel,
+        nextBadgeLevel: nextBadgeLevel,
+        points: {
+          currentPoints: currentPoints,
+          nextPoints: nextPoints,
+          percentage: percentage
+        }
+      };
     }
   });
 
-  return earnedBadges;
+  return userBadges;
 };
