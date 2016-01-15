@@ -22,6 +22,9 @@ export default React.createClass({
         return response.json();
       })
       .then(function (users) {
+        users = users.map(function (obj) {
+          return {name: obj.name.toLowerCase(), id: obj.id};
+        });
         var names = R.map(R.prop('name'), users);
         if (component.isMounted()) {
           component.setState({
@@ -34,11 +37,11 @@ export default React.createClass({
   },
   onChange: function (input, resolve) {
     resolve(this.state.names.filter((suggestion) => {
-      return suggestion.toLowerCase().startsWith(input.toLowerCase());
+      return suggestion.startsWith(input.toLowerCase());
     }));
   },
   onSubmit: function (input) {
-    var user = R.find(R.propEq('name', input))(this.state.users);
+    var user = R.find(R.propEq('name', input.toLowerCase()))(this.state.users);
     this.props.history.push('/' + user.id);
   },
 

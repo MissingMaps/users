@@ -11,7 +11,7 @@ export default React.createClass({
         color: '#F9E698',
         highlight: '#F7EEC1',
         label: 'Roads'
-      },      
+      },
       {
         value: Math.floor(stats.total_waterway_count_add),
         color: '#91B7FF',
@@ -39,6 +39,12 @@ export default React.createClass({
         label: 'Roads'
       },
       {
+        value: Math.floor(stats.total_waterway_count_add),
+        color: '#91B7FF',
+        highlight: '#BDD4FF',
+        label: 'Waterways'
+      },
+      {
         value: 0,
         color: '#BEBFBF',
         highlight: '#D2D3D3',
@@ -49,12 +55,6 @@ export default React.createClass({
         color: '#FFA3A2',
         highlight: '#FFC6C5',
         label: 'Points of Interest'
-      },
-      {
-        value: Math.floor(stats.total_waterway_count_add),
-        color: '#91B7FF',
-        highlight: '#BDD4FF',
-        label: 'Waterways'
       }
     ];
     return {
