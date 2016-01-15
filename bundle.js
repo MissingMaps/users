@@ -56344,6 +56344,11 @@ exports.default = _react2.default.createClass({
       highlight: '#E8EA6B',
       label: 'Roads'
     }, {
+      value: Math.floor(stats.total_waterway_count_add),
+      color: '#91B7FF',
+      highlight: '#BDD4FF',
+      label: 'Waterways'
+    }, {
       value: 0,
       color: '#BEBFBF',
       highlight: '#D2D3D3',
@@ -56353,11 +56358,6 @@ exports.default = _react2.default.createClass({
       color: '#FFA3A2',
       highlight: '#FFC6C5',
       label: 'Points of Interest'
-    }, {
-      value: Math.floor(stats.total_waterway_count_add),
-      color: '#91B7FF',
-      highlight: '#BDD4FF',
-      label: 'Waterways'
     }];
     return {
       chartOptions: {
@@ -57067,6 +57067,9 @@ exports.default = _react2.default.createClass({
         }
         return response.json();
       }).then(function (users) {
+        users = users.map(function (obj) {
+          return { name: obj.name.toLowerCase(), id: obj.id };
+        });
         var names = _ramda2.default.map(_ramda2.default.prop('name'), users);
         if (component.isMounted()) {
           component.setState({
@@ -57079,11 +57082,11 @@ exports.default = _react2.default.createClass({
   },
   onChange: function onChange(input, resolve) {
     resolve(this.state.names.filter(function (suggestion) {
-      return suggestion.toLowerCase().startsWith(input.toLowerCase());
+      return suggestion.startsWith(input.toLowerCase());
     }));
   },
   onSubmit: function onSubmit(input) {
-    var user = _ramda2.default.find(_ramda2.default.propEq('name', input))(this.state.users);
+    var user = _ramda2.default.find(_ramda2.default.propEq('name', input.toLowerCase()))(this.state.users);
     this.props.history.push('/' + user.id);
   },
 
