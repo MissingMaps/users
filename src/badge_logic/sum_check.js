@@ -92,17 +92,17 @@ module.exports = function (data) {
       if (badgeLevel > 0) lastPoints = badge.tiers[badgeLevel];
       var nextPoints = badge.tiers[nextBadgeLevel];
       var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
+      userBadges[key] = {
+        name: badge.name,
+        badgeLevel: badgeLevel,
+        nextBadgeLevel: nextBadgeLevel,
+        points: {
+          currentPoints: currentPoints,
+          nextPoints: nextPoints,
+          percentage: percentage
+        }
+      };
     }
-
-    userBadges[key] = {
-      badgeLevel: badgeLevel,
-      nextBadgeLevel: nextBadgeLevel,
-      points: {
-        currentPoints: currentPoints,
-        nextPoints: nextPoints,
-        percentage: percentage
-      }
-    };
   });
 
   return userBadges;
