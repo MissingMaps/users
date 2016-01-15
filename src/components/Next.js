@@ -4,19 +4,19 @@ export default (data) => {
   return (
     <div id = "Recent-Container">
       <div className = "Card">
-    <div className = "Card-title">What's Next'</div>
+    <div className = "Card-title">What's Next</div>
     <div className = "Card-Content">
       <div className = "Card-Left">
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Next Badge
+          UPCOMING
           </div>
-          <p>You''re really close to earning the ____ badge!</p>
-          <p>Here are some projects you can help out with to get it!</p>
+          <p>You're close to earning our _______ badge!</p>
+          <p>Here are some projects you can help to earn it.</p>
         </div>
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Trending Projects
+          TRENDING PROJECTS
           </div>
           <p>#JapanRoadImrovement</p>
           <p>#ChineseWaterwayFix</p>
@@ -26,7 +26,7 @@ export default (data) => {
       <div className = "Card-Right">
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Next Badge...
+          NEXT BADGE...
           </div>
           <div className = "Card-Badge>">
           <img src="assets/graphics/test2.svg" width = "100px"></img>

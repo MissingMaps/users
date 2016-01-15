@@ -74,7 +74,7 @@ export default (data) => {
 			<div className = "Split-3">
 				<div className = "Card-Content Split-Content">
 					<div className = "Card-Section-Title">
-					Edits by Type
+					EDITS BY TYPE
 					</div>
 				</div>
 			</div>
