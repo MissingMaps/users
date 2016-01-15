@@ -41,8 +41,8 @@ export default (props) => {
             <div className="next-badge-overlay">
               <div className = "nextBadgeHome">
               <img src="assets/graphics/test.svg" width = "100px"></img>
-              <p>{mostAttainableBadge.points.percentage}%</p>
-              </div> 
+              <p>{Math.floor(mostAttainableBadge.points.percentage)}%</p>
+              </div>
             </div>
           </div>
           <div className = "Card-Badge-Name">
