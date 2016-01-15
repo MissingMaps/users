@@ -80,8 +80,10 @@ export default React.createClass({
   render: function () {
     return (
       <div>
+        <div className = "Card-Section-Title Move-over">
+          CONTRIBUTION TIMELINE
+        </div>
         <div className = "Contribute-Timeline-Container">
-          <div className = "Block-header">Contribution Timeline</div>
           <div className = {this.state.tallerDiv ? 'Contribute-Timeline-Content tall' : 'Contribute-Timeline-Content'}>
           <div id="cal-heatmap"></div>
           </div>

@@ -37,6 +37,7 @@ export default (props) => {
                 Last Edit
               </div>
               <p>{last_edit_total} contributions</p>
+              <p>at 2:36pm Today</p>
               <p>To #{hashtag}</p>
               <p>In {country}</p>
             </div>

@@ -1,9 +1,11 @@
 import ContributionBox from '../components/ContributionBox.js';
 import React from 'react';
 import R from 'ramda';
+import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 
 export default (props) => {
   var user = props.data;
+  const position = [51.505, -0.09];
 
   return (
     <div id = "Stats-Container">
@@ -67,15 +69,28 @@ export default (props) => {
           <div className = "Split-3">
             <div className = "Card-Content Split-Content">
               <div className = "Card-Section-Title">
-                Edits by Type
+                TYPE OF EDITS
               </div>
             </div>
           </div>
         </div>
-        <ContributionBox timestamps={user.edit_times} />
-        <div id = "MapContainer">
-        </div>
-      </div>
+        <div className ="Stat-Component-Container">
+	        <ContributionBox timestamps={user.edit_times} />
+					<div className = "Card-Section-Title Move-over">
+						WORLD REACH
+					</div>
+					<div id = "MapContainer">
+						<div className = "MapContent">
+							<Map center={position} zoom={2}>
+								<TileLayer
+								url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+								attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+								/>
+							</Map>
+						</div>
+					</div>
+				</div>
+	   </div>
     </div>
   );
 };

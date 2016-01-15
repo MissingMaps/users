@@ -392,6 +392,7 @@ input[type="text"]{
 /*----------------------------------------------*/
 #User-Container{
   width:100%;
+  min-height:100%;
   margin-left: auto;
   margin-right: auto;
   background-color: #EEE;
@@ -493,13 +494,17 @@ input[type="text"]{
 
 .Contribute-Timeline-Content{
   background-color: white;
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   height: 130px;
   &.tall {
     height: 155px;
   }
 }
+
+.Move-over{
+  margin-top:20px;
+  margin-left: 40px;
+}
+
 /*----------------------------------------------*/
 /*              Overview Styles     */
 /*                  Text            */         
@@ -679,23 +684,15 @@ input[type="text"]{
 #MapContainer{
   width: 96%;
   min-width: 300px;
-  height: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: red;
-  margin-top: 60px;
+  margin: 0px auto 20px auto;
   @media screen and (max-width: 1100px){
     position: relative;
     margin: 50px 10px 0px 10px;
     max-width: 75%;
-    margin-left: auto;
-    margin-right: auto;
     }
 }
 
 .MapContent{
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   padding: 10px;
   height: 360px;
   background-color: white;
@@ -724,7 +721,9 @@ input[type="text"]{
 }
 
 #Map{
-  width: 100%;
+  border: solid 1px #CCC;
+  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
+  width: 66%;
   height: 100%;
   background-color: red;
 }
