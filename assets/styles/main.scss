@@ -70,7 +70,7 @@ li{
 }
 
 ::selection {
-    background: $osmgreen;
+    background: lighten($lightgrey,2);
 }
 
 .site-canvas{
@@ -91,26 +91,26 @@ h1{
 
 a{
   text-decoration: none;
-  color: $darkgreen;
+  color: $darkgrey;
   &:hover{
-    color: $osmgreen;   
+    color: lighten(darkgrey, 5);   
   }
   &:focus{
-    color: $osmgreen;
+    color: lighten(darkgrey, 5);
   }
 }
 
 .titleheader{
   font-weight: 900;
   font-size: 2em;
-  color: $darkgreen;
+  color: $darkgrey;
 }
 
 .sub-head{
   font-weight: 400;
   font-size: 1.4em;
   padding: 2px 0px 8px 0px;
-  color: $darkgreen;
+  color: $darkgrey;
 }
 
 .textbox{
@@ -372,8 +372,8 @@ input[type="text"]{
     margin-right: 10px;
     border: 1px solid #DDD;
     &:hover{
-      background-color: $darkgreen;
-      color: $osmgreen;  
+      background-color: lighten($darkgrey, 5);
+      color: black;  
     }
   }
     @media screen and (max-width: 700px){
@@ -392,6 +392,7 @@ input[type="text"]{
 /*----------------------------------------------*/
 #User-Container{
   width:100%;
+  min-height:100%;
   margin-left: auto;
   margin-right: auto;
   background-color: #EEE;
@@ -493,13 +494,17 @@ input[type="text"]{
 
 .Contribute-Timeline-Content{
   background-color: white;
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   height: 130px;
   &.tall {
     height: 155px;
   }
 }
+
+.Move-over{
+  margin-top:20px;
+  margin-left: 40px;
+}
+
 /*----------------------------------------------*/
 /*              Overview Styles     */
 /*                  Text            */         
@@ -679,23 +684,15 @@ input[type="text"]{
 #MapContainer{
   width: 96%;
   min-width: 300px;
-  height: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: red;
-  margin-top: 60px;
+  margin: 0px auto 20px auto;
   @media screen and (max-width: 1100px){
     position: relative;
     margin: 50px 10px 0px 10px;
     max-width: 75%;
-    margin-left: auto;
-    margin-right: auto;
     }
 }
 
 .MapContent{
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   padding: 10px;
   height: 360px;
   background-color: white;
@@ -723,8 +720,10 @@ input[type="text"]{
   height: 360px;
 }
 
-#Map{
+#map{
+  border: solid 1px #CCC;
   width: 100%;
+  box-shadow: 1px 2px 1px rgba( 55, 55, 55, 0.1);
   height: 100%;
   background-color: red;
 }
@@ -817,7 +816,8 @@ input[type="text"]{
 .Card-title{
   width: 100%;
   text-align: center;
-  padding-top: 16px;
+  padding-top: 8px;
+  padding-bottom: 2px;
   font-size: 1.4em;
   font-weight: 800;
   color: #BBB;
@@ -854,13 +854,13 @@ input[type="text"]{
 }
 
 h3{
-  margin: 4px 0px 0px;  
+  margin: 4px 0px 8px;  
   font-size: 2em;
 }
 
 .Card-Section-Title{
   font-weight: 300;
-  border-bottom: 3px solid lighten($darkgrey, 33%);
+  border-bottom: 1px solid lighten($darkgrey, 40%);
   margin-bottom: 2px;
   display: inline-block;
 }

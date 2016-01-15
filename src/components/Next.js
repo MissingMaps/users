@@ -9,19 +9,19 @@ export default (props) => {
   return (
     <div id = "Recent-Container">
       <div className = "Card">
-    <div className = "Card-title">What's Next'</div>
+    <div className = "Card-title">What's Next</div>
     <div className = "Card-Content">
       <div className = "Card-Left">
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Next Badge
+          UPCOMING
           </div>
           <p>You''re really close to earning the {mostAttainableBadge.name} badge!</p>
           <p>Here are some projects you can help out with to get it!</p>
         </div>
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Trending Projects
+          TRENDING PROJECTS
           </div>
           {
             // This should be changed to grabbing from hashtags endpoint
@@ -35,7 +35,7 @@ export default (props) => {
       <div className = "Card-Right">
         <div className = "Card-Textbox">
           <div className = "Card-Section-Title">
-          Next Badge...
+          NEXT BADGE...
           </div>
           <div className = "Card-Badge>">
             <img src="assets/graphics/test.svg" width = "100px"></img>

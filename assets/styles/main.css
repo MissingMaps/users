@@ -40,7 +40,7 @@ li {
   background: #9dcf80; }
 
 ::selection {
-  background: #9dcf80; }
+  background: #e0e0df; }
 
 .site-canvas {
   z-index: -1; }
@@ -57,22 +57,22 @@ h1 {
 
 a {
   text-decoration: none;
-  color: #38803D; }
+  color: #6e6f71; }
   a:hover {
-    color: #9dcf80; }
+    color: #b6b6b6; }
   a:focus {
-    color: #9dcf80; }
+    color: #b6b6b6; }
 
 .titleheader {
   font-weight: 900;
   font-size: 2em;
-  color: #38803D; }
+  color: #6e6f71; }
 
 .sub-head {
   font-weight: 400;
   font-size: 1.4em;
   padding: 2px 0px 8px 0px;
-  color: #38803D; }
+  color: #6e6f71; }
 
 .textbox {
   padding-bottom: 4px;
@@ -294,8 +294,8 @@ input[type="text"] {
     margin-right: 10px;
     border: 1px solid #DDD; }
     .Subhead-Nav a:hover {
-      background-color: #38803D;
-      color: #9dcf80; }
+      background-color: #7b7c7e;
+      color: black; }
   @media screen and (max-width: 700px) {
     .Subhead-Nav {
       top: 125px;
@@ -311,6 +311,7 @@ input[type="text"] {
 /*----------------------------------------------*/
 #User-Container {
   width: 100%;
+  min-height: 100%;
   margin-left: auto;
   margin-right: auto;
   background-color: #EEE; }
@@ -400,11 +401,13 @@ input[type="text"] {
 
 .Contribute-Timeline-Content {
   background-color: white;
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1);
   height: 130px; }
   .Contribute-Timeline-Content.tall {
     height: 155px; }
+
+.Move-over {
+  margin-top: 20px;
+  margin-left: 40px; }
 
 /*----------------------------------------------*/
 /*              Overview Styles     */
@@ -560,22 +563,14 @@ input[type="text"] {
 #MapContainer {
   width: 96%;
   min-width: 300px;
-  height: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: red;
-  margin-top: 60px; }
+  margin: 0px auto 20px auto; }
   @media screen and (max-width: 1100px) {
     #MapContainer {
       position: relative;
       margin: 50px 10px 0px 10px;
-      max-width: 75%;
-      margin-left: auto;
-      margin-right: auto; } }
+      max-width: 75%; } }
 
 .MapContent {
-  border: solid 1px #CCC;
-  box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1);
   padding: 10px;
   height: 360px;
   background-color: white; }
@@ -600,8 +595,10 @@ input[type="text"] {
   background-color: white;
   height: 360px; }
 
-#Map {
+#map {
+  border: solid 1px #CCC;
   width: 100%;
+  box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1);
   height: 100%;
   background-color: red; }
 
@@ -683,7 +680,8 @@ input[type="text"] {
 .Card-title {
   width: 100%;
   text-align: center;
-  padding-top: 16px;
+  padding-top: 8px;
+  padding-bottom: 2px;
   font-size: 1.4em;
   font-weight: 800;
   color: #BBB; }
@@ -713,12 +711,12 @@ input[type="text"] {
   padding-top: 10px; }
 
 h3 {
-  margin: 4px 0px 0px;
+  margin: 4px 0px 8px;
   font-size: 2em; }
 
 .Card-Section-Title {
   font-weight: 300;
-  border-bottom: 3px solid #c3c3c4;
+  border-bottom: 1px solid #d5d5d6;
   margin-bottom: 2px;
   display: inline-block; }
 

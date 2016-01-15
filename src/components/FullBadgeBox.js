@@ -78,7 +78,6 @@ export default (props) => {
         <div className = "Card-title">
           EARNED BADGES
         </div>
-
             <ul className = "Badge-Roll">
               {list}
             </ul>
