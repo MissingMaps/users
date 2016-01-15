@@ -373,9 +373,10 @@ input[type="text"]{
     margin-left: 10px;
     margin-right: 10px;
     border: 1px solid #DDD;
+    border-bottom: 0px;
     &:hover{
-      background-color: lighten($darkgrey, 5);
-      color: black;  
+      background-color: #DDD;
+      color: #999;  
     }
   }
     .activeLink {
