@@ -501,13 +501,13 @@ input[type="text"] {
   margin-right: 20px;
   margin-bottom: 18px; }
 
-#Badge-Container {
+.Badge-Container {
   max-width: 100%;
   min-width: 300px;
   margin: 20px 24px;
   margin-bottom: 0px; }
   @media screen and (max-width: 1100px) {
-    #Badge-Container {
+    .Badge-Container {
       position: relative;
       margin: 50px 10px 0px 10px;
       max-width: 75%;
@@ -599,8 +599,7 @@ input[type="text"] {
   border: solid 1px #CCC;
   width: 100%;
   box-shadow: 1px 2px 1px rgba(55, 55, 55, 0.1);
-  height: 100%;
-  background-color: red; }
+  height: 100%; }
 
 #map1 {
   height: 100%; }
@@ -708,6 +707,7 @@ input[type="text"] {
     padding-top: 10px; }
 
 .Card-Badge-Name {
+  position: relative;
   padding-top: 10px; }
 
 h3 {
@@ -774,9 +774,14 @@ th, td {
     .Search-Box input.search-bar-submit {
       width: 100px;
       border-radius: 4px;
+      padding-left: 0px;
       background-color: #f4f4f4;
       border: 1px solid #dbdbda;
-      color: #6e6f71; }
+      color: #6e6f71;
+      outline: none;
+      transition: background-color 0.1s; }
+      .Search-Box input.search-bar-submit:active {
+        background-color: white; }
   .Search-Box img {
     padding-bottom: 40px; }
 
@@ -798,3 +803,52 @@ th, td {
     background-color: #f4f4f4; }
     .search-bar-suggestions li:hover {
       background-color: white; }
+
+.Pie-Tin {
+  text-align: center;
+  margin: 10px 0px;
+  font-family: 'Lato', sans-serif; }
+
+.ChartControls {
+  font-family: 'Lato', sans-serif;
+  text-align: center; }
+  .ChartControls input {
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    border: 1px solid 1px;
+    border-radius: 2px;
+    background-color: #dbdbda;
+    border: 1px solid #87888b; }
+    .ChartControls input:active {
+      background-color: white;
+      border-color: #a1a2a4; }
+    .ChartControls input:focus {
+      outline: none; }
+    .ChartControls input:hover {
+      background-color: #fefefe;
+      border-color: #aeafb0; }
+
+.next-badge-overlay {
+  position: absolute;
+  font-size: 2em;
+  font-weight: 800;
+  color: white; }
+
+.next-badge-overlay {
+  height: auto;
+  margin: auto;
+  text-align: center;
+  position: relative; }
+
+.nextBadgeHome {
+  width: 140px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative; }
+  .nextBadgeHome p {
+    top: 36px;
+    left: 38px;
+    position: absolute; }

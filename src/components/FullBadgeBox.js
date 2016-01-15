@@ -71,6 +71,7 @@ export default (props) => {
     );
   });
   return (
+  <div>
     <div id = "Badge-Container">
       <div className = "Badge-Box-Content">
         <div className = "badgeroll-frame">
@@ -85,5 +86,6 @@ export default (props) => {
         </div>
       </div>
     </div>
+  </div>
   );
 };

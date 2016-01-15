@@ -88,6 +88,7 @@ export default React.createClass({
                 <div className = "Card-Section-Title">
                   TYPE OF EDITS
                 </div>
+	              <PieChart user={user} />
               </div>
             </div>
           </div>
@@ -100,7 +101,6 @@ export default React.createClass({
               <div className = "MapContent">
                 <div id="map"></div>
               </div>
-              <PieChart user={user} />
             </div>
           </div>
         </div>
