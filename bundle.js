@@ -1,97 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = setTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    clearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],2:[function(require,module,exports){
 /*! cal-heatmap v3.5.4 (Mon Aug 24 2015 10:02:32)
  *  ---------------------------------------------
  *  Cal-Heatmap is a javascript module to create calendar heatmap to visualize time series data
@@ -101,7 +8,3485 @@ process.umask = function() { return 0; };
  */
 function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].constructor===Object?mergeRecursive(a[c],b[c]):b[c]}catch(d){a[c]=b[c]}return a}function arrayEquals(a,b){"use strict";if(!b||!a)return!1;if(a.length!==b.length)return!1;for(var c=0;c<a.length;c++)if(a[c]instanceof Array&&b[c]instanceof Array){if(!arrayEquals(a[c],b[c]))return!1}else if(a[c]!==b[c])return!1;return!0}var d3="function"==typeof require?require("d3"):window.d3,CalHeatMap=function(){"use strict";function a(){d.verticalDomainLabel="top"===d.options.label.position||"bottom"===d.options.label.position,d.domainVerticalLabelHeight=null===d.options.label.height?Math.max(25,2*d.options.cellSize):d.options.label.height,d.domainHorizontalLabelWidth=0,""===d.options.domainLabelFormat&&null===d.options.label.height&&(d.domainVerticalLabelHeight=0),d.verticalDomainLabel||(d.domainVerticalLabelHeight=0,d.domainHorizontalLabelWidth=d.options.label.width),d.paint(),d.options.nextSelector!==!1&&d3.select(d.options.nextSelector).on("click."+d.options.itemNamespace,function(){return d3.event.preventDefault(),d.loadNextDomain(1)}),d.options.previousSelector!==!1&&d3.select(d.options.previousSelector).on("click."+d.options.itemNamespace,function(){return d3.event.preventDefault(),d.loadPreviousDomain(1)}),d.Legend.redraw(d.graphDim.width-d.options.domainGutter-d.options.cellPadding),d.afterLoad();var a=d.getDomainKeys();d.options.loadOnInit?d.getDatas(d.options.data,new Date(a[0]),d.getSubDomain(a[a.length-1]).pop(),function(){d.fill(),d.onComplete()}):d.onComplete(),d.checkIfMinDomainIsReached(a[0]),d.checkIfMaxDomainIsReached(d.getNextDomain().getTime())}function b(a,b){var c=d.options.cellSize*d._domainType[d.options.subDomain].column(a)+d.options.cellPadding*d._domainType[d.options.subDomain].column(a);return 2===arguments.length&&b===!0?c+=d.domainHorizontalLabelWidth+d.options.domainGutter+d.options.domainMargin[1]+d.options.domainMargin[3]:c}function c(a,b){var c=d.options.cellSize*d._domainType[d.options.subDomain].row(a)+d.options.cellPadding*d._domainType[d.options.subDomain].row(a);return 2===arguments.length&&b===!0&&(c+=d.options.domainGutter+d.domainVerticalLabelHeight+d.options.domainMargin[0]+d.options.domainMargin[2]),c}var d=this;this.allowedDataType=["json","csv","tsv","txt"],this.options={itemSelector:"#cal-heatmap",paintOnLoad:!0,range:12,cellSize:10,cellPadding:2,cellRadius:0,domainGutter:2,domainMargin:[0,0,0,0],domain:"hour",subDomain:"min",colLimit:null,rowLimit:null,weekStartOnMonday:!0,start:new Date,minDate:null,maxDate:null,data:"",dataType:this.allowedDataType[0],dataPostPayload:null,considerMissingDataAsZero:!1,loadOnInit:!0,verticalOrientation:!1,domainDynamicDimension:!0,label:{position:"bottom",align:"center",offset:{x:0,y:0},rotate:null,width:100,height:null},legend:[10,20,30,40],displayLegend:!0,legendCellSize:10,legendCellPadding:2,legendMargin:[0,0,0,0],legendVerticalPosition:"bottom",legendHorizontalPosition:"left",legendOrientation:"horizontal",legendColors:null,highlight:[],itemName:["item","items"],domainLabelFormat:null,subDomainTitleFormat:{empty:"{date}",filled:"{count} {name} {connector} {date}"},subDomainDateFormat:null,subDomainTextFormat:null,legendTitleFormat:{lower:"less than {min} {name}",inner:"between {down} and {up} {name}",upper:"more than {max} {name}"},animationDuration:500,nextSelector:!1,previousSelector:!1,itemNamespace:"cal-heatmap",tooltip:!1,onClick:null,afterLoad:null,afterLoadNextDomain:null,afterLoadPreviousDomain:null,onComplete:null,afterLoadData:function(a){return a},onMaxDomainReached:null,onMinDomainReached:null},this._domainType={min:{name:"minute",level:10,maxItemNumber:60,defaultRowNumber:10,defaultColumnNumber:6,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){return Math.floor(a.getMinutes()/d._domainType.min.row(a))},y:function(a){return a.getMinutes()%d._domainType.min.row(a)}},format:{date:"%H:%M, %A %B %-e, %Y",legend:"",connector:"at"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours(),a.getMinutes()).getTime()}},hour:{name:"hour",level:20,maxItemNumber:function(a){switch(d.options.domain){case"day":return 24;case"week":return 168;case"month":return 24*(d.options.domainDynamicDimension?d.getDayCountInMonth(a):31)}},defaultRowNumber:6,defaultColumnNumber:function(a){switch(d.options.domain){case"day":return 4;case"week":return 28;case"month":return d.options.domainDynamicDimension?d.getDayCountInMonth(a):31}},row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){return"month"===d.options.domain?d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getHours()+24*(a.getDate()-1))/d._domainType.hour.row(a)):Math.floor(a.getHours()/d._domainType.hour.row(a))+4*(a.getDate()-1):"week"===d.options.domain?d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getHours()+24*d.getWeekDay(a))/d._domainType.hour.row(a)):Math.floor(a.getHours()/d._domainType.hour.row(a))+4*d.getWeekDay(a):Math.floor(a.getHours()/d._domainType.hour.row(a))},y:function(a){var b=a.getHours();if(d.options.colLimit>0||d.options.rowLimit>0)switch(d.options.domain){case"month":b+=24*(a.getDate()-1);break;case"week":b+=24*d.getWeekDay(a)}return Math.floor(b%d._domainType.hour.row(a))}},format:{date:"%Hh, %A %B %-e, %Y",legend:"%H:00",connector:"at"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()).getTime()}},day:{name:"day",level:30,maxItemNumber:function(a){switch(d.options.domain){case"week":return 7;case"month":return d.options.domainDynamicDimension?d.getDayCountInMonth(a):31;case"year":return d.options.domainDynamicDimension?d.getDayCountInYear(a):366}},defaultColumnNumber:function(a){switch(a=new Date(a),d.options.domain){case"week":return 1;case"month":return d.options.domainDynamicDimension&&!d.options.verticalOrientation?d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()+1,0))-d.getWeekNumber(a)+1:6;case"year":return d.options.domainDynamicDimension?d.getWeekNumber(new Date(a.getFullYear(),11,31))-d.getWeekNumber(new Date(a.getFullYear(),0))+1:54}},defaultRowNumber:7,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){switch(d.options.domain){case"week":return Math.floor(d.getWeekDay(a)/d._domainType.day.row(a));case"month":return d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getDate()-1)/d._domainType.day.row(a)):d.getWeekNumber(a)-d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));case"year":return d.options.colLimit>0||d.options.rowLimit>0?Math.floor((d.getDayOfYear(a)-1)/d._domainType.day.row(a)):d.getWeekNumber(a)}},y:function(a){var b=d.getWeekDay(a);if(d.options.colLimit>0||d.options.rowLimit>0)switch(d.options.domain){case"year":b=d.getDayOfYear(a)-1;break;case"week":b=d.getWeekDay(a);break;case"month":b=a.getDate()-1}return Math.floor(b%d._domainType.day.row(a))}},format:{date:"%A %B %-e, %Y",legend:"%e %b",connector:"on"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate()).getTime()}},week:{name:"week",level:40,maxItemNumber:54,defaultColumnNumber:function(a){switch(a=new Date(a),d.options.domain){case"year":return d._domainType.week.maxItemNumber;case"month":return d.options.domainDynamicDimension?d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()+1,0))-d.getWeekNumber(a):5}},defaultRowNumber:1,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){switch(d.options.domain){case"year":return Math.floor(d.getWeekNumber(a)/d._domainType.week.row(a));case"month":return Math.floor(d.getMonthWeekNumber(a)/d._domainType.week.row(a))}},y:function(a){return d.getWeekNumber(a)%d._domainType.week.row(a)}},format:{date:"%B Week #%W",legend:"%B Week #%W",connector:"in"},extractUnit:function(a){var b=new Date(a.getFullYear(),a.getMonth(),a.getDate()),c=b.getDay()-1;return 0>c&&(c=6),b.setDate(b.getDate()-c),b.getTime()}},month:{name:"month",level:50,maxItemNumber:12,defaultColumnNumber:12,defaultRowNumber:1,row:function(){return d.getSubDomainRowNumber()},column:function(){return d.getSubDomainColumnNumber()},position:{x:function(a){return Math.floor(a.getMonth()/d._domainType.month.row(a))},y:function(a){return a.getMonth()%d._domainType.month.row(a)}},format:{date:"%B %Y",legend:"%B",connector:"in"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth()).getTime()}},year:{name:"year",level:60,row:function(){return d.options.rowLimit||1},column:function(){return d.options.colLimit||1},position:{x:function(){return 1},y:function(){return 1}},format:{date:"%Y",legend:"%Y",connector:"in"},extractUnit:function(a){return new Date(a.getFullYear()).getTime()}}};for(var e in this._domainType)if(this._domainType.hasOwnProperty(e)){var f=this._domainType[e];this._domainType["x_"+e]={name:"x_"+e,level:f.type,maxItemNumber:f.maxItemNumber,defaultRowNumber:f.defaultRowNumber,defaultColumnNumber:f.defaultColumnNumber,row:f.column,column:f.row,position:{x:f.position.y,y:f.position.x},format:f.format,extractUnit:f.extractUnit}}this.lastInsertedSvg=null,this._completed=!1,this._domains=d3.map(),this.graphDim={width:0,height:0},this.legendDim={width:0,height:0},this.NAVIGATE_LEFT=1,this.NAVIGATE_RIGHT=2,this.RESET_ALL_ON_UPDATE=0,this.RESET_SINGLE_ON_UPDATE=1,this.APPEND_ON_UPDATE=2,this.DEFAULT_LEGEND_MARGIN=10,this.root=null,this.tooltip=null,this._maxDomainReached=!1,this._minDomainReached=!1,this.domainPosition=new DomainPosition,this.Legend=null,this.legendScale=null,this.DSTDomain=[],this._init=function(){return d.getDomain(d.options.start).map(function(a){return a.getTime()}).map(function(a){d._domains.set(a,d.getSubDomain(a).map(function(a){return{t:d._domainType[d.options.subDomain].extractUnit(a),v:null}}))}),d.root=d3.select(d.options.itemSelector).append("svg").attr("class","cal-heatmap-container"),d.tooltip=d3.select(d.options.itemSelector).attr("style",function(){var a=d3.select(d.options.itemSelector).attr("style");return(null!==a?a:"")+"position:relative;"}).append("div").attr("class","ch-tooltip"),d.root.attr("x",0).attr("y",0).append("svg").attr("class","graph"),d.Legend=new Legend(d),d.options.paintOnLoad&&a(),!0},this.paint=function(a){function e(b,c,e,f){var g=0;switch(a){case!1:return g=c[e],c[e]+=f,d.domainPosition.setPosition(b,g),g;case d.NAVIGATE_RIGHT:return d.domainPosition.setPosition(b,c[e]),i=f,j=d.domainPosition.getPositionFromIndex(1),d.domainPosition.shiftRightBy(j),c[e];case d.NAVIGATE_LEFT:return g=-f,i=-g,j=c[e]-d.domainPosition.getLast(),d.domainPosition.setPosition(b,g),d.domainPosition.shiftLeftBy(i),g}}function f(a){switch(g.label.rotate){case"right":a.attr("transform",function(a){var c="rotate(90), ";switch(g.label.position){case"right":c+="translate(-"+b(a)+" , -"+b(a)+")";break;case"left":c+="translate(0, -"+d.domainHorizontalLabelWidth+")"}return c});break;case"left":a.attr("transform",function(a){var c="rotate(270), ";switch(g.label.position){case"right":c+="translate(-"+(b(a)+d.domainHorizontalLabelWidth)+" , "+b(a)+")";break;case"left":c+="translate(-"+d.domainHorizontalLabelWidth+" , "+d.domainHorizontalLabelWidth+")"}return c})}}var g=d.options;0===arguments.length&&(a=!1);var h=d.root.select(".graph").selectAll(".graph-domain").data(function(){var b=d.getDomainKeys();return a===d.NAVIGATE_LEFT?b.reverse():b},function(a){return a}),i=0,j=0,k=h.enter().append("svg").attr("width",function(a){return b(a,!0)}).attr("height",function(a){return c(a,!0)}).attr("x",function(a){return g.verticalOrientation?(d.graphDim.width=Math.max(d.graphDim.width,b(a,!0)),0):e(a,d.graphDim,"width",b(a,!0))}).attr("y",function(a){return g.verticalOrientation?e(a,d.graphDim,"height",c(a,!0)):(d.graphDim.height=Math.max(d.graphDim.height,c(a,!0)),0)}).attr("class",function(a){var b="graph-domain",c=new Date(a);switch(g.domain){case"hour":b+=" h_"+c.getHours();case"day":b+=" d_"+c.getDate()+" dy_"+c.getDay();case"week":b+=" w_"+d.getWeekNumber(c);case"month":b+=" m_"+(c.getMonth()+1);case"year":b+=" y_"+c.getFullYear()}return b});d.lastInsertedSvg=k,k.append("rect").attr("width",function(a){return b(a,!0)-g.domainGutter-g.cellPadding}).attr("height",function(a){return c(a,!0)-g.domainGutter-g.cellPadding}).attr("class","domain-background");var l=k.append("svg").attr("x",function(){return"left"===g.label.position?d.domainHorizontalLabelWidth+g.domainMargin[3]:g.domainMargin[3]}).attr("y",function(){return"top"===g.label.position?d.domainVerticalLabelHeight+g.domainMargin[0]:g.domainMargin[0]}).attr("class","graph-subdomain-group"),m=l.selectAll("g").data(function(a){return d._domains.get(a)}).enter().append("g");m.append("rect").attr("class",function(a){return"graph-rect"+d.getHighlightClassName(a.t)+(null!==g.onClick?" hover_cursor":"")}).attr("width",g.cellSize).attr("height",g.cellSize).attr("x",function(a){return d.positionSubDomainX(a.t)}).attr("y",function(a){return d.positionSubDomainY(a.t)}).on("click",function(a){return null!==g.onClick?d.onClick(new Date(a.t),a.v):void 0}).call(function(a){g.cellRadius>0&&a.attr("rx",g.cellRadius).attr("ry",g.cellRadius),null!==d.legendScale&&null!==g.legendColors&&g.legendColors.hasOwnProperty("base")&&a.attr("fill",g.legendColors.base),g.tooltip&&(a.on("mouseover",function(a){var b=this.parentNode.parentNode;d.tooltip.html(d.getSubDomainTitle(a)).attr("style","display: block;");var c=d.positionSubDomainX(a.t)-d.tooltip[0][0].offsetWidth/2+g.cellSize/2,e=d.positionSubDomainY(a.t)-d.tooltip[0][0].offsetHeight-g.cellSize/2;c+=parseInt(b.getAttribute("x"),10),e+=parseInt(b.getAttribute("y"),10),c+=parseInt(d.root.select(".graph").attr("x"),10),e+=parseInt(d.root.select(".graph").attr("y"),10),c+=parseInt(b.parentNode.getAttribute("x"),10),e+=parseInt(b.parentNode.getAttribute("y"),10),d.tooltip.attr("style","display: block; left: "+c+"px; top: "+e+"px;")}),a.on("mouseout",function(){d.tooltip.attr("style","display:none").html("")}))}),g.tooltip||m.append("title").text(function(a){return d.formatDate(new Date(a.t),g.subDomainDateFormat)}),""!==g.domainLabelFormat&&k.append("text").attr("class","graph-label").attr("y",function(a){var b=g.domainMargin[0];switch(g.label.position){case"top":b+=d.domainVerticalLabelHeight/2;break;case"bottom":b+=c(a)+d.domainVerticalLabelHeight/2}return b+g.label.offset.y*("right"===g.label.rotate&&"right"===g.label.position||"left"===g.label.rotate&&"left"===g.label.position?-1:1)}).attr("x",function(a){var c=g.domainMargin[3];switch(g.label.position){case"right":c+=b(a);break;case"bottom":case"top":c+=b(a)/2}return"right"===g.label.align?c+d.domainHorizontalLabelWidth-g.label.offset.x*("right"===g.label.rotate?-1:1):c+g.label.offset.x}).attr("text-anchor",function(){switch(g.label.align){case"start":case"left":return"start";case"end":case"right":return"end";default:return"middle"}}).attr("dominant-baseline",function(){return d.verticalDomainLabel?"middle":"top"}).text(function(a){return d.formatDate(new Date(a),g.domainLabelFormat)}).call(f),null!==g.subDomainTextFormat&&m.append("text").attr("class",function(a){return"subdomain-text"+d.getHighlightClassName(a.t)}).attr("x",function(a){return d.positionSubDomainX(a.t)+g.cellSize/2}).attr("y",function(a){return d.positionSubDomainY(a.t)+g.cellSize/2}).attr("text-anchor","middle").attr("dominant-baseline","central").text(function(a){return d.formatDate(new Date(a.t),g.subDomainTextFormat)}),a!==!1&&h.transition().duration(g.animationDuration).attr("x",function(a){return g.verticalOrientation?0:d.domainPosition.getPosition(a)}).attr("y",function(a){return g.verticalOrientation?d.domainPosition.getPosition(a):0});var n=d.graphDim.width,o=d.graphDim.height;g.verticalOrientation?d.graphDim.height+=i-j:d.graphDim.width+=i-j,h.exit().transition().duration(g.animationDuration).attr("x",function(c){if(g.verticalOrientation)return 0;switch(a){case d.NAVIGATE_LEFT:return Math.min(d.graphDim.width,n);case d.NAVIGATE_RIGHT:return-b(c,!0)}}).attr("y",function(b){if(!g.verticalOrientation)return 0;switch(a){case d.NAVIGATE_LEFT:return Math.min(d.graphDim.height,o);case d.NAVIGATE_RIGHT:return-c(b,!0)}}).remove(),d.resize()}};CalHeatMap.prototype={init:function(a){"use strict";function b(a,b,c){if((b&&a===!1||a instanceof Element||"string"==typeof a)&&""!==a)return!0;throw new Error("The "+c+" is not valid")}function c(a){switch(a){case"year":return"month";case"month":return"day";case"week":return"day";case"day":return"hour";default:return"min"}}function d(){if(!k._domainType.hasOwnProperty(l.domain)||"min"===l.domain||"x_"===l.domain.substring(0,2))throw new Error("The domain '"+l.domain+"' is not valid");if(!k._domainType.hasOwnProperty(l.subDomain)||"year"===l.subDomain)throw new Error("The subDomain '"+l.subDomain+"' is not valid");if(k._domainType[l.domain].level<=k._domainType[l.subDomain].level)throw new Error("'"+l.subDomain+"' is not a valid subDomain to '"+l.domain+"'");return!0}function e(){if(!a.hasOwnProperty("label")||a.hasOwnProperty("label")&&!a.label.hasOwnProperty("align")){switch(l.label.position){case"left":l.label.align="right";break;case"right":l.label.align="left";break;default:l.label.align="center"}"left"===l.label.rotate?l.label.align="right":"right"===l.label.rotate&&(l.label.align="left")}(!a.hasOwnProperty("label")||a.hasOwnProperty("label")&&!a.label.hasOwnProperty("offset"))&&("left"===l.label.position||"right"===l.label.position)&&(l.label.offset={x:10,y:15})}function f(){switch(l.legendVerticalPosition){case"top":l.legendMargin[2]=k.DEFAULT_LEGEND_MARGIN;break;case"bottom":l.legendMargin[0]=k.DEFAULT_LEGEND_MARGIN;break;case"middle":case"center":l.legendMargin["right"===l.legendHorizontalPosition?3:1]=k.DEFAULT_LEGEND_MARGIN}}function g(a){switch("number"==typeof a&&(a=[a]),Array.isArray(a)||(console.log("Margin only takes an integer or an array of integers"),a=[0]),a.length){case 1:return[a[0],a[0],a[0],a[0]];case 2:return[a[0],a[1],a[0],a[1]];case 3:return[a[0],a[1],a[2],a[1]];case 4:return a;default:return a.slice(0,4)}}function h(a){return"string"==typeof a?[a,a+(""!==a?"s":"")]:Array.isArray(a)?1===a.length?[a[0],a[0]+"s"]:a.length>2?a.slice(0,2):a:["item","items"]}function i(a){return a>0?a:null}function j(a){return a>0&&l.colLimit>0?(console.log("colLimit and rowLimit are mutually exclusive, rowLimit will be ignored"),null):a>0?a:null}var k=this,l=k.options=mergeRecursive(k.options,a);if(d(),b(l.itemSelector,!1,"itemSelector"),-1===k.allowedDataType.indexOf(l.dataType))throw new Error("The data type '"+l.dataType+"' is not valid data type");if(null===d3.select(l.itemSelector)[0][0])throw new Error("The node '"+l.itemSelector+"' specified in itemSelector does not exists");try{b(l.nextSelector,!0,"nextSelector"),b(l.previousSelector,!0,"previousSelector")}catch(m){return console.log(m.message),!1}a.hasOwnProperty("subDomain")||(this.options.subDomain=c(a.domain)),("string"!=typeof l.itemNamespace||""===l.itemNamespace)&&(console.log("itemNamespace can not be empty, falling back to cal-heatmap"),l.itemNamespace="cal-heatmap");var n=["data","onComplete","onClick","afterLoad","afterLoadData","afterLoadPreviousDomain","afterLoadNextDomain"];for(var o in n)a.hasOwnProperty(n[o])&&(l[n[o]]=a[n[o]]);return l.subDomainDateFormat="string"==typeof l.subDomainDateFormat||"function"==typeof l.subDomainDateFormat?l.subDomainDateFormat:this._domainType[l.subDomain].format.date,l.domainLabelFormat="string"==typeof l.domainLabelFormat||"function"==typeof l.domainLabelFormat?l.domainLabelFormat:this._domainType[l.domain].format.legend,l.subDomainTextFormat="string"==typeof l.subDomainTextFormat&&""!==l.subDomainTextFormat||"function"==typeof l.subDomainTextFormat?l.subDomainTextFormat:null,l.domainMargin=g(l.domainMargin),l.legendMargin=g(l.legendMargin),l.highlight=k.expandDateSetting(l.highlight),l.itemName=h(l.itemName),l.colLimit=i(l.colLimit),l.rowLimit=j(l.rowLimit),a.hasOwnProperty("legendMargin")||f(),e(),this._init()},expandDateSetting:function(a){"use strict";return Array.isArray(a)||(a=[a]),a.map(function(a){return"now"===a?new Date:a instanceof Date?a:!1}).filter(function(a){return a!==!1})},fill:function(a){"use strict";function b(a){return null===d.legendScale?!1:void a.attr("fill",function(a){return null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&!e.considerMissingDataAsZero&&e.legendColors.hasOwnProperty("base")?e.legendColors.base:null!==e.legendColors&&e.legendColors.hasOwnProperty("empty")&&(0===a.v||null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&e.considerMissingDataAsZero)?e.legendColors.empty:a.v<0&&e.legend[0]>0&&null!==e.legendColors&&e.legendColors.hasOwnProperty("overflow")?e.legendColors.overflow:d.legendScale(Math.min(a.v,e.legend[e.legend.length-1]))})}function c(a){"function"==typeof e.subDomainTextFormat&&a.text(function(a){return e.subDomainTextFormat(a.t,a.v)})}var d=this,e=d.options;0===arguments.length&&(a=d.root.selectAll(".graph-domain"));var f=a.selectAll("svg").selectAll("g").data(function(a){return d._domains.get(a)});f.transition().duration(e.animationDuration).select("rect").attr("class",function(a){var b=d.getHighlightClassName(a.t).trim().split(" "),c=d.dateIsLessThan(a.t,new Date);return(null===d.legendScale||null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&!e.considerMissingDataAsZero&&!e.legendColors.hasOwnProperty("base"))&&b.push("graph-rect"),c||-1!==b.indexOf("now")||b.push("future"),null!==a.v?b.push(d.Legend.getClass(a.v,null===d.legendScale)):e.considerMissingDataAsZero&&c&&b.push(d.Legend.getClass(0,null===d.legendScale)),null!==e.onClick&&b.push("hover_cursor"),b.join(" ")}).call(b),f.transition().duration(e.animationDuration).select("title").text(function(a){return d.getSubDomainTitle(a)}),f.transition().duration(e.animationDuration).select("text").attr("class",function(a){return"subdomain-text"+d.getHighlightClassName(a.t)}).call(c)},triggerEvent:function(a,b,c){"use strict";return 3===arguments.length&&c||null===this.options[a]?!0:"function"==typeof this.options[a]?("function"==typeof b&&(b=b()),this.options[a].apply(this,b)):(console.log("Provided callback for "+a+" is not a function."),!1)},onClick:function(a,b){"use strict";return this.triggerEvent("onClick",[a,b])},afterLoad:function(){"use strict";return this.triggerEvent("afterLoad")},onComplete:function(){"use strict";var a=this.triggerEvent("onComplete",[],this._completed);return this._completed=!0,a},afterLoadPreviousDomain:function(a){"use strict";var b=this;return this.triggerEvent("afterLoadPreviousDomain",function(){var c=b.getSubDomain(a);return[c.shift(),c.pop()]})},afterLoadNextDomain:function(a){"use strict";var b=this;return this.triggerEvent("afterLoadNextDomain",function(){var c=b.getSubDomain(a);return[c.shift(),c.pop()]})},onMinDomainReached:function(a){"use strict";return this._minDomainReached=a,this.triggerEvent("onMinDomainReached",[a])},onMaxDomainReached:function(a){"use strict";return this._maxDomainReached=a,this.triggerEvent("onMaxDomainReached",[a])},checkIfMinDomainIsReached:function(a,b){"use strict";this.minDomainIsReached(a)&&this.onMinDomainReached(!0),2===arguments.length&&this._maxDomainReached&&!this.maxDomainIsReached(b)&&this.onMaxDomainReached(!1)},checkIfMaxDomainIsReached:function(a,b){"use strict";this.maxDomainIsReached(a)&&this.onMaxDomainReached(!0),2===arguments.length&&this._minDomainReached&&!this.minDomainIsReached(b)&&this.onMinDomainReached(!1)},formatNumber:d3.format(",g"),formatDate:function(a,b){"use strict";if(arguments.length<2&&(b="title"),"function"==typeof b)return b(a);var c=d3.time.format(b);return c(a)},getSubDomainTitle:function(a){"use strict";if(null!==a.v||this.options.considerMissingDataAsZero){var b=a.v;return null===b&&this.options.considerMissingDataAsZero&&(b=0),this.options.subDomainTitleFormat.filled.format({count:this.formatNumber(b),name:this.options.itemName[1!==b?1:0],connector:this._domainType[this.options.subDomain].format.connector,date:this.formatDate(new Date(a.t),this.options.subDomainDateFormat)})}return this.options.subDomainTitleFormat.empty.format({date:this.formatDate(new Date(a.t),this.options.subDomainDateFormat)})},loadNextDomain:function(a){"use strict";if(this._maxDomainReached||0===a)return!1;var b=this.loadNewDomains(this.NAVIGATE_RIGHT,this.getDomain(this.getNextDomain(),a));return this.afterLoadNextDomain(b.end),this.checkIfMaxDomainIsReached(this.getNextDomain().getTime(),b.start),!0},loadPreviousDomain:function(a){"use strict";if(this._minDomainReached||0===a)return!1;var b=this.loadNewDomains(this.NAVIGATE_LEFT,this.getDomain(this.getDomainKeys()[0],-a).reverse());return this.afterLoadPreviousDomain(b.start),this.checkIfMinDomainIsReached(b.start,b.end),!0},loadNewDomains:function(a,b){"use strict";function c(a){return{t:d._domainType[d.options.subDomain].extractUnit(a),v:null}}for(var d=this,e=a===this.NAVIGATE_LEFT,f=-1,g=b.length,h=this.getDomainKeys();++f<g;){if(e&&this.minDomainIsReached(b[f])){b=b.slice(0,f+1);break}if(!e&&this.maxDomainIsReached(b[f])){b=b.slice(0,f);break}}for(b=b.slice(-this.options.range),f=0,g=b.length;g>f;f++)this._domains.set(b[f].getTime(),this.getSubDomain(b[f]).map(c)),this._domains.remove(e?h.pop():h.shift());return h=this.getDomainKeys(),e&&(b=b.reverse()),this.paint(a),this.getDatas(this.options.data,b[0],this.getSubDomain(b[b.length-1]).pop(),function(){d.fill(d.lastInsertedSvg)}),{start:b[e?0:1],end:h[h.length-1]}},maxDomainIsReached:function(a){"use strict";return null!==this.options.maxDate&&this.options.maxDate.getTime()<a},minDomainIsReached:function(a){"use strict";return null!==this.options.minDate&&this.options.minDate.getTime()>=a},getDomainKeys:function(){"use strict";return this._domains.keys().map(function(a){return parseInt(a,10)}).sort(function(a,b){return a-b})},positionSubDomainX:function(a){"use strict";var b=this._domainType[this.options.subDomain].position.x(new Date(a));return b*this.options.cellSize+b*this.options.cellPadding},positionSubDomainY:function(a){"use strict";var b=this._domainType[this.options.subDomain].position.y(new Date(a));return b*this.options.cellSize+b*this.options.cellPadding},getSubDomainColumnNumber:function(a){"use strict";if(this.options.rowLimit>0){var b=this._domainType[this.options.subDomain].maxItemNumber;return"function"==typeof b&&(b=b(a)),Math.ceil(b/this.options.rowLimit)}var c=this._domainType[this.options.subDomain].defaultColumnNumber;return"function"==typeof c&&(c=c(a)),this.options.colLimit||c},getSubDomainRowNumber:function(a){"use strict";if(this.options.colLimit>0){var b=this._domainType[this.options.subDomain].maxItemNumber;return"function"==typeof b&&(b=b(a)),Math.ceil(b/this.options.colLimit)}var c=this._domainType[this.options.subDomain].defaultRowNumber;return"function"==typeof c&&(c=c(a)),this.options.rowLimit||c},getHighlightClassName:function(a){"use strict";if(a=new Date(a),this.options.highlight.length>0)for(var b in this.options.highlight)if(this.options.highlight[b]instanceof Date&&this.dateIsEqual(this.options.highlight[b],a))return" highlight"+(this.isNow(this.options.highlight[b])?" now":"");return""},isNow:function(a){"use strict";return this.dateIsEqual(a,new Date)},dateIsEqual:function(a,b){"use strict";switch(this.options.subDomain){case"x_min":case"min":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()&&a.getHours()===b.getHours()&&a.getMinutes()===b.getMinutes();case"x_hour":case"hour":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()&&a.getHours()===b.getHours();case"x_day":case"day":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();case"x_week":case"week":return a.getFullYear()===b.getFullYear()&&this.getWeekNumber(a)===this.getWeekNumber(b);case"x_month":case"month":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth();default:return!1}},dateIsLessThan:function(a,b){"use strict";function c(a,b){switch(b){case"x_min":case"min":return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours(),a.getMinutes()).getTime();case"x_hour":case"hour":return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()).getTime();case"x_day":case"day":return new Date(a.getFullYear(),a.getMonth(),a.getDate()).getTime();case"x_week":case"week":case"x_month":case"month":return new Date(a.getFullYear(),a.getMonth()).getTime();default:return a.getTime()}}return a instanceof Date||(a=new Date(a)),b instanceof Date||(b=new Date(b)),c(a,this.options.subDomain)<c(b,this.options.subDomain)},getDayOfYear:d3.time.format("%j"),getWeekNumber:function(a){"use strict";var b=d3.time.format(this.options.weekStartOnMonday===!0?"%W":"%U");return b(a)},getMonthWeekNumber:function(a){"use strict";"number"==typeof a&&(a=new Date(a));var b=this.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));return this.getWeekNumber(a)-b-1},getWeekNumberInYear:function(a){"use strict";"number"==typeof a&&(a=new Date(a))},getDayCountInMonth:function(a){"use strict";return this.getEndOfMonth(a).getDate()},getDayCountInYear:function(a){"use strict";return"number"==typeof a&&(a=new Date(a)),1===new Date(a.getFullYear(),1,29).getMonth()?366:365},getWeekDay:function(a){"use strict";return this.options.weekStartOnMonday===!1?a.getDay():0===a.getDay()?6:a.getDay()-1},getEndOfMonth:function(a){"use strict";return"number"==typeof a&&(a=new Date(a)),new Date(a.getFullYear(),a.getMonth()+1,0)},jumpDate:function(a,b,c){"use strict";var d=new Date(a);switch(c){case"hour":d.setHours(d.getHours()+b);break;case"day":d.setHours(d.getHours()+24*b);break;case"week":d.setHours(d.getHours()+24*b*7);break;case"month":d.setMonth(d.getMonth()+b);break;case"year":d.setFullYear(d.getFullYear()+b)}return new Date(d)},getMinuteDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()),d=null;return d=b instanceof Date?new Date(b.getFullYear(),b.getMonth(),b.getDate(),b.getHours()):new Date(+c+1e3*b*60),d3.time.minutes(Math.min(c,d),Math.max(c,d))},getHourDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()),d=null;b instanceof Date?d=new Date(b.getFullYear(),b.getMonth(),b.getDate(),b.getHours()):(d=new Date(c),d.setHours(d.getHours()+b));var e=d3.time.hours(Math.min(c,d),Math.max(c,d)),f=0,g=e.length;for(f=0;g>f;f++)if(f>0&&e[f].getHours()===e[f-1].getHours()){this.DSTDomain.push(e[f].getTime()),e.splice(f,1);break}return"number"==typeof b&&e.length>Math.abs(b)&&e.splice(e.length-1,1),e},getDayDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate()),d=null;return b instanceof Date?d=new Date(b.getFullYear(),b.getMonth(),b.getDate()):(d=new Date(c),d=new Date(d.setDate(d.getDate()+parseInt(b,10)))),d3.time.days(Math.min(c,d),Math.max(c,d))},getWeekDomain:function(a,b){"use strict";var c;this.options.weekStartOnMonday===!1?c=new Date(a.getFullYear(),a.getMonth(),a.getDate()-a.getDay()):1===a.getDay()?c=new Date(a.getFullYear(),a.getMonth(),a.getDate()):0===a.getDay()?(c=new Date(a.getFullYear(),a.getMonth(),a.getDate()),c.setDate(c.getDate()-6)):c=new Date(a.getFullYear(),a.getMonth(),a.getDate()-a.getDay()+1);var d=new Date(c),e=b;return"object"!=typeof b&&(e=new Date(d.setDate(d.getDate()+7*b))),this.options.weekStartOnMonday===!0?d3.time.mondays(Math.min(c,e),Math.max(c,e)):d3.time.sundays(Math.min(c,e),Math.max(c,e))},getMonthDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth()),d=null;return b instanceof Date?d=new Date(b.getFullYear(),b.getMonth()):(d=new Date(c),d=d.setMonth(d.getMonth()+b)),d3.time.months(Math.min(c,d),Math.max(c,d))},getYearDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),0),d=null;return d=b instanceof Date?new Date(b.getFullYear(),0):new Date(a.getFullYear()+b,0),d3.time.years(Math.min(c,d),Math.max(c,d))
 },getDomain:function(a,b){"use strict";switch("number"==typeof a&&(a=new Date(a)),arguments.length<2&&(b=this.options.range),this.options.domain){case"hour":var c=this.getHourDomain(a,b);return"number"==typeof b&&c.length<b&&(b>0?c.push(this.getHourDomain(c[c.length-1],2)[1]):c.shift(this.getHourDomain(c[0],-2)[0])),c;case"day":return this.getDayDomain(a,b);case"week":return this.getWeekDomain(a,b);case"month":return this.getMonthDomain(a,b);case"year":return this.getYearDomain(a,b)}},getSubDomain:function(a){"use strict";"number"==typeof a&&(a=new Date(a));var b=this,c=function(a,c){switch(c){case"year":return b.getDayCountInYear(a);case"month":return b.getDayCountInMonth(a);case"week":return 7}},d=function(a,b){switch(b){case"hour":return 60;case"day":return 1440;case"week":return 10080}},e=function(a,c){switch(c){case"day":return 24;case"week":return 168;case"month":return 24*b.getDayCountInMonth(a)}},f=function(a,c){if("month"===c){var d=new Date(a.getFullYear(),a.getMonth()+1,0),e=b.getWeekNumber(d),f=b.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));return f>e&&(f=0,e++),e-f+1}return"year"===c?b.getWeekNumber(new Date(a.getFullYear(),11,31)):void 0};switch(this.options.subDomain){case"x_min":case"min":return this.getMinuteDomain(a,d(a,this.options.domain));case"x_hour":case"hour":return this.getHourDomain(a,e(a,this.options.domain));case"x_day":case"day":return this.getDayDomain(a,c(a,this.options.domain));case"x_week":case"week":return this.getWeekDomain(a,f(a,this.options.domain));case"x_month":case"month":return this.getMonthDomain(a,12)}},getNextDomain:function(a){"use strict";return 0===arguments.length&&(a=1),this.getDomain(this.jumpDate(this.getDomainKeys().pop(),a,this.options.domain),1)[0]},getPreviousDomain:function(a){"use strict";return 0===arguments.length&&(a=1),this.getDomain(this.jumpDate(this.getDomainKeys().shift(),-a,this.options.domain),1)[0]},getDatas:function(a,b,c,d,e,f){"use strict";var g=this;arguments.length<5&&(e=!0),arguments.length<6&&(f=this.APPEND_ON_UPDATE);var h=function(a){e!==!1?"function"==typeof e?a=e(a):"function"==typeof g.options.afterLoadData?a=g.options.afterLoadData(a):console.log("Provided callback for afterLoadData is not a function."):("csv"===g.options.dataType||"tsv"===g.options.dataType)&&(a=this.interpretCSV(a)),g.parseDatas(a,f,b,c),"function"==typeof d&&d()};switch(typeof a){case"string":if(""===a)return h({}),!0;var i=this.parseURI(a,b,c),j="GET";null!==g.options.dataPostPayload&&(j="POST");var k=null;switch(null!==g.options.dataPostPayload&&(k=this.parseURI(g.options.dataPostPayload,b,c)),this.options.dataType){case"json":d3.json(i,h).send(j,k);break;case"csv":d3.csv(i,h).send(j,k);break;case"tsv":d3.tsv(i,h).send(j,k);break;case"txt":d3.text(i,"text/plain",h).send(j,k)}return!1;case"object":if(a===Object(a))return h(a),!1;default:return h({}),!0}},parseDatas:function(a,b,c,d){"use strict";b===this.RESET_ALL_ON_UPDATE&&this._domains.forEach(function(a,b){b.forEach(function(a,b,c){c[b].v=null})});var e={},f=function(a){return a.t};for(var g in a){var h=new Date(1e3*g),i=this.getDomain(h)[0].getTime();if(this.DSTDomain.indexOf(i)>=0&&this._domains.has(i-36e5)&&(i-=36e5),!isNaN(g)&&a.hasOwnProperty(g)&&this._domains.has(i)&&i>=+c&&+d>i){var j=this._domains.get(i);e.hasOwnProperty(i)||(e[i]=j.map(f));var k=e[i].indexOf(this._domainType[this.options.subDomain].extractUnit(h));b===this.RESET_SINGLE_ON_UPDATE?j[k].v=a[g]:isNaN(j[k].v)?j[k].v=a[g]:j[k].v+=a[g]}}},parseURI:function(a,b,c){"use strict";return a=a.replace(/\{\{t:start\}\}/g,b.getTime()/1e3),a=a.replace(/\{\{t:end\}\}/g,c.getTime()/1e3),a=a.replace(/\{\{d:start\}\}/g,b.toISOString()),a=a.replace(/\{\{d:end\}\}/g,c.toISOString())},interpretCSV:function(a){"use strict";var b,c,d={},e=Object.keys(a[0]);for(b=0,c=a.length;c>b;b++)d[a[b][e[0]]]=+a[b][e[1]];return d},resize:function(){"use strict";var a=this,b=a.options,c=b.displayLegend?a.Legend.getDim("width")+b.legendMargin[1]+b.legendMargin[3]:0,d=b.displayLegend?a.Legend.getDim("height")+b.legendMargin[0]+b.legendMargin[2]:0,e=a.graphDim.width-b.domainGutter-b.cellPadding,f=a.graphDim.height-b.domainGutter-b.cellPadding;this.root.transition().duration(b.animationDuration).attr("width",function(){return"middle"===b.legendVerticalPosition||"center"===b.legendVerticalPosition?e+c:Math.max(e,c)}).attr("height",function(){return"middle"===b.legendVerticalPosition||"center"===b.legendVerticalPosition?Math.max(f,d):f+d}),this.root.select(".graph").transition().duration(b.animationDuration).attr("y",function(){return"top"===b.legendVerticalPosition?d:0}).attr("x",function(){return"middle"!==b.legendVerticalPosition&&"center"!==b.legendVerticalPosition||"left"!==b.legendHorizontalPosition?0:c})},next:function(a){"use strict";return 0===arguments.length&&(a=1),this.loadNextDomain(a)},previous:function(a){"use strict";return 0===arguments.length&&(a=1),this.loadPreviousDomain(a)},jumpTo:function(a,b){"use strict";arguments.length<2&&(b=!1);var c=this.getDomainKeys(),d=c[0],e=c[c.length-1];return d>a?this.loadPreviousDomain(this.getDomain(d,a).length):b?this.loadNextDomain(this.getDomain(d,a).length):a>e?this.loadNextDomain(this.getDomain(e,a).length):!1},rewind:function(){"use strict";this.jumpTo(this.options.start,!0)},update:function(a,b,c){"use strict";arguments.length<2&&(b=!0),arguments.length<3&&(c=this.RESET_ALL_ON_UPDATE);var d=this.getDomainKeys(),e=this;this.getDatas(a,new Date(d[0]),this.getSubDomain(d[d.length-1]).pop(),function(){e.fill()},b,c)},setLegend:function(){"use strict";var a=this.options.legend.slice(0);arguments.length>=1&&Array.isArray(arguments[0])&&(this.options.legend=arguments[0]),arguments.length>=2&&(this.options.legendColors=Array.isArray(arguments[1])&&arguments[1].length>=2?[arguments[1][0],arguments[1][1]]:arguments[1]),(arguments.length>0&&!arrayEquals(a,this.options.legend)||arguments.length>=2)&&(this.Legend.buildColors(),this.fill()),this.Legend.redraw(this.graphDim.width-this.options.domainGutter-this.options.cellPadding)},removeLegend:function(){"use strict";return this.options.displayLegend?(this.options.displayLegend=!1,this.Legend.remove(),!0):!1},showLegend:function(){"use strict";return this.options.displayLegend?!1:(this.options.displayLegend=!0,this.Legend.redraw(this.graphDim.width-this.options.domainGutter-this.options.cellPadding),!0)},highlight:function(a){"use strict";return(this.options.highlight=this.expandDateSetting(a)).length>0?(this.fill(),!0):!1},destroy:function(a){"use strict";return this.root.transition().duration(this.options.animationDuration).attr("width",0).attr("height",0).remove().each("end",function(){"function"==typeof a?a():"undefined"!=typeof a&&console.log("Provided callback for destroy() is not a function.")}),null},getSVG:function(){"use strict";for(var a={".cal-heatmap-container":{},".graph":{},".graph-rect":{},"rect.highlight":{},"rect.now":{},"text.highlight":{},"text.now":{},".domain-background":{},".graph-label":{},".subdomain-text":{},".q0":{},".qi":{}},b=1,c=this.options.legend.length+1;c>=b;b++)a[".q"+b]={};var d=this.root,e=["stroke","stroke-width","stroke-opacity","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-miterlimit","fill","fill-opacity","fill-rule","marker","marker-start","marker-mid","marker-end","alignement-baseline","baseline-shift","dominant-baseline","glyph-orientation-horizontal","glyph-orientation-vertical","kerning","text-anchor","shape-rendering","text-transform","font-family","font","font-size","font-weight"],f=function(b,c,d){-1!==e.indexOf(c)&&(a[b][c]=d)},g=function(a){return d.select(a)[0][0]};for(var h in a)if(a.hasOwnProperty(h)){var i=g(h);if(null!==i)if("getComputedStyle"in window){var j=getComputedStyle(i,null);if(0!==j.length)for(var k=0;k<j.length;k++)f(h,j.item(k),j.getPropertyValue(j.item(k)));else for(var l in j)j.hasOwnProperty(l)&&f(h,l,j[l])}else if("currentStyle"in i){var m=i.currentStyle;for(var n in m)f(h,n,m[n])}}var o='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style type="text/css"><![CDATA[ ';for(var p in a){o+=p+" {\n";for(var q in a[p])o+="	"+q+":"+a[p][q]+";\n";o+="}\n"}return o+="]]></style>",o+=(new XMLSerializer).serializeToString(this.root[0][0]),o+="</svg>"}};var DomainPosition=function(){"use strict";this.positions=d3.map()};DomainPosition.prototype.getPosition=function(a){"use strict";return this.positions.get(a)},DomainPosition.prototype.getPositionFromIndex=function(a){"use strict";var b=this.getKeys();return this.positions.get(b[a])},DomainPosition.prototype.getLast=function(){"use strict";var a=this.getKeys();return this.positions.get(a[a.length-1])},DomainPosition.prototype.setPosition=function(a,b){"use strict";this.positions.set(a,b)},DomainPosition.prototype.shiftRightBy=function(a){"use strict";this.positions.forEach(function(b,c){this.set(b,c-a)});var b=this.getKeys();this.positions.remove(b[0])},DomainPosition.prototype.shiftLeftBy=function(a){"use strict";this.positions.forEach(function(b,c){this.set(b,c+a)});var b=this.getKeys();this.positions.remove(b[b.length-1])},DomainPosition.prototype.getKeys=function(){"use strict";return this.positions.keys().sort(function(a,b){return parseInt(a,10)-parseInt(b,10)})};var Legend=function(a){"use strict";this.calendar=a,this.computeDim(),null!==a.options.legendColors&&this.buildColors()};Legend.prototype.computeDim=function(){"use strict";var a=this.calendar.options;this.dim={width:a.legendCellSize*(a.legend.length+1)+a.legendCellPadding*a.legend.length,height:a.legendCellSize}},Legend.prototype.remove=function(){"use strict";this.calendar.root.select(".graph-legend").remove(),this.calendar.resize()},Legend.prototype.redraw=function(a){"use strict";function b(a){a.attr("width",i.legendCellSize).attr("height",i.legendCellSize).attr("x",function(a,b){return b*(i.legendCellSize+i.legendCellPadding)})}function c(){switch(i.legendHorizontalPosition){case"right":return"center"===i.legendVerticalPosition||"middle"===i.legendVerticalPosition?a+i.legendMargin[3]:a-f.getDim("width")-i.legendMargin[1];case"middle":case"center":return Math.round(a/2-f.getDim("width")/2);default:return i.legendMargin[3]}}function d(){return"bottom"===i.legendVerticalPosition?g.graphDim.height+i.legendMargin[0]-i.domainGutter-i.cellPadding:i.legendMargin[0]}if(!this.calendar.options.displayLegend)return!1;var e,f=this,g=this.calendar,h=g.root,i=g.options;this.computeDim();var j=i.legend.slice(0);j.push(j[j.length-1]+1);var k=g.root.select(".graph-legend");null!==k[0][0]?(h=k,e=h.select("g").selectAll("rect").data(j)):(h="top"===i.legendVerticalPosition?h.insert("svg",".graph"):h.append("svg"),h.attr("x",c()).attr("y",d()),e=h.attr("class","graph-legend").attr("height",f.getDim("height")).attr("width",f.getDim("width")).append("g").selectAll().data(j)),e.enter().append("rect").call(b).attr("class",function(a){return g.Legend.getClass(a,null===g.legendScale)}).attr("fill-opacity",0).call(function(a){null!==g.legendScale&&null!==i.legendColors&&i.legendColors.hasOwnProperty("base")&&a.attr("fill",i.legendColors.base)}).append("title"),e.exit().transition().duration(i.animationDuration).attr("fill-opacity",0).remove(),e.transition().delay(function(a,b){return i.animationDuration*b/10}).call(b).attr("fill-opacity",1).call(function(a){a.attr("fill",function(a,b){return null===g.legendScale?"":g.legendScale(0===b?a-1:i.legend[b-1])}),a.attr("class",function(a){return g.Legend.getClass(a,null===g.legendScale)})}),e.select("title").text(function(a,b){return 0===b?i.legendTitleFormat.lower.format({min:i.legend[b],name:i.itemName[1]}):b===j.length-1?i.legendTitleFormat.upper.format({max:i.legend[b-1],name:i.itemName[1]}):i.legendTitleFormat.inner.format({down:i.legend[b-1],up:i.legend[b],name:i.itemName[1]})}),h.transition().duration(i.animationDuration).attr("x",c()).attr("y",d()).attr("width",f.getDim("width")).attr("height",f.getDim("height")),h.select("g").transition().duration(i.animationDuration).attr("transform",function(){return"vertical"===i.legendOrientation?"rotate(90 "+i.legendCellSize/2+" "+i.legendCellSize/2+")":""}),g.resize()},Legend.prototype.getDim=function(a){"use strict";var b="horizontal"===this.calendar.options.legendOrientation;switch(a){case"width":return this.dim[b?"width":"height"];case"height":return this.dim[b?"height":"width"]}},Legend.prototype.buildColors=function(){"use strict";var a=this.calendar.options;if(null===a.legendColors)return this.calendar.legendScale=null,!1;var b=[];if(Array.isArray(a.legendColors))b=a.legendColors;else{if(!a.legendColors.hasOwnProperty("min")||!a.legendColors.hasOwnProperty("max"))return a.legendColors=null,!1;b=[a.legendColors.min,a.legendColors.max]}var c=a.legend.slice(0);c[0]>0?c.unshift(0):c[0]<0&&c.unshift(c[0]-(c[c.length-1]-c[0])/c.length);var d=d3.scale.linear().range(b).interpolate(d3.interpolateHcl).domain([d3.min(c),d3.max(c)]),e=c.map(function(a){return d(a)});return this.calendar.legendScale=d3.scale.threshold().domain(a.legend).range(e),!0},Legend.prototype.getClass=function(a,b){"use strict";if(null===a||isNaN(a))return"";for(var c=[this.calendar.options.legend.length+1],d=0,e=this.calendar.options.legend.length-1;e>=d;d++){if(this.calendar.options.legend[0]>0&&0>a){c=["1","i"];break}if(a<=this.calendar.options.legend[d]){c=[d+1];break}}return 0===a&&c.push(0),c.unshift(""),(c.join(" r")+(b?c.join(" q"):"")).trim()},String.prototype.format=function(){"use strict";var a=this;for(var b in arguments[0])if(arguments[0].hasOwnProperty(b)){var c=new RegExp("\\{"+b+"\\}","gi");a=a.replace(c,arguments[0][b])}return a},"function"==typeof define&&define.amd?define(["d3"],function(){"use strict";return CalHeatMap}):"object"==typeof module&&module.exports?module.exports=CalHeatMap:window.CalHeatMap=CalHeatMap;
-},{"d3":4}],3:[function(require,module,exports){
+},{"d3":4}],2:[function(require,module,exports){
+/*!
+ * Chart.js
+ * http://chartjs.org/
+ * Version: 1.0.2
+ *
+ * Copyright 2015 Nick Downie
+ * Released under the MIT license
+ * https://github.com/nnnick/Chart.js/blob/master/LICENSE.md
+ */
+
+
+(function(){
+
+	"use strict";
+
+	//Declare root variable - window in the browser, global on the server
+	var root = this,
+		previous = root.Chart;
+
+	//Occupy the global variable of Chart, and create a simple base class
+	var Chart = function(context){
+		var chart = this;
+		this.canvas = context.canvas;
+
+		this.ctx = context;
+
+		//Variables global to the chart
+		var computeDimension = function(element,dimension)
+		{
+			if (element['offset'+dimension])
+			{
+				return element['offset'+dimension];
+			}
+			else
+			{
+				return document.defaultView.getComputedStyle(element).getPropertyValue(dimension);
+			}
+		}
+
+		var width = this.width = computeDimension(context.canvas,'Width');
+		var height = this.height = computeDimension(context.canvas,'Height');
+
+		// Firefox requires this to work correctly
+		context.canvas.width  = width;
+		context.canvas.height = height;
+
+		var width = this.width = context.canvas.width;
+		var height = this.height = context.canvas.height;
+		this.aspectRatio = this.width / this.height;
+		//High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
+		helpers.retinaScale(this);
+
+		return this;
+	};
+	//Globally expose the defaults to allow for user updating/changing
+	Chart.defaults = {
+		global: {
+			// Boolean - Whether to animate the chart
+			animation: true,
+
+			// Number - Number of animation steps
+			animationSteps: 60,
+
+			// String - Animation easing effect
+			animationEasing: "easeOutQuart",
+
+			// Boolean - If we should show the scale at all
+			showScale: true,
+
+			// Boolean - If we want to override with a hard coded scale
+			scaleOverride: false,
+
+			// ** Required if scaleOverride is true **
+			// Number - The number of steps in a hard coded scale
+			scaleSteps: null,
+			// Number - The value jump in the hard coded scale
+			scaleStepWidth: null,
+			// Number - The scale starting value
+			scaleStartValue: null,
+
+			// String - Colour of the scale line
+			scaleLineColor: "rgba(0,0,0,.1)",
+
+			// Number - Pixel width of the scale line
+			scaleLineWidth: 1,
+
+			// Boolean - Whether to show labels on the scale
+			scaleShowLabels: true,
+
+			// Interpolated JS string - can access value
+			scaleLabel: "<%=value%>",
+
+			// Boolean - Whether the scale should stick to integers, and not show any floats even if drawing space is there
+			scaleIntegersOnly: true,
+
+			// Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+			scaleBeginAtZero: false,
+
+			// String - Scale label font declaration for the scale label
+			scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+			// Number - Scale label font size in pixels
+			scaleFontSize: 12,
+
+			// String - Scale label font weight style
+			scaleFontStyle: "normal",
+
+			// String - Scale label font colour
+			scaleFontColor: "#666",
+
+			// Boolean - whether or not the chart should be responsive and resize when the browser does.
+			responsive: false,
+
+			// Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+			maintainAspectRatio: true,
+
+			// Boolean - Determines whether to draw tooltips on the canvas or not - attaches events to touchmove & mousemove
+			showTooltips: true,
+
+			// Boolean - Determines whether to draw built-in tooltip or call custom tooltip function
+			customTooltips: false,
+
+			// Array - Array of string names to attach tooltip events
+			tooltipEvents: ["mousemove", "touchstart", "touchmove", "mouseout"],
+
+			// String - Tooltip background colour
+			tooltipFillColor: "rgba(0,0,0,0.8)",
+
+			// String - Tooltip label font declaration for the scale label
+			tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+			// Number - Tooltip label font size in pixels
+			tooltipFontSize: 14,
+
+			// String - Tooltip font weight style
+			tooltipFontStyle: "normal",
+
+			// String - Tooltip label font colour
+			tooltipFontColor: "#fff",
+
+			// String - Tooltip title font declaration for the scale label
+			tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+			// Number - Tooltip title font size in pixels
+			tooltipTitleFontSize: 14,
+
+			// String - Tooltip title font weight style
+			tooltipTitleFontStyle: "bold",
+
+			// String - Tooltip title font colour
+			tooltipTitleFontColor: "#fff",
+
+			// Number - pixel width of padding around tooltip text
+			tooltipYPadding: 6,
+
+			// Number - pixel width of padding around tooltip text
+			tooltipXPadding: 6,
+
+			// Number - Size of the caret on the tooltip
+			tooltipCaretSize: 8,
+
+			// Number - Pixel radius of the tooltip border
+			tooltipCornerRadius: 6,
+
+			// Number - Pixel offset from point x to tooltip edge
+			tooltipXOffset: 10,
+
+			// String - Template string for single tooltips
+			tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
+
+			// String - Template string for single tooltips
+			multiTooltipTemplate: "<%= value %>",
+
+			// String - Colour behind the legend colour block
+			multiTooltipKeyBackground: '#fff',
+
+			// Function - Will fire on animation progression.
+			onAnimationProgress: function(){},
+
+			// Function - Will fire on animation completion.
+			onAnimationComplete: function(){}
+
+		}
+	};
+
+	//Create a dictionary of chart types, to allow for extension of existing types
+	Chart.types = {};
+
+	//Global Chart helpers object for utility methods and classes
+	var helpers = Chart.helpers = {};
+
+		//-- Basic js utility methods
+	var each = helpers.each = function(loopable,callback,self){
+			var additionalArgs = Array.prototype.slice.call(arguments, 3);
+			// Check to see if null or undefined firstly.
+			if (loopable){
+				if (loopable.length === +loopable.length){
+					var i;
+					for (i=0; i<loopable.length; i++){
+						callback.apply(self,[loopable[i], i].concat(additionalArgs));
+					}
+				}
+				else{
+					for (var item in loopable){
+						callback.apply(self,[loopable[item],item].concat(additionalArgs));
+					}
+				}
+			}
+		},
+		clone = helpers.clone = function(obj){
+			var objClone = {};
+			each(obj,function(value,key){
+				if (obj.hasOwnProperty(key)) objClone[key] = value;
+			});
+			return objClone;
+		},
+		extend = helpers.extend = function(base){
+			each(Array.prototype.slice.call(arguments,1), function(extensionObject) {
+				each(extensionObject,function(value,key){
+					if (extensionObject.hasOwnProperty(key)) base[key] = value;
+				});
+			});
+			return base;
+		},
+		merge = helpers.merge = function(base,master){
+			//Merge properties in left object over to a shallow clone of object right.
+			var args = Array.prototype.slice.call(arguments,0);
+			args.unshift({});
+			return extend.apply(null, args);
+		},
+		indexOf = helpers.indexOf = function(arrayToSearch, item){
+			if (Array.prototype.indexOf) {
+				return arrayToSearch.indexOf(item);
+			}
+			else{
+				for (var i = 0; i < arrayToSearch.length; i++) {
+					if (arrayToSearch[i] === item) return i;
+				}
+				return -1;
+			}
+		},
+		where = helpers.where = function(collection, filterCallback){
+			var filtered = [];
+
+			helpers.each(collection, function(item){
+				if (filterCallback(item)){
+					filtered.push(item);
+				}
+			});
+
+			return filtered;
+		},
+		findNextWhere = helpers.findNextWhere = function(arrayToSearch, filterCallback, startIndex){
+			// Default to start of the array
+			if (!startIndex){
+				startIndex = -1;
+			}
+			for (var i = startIndex + 1; i < arrayToSearch.length; i++) {
+				var currentItem = arrayToSearch[i];
+				if (filterCallback(currentItem)){
+					return currentItem;
+				}
+			}
+		},
+		findPreviousWhere = helpers.findPreviousWhere = function(arrayToSearch, filterCallback, startIndex){
+			// Default to end of the array
+			if (!startIndex){
+				startIndex = arrayToSearch.length;
+			}
+			for (var i = startIndex - 1; i >= 0; i--) {
+				var currentItem = arrayToSearch[i];
+				if (filterCallback(currentItem)){
+					return currentItem;
+				}
+			}
+		},
+		inherits = helpers.inherits = function(extensions){
+			//Basic javascript inheritance based on the model created in Backbone.js
+			var parent = this;
+			var ChartElement = (extensions && extensions.hasOwnProperty("constructor")) ? extensions.constructor : function(){ return parent.apply(this, arguments); };
+
+			var Surrogate = function(){ this.constructor = ChartElement;};
+			Surrogate.prototype = parent.prototype;
+			ChartElement.prototype = new Surrogate();
+
+			ChartElement.extend = inherits;
+
+			if (extensions) extend(ChartElement.prototype, extensions);
+
+			ChartElement.__super__ = parent.prototype;
+
+			return ChartElement;
+		},
+		noop = helpers.noop = function(){},
+		uid = helpers.uid = (function(){
+			var id=0;
+			return function(){
+				return "chart-" + id++;
+			};
+		})(),
+		warn = helpers.warn = function(str){
+			//Method for warning of errors
+			if (window.console && typeof window.console.warn == "function") console.warn(str);
+		},
+		amd = helpers.amd = (typeof define == 'function' && define.amd),
+		//-- Math methods
+		isNumber = helpers.isNumber = function(n){
+			return !isNaN(parseFloat(n)) && isFinite(n);
+		},
+		max = helpers.max = function(array){
+			return Math.max.apply( Math, array );
+		},
+		min = helpers.min = function(array){
+			return Math.min.apply( Math, array );
+		},
+		cap = helpers.cap = function(valueToCap,maxValue,minValue){
+			if(isNumber(maxValue)) {
+				if( valueToCap > maxValue ) {
+					return maxValue;
+				}
+			}
+			else if(isNumber(minValue)){
+				if ( valueToCap < minValue ){
+					return minValue;
+				}
+			}
+			return valueToCap;
+		},
+		getDecimalPlaces = helpers.getDecimalPlaces = function(num){
+			if (num%1!==0 && isNumber(num)){
+				return num.toString().split(".")[1].length;
+			}
+			else {
+				return 0;
+			}
+		},
+		toRadians = helpers.radians = function(degrees){
+			return degrees * (Math.PI/180);
+		},
+		// Gets the angle from vertical upright to the point about a centre.
+		getAngleFromPoint = helpers.getAngleFromPoint = function(centrePoint, anglePoint){
+			var distanceFromXCenter = anglePoint.x - centrePoint.x,
+				distanceFromYCenter = anglePoint.y - centrePoint.y,
+				radialDistanceFromCenter = Math.sqrt( distanceFromXCenter * distanceFromXCenter + distanceFromYCenter * distanceFromYCenter);
+
+
+			var angle = Math.PI * 2 + Math.atan2(distanceFromYCenter, distanceFromXCenter);
+
+			//If the segment is in the top left quadrant, we need to add another rotation to the angle
+			if (distanceFromXCenter < 0 && distanceFromYCenter < 0){
+				angle += Math.PI*2;
+			}
+
+			return {
+				angle: angle,
+				distance: radialDistanceFromCenter
+			};
+		},
+		aliasPixel = helpers.aliasPixel = function(pixelWidth){
+			return (pixelWidth % 2 === 0) ? 0 : 0.5;
+		},
+		splineCurve = helpers.splineCurve = function(FirstPoint,MiddlePoint,AfterPoint,t){
+			//Props to Rob Spencer at scaled innovation for his post on splining between points
+			//http://scaledinnovation.com/analytics/splines/aboutSplines.html
+			var d01=Math.sqrt(Math.pow(MiddlePoint.x-FirstPoint.x,2)+Math.pow(MiddlePoint.y-FirstPoint.y,2)),
+				d12=Math.sqrt(Math.pow(AfterPoint.x-MiddlePoint.x,2)+Math.pow(AfterPoint.y-MiddlePoint.y,2)),
+				fa=t*d01/(d01+d12),// scaling factor for triangle Ta
+				fb=t*d12/(d01+d12);
+			return {
+				inner : {
+					x : MiddlePoint.x-fa*(AfterPoint.x-FirstPoint.x),
+					y : MiddlePoint.y-fa*(AfterPoint.y-FirstPoint.y)
+				},
+				outer : {
+					x: MiddlePoint.x+fb*(AfterPoint.x-FirstPoint.x),
+					y : MiddlePoint.y+fb*(AfterPoint.y-FirstPoint.y)
+				}
+			};
+		},
+		calculateOrderOfMagnitude = helpers.calculateOrderOfMagnitude = function(val){
+			return Math.floor(Math.log(val) / Math.LN10);
+		},
+		calculateScaleRange = helpers.calculateScaleRange = function(valuesArray, drawingSize, textSize, startFromZero, integersOnly){
+
+			//Set a minimum step of two - a point at the top of the graph, and a point at the base
+			var minSteps = 2,
+				maxSteps = Math.floor(drawingSize/(textSize * 1.5)),
+				skipFitting = (minSteps >= maxSteps);
+
+			var maxValue = max(valuesArray),
+				minValue = min(valuesArray);
+
+			// We need some degree of seperation here to calculate the scales if all the values are the same
+			// Adding/minusing 0.5 will give us a range of 1.
+			if (maxValue === minValue){
+				maxValue += 0.5;
+				// So we don't end up with a graph with a negative start value if we've said always start from zero
+				if (minValue >= 0.5 && !startFromZero){
+					minValue -= 0.5;
+				}
+				else{
+					// Make up a whole number above the values
+					maxValue += 0.5;
+				}
+			}
+
+			var	valueRange = Math.abs(maxValue - minValue),
+				rangeOrderOfMagnitude = calculateOrderOfMagnitude(valueRange),
+				graphMax = Math.ceil(maxValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) * Math.pow(10, rangeOrderOfMagnitude),
+				graphMin = (startFromZero) ? 0 : Math.floor(minValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) * Math.pow(10, rangeOrderOfMagnitude),
+				graphRange = graphMax - graphMin,
+				stepValue = Math.pow(10, rangeOrderOfMagnitude),
+				numberOfSteps = Math.round(graphRange / stepValue);
+
+			//If we have more space on the graph we'll use it to give more definition to the data
+			while((numberOfSteps > maxSteps || (numberOfSteps * 2) < maxSteps) && !skipFitting) {
+				if(numberOfSteps > maxSteps){
+					stepValue *=2;
+					numberOfSteps = Math.round(graphRange/stepValue);
+					// Don't ever deal with a decimal number of steps - cancel fitting and just use the minimum number of steps.
+					if (numberOfSteps % 1 !== 0){
+						skipFitting = true;
+					}
+				}
+				//We can fit in double the amount of scale points on the scale
+				else{
+					//If user has declared ints only, and the step value isn't a decimal
+					if (integersOnly && rangeOrderOfMagnitude >= 0){
+						//If the user has said integers only, we need to check that making the scale more granular wouldn't make it a float
+						if(stepValue/2 % 1 === 0){
+							stepValue /=2;
+							numberOfSteps = Math.round(graphRange/stepValue);
+						}
+						//If it would make it a float break out of the loop
+						else{
+							break;
+						}
+					}
+					//If the scale doesn't have to be an int, make the scale more granular anyway.
+					else{
+						stepValue /=2;
+						numberOfSteps = Math.round(graphRange/stepValue);
+					}
+
+				}
+			}
+
+			if (skipFitting){
+				numberOfSteps = minSteps;
+				stepValue = graphRange / numberOfSteps;
+			}
+
+			return {
+				steps : numberOfSteps,
+				stepValue : stepValue,
+				min : graphMin,
+				max	: graphMin + (numberOfSteps * stepValue)
+			};
+
+		},
+		/* jshint ignore:start */
+		// Blows up jshint errors based on the new Function constructor
+		//Templating methods
+		//Javascript micro templating by John Resig - source at http://ejohn.org/blog/javascript-micro-templating/
+		template = helpers.template = function(templateString, valuesObject){
+
+			// If templateString is function rather than string-template - call the function for valuesObject
+
+			if(templateString instanceof Function){
+			 	return templateString(valuesObject);
+		 	}
+
+			var cache = {};
+			function tmpl(str, data){
+				// Figure out if we're getting a template, or if we need to
+				// load the template - and be sure to cache the result.
+				var fn = !/\W/.test(str) ?
+				cache[str] = cache[str] :
+
+				// Generate a reusable function that will serve as a template
+				// generator (and which will be cached).
+				new Function("obj",
+					"var p=[],print=function(){p.push.apply(p,arguments);};" +
+
+					// Introduce the data as local variables using with(){}
+					"with(obj){p.push('" +
+
+					// Convert the template into pure JavaScript
+					str
+						.replace(/[\r\t\n]/g, " ")
+						.split("<%").join("\t")
+						.replace(/((^|%>)[^\t]*)'/g, "$1\r")
+						.replace(/\t=(.*?)%>/g, "',$1,'")
+						.split("\t").join("');")
+						.split("%>").join("p.push('")
+						.split("\r").join("\\'") +
+					"');}return p.join('');"
+				);
+
+				// Provide some basic currying to the user
+				return data ? fn( data ) : fn;
+			}
+			return tmpl(templateString,valuesObject);
+		},
+		/* jshint ignore:end */
+		generateLabels = helpers.generateLabels = function(templateString,numberOfSteps,graphMin,stepValue){
+			var labelsArray = new Array(numberOfSteps);
+			if (labelTemplateString){
+				each(labelsArray,function(val,index){
+					labelsArray[index] = template(templateString,{value: (graphMin + (stepValue*(index+1)))});
+				});
+			}
+			return labelsArray;
+		},
+		//--Animation methods
+		//Easing functions adapted from Robert Penner's easing equations
+		//http://www.robertpenner.com/easing/
+		easingEffects = helpers.easingEffects = {
+			linear: function (t) {
+				return t;
+			},
+			easeInQuad: function (t) {
+				return t * t;
+			},
+			easeOutQuad: function (t) {
+				return -1 * t * (t - 2);
+			},
+			easeInOutQuad: function (t) {
+				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t;
+				return -1 / 2 * ((--t) * (t - 2) - 1);
+			},
+			easeInCubic: function (t) {
+				return t * t * t;
+			},
+			easeOutCubic: function (t) {
+				return 1 * ((t = t / 1 - 1) * t * t + 1);
+			},
+			easeInOutCubic: function (t) {
+				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t;
+				return 1 / 2 * ((t -= 2) * t * t + 2);
+			},
+			easeInQuart: function (t) {
+				return t * t * t * t;
+			},
+			easeOutQuart: function (t) {
+				return -1 * ((t = t / 1 - 1) * t * t * t - 1);
+			},
+			easeInOutQuart: function (t) {
+				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t;
+				return -1 / 2 * ((t -= 2) * t * t * t - 2);
+			},
+			easeInQuint: function (t) {
+				return 1 * (t /= 1) * t * t * t * t;
+			},
+			easeOutQuint: function (t) {
+				return 1 * ((t = t / 1 - 1) * t * t * t * t + 1);
+			},
+			easeInOutQuint: function (t) {
+				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t * t;
+				return 1 / 2 * ((t -= 2) * t * t * t * t + 2);
+			},
+			easeInSine: function (t) {
+				return -1 * Math.cos(t / 1 * (Math.PI / 2)) + 1;
+			},
+			easeOutSine: function (t) {
+				return 1 * Math.sin(t / 1 * (Math.PI / 2));
+			},
+			easeInOutSine: function (t) {
+				return -1 / 2 * (Math.cos(Math.PI * t / 1) - 1);
+			},
+			easeInExpo: function (t) {
+				return (t === 0) ? 1 : 1 * Math.pow(2, 10 * (t / 1 - 1));
+			},
+			easeOutExpo: function (t) {
+				return (t === 1) ? 1 : 1 * (-Math.pow(2, -10 * t / 1) + 1);
+			},
+			easeInOutExpo: function (t) {
+				if (t === 0) return 0;
+				if (t === 1) return 1;
+				if ((t /= 1 / 2) < 1) return 1 / 2 * Math.pow(2, 10 * (t - 1));
+				return 1 / 2 * (-Math.pow(2, -10 * --t) + 2);
+			},
+			easeInCirc: function (t) {
+				if (t >= 1) return t;
+				return -1 * (Math.sqrt(1 - (t /= 1) * t) - 1);
+			},
+			easeOutCirc: function (t) {
+				return 1 * Math.sqrt(1 - (t = t / 1 - 1) * t);
+			},
+			easeInOutCirc: function (t) {
+				if ((t /= 1 / 2) < 1) return -1 / 2 * (Math.sqrt(1 - t * t) - 1);
+				return 1 / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1);
+			},
+			easeInElastic: function (t) {
+				var s = 1.70158;
+				var p = 0;
+				var a = 1;
+				if (t === 0) return 0;
+				if ((t /= 1) == 1) return 1;
+				if (!p) p = 1 * 0.3;
+				if (a < Math.abs(1)) {
+					a = 1;
+					s = p / 4;
+				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
+				return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
+			},
+			easeOutElastic: function (t) {
+				var s = 1.70158;
+				var p = 0;
+				var a = 1;
+				if (t === 0) return 0;
+				if ((t /= 1) == 1) return 1;
+				if (!p) p = 1 * 0.3;
+				if (a < Math.abs(1)) {
+					a = 1;
+					s = p / 4;
+				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
+				return a * Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) + 1;
+			},
+			easeInOutElastic: function (t) {
+				var s = 1.70158;
+				var p = 0;
+				var a = 1;
+				if (t === 0) return 0;
+				if ((t /= 1 / 2) == 2) return 1;
+				if (!p) p = 1 * (0.3 * 1.5);
+				if (a < Math.abs(1)) {
+					a = 1;
+					s = p / 4;
+				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
+				if (t < 1) return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
+				return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) * 0.5 + 1;
+			},
+			easeInBack: function (t) {
+				var s = 1.70158;
+				return 1 * (t /= 1) * t * ((s + 1) * t - s);
+			},
+			easeOutBack: function (t) {
+				var s = 1.70158;
+				return 1 * ((t = t / 1 - 1) * t * ((s + 1) * t + s) + 1);
+			},
+			easeInOutBack: function (t) {
+				var s = 1.70158;
+				if ((t /= 1 / 2) < 1) return 1 / 2 * (t * t * (((s *= (1.525)) + 1) * t - s));
+				return 1 / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
+			},
+			easeInBounce: function (t) {
+				return 1 - easingEffects.easeOutBounce(1 - t);
+			},
+			easeOutBounce: function (t) {
+				if ((t /= 1) < (1 / 2.75)) {
+					return 1 * (7.5625 * t * t);
+				} else if (t < (2 / 2.75)) {
+					return 1 * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75);
+				} else if (t < (2.5 / 2.75)) {
+					return 1 * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375);
+				} else {
+					return 1 * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375);
+				}
+			},
+			easeInOutBounce: function (t) {
+				if (t < 1 / 2) return easingEffects.easeInBounce(t * 2) * 0.5;
+				return easingEffects.easeOutBounce(t * 2 - 1) * 0.5 + 1 * 0.5;
+			}
+		},
+		//Request animation polyfill - http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+		requestAnimFrame = helpers.requestAnimFrame = (function(){
+			return window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				window.msRequestAnimationFrame ||
+				function(callback) {
+					return window.setTimeout(callback, 1000 / 60);
+				};
+		})(),
+		cancelAnimFrame = helpers.cancelAnimFrame = (function(){
+			return window.cancelAnimationFrame ||
+				window.webkitCancelAnimationFrame ||
+				window.mozCancelAnimationFrame ||
+				window.oCancelAnimationFrame ||
+				window.msCancelAnimationFrame ||
+				function(callback) {
+					return window.clearTimeout(callback, 1000 / 60);
+				};
+		})(),
+		animationLoop = helpers.animationLoop = function(callback,totalSteps,easingString,onProgress,onComplete,chartInstance){
+
+			var currentStep = 0,
+				easingFunction = easingEffects[easingString] || easingEffects.linear;
+
+			var animationFrame = function(){
+				currentStep++;
+				var stepDecimal = currentStep/totalSteps;
+				var easeDecimal = easingFunction(stepDecimal);
+
+				callback.call(chartInstance,easeDecimal,stepDecimal, currentStep);
+				onProgress.call(chartInstance,easeDecimal,stepDecimal);
+				if (currentStep < totalSteps){
+					chartInstance.animationFrame = requestAnimFrame(animationFrame);
+				} else{
+					onComplete.apply(chartInstance);
+				}
+			};
+			requestAnimFrame(animationFrame);
+		},
+		//-- DOM methods
+		getRelativePosition = helpers.getRelativePosition = function(evt){
+			var mouseX, mouseY;
+			var e = evt.originalEvent || evt,
+				canvas = evt.currentTarget || evt.srcElement,
+				boundingRect = canvas.getBoundingClientRect();
+
+			if (e.touches){
+				mouseX = e.touches[0].clientX - boundingRect.left;
+				mouseY = e.touches[0].clientY - boundingRect.top;
+
+			}
+			else{
+				mouseX = e.clientX - boundingRect.left;
+				mouseY = e.clientY - boundingRect.top;
+			}
+
+			return {
+				x : mouseX,
+				y : mouseY
+			};
+
+		},
+		addEvent = helpers.addEvent = function(node,eventType,method){
+			if (node.addEventListener){
+				node.addEventListener(eventType,method);
+			} else if (node.attachEvent){
+				node.attachEvent("on"+eventType, method);
+			} else {
+				node["on"+eventType] = method;
+			}
+		},
+		removeEvent = helpers.removeEvent = function(node, eventType, handler){
+			if (node.removeEventListener){
+				node.removeEventListener(eventType, handler, false);
+			} else if (node.detachEvent){
+				node.detachEvent("on"+eventType,handler);
+			} else{
+				node["on" + eventType] = noop;
+			}
+		},
+		bindEvents = helpers.bindEvents = function(chartInstance, arrayOfEvents, handler){
+			// Create the events object if it's not already present
+			if (!chartInstance.events) chartInstance.events = {};
+
+			each(arrayOfEvents,function(eventName){
+				chartInstance.events[eventName] = function(){
+					handler.apply(chartInstance, arguments);
+				};
+				addEvent(chartInstance.chart.canvas,eventName,chartInstance.events[eventName]);
+			});
+		},
+		unbindEvents = helpers.unbindEvents = function (chartInstance, arrayOfEvents) {
+			each(arrayOfEvents, function(handler,eventName){
+				removeEvent(chartInstance.chart.canvas, eventName, handler);
+			});
+		},
+		getMaximumWidth = helpers.getMaximumWidth = function(domNode){
+			var container = domNode.parentNode;
+			// TODO = check cross browser stuff with this.
+			return container.clientWidth;
+		},
+		getMaximumHeight = helpers.getMaximumHeight = function(domNode){
+			var container = domNode.parentNode;
+			// TODO = check cross browser stuff with this.
+			return container.clientHeight;
+		},
+		getMaximumSize = helpers.getMaximumSize = helpers.getMaximumWidth, // legacy support
+		retinaScale = helpers.retinaScale = function(chart){
+			var ctx = chart.ctx,
+				width = chart.canvas.width,
+				height = chart.canvas.height;
+
+			if (window.devicePixelRatio) {
+				ctx.canvas.style.width = width + "px";
+				ctx.canvas.style.height = height + "px";
+				ctx.canvas.height = height * window.devicePixelRatio;
+				ctx.canvas.width = width * window.devicePixelRatio;
+				ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+			}
+		},
+		//-- Canvas methods
+		clear = helpers.clear = function(chart){
+			chart.ctx.clearRect(0,0,chart.width,chart.height);
+		},
+		fontString = helpers.fontString = function(pixelSize,fontStyle,fontFamily){
+			return fontStyle + " " + pixelSize+"px " + fontFamily;
+		},
+		longestText = helpers.longestText = function(ctx,font,arrayOfStrings){
+			ctx.font = font;
+			var longest = 0;
+			each(arrayOfStrings,function(string){
+				var textWidth = ctx.measureText(string).width;
+				longest = (textWidth > longest) ? textWidth : longest;
+			});
+			return longest;
+		},
+		drawRoundedRectangle = helpers.drawRoundedRectangle = function(ctx,x,y,width,height,radius){
+			ctx.beginPath();
+			ctx.moveTo(x + radius, y);
+			ctx.lineTo(x + width - radius, y);
+			ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+			ctx.lineTo(x + width, y + height - radius);
+			ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+			ctx.lineTo(x + radius, y + height);
+			ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+			ctx.lineTo(x, y + radius);
+			ctx.quadraticCurveTo(x, y, x + radius, y);
+			ctx.closePath();
+		};
+
+
+	//Store a reference to each instance - allowing us to globally resize chart instances on window resize.
+	//Destroy method on the chart will remove the instance of the chart from this reference.
+	Chart.instances = {};
+
+	Chart.Type = function(data,options,chart){
+		this.options = options;
+		this.chart = chart;
+		this.id = uid();
+		//Add the chart instance to the global namespace
+		Chart.instances[this.id] = this;
+
+		// Initialize is always called when a chart type is created
+		// By default it is a no op, but it should be extended
+		if (options.responsive){
+			this.resize();
+		}
+		this.initialize.call(this,data);
+	};
+
+	//Core methods that'll be a part of every chart type
+	extend(Chart.Type.prototype,{
+		initialize : function(){return this;},
+		clear : function(){
+			clear(this.chart);
+			return this;
+		},
+		stop : function(){
+			// Stops any current animation loop occuring
+			cancelAnimFrame(this.animationFrame);
+			return this;
+		},
+		resize : function(callback){
+			this.stop();
+			var canvas = this.chart.canvas,
+				newWidth = getMaximumWidth(this.chart.canvas),
+				newHeight = this.options.maintainAspectRatio ? newWidth / this.chart.aspectRatio : getMaximumHeight(this.chart.canvas);
+
+			canvas.width = this.chart.width = newWidth;
+			canvas.height = this.chart.height = newHeight;
+
+			retinaScale(this.chart);
+
+			if (typeof callback === "function"){
+				callback.apply(this, Array.prototype.slice.call(arguments, 1));
+			}
+			return this;
+		},
+		reflow : noop,
+		render : function(reflow){
+			if (reflow){
+				this.reflow();
+			}
+			if (this.options.animation && !reflow){
+				helpers.animationLoop(
+					this.draw,
+					this.options.animationSteps,
+					this.options.animationEasing,
+					this.options.onAnimationProgress,
+					this.options.onAnimationComplete,
+					this
+				);
+			}
+			else{
+				this.draw();
+				this.options.onAnimationComplete.call(this);
+			}
+			return this;
+		},
+		generateLegend : function(){
+			return template(this.options.legendTemplate,this);
+		},
+		destroy : function(){
+			this.clear();
+			unbindEvents(this, this.events);
+			var canvas = this.chart.canvas;
+
+			// Reset canvas height/width attributes starts a fresh with the canvas context
+			canvas.width = this.chart.width;
+			canvas.height = this.chart.height;
+
+			// < IE9 doesn't support removeProperty
+			if (canvas.style.removeProperty) {
+				canvas.style.removeProperty('width');
+				canvas.style.removeProperty('height');
+			} else {
+				canvas.style.removeAttribute('width');
+				canvas.style.removeAttribute('height');
+			}
+
+			delete Chart.instances[this.id];
+		},
+		showTooltip : function(ChartElements, forceRedraw){
+			// Only redraw the chart if we've actually changed what we're hovering on.
+			if (typeof this.activeElements === 'undefined') this.activeElements = [];
+
+			var isChanged = (function(Elements){
+				var changed = false;
+
+				if (Elements.length !== this.activeElements.length){
+					changed = true;
+					return changed;
+				}
+
+				each(Elements, function(element, index){
+					if (element !== this.activeElements[index]){
+						changed = true;
+					}
+				}, this);
+				return changed;
+			}).call(this, ChartElements);
+
+			if (!isChanged && !forceRedraw){
+				return;
+			}
+			else{
+				this.activeElements = ChartElements;
+			}
+			this.draw();
+			if(this.options.customTooltips){
+				this.options.customTooltips(false);
+			}
+			if (ChartElements.length > 0){
+				// If we have multiple datasets, show a MultiTooltip for all of the data points at that index
+				if (this.datasets && this.datasets.length > 1) {
+					var dataArray,
+						dataIndex;
+
+					for (var i = this.datasets.length - 1; i >= 0; i--) {
+						dataArray = this.datasets[i].points || this.datasets[i].bars || this.datasets[i].segments;
+						dataIndex = indexOf(dataArray, ChartElements[0]);
+						if (dataIndex !== -1){
+							break;
+						}
+					}
+					var tooltipLabels = [],
+						tooltipColors = [],
+						medianPosition = (function(index) {
+
+							// Get all the points at that particular index
+							var Elements = [],
+								dataCollection,
+								xPositions = [],
+								yPositions = [],
+								xMax,
+								yMax,
+								xMin,
+								yMin;
+							helpers.each(this.datasets, function(dataset){
+								dataCollection = dataset.points || dataset.bars || dataset.segments;
+								if (dataCollection[dataIndex] && dataCollection[dataIndex].hasValue()){
+									Elements.push(dataCollection[dataIndex]);
+								}
+							});
+
+							helpers.each(Elements, function(element) {
+								xPositions.push(element.x);
+								yPositions.push(element.y);
+
+
+								//Include any colour information about the element
+								tooltipLabels.push(helpers.template(this.options.multiTooltipTemplate, element));
+								tooltipColors.push({
+									fill: element._saved.fillColor || element.fillColor,
+									stroke: element._saved.strokeColor || element.strokeColor
+								});
+
+							}, this);
+
+							yMin = min(yPositions);
+							yMax = max(yPositions);
+
+							xMin = min(xPositions);
+							xMax = max(xPositions);
+
+							return {
+								x: (xMin > this.chart.width/2) ? xMin : xMax,
+								y: (yMin + yMax)/2
+							};
+						}).call(this, dataIndex);
+
+					new Chart.MultiTooltip({
+						x: medianPosition.x,
+						y: medianPosition.y,
+						xPadding: this.options.tooltipXPadding,
+						yPadding: this.options.tooltipYPadding,
+						xOffset: this.options.tooltipXOffset,
+						fillColor: this.options.tooltipFillColor,
+						textColor: this.options.tooltipFontColor,
+						fontFamily: this.options.tooltipFontFamily,
+						fontStyle: this.options.tooltipFontStyle,
+						fontSize: this.options.tooltipFontSize,
+						titleTextColor: this.options.tooltipTitleFontColor,
+						titleFontFamily: this.options.tooltipTitleFontFamily,
+						titleFontStyle: this.options.tooltipTitleFontStyle,
+						titleFontSize: this.options.tooltipTitleFontSize,
+						cornerRadius: this.options.tooltipCornerRadius,
+						labels: tooltipLabels,
+						legendColors: tooltipColors,
+						legendColorBackground : this.options.multiTooltipKeyBackground,
+						title: ChartElements[0].label,
+						chart: this.chart,
+						ctx: this.chart.ctx,
+						custom: this.options.customTooltips
+					}).draw();
+
+				} else {
+					each(ChartElements, function(Element) {
+						var tooltipPosition = Element.tooltipPosition();
+						new Chart.Tooltip({
+							x: Math.round(tooltipPosition.x),
+							y: Math.round(tooltipPosition.y),
+							xPadding: this.options.tooltipXPadding,
+							yPadding: this.options.tooltipYPadding,
+							fillColor: this.options.tooltipFillColor,
+							textColor: this.options.tooltipFontColor,
+							fontFamily: this.options.tooltipFontFamily,
+							fontStyle: this.options.tooltipFontStyle,
+							fontSize: this.options.tooltipFontSize,
+							caretHeight: this.options.tooltipCaretSize,
+							cornerRadius: this.options.tooltipCornerRadius,
+							text: template(this.options.tooltipTemplate, Element),
+							chart: this.chart,
+							custom: this.options.customTooltips
+						}).draw();
+					}, this);
+				}
+			}
+			return this;
+		},
+		toBase64Image : function(){
+			return this.chart.canvas.toDataURL.apply(this.chart.canvas, arguments);
+		}
+	});
+
+	Chart.Type.extend = function(extensions){
+
+		var parent = this;
+
+		var ChartType = function(){
+			return parent.apply(this,arguments);
+		};
+
+		//Copy the prototype object of the this class
+		ChartType.prototype = clone(parent.prototype);
+		//Now overwrite some of the properties in the base class with the new extensions
+		extend(ChartType.prototype, extensions);
+
+		ChartType.extend = Chart.Type.extend;
+
+		if (extensions.name || parent.prototype.name){
+
+			var chartName = extensions.name || parent.prototype.name;
+			//Assign any potential default values of the new chart type
+
+			//If none are defined, we'll use a clone of the chart type this is being extended from.
+			//I.e. if we extend a line chart, we'll use the defaults from the line chart if our new chart
+			//doesn't define some defaults of their own.
+
+			var baseDefaults = (Chart.defaults[parent.prototype.name]) ? clone(Chart.defaults[parent.prototype.name]) : {};
+
+			Chart.defaults[chartName] = extend(baseDefaults,extensions.defaults);
+
+			Chart.types[chartName] = ChartType;
+
+			//Register this new chart type in the Chart prototype
+			Chart.prototype[chartName] = function(data,options){
+				var config = merge(Chart.defaults.global, Chart.defaults[chartName], options || {});
+				return new ChartType(data,config,this);
+			};
+		} else{
+			warn("Name not provided for this chart, so it hasn't been registered");
+		}
+		return parent;
+	};
+
+	Chart.Element = function(configuration){
+		extend(this,configuration);
+		this.initialize.apply(this,arguments);
+		this.save();
+	};
+	extend(Chart.Element.prototype,{
+		initialize : function(){},
+		restore : function(props){
+			if (!props){
+				extend(this,this._saved);
+			} else {
+				each(props,function(key){
+					this[key] = this._saved[key];
+				},this);
+			}
+			return this;
+		},
+		save : function(){
+			this._saved = clone(this);
+			delete this._saved._saved;
+			return this;
+		},
+		update : function(newProps){
+			each(newProps,function(value,key){
+				this._saved[key] = this[key];
+				this[key] = value;
+			},this);
+			return this;
+		},
+		transition : function(props,ease){
+			each(props,function(value,key){
+				this[key] = ((value - this._saved[key]) * ease) + this._saved[key];
+			},this);
+			return this;
+		},
+		tooltipPosition : function(){
+			return {
+				x : this.x,
+				y : this.y
+			};
+		},
+		hasValue: function(){
+			return isNumber(this.value);
+		}
+	});
+
+	Chart.Element.extend = inherits;
+
+
+	Chart.Point = Chart.Element.extend({
+		display: true,
+		inRange: function(chartX,chartY){
+			var hitDetectionRange = this.hitDetectionRadius + this.radius;
+			return ((Math.pow(chartX-this.x, 2)+Math.pow(chartY-this.y, 2)) < Math.pow(hitDetectionRange,2));
+		},
+		draw : function(){
+			if (this.display){
+				var ctx = this.ctx;
+				ctx.beginPath();
+
+				ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+				ctx.closePath();
+
+				ctx.strokeStyle = this.strokeColor;
+				ctx.lineWidth = this.strokeWidth;
+
+				ctx.fillStyle = this.fillColor;
+
+				ctx.fill();
+				ctx.stroke();
+			}
+
+
+			//Quick debug for bezier curve splining
+			//Highlights control points and the line between them.
+			//Handy for dev - stripped in the min version.
+
+			// ctx.save();
+			// ctx.fillStyle = "black";
+			// ctx.strokeStyle = "black"
+			// ctx.beginPath();
+			// ctx.arc(this.controlPoints.inner.x,this.controlPoints.inner.y, 2, 0, Math.PI*2);
+			// ctx.fill();
+
+			// ctx.beginPath();
+			// ctx.arc(this.controlPoints.outer.x,this.controlPoints.outer.y, 2, 0, Math.PI*2);
+			// ctx.fill();
+
+			// ctx.moveTo(this.controlPoints.inner.x,this.controlPoints.inner.y);
+			// ctx.lineTo(this.x, this.y);
+			// ctx.lineTo(this.controlPoints.outer.x,this.controlPoints.outer.y);
+			// ctx.stroke();
+
+			// ctx.restore();
+
+
+
+		}
+	});
+
+	Chart.Arc = Chart.Element.extend({
+		inRange : function(chartX,chartY){
+
+			var pointRelativePosition = helpers.getAngleFromPoint(this, {
+				x: chartX,
+				y: chartY
+			});
+
+			//Check if within the range of the open/close angle
+			var betweenAngles = (pointRelativePosition.angle >= this.startAngle && pointRelativePosition.angle <= this.endAngle),
+				withinRadius = (pointRelativePosition.distance >= this.innerRadius && pointRelativePosition.distance <= this.outerRadius);
+
+			return (betweenAngles && withinRadius);
+			//Ensure within the outside of the arc centre, but inside arc outer
+		},
+		tooltipPosition : function(){
+			var centreAngle = this.startAngle + ((this.endAngle - this.startAngle) / 2),
+				rangeFromCentre = (this.outerRadius - this.innerRadius) / 2 + this.innerRadius;
+			return {
+				x : this.x + (Math.cos(centreAngle) * rangeFromCentre),
+				y : this.y + (Math.sin(centreAngle) * rangeFromCentre)
+			};
+		},
+		draw : function(animationPercent){
+
+			var easingDecimal = animationPercent || 1;
+
+			var ctx = this.ctx;
+
+			ctx.beginPath();
+
+			ctx.arc(this.x, this.y, this.outerRadius, this.startAngle, this.endAngle);
+
+			ctx.arc(this.x, this.y, this.innerRadius, this.endAngle, this.startAngle, true);
+
+			ctx.closePath();
+			ctx.strokeStyle = this.strokeColor;
+			ctx.lineWidth = this.strokeWidth;
+
+			ctx.fillStyle = this.fillColor;
+
+			ctx.fill();
+			ctx.lineJoin = 'bevel';
+
+			if (this.showStroke){
+				ctx.stroke();
+			}
+		}
+	});
+
+	Chart.Rectangle = Chart.Element.extend({
+		draw : function(){
+			var ctx = this.ctx,
+				halfWidth = this.width/2,
+				leftX = this.x - halfWidth,
+				rightX = this.x + halfWidth,
+				top = this.base - (this.base - this.y),
+				halfStroke = this.strokeWidth / 2;
+
+			// Canvas doesn't allow us to stroke inside the width so we can
+			// adjust the sizes to fit if we're setting a stroke on the line
+			if (this.showStroke){
+				leftX += halfStroke;
+				rightX -= halfStroke;
+				top += halfStroke;
+			}
+
+			ctx.beginPath();
+
+			ctx.fillStyle = this.fillColor;
+			ctx.strokeStyle = this.strokeColor;
+			ctx.lineWidth = this.strokeWidth;
+
+			// It'd be nice to keep this class totally generic to any rectangle
+			// and simply specify which border to miss out.
+			ctx.moveTo(leftX, this.base);
+			ctx.lineTo(leftX, top);
+			ctx.lineTo(rightX, top);
+			ctx.lineTo(rightX, this.base);
+			ctx.fill();
+			if (this.showStroke){
+				ctx.stroke();
+			}
+		},
+		height : function(){
+			return this.base - this.y;
+		},
+		inRange : function(chartX,chartY){
+			return (chartX >= this.x - this.width/2 && chartX <= this.x + this.width/2) && (chartY >= this.y && chartY <= this.base);
+		}
+	});
+
+	Chart.Tooltip = Chart.Element.extend({
+		draw : function(){
+
+			var ctx = this.chart.ctx;
+
+			ctx.font = fontString(this.fontSize,this.fontStyle,this.fontFamily);
+
+			this.xAlign = "center";
+			this.yAlign = "above";
+
+			//Distance between the actual element.y position and the start of the tooltip caret
+			var caretPadding = this.caretPadding = 2;
+
+			var tooltipWidth = ctx.measureText(this.text).width + 2*this.xPadding,
+				tooltipRectHeight = this.fontSize + 2*this.yPadding,
+				tooltipHeight = tooltipRectHeight + this.caretHeight + caretPadding;
+
+			if (this.x + tooltipWidth/2 >this.chart.width){
+				this.xAlign = "left";
+			} else if (this.x - tooltipWidth/2 < 0){
+				this.xAlign = "right";
+			}
+
+			if (this.y - tooltipHeight < 0){
+				this.yAlign = "below";
+			}
+
+
+			var tooltipX = this.x - tooltipWidth/2,
+				tooltipY = this.y - tooltipHeight;
+
+			ctx.fillStyle = this.fillColor;
+
+			// Custom Tooltips
+			if(this.custom){
+				this.custom(this);
+			}
+			else{
+				switch(this.yAlign)
+				{
+				case "above":
+					//Draw a caret above the x/y
+					ctx.beginPath();
+					ctx.moveTo(this.x,this.y - caretPadding);
+					ctx.lineTo(this.x + this.caretHeight, this.y - (caretPadding + this.caretHeight));
+					ctx.lineTo(this.x - this.caretHeight, this.y - (caretPadding + this.caretHeight));
+					ctx.closePath();
+					ctx.fill();
+					break;
+				case "below":
+					tooltipY = this.y + caretPadding + this.caretHeight;
+					//Draw a caret below the x/y
+					ctx.beginPath();
+					ctx.moveTo(this.x, this.y + caretPadding);
+					ctx.lineTo(this.x + this.caretHeight, this.y + caretPadding + this.caretHeight);
+					ctx.lineTo(this.x - this.caretHeight, this.y + caretPadding + this.caretHeight);
+					ctx.closePath();
+					ctx.fill();
+					break;
+				}
+
+				switch(this.xAlign)
+				{
+				case "left":
+					tooltipX = this.x - tooltipWidth + (this.cornerRadius + this.caretHeight);
+					break;
+				case "right":
+					tooltipX = this.x - (this.cornerRadius + this.caretHeight);
+					break;
+				}
+
+				drawRoundedRectangle(ctx,tooltipX,tooltipY,tooltipWidth,tooltipRectHeight,this.cornerRadius);
+
+				ctx.fill();
+
+				ctx.fillStyle = this.textColor;
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+				ctx.fillText(this.text, tooltipX + tooltipWidth/2, tooltipY + tooltipRectHeight/2);
+			}
+		}
+	});
+
+	Chart.MultiTooltip = Chart.Element.extend({
+		initialize : function(){
+			this.font = fontString(this.fontSize,this.fontStyle,this.fontFamily);
+
+			this.titleFont = fontString(this.titleFontSize,this.titleFontStyle,this.titleFontFamily);
+
+			this.height = (this.labels.length * this.fontSize) + ((this.labels.length-1) * (this.fontSize/2)) + (this.yPadding*2) + this.titleFontSize *1.5;
+
+			this.ctx.font = this.titleFont;
+
+			var titleWidth = this.ctx.measureText(this.title).width,
+				//Label has a legend square as well so account for this.
+				labelWidth = longestText(this.ctx,this.font,this.labels) + this.fontSize + 3,
+				longestTextWidth = max([labelWidth,titleWidth]);
+
+			this.width = longestTextWidth + (this.xPadding*2);
+
+
+			var halfHeight = this.height/2;
+
+			//Check to ensure the height will fit on the canvas
+			if (this.y - halfHeight < 0 ){
+				this.y = halfHeight;
+			} else if (this.y + halfHeight > this.chart.height){
+				this.y = this.chart.height - halfHeight;
+			}
+
+			//Decide whether to align left or right based on position on canvas
+			if (this.x > this.chart.width/2){
+				this.x -= this.xOffset + this.width;
+			} else {
+				this.x += this.xOffset;
+			}
+
+
+		},
+		getLineHeight : function(index){
+			var baseLineHeight = this.y - (this.height/2) + this.yPadding,
+				afterTitleIndex = index-1;
+
+			//If the index is zero, we're getting the title
+			if (index === 0){
+				return baseLineHeight + this.titleFontSize/2;
+			} else{
+				return baseLineHeight + ((this.fontSize*1.5*afterTitleIndex) + this.fontSize/2) + this.titleFontSize * 1.5;
+			}
+
+		},
+		draw : function(){
+			// Custom Tooltips
+			if(this.custom){
+				this.custom(this);
+			}
+			else{
+				drawRoundedRectangle(this.ctx,this.x,this.y - this.height/2,this.width,this.height,this.cornerRadius);
+				var ctx = this.ctx;
+				ctx.fillStyle = this.fillColor;
+				ctx.fill();
+				ctx.closePath();
+
+				ctx.textAlign = "left";
+				ctx.textBaseline = "middle";
+				ctx.fillStyle = this.titleTextColor;
+				ctx.font = this.titleFont;
+
+				ctx.fillText(this.title,this.x + this.xPadding, this.getLineHeight(0));
+
+				ctx.font = this.font;
+				helpers.each(this.labels,function(label,index){
+					ctx.fillStyle = this.textColor;
+					ctx.fillText(label,this.x + this.xPadding + this.fontSize + 3, this.getLineHeight(index + 1));
+
+					//A bit gnarly, but clearing this rectangle breaks when using explorercanvas (clears whole canvas)
+					//ctx.clearRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize/2, this.fontSize, this.fontSize);
+					//Instead we'll make a white filled block to put the legendColour palette over.
+
+					ctx.fillStyle = this.legendColorBackground;
+					ctx.fillRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize/2, this.fontSize, this.fontSize);
+
+					ctx.fillStyle = this.legendColors[index].fill;
+					ctx.fillRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize/2, this.fontSize, this.fontSize);
+
+
+				},this);
+			}
+		}
+	});
+
+	Chart.Scale = Chart.Element.extend({
+		initialize : function(){
+			this.fit();
+		},
+		buildYLabels : function(){
+			this.yLabels = [];
+
+			var stepDecimalPlaces = getDecimalPlaces(this.stepValue);
+
+			for (var i=0; i<=this.steps; i++){
+				this.yLabels.push(template(this.templateString,{value:(this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces)}));
+			}
+			this.yLabelWidth = (this.display && this.showLabels) ? longestText(this.ctx,this.font,this.yLabels) : 0;
+		},
+		addXLabel : function(label){
+			this.xLabels.push(label);
+			this.valuesCount++;
+			this.fit();
+		},
+		removeXLabel : function(){
+			this.xLabels.shift();
+			this.valuesCount--;
+			this.fit();
+		},
+		// Fitting loop to rotate x Labels and figure out what fits there, and also calculate how many Y steps to use
+		fit: function(){
+			// First we need the width of the yLabels, assuming the xLabels aren't rotated
+
+			// To do that we need the base line at the top and base of the chart, assuming there is no x label rotation
+			this.startPoint = (this.display) ? this.fontSize : 0;
+			this.endPoint = (this.display) ? this.height - (this.fontSize * 1.5) - 5 : this.height; // -5 to pad labels
+
+			// Apply padding settings to the start and end point.
+			this.startPoint += this.padding;
+			this.endPoint -= this.padding;
+
+			// Cache the starting height, so can determine if we need to recalculate the scale yAxis
+			var cachedHeight = this.endPoint - this.startPoint,
+				cachedYLabelWidth;
+
+			// Build the current yLabels so we have an idea of what size they'll be to start
+			/*
+			 *	This sets what is returned from calculateScaleRange as static properties of this class:
+			 *
+				this.steps;
+				this.stepValue;
+				this.min;
+				this.max;
+			 *
+			 */
+			this.calculateYRange(cachedHeight);
+
+			// With these properties set we can now build the array of yLabels
+			// and also the width of the largest yLabel
+			this.buildYLabels();
+
+			this.calculateXLabelRotation();
+
+			while((cachedHeight > this.endPoint - this.startPoint)){
+				cachedHeight = this.endPoint - this.startPoint;
+				cachedYLabelWidth = this.yLabelWidth;
+
+				this.calculateYRange(cachedHeight);
+				this.buildYLabels();
+
+				// Only go through the xLabel loop again if the yLabel width has changed
+				if (cachedYLabelWidth < this.yLabelWidth){
+					this.calculateXLabelRotation();
+				}
+			}
+
+		},
+		calculateXLabelRotation : function(){
+			//Get the width of each grid by calculating the difference
+			//between x offsets between 0 and 1.
+
+			this.ctx.font = this.font;
+
+			var firstWidth = this.ctx.measureText(this.xLabels[0]).width,
+				lastWidth = this.ctx.measureText(this.xLabels[this.xLabels.length - 1]).width,
+				firstRotated,
+				lastRotated;
+
+
+			this.xScalePaddingRight = lastWidth/2 + 3;
+			this.xScalePaddingLeft = (firstWidth/2 > this.yLabelWidth + 10) ? firstWidth/2 : this.yLabelWidth + 10;
+
+			this.xLabelRotation = 0;
+			if (this.display){
+				var originalLabelWidth = longestText(this.ctx,this.font,this.xLabels),
+					cosRotation,
+					firstRotatedWidth;
+				this.xLabelWidth = originalLabelWidth;
+				//Allow 3 pixels x2 padding either side for label readability
+				var xGridWidth = Math.floor(this.calculateX(1) - this.calculateX(0)) - 6;
+
+				//Max label rotate should be 90 - also act as a loop counter
+				while ((this.xLabelWidth > xGridWidth && this.xLabelRotation === 0) || (this.xLabelWidth > xGridWidth && this.xLabelRotation <= 90 && this.xLabelRotation > 0)){
+					cosRotation = Math.cos(toRadians(this.xLabelRotation));
+
+					firstRotated = cosRotation * firstWidth;
+					lastRotated = cosRotation * lastWidth;
+
+					// We're right aligning the text now.
+					if (firstRotated + this.fontSize / 2 > this.yLabelWidth + 8){
+						this.xScalePaddingLeft = firstRotated + this.fontSize / 2;
+					}
+					this.xScalePaddingRight = this.fontSize/2;
+
+
+					this.xLabelRotation++;
+					this.xLabelWidth = cosRotation * originalLabelWidth;
+
+				}
+				if (this.xLabelRotation > 0){
+					this.endPoint -= Math.sin(toRadians(this.xLabelRotation))*originalLabelWidth + 3;
+				}
+			}
+			else{
+				this.xLabelWidth = 0;
+				this.xScalePaddingRight = this.padding;
+				this.xScalePaddingLeft = this.padding;
+			}
+
+		},
+		// Needs to be overidden in each Chart type
+		// Otherwise we need to pass all the data into the scale class
+		calculateYRange: noop,
+		drawingArea: function(){
+			return this.startPoint - this.endPoint;
+		},
+		calculateY : function(value){
+			var scalingFactor = this.drawingArea() / (this.min - this.max);
+			return this.endPoint - (scalingFactor * (value - this.min));
+		},
+		calculateX : function(index){
+			var isRotated = (this.xLabelRotation > 0),
+				// innerWidth = (this.offsetGridLines) ? this.width - offsetLeft - this.padding : this.width - (offsetLeft + halfLabelWidth * 2) - this.padding,
+				innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
+				valueWidth = innerWidth/Math.max((this.valuesCount - ((this.offsetGridLines) ? 0 : 1)), 1),
+				valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
+
+			if (this.offsetGridLines){
+				valueOffset += (valueWidth/2);
+			}
+
+			return Math.round(valueOffset);
+		},
+		update : function(newProps){
+			helpers.extend(this, newProps);
+			this.fit();
+		},
+		draw : function(){
+			var ctx = this.ctx,
+				yLabelGap = (this.endPoint - this.startPoint) / this.steps,
+				xStart = Math.round(this.xScalePaddingLeft);
+			if (this.display){
+				ctx.fillStyle = this.textColor;
+				ctx.font = this.font;
+				each(this.yLabels,function(labelString,index){
+					var yLabelCenter = this.endPoint - (yLabelGap * index),
+						linePositionY = Math.round(yLabelCenter),
+						drawHorizontalLine = this.showHorizontalLines;
+
+					ctx.textAlign = "right";
+					ctx.textBaseline = "middle";
+					if (this.showLabels){
+						ctx.fillText(labelString,xStart - 10,yLabelCenter);
+					}
+
+					// This is X axis, so draw it
+					if (index === 0 && !drawHorizontalLine){
+						drawHorizontalLine = true;
+					}
+
+					if (drawHorizontalLine){
+						ctx.beginPath();
+					}
+
+					if (index > 0){
+						// This is a grid line in the centre, so drop that
+						ctx.lineWidth = this.gridLineWidth;
+						ctx.strokeStyle = this.gridLineColor;
+					} else {
+						// This is the first line on the scale
+						ctx.lineWidth = this.lineWidth;
+						ctx.strokeStyle = this.lineColor;
+					}
+
+					linePositionY += helpers.aliasPixel(ctx.lineWidth);
+
+					if(drawHorizontalLine){
+						ctx.moveTo(xStart, linePositionY);
+						ctx.lineTo(this.width, linePositionY);
+						ctx.stroke();
+						ctx.closePath();
+					}
+
+					ctx.lineWidth = this.lineWidth;
+					ctx.strokeStyle = this.lineColor;
+					ctx.beginPath();
+					ctx.moveTo(xStart - 5, linePositionY);
+					ctx.lineTo(xStart, linePositionY);
+					ctx.stroke();
+					ctx.closePath();
+
+				},this);
+
+				each(this.xLabels,function(label,index){
+					var xPos = this.calculateX(index) + aliasPixel(this.lineWidth),
+						// Check to see if line/bar here and decide where to place the line
+						linePos = this.calculateX(index - (this.offsetGridLines ? 0.5 : 0)) + aliasPixel(this.lineWidth),
+						isRotated = (this.xLabelRotation > 0),
+						drawVerticalLine = this.showVerticalLines;
+
+					// This is Y axis, so draw it
+					if (index === 0 && !drawVerticalLine){
+						drawVerticalLine = true;
+					}
+
+					if (drawVerticalLine){
+						ctx.beginPath();
+					}
+
+					if (index > 0){
+						// This is a grid line in the centre, so drop that
+						ctx.lineWidth = this.gridLineWidth;
+						ctx.strokeStyle = this.gridLineColor;
+					} else {
+						// This is the first line on the scale
+						ctx.lineWidth = this.lineWidth;
+						ctx.strokeStyle = this.lineColor;
+					}
+
+					if (drawVerticalLine){
+						ctx.moveTo(linePos,this.endPoint);
+						ctx.lineTo(linePos,this.startPoint - 3);
+						ctx.stroke();
+						ctx.closePath();
+					}
+
+
+					ctx.lineWidth = this.lineWidth;
+					ctx.strokeStyle = this.lineColor;
+
+
+					// Small lines at the bottom of the base grid line
+					ctx.beginPath();
+					ctx.moveTo(linePos,this.endPoint);
+					ctx.lineTo(linePos,this.endPoint + 5);
+					ctx.stroke();
+					ctx.closePath();
+
+					ctx.save();
+					ctx.translate(xPos,(isRotated) ? this.endPoint + 12 : this.endPoint + 8);
+					ctx.rotate(toRadians(this.xLabelRotation)*-1);
+					ctx.font = this.font;
+					ctx.textAlign = (isRotated) ? "right" : "center";
+					ctx.textBaseline = (isRotated) ? "middle" : "top";
+					ctx.fillText(label, 0, 0);
+					ctx.restore();
+				},this);
+
+			}
+		}
+
+	});
+
+	Chart.RadialScale = Chart.Element.extend({
+		initialize: function(){
+			this.size = min([this.height, this.width]);
+			this.drawingArea = (this.display) ? (this.size/2) - (this.fontSize/2 + this.backdropPaddingY) : (this.size/2);
+		},
+		calculateCenterOffset: function(value){
+			// Take into account half font size + the yPadding of the top value
+			var scalingFactor = this.drawingArea / (this.max - this.min);
+
+			return (value - this.min) * scalingFactor;
+		},
+		update : function(){
+			if (!this.lineArc){
+				this.setScaleSize();
+			} else {
+				this.drawingArea = (this.display) ? (this.size/2) - (this.fontSize/2 + this.backdropPaddingY) : (this.size/2);
+			}
+			this.buildYLabels();
+		},
+		buildYLabels: function(){
+			this.yLabels = [];
+
+			var stepDecimalPlaces = getDecimalPlaces(this.stepValue);
+
+			for (var i=0; i<=this.steps; i++){
+				this.yLabels.push(template(this.templateString,{value:(this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces)}));
+			}
+		},
+		getCircumference : function(){
+			return ((Math.PI*2) / this.valuesCount);
+		},
+		setScaleSize: function(){
+			/*
+			 * Right, this is really confusing and there is a lot of maths going on here
+			 * The gist of the problem is here: https://gist.github.com/nnnick/696cc9c55f4b0beb8fe9
+			 *
+			 * Reaction: https://dl.dropboxusercontent.com/u/34601363/toomuchscience.gif
+			 *
+			 * Solution:
+			 *
+			 * We assume the radius of the polygon is half the size of the canvas at first
+			 * at each index we check if the text overlaps.
+			 *
+			 * Where it does, we store that angle and that index.
+			 *
+			 * After finding the largest index and angle we calculate how much we need to remove
+			 * from the shape radius to move the point inwards by that x.
+			 *
+			 * We average the left and right distances to get the maximum shape radius that can fit in the box
+			 * along with labels.
+			 *
+			 * Once we have that, we can find the centre point for the chart, by taking the x text protrusion
+			 * on each side, removing that from the size, halving it and adding the left x protrusion width.
+			 *
+			 * This will mean we have a shape fitted to the canvas, as large as it can be with the labels
+			 * and position it in the most space efficient manner
+			 *
+			 * https://dl.dropboxusercontent.com/u/34601363/yeahscience.gif
+			 */
+
+
+			// Get maximum radius of the polygon. Either half the height (minus the text width) or half the width.
+			// Use this to calculate the offset + change. - Make sure L/R protrusion is at least 0 to stop issues with centre points
+			var largestPossibleRadius = min([(this.height/2 - this.pointLabelFontSize - 5), this.width/2]),
+				pointPosition,
+				i,
+				textWidth,
+				halfTextWidth,
+				furthestRight = this.width,
+				furthestRightIndex,
+				furthestRightAngle,
+				furthestLeft = 0,
+				furthestLeftIndex,
+				furthestLeftAngle,
+				xProtrusionLeft,
+				xProtrusionRight,
+				radiusReductionRight,
+				radiusReductionLeft,
+				maxWidthRadius;
+			this.ctx.font = fontString(this.pointLabelFontSize,this.pointLabelFontStyle,this.pointLabelFontFamily);
+			for (i=0;i<this.valuesCount;i++){
+				// 5px to space the text slightly out - similar to what we do in the draw function.
+				pointPosition = this.getPointPosition(i, largestPossibleRadius);
+				textWidth = this.ctx.measureText(template(this.templateString, { value: this.labels[i] })).width + 5;
+				if (i === 0 || i === this.valuesCount/2){
+					// If we're at index zero, or exactly the middle, we're at exactly the top/bottom
+					// of the radar chart, so text will be aligned centrally, so we'll half it and compare
+					// w/left and right text sizes
+					halfTextWidth = textWidth/2;
+					if (pointPosition.x + halfTextWidth > furthestRight) {
+						furthestRight = pointPosition.x + halfTextWidth;
+						furthestRightIndex = i;
+					}
+					if (pointPosition.x - halfTextWidth < furthestLeft) {
+						furthestLeft = pointPosition.x - halfTextWidth;
+						furthestLeftIndex = i;
+					}
+				}
+				else if (i < this.valuesCount/2) {
+					// Less than half the values means we'll left align the text
+					if (pointPosition.x + textWidth > furthestRight) {
+						furthestRight = pointPosition.x + textWidth;
+						furthestRightIndex = i;
+					}
+				}
+				else if (i > this.valuesCount/2){
+					// More than half the values means we'll right align the text
+					if (pointPosition.x - textWidth < furthestLeft) {
+						furthestLeft = pointPosition.x - textWidth;
+						furthestLeftIndex = i;
+					}
+				}
+			}
+
+			xProtrusionLeft = furthestLeft;
+
+			xProtrusionRight = Math.ceil(furthestRight - this.width);
+
+			furthestRightAngle = this.getIndexAngle(furthestRightIndex);
+
+			furthestLeftAngle = this.getIndexAngle(furthestLeftIndex);
+
+			radiusReductionRight = xProtrusionRight / Math.sin(furthestRightAngle + Math.PI/2);
+
+			radiusReductionLeft = xProtrusionLeft / Math.sin(furthestLeftAngle + Math.PI/2);
+
+			// Ensure we actually need to reduce the size of the chart
+			radiusReductionRight = (isNumber(radiusReductionRight)) ? radiusReductionRight : 0;
+			radiusReductionLeft = (isNumber(radiusReductionLeft)) ? radiusReductionLeft : 0;
+
+			this.drawingArea = largestPossibleRadius - (radiusReductionLeft + radiusReductionRight)/2;
+
+			//this.drawingArea = min([maxWidthRadius, (this.height - (2 * (this.pointLabelFontSize + 5)))/2])
+			this.setCenterPoint(radiusReductionLeft, radiusReductionRight);
+
+		},
+		setCenterPoint: function(leftMovement, rightMovement){
+
+			var maxRight = this.width - rightMovement - this.drawingArea,
+				maxLeft = leftMovement + this.drawingArea;
+
+			this.xCenter = (maxLeft + maxRight)/2;
+			// Always vertically in the centre as the text height doesn't change
+			this.yCenter = (this.height/2);
+		},
+
+		getIndexAngle : function(index){
+			var angleMultiplier = (Math.PI * 2) / this.valuesCount;
+			// Start from the top instead of right, so remove a quarter of the circle
+
+			return index * angleMultiplier - (Math.PI/2);
+		},
+		getPointPosition : function(index, distanceFromCenter){
+			var thisAngle = this.getIndexAngle(index);
+			return {
+				x : (Math.cos(thisAngle) * distanceFromCenter) + this.xCenter,
+				y : (Math.sin(thisAngle) * distanceFromCenter) + this.yCenter
+			};
+		},
+		draw: function(){
+			if (this.display){
+				var ctx = this.ctx;
+				each(this.yLabels, function(label, index){
+					// Don't draw a centre value
+					if (index > 0){
+						var yCenterOffset = index * (this.drawingArea/this.steps),
+							yHeight = this.yCenter - yCenterOffset,
+							pointPosition;
+
+						// Draw circular lines around the scale
+						if (this.lineWidth > 0){
+							ctx.strokeStyle = this.lineColor;
+							ctx.lineWidth = this.lineWidth;
+
+							if(this.lineArc){
+								ctx.beginPath();
+								ctx.arc(this.xCenter, this.yCenter, yCenterOffset, 0, Math.PI*2);
+								ctx.closePath();
+								ctx.stroke();
+							} else{
+								ctx.beginPath();
+								for (var i=0;i<this.valuesCount;i++)
+								{
+									pointPosition = this.getPointPosition(i, this.calculateCenterOffset(this.min + (index * this.stepValue)));
+									if (i === 0){
+										ctx.moveTo(pointPosition.x, pointPosition.y);
+									} else {
+										ctx.lineTo(pointPosition.x, pointPosition.y);
+									}
+								}
+								ctx.closePath();
+								ctx.stroke();
+							}
+						}
+						if(this.showLabels){
+							ctx.font = fontString(this.fontSize,this.fontStyle,this.fontFamily);
+							if (this.showLabelBackdrop){
+								var labelWidth = ctx.measureText(label).width;
+								ctx.fillStyle = this.backdropColor;
+								ctx.fillRect(
+									this.xCenter - labelWidth/2 - this.backdropPaddingX,
+									yHeight - this.fontSize/2 - this.backdropPaddingY,
+									labelWidth + this.backdropPaddingX*2,
+									this.fontSize + this.backdropPaddingY*2
+								);
+							}
+							ctx.textAlign = 'center';
+							ctx.textBaseline = "middle";
+							ctx.fillStyle = this.fontColor;
+							ctx.fillText(label, this.xCenter, yHeight);
+						}
+					}
+				}, this);
+
+				if (!this.lineArc){
+					ctx.lineWidth = this.angleLineWidth;
+					ctx.strokeStyle = this.angleLineColor;
+					for (var i = this.valuesCount - 1; i >= 0; i--) {
+						if (this.angleLineWidth > 0){
+							var outerPosition = this.getPointPosition(i, this.calculateCenterOffset(this.max));
+							ctx.beginPath();
+							ctx.moveTo(this.xCenter, this.yCenter);
+							ctx.lineTo(outerPosition.x, outerPosition.y);
+							ctx.stroke();
+							ctx.closePath();
+						}
+						// Extra 3px out for some label spacing
+						var pointLabelPosition = this.getPointPosition(i, this.calculateCenterOffset(this.max) + 5);
+						ctx.font = fontString(this.pointLabelFontSize,this.pointLabelFontStyle,this.pointLabelFontFamily);
+						ctx.fillStyle = this.pointLabelFontColor;
+
+						var labelsCount = this.labels.length,
+							halfLabelsCount = this.labels.length/2,
+							quarterLabelsCount = halfLabelsCount/2,
+							upperHalf = (i < quarterLabelsCount || i > labelsCount - quarterLabelsCount),
+							exactQuarter = (i === quarterLabelsCount || i === labelsCount - quarterLabelsCount);
+						if (i === 0){
+							ctx.textAlign = 'center';
+						} else if(i === halfLabelsCount){
+							ctx.textAlign = 'center';
+						} else if (i < halfLabelsCount){
+							ctx.textAlign = 'left';
+						} else {
+							ctx.textAlign = 'right';
+						}
+
+						// Set the correct text baseline based on outer positioning
+						if (exactQuarter){
+							ctx.textBaseline = 'middle';
+						} else if (upperHalf){
+							ctx.textBaseline = 'bottom';
+						} else {
+							ctx.textBaseline = 'top';
+						}
+
+						ctx.fillText(this.labels[i], pointLabelPosition.x, pointLabelPosition.y);
+					}
+				}
+			}
+		}
+	});
+
+	// Attach global event to resize each chart instance when the browser resizes
+	helpers.addEvent(window, "resize", (function(){
+		// Basic debounce of resize function so it doesn't hurt performance when resizing browser.
+		var timeout;
+		return function(){
+			clearTimeout(timeout);
+			timeout = setTimeout(function(){
+				each(Chart.instances,function(instance){
+					// If the responsive flag is set in the chart instance config
+					// Cascade the resize event down to the chart.
+					if (instance.options.responsive){
+						instance.resize(instance.render, true);
+					}
+				});
+			}, 50);
+		};
+	})());
+
+
+	if (amd) {
+		define(function(){
+			return Chart;
+		});
+	} else if (typeof module === 'object' && module.exports) {
+		module.exports = Chart;
+	}
+
+	root.Chart = Chart;
+
+	Chart.noConflict = function(){
+		root.Chart = previous;
+		return Chart;
+	};
+
+}).call(this);
+
+(function(){
+	"use strict";
+
+	var root = this,
+		Chart = root.Chart,
+		helpers = Chart.helpers;
+
+
+	var defaultConfig = {
+		//Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+		scaleBeginAtZero : true,
+
+		//Boolean - Whether grid lines are shown across the chart
+		scaleShowGridLines : true,
+
+		//String - Colour of the grid lines
+		scaleGridLineColor : "rgba(0,0,0,.05)",
+
+		//Number - Width of the grid lines
+		scaleGridLineWidth : 1,
+
+		//Boolean - Whether to show horizontal lines (except X axis)
+		scaleShowHorizontalLines: true,
+
+		//Boolean - Whether to show vertical lines (except Y axis)
+		scaleShowVerticalLines: true,
+
+		//Boolean - If there is a stroke on each bar
+		barShowStroke : true,
+
+		//Number - Pixel width of the bar stroke
+		barStrokeWidth : 2,
+
+		//Number - Spacing between each of the X value sets
+		barValueSpacing : 5,
+
+		//Number - Spacing between data sets within X values
+		barDatasetSpacing : 1,
+
+		//String - A legend template
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+
+	};
+
+
+	Chart.Type.extend({
+		name: "Bar",
+		defaults : defaultConfig,
+		initialize:  function(data){
+
+			//Expose options as a scope variable here so we can access it in the ScaleClass
+			var options = this.options;
+
+			this.ScaleClass = Chart.Scale.extend({
+				offsetGridLines : true,
+				calculateBarX : function(datasetCount, datasetIndex, barIndex){
+					//Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
+					var xWidth = this.calculateBaseWidth(),
+						xAbsolute = this.calculateX(barIndex) - (xWidth/2),
+						barWidth = this.calculateBarWidth(datasetCount);
+
+					return xAbsolute + (barWidth * datasetIndex) + (datasetIndex * options.barDatasetSpacing) + barWidth/2;
+				},
+				calculateBaseWidth : function(){
+					return (this.calculateX(1) - this.calculateX(0)) - (2*options.barValueSpacing);
+				},
+				calculateBarWidth : function(datasetCount){
+					//The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
+					var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
+
+					return (baseWidth / datasetCount);
+				}
+			});
+
+			this.datasets = [];
+
+			//Set up tooltip events on the chart
+			if (this.options.showTooltips){
+				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
+					var activeBars = (evt.type !== 'mouseout') ? this.getBarsAtEvent(evt) : [];
+
+					this.eachBars(function(bar){
+						bar.restore(['fillColor', 'strokeColor']);
+					});
+					helpers.each(activeBars, function(activeBar){
+						activeBar.fillColor = activeBar.highlightFill;
+						activeBar.strokeColor = activeBar.highlightStroke;
+					});
+					this.showTooltip(activeBars);
+				});
+			}
+
+			//Declare the extension of the default point, to cater for the options passed in to the constructor
+			this.BarClass = Chart.Rectangle.extend({
+				strokeWidth : this.options.barStrokeWidth,
+				showStroke : this.options.barShowStroke,
+				ctx : this.chart.ctx
+			});
+
+			//Iterate through each of the datasets, and build this into a property of the chart
+			helpers.each(data.datasets,function(dataset,datasetIndex){
+
+				var datasetObject = {
+					label : dataset.label || null,
+					fillColor : dataset.fillColor,
+					strokeColor : dataset.strokeColor,
+					bars : []
+				};
+
+				this.datasets.push(datasetObject);
+
+				helpers.each(dataset.data,function(dataPoint,index){
+					//Add a new point for each piece of data, passing any required data to draw.
+					datasetObject.bars.push(new this.BarClass({
+						value : dataPoint,
+						label : data.labels[index],
+						datasetLabel: dataset.label,
+						strokeColor : dataset.strokeColor,
+						fillColor : dataset.fillColor,
+						highlightFill : dataset.highlightFill || dataset.fillColor,
+						highlightStroke : dataset.highlightStroke || dataset.strokeColor
+					}));
+				},this);
+
+			},this);
+
+			this.buildScale(data.labels);
+
+			this.BarClass.prototype.base = this.scale.endPoint;
+
+			this.eachBars(function(bar, index, datasetIndex){
+				helpers.extend(bar, {
+					width : this.scale.calculateBarWidth(this.datasets.length),
+					x: this.scale.calculateBarX(this.datasets.length, datasetIndex, index),
+					y: this.scale.endPoint
+				});
+				bar.save();
+			}, this);
+
+			this.render();
+		},
+		update : function(){
+			this.scale.update();
+			// Reset any highlight colours before updating.
+			helpers.each(this.activeElements, function(activeElement){
+				activeElement.restore(['fillColor', 'strokeColor']);
+			});
+
+			this.eachBars(function(bar){
+				bar.save();
+			});
+			this.render();
+		},
+		eachBars : function(callback){
+			helpers.each(this.datasets,function(dataset, datasetIndex){
+				helpers.each(dataset.bars, callback, this, datasetIndex);
+			},this);
+		},
+		getBarsAtEvent : function(e){
+			var barsArray = [],
+				eventPosition = helpers.getRelativePosition(e),
+				datasetIterator = function(dataset){
+					barsArray.push(dataset.bars[barIndex]);
+				},
+				barIndex;
+
+			for (var datasetIndex = 0; datasetIndex < this.datasets.length; datasetIndex++) {
+				for (barIndex = 0; barIndex < this.datasets[datasetIndex].bars.length; barIndex++) {
+					if (this.datasets[datasetIndex].bars[barIndex].inRange(eventPosition.x,eventPosition.y)){
+						helpers.each(this.datasets, datasetIterator);
+						return barsArray;
+					}
+				}
+			}
+
+			return barsArray;
+		},
+		buildScale : function(labels){
+			var self = this;
+
+			var dataTotal = function(){
+				var values = [];
+				self.eachBars(function(bar){
+					values.push(bar.value);
+				});
+				return values;
+			};
+
+			var scaleOptions = {
+				templateString : this.options.scaleLabel,
+				height : this.chart.height,
+				width : this.chart.width,
+				ctx : this.chart.ctx,
+				textColor : this.options.scaleFontColor,
+				fontSize : this.options.scaleFontSize,
+				fontStyle : this.options.scaleFontStyle,
+				fontFamily : this.options.scaleFontFamily,
+				valuesCount : labels.length,
+				beginAtZero : this.options.scaleBeginAtZero,
+				integersOnly : this.options.scaleIntegersOnly,
+				calculateYRange: function(currentHeight){
+					var updatedRanges = helpers.calculateScaleRange(
+						dataTotal(),
+						currentHeight,
+						this.fontSize,
+						this.beginAtZero,
+						this.integersOnly
+					);
+					helpers.extend(this, updatedRanges);
+				},
+				xLabels : labels,
+				font : helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
+				lineWidth : this.options.scaleLineWidth,
+				lineColor : this.options.scaleLineColor,
+				showHorizontalLines : this.options.scaleShowHorizontalLines,
+				showVerticalLines : this.options.scaleShowVerticalLines,
+				gridLineWidth : (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
+				gridLineColor : (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+				padding : (this.options.showScale) ? 0 : (this.options.barShowStroke) ? this.options.barStrokeWidth : 0,
+				showLabels : this.options.scaleShowLabels,
+				display : this.options.showScale
+			};
+
+			if (this.options.scaleOverride){
+				helpers.extend(scaleOptions, {
+					calculateYRange: helpers.noop,
+					steps: this.options.scaleSteps,
+					stepValue: this.options.scaleStepWidth,
+					min: this.options.scaleStartValue,
+					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
+				});
+			}
+
+			this.scale = new this.ScaleClass(scaleOptions);
+		},
+		addData : function(valuesArray,label){
+			//Map the values array for each of the datasets
+			helpers.each(valuesArray,function(value,datasetIndex){
+				//Add a new point for each piece of data, passing any required data to draw.
+				this.datasets[datasetIndex].bars.push(new this.BarClass({
+					value : value,
+					label : label,
+					x: this.scale.calculateBarX(this.datasets.length, datasetIndex, this.scale.valuesCount+1),
+					y: this.scale.endPoint,
+					width : this.scale.calculateBarWidth(this.datasets.length),
+					base : this.scale.endPoint,
+					strokeColor : this.datasets[datasetIndex].strokeColor,
+					fillColor : this.datasets[datasetIndex].fillColor
+				}));
+			},this);
+
+			this.scale.addXLabel(label);
+			//Then re-render the chart.
+			this.update();
+		},
+		removeData : function(){
+			this.scale.removeXLabel();
+			//Then re-render the chart.
+			helpers.each(this.datasets,function(dataset){
+				dataset.bars.shift();
+			},this);
+			this.update();
+		},
+		reflow : function(){
+			helpers.extend(this.BarClass.prototype,{
+				y: this.scale.endPoint,
+				base : this.scale.endPoint
+			});
+			var newScaleProps = helpers.extend({
+				height : this.chart.height,
+				width : this.chart.width
+			});
+			this.scale.update(newScaleProps);
+		},
+		draw : function(ease){
+			var easingDecimal = ease || 1;
+			this.clear();
+
+			var ctx = this.chart.ctx;
+
+			this.scale.draw(easingDecimal);
+
+			//Draw all the bars for each dataset
+			helpers.each(this.datasets,function(dataset,datasetIndex){
+				helpers.each(dataset.bars,function(bar,index){
+					if (bar.hasValue()){
+						bar.base = this.scale.endPoint;
+						//Transition then draw
+						bar.transition({
+							x : this.scale.calculateBarX(this.datasets.length, datasetIndex, index),
+							y : this.scale.calculateY(bar.value),
+							width : this.scale.calculateBarWidth(this.datasets.length)
+						}, easingDecimal).draw();
+					}
+				},this);
+
+			},this);
+		}
+	});
+
+
+}).call(this);
+
+(function(){
+	"use strict";
+
+	var root = this,
+		Chart = root.Chart,
+		//Cache a local reference to Chart.helpers
+		helpers = Chart.helpers;
+
+	var defaultConfig = {
+		//Boolean - Whether we should show a stroke on each segment
+		segmentShowStroke : true,
+
+		//String - The colour of each segment stroke
+		segmentStrokeColor : "#fff",
+
+		//Number - The width of each segment stroke
+		segmentStrokeWidth : 2,
+
+		//The percentage of the chart that we cut out of the middle.
+		percentageInnerCutout : 50,
+
+		//Number - Amount of animation steps
+		animationSteps : 100,
+
+		//String - Animation easing effect
+		animationEasing : "easeOutBounce",
+
+		//Boolean - Whether we animate the rotation of the Doughnut
+		animateRotate : true,
+
+		//Boolean - Whether we animate scaling the Doughnut from the centre
+		animateScale : false,
+
+		//String - A legend template
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+
+	};
+
+
+	Chart.Type.extend({
+		//Passing in a name registers this chart in the Chart namespace
+		name: "Doughnut",
+		//Providing a defaults will also register the deafults in the chart namespace
+		defaults : defaultConfig,
+		//Initialize is fired when the chart is initialized - Data is passed in as a parameter
+		//Config is automatically merged by the core of Chart.js, and is available at this.options
+		initialize:  function(data){
+
+			//Declare segments as a static property to prevent inheriting across the Chart type prototype
+			this.segments = [];
+			this.outerRadius = (helpers.min([this.chart.width,this.chart.height]) -	this.options.segmentStrokeWidth/2)/2;
+
+			this.SegmentArc = Chart.Arc.extend({
+				ctx : this.chart.ctx,
+				x : this.chart.width/2,
+				y : this.chart.height/2
+			});
+
+			//Set up tooltip events on the chart
+			if (this.options.showTooltips){
+				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
+					var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
+
+					helpers.each(this.segments,function(segment){
+						segment.restore(["fillColor"]);
+					});
+					helpers.each(activeSegments,function(activeSegment){
+						activeSegment.fillColor = activeSegment.highlightColor;
+					});
+					this.showTooltip(activeSegments);
+				});
+			}
+			this.calculateTotal(data);
+
+			helpers.each(data,function(datapoint, index){
+				this.addData(datapoint, index, true);
+			},this);
+
+			this.render();
+		},
+		getSegmentsAtEvent : function(e){
+			var segmentsArray = [];
+
+			var location = helpers.getRelativePosition(e);
+
+			helpers.each(this.segments,function(segment){
+				if (segment.inRange(location.x,location.y)) segmentsArray.push(segment);
+			},this);
+			return segmentsArray;
+		},
+		addData : function(segment, atIndex, silent){
+			var index = atIndex || this.segments.length;
+			this.segments.splice(index, 0, new this.SegmentArc({
+				value : segment.value,
+				outerRadius : (this.options.animateScale) ? 0 : this.outerRadius,
+				innerRadius : (this.options.animateScale) ? 0 : (this.outerRadius/100) * this.options.percentageInnerCutout,
+				fillColor : segment.color,
+				highlightColor : segment.highlight || segment.color,
+				showStroke : this.options.segmentShowStroke,
+				strokeWidth : this.options.segmentStrokeWidth,
+				strokeColor : this.options.segmentStrokeColor,
+				startAngle : Math.PI * 1.5,
+				circumference : (this.options.animateRotate) ? 0 : this.calculateCircumference(segment.value),
+				label : segment.label
+			}));
+			if (!silent){
+				this.reflow();
+				this.update();
+			}
+		},
+		calculateCircumference : function(value){
+			return (Math.PI*2)*(Math.abs(value) / this.total);
+		},
+		calculateTotal : function(data){
+			this.total = 0;
+			helpers.each(data,function(segment){
+				this.total += Math.abs(segment.value);
+			},this);
+		},
+		update : function(){
+			this.calculateTotal(this.segments);
+
+			// Reset any highlight colours before updating.
+			helpers.each(this.activeElements, function(activeElement){
+				activeElement.restore(['fillColor']);
+			});
+
+			helpers.each(this.segments,function(segment){
+				segment.save();
+			});
+			this.render();
+		},
+
+		removeData: function(atIndex){
+			var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length-1;
+			this.segments.splice(indexToDelete, 1);
+			this.reflow();
+			this.update();
+		},
+
+		reflow : function(){
+			helpers.extend(this.SegmentArc.prototype,{
+				x : this.chart.width/2,
+				y : this.chart.height/2
+			});
+			this.outerRadius = (helpers.min([this.chart.width,this.chart.height]) -	this.options.segmentStrokeWidth/2)/2;
+			helpers.each(this.segments, function(segment){
+				segment.update({
+					outerRadius : this.outerRadius,
+					innerRadius : (this.outerRadius/100) * this.options.percentageInnerCutout
+				});
+			}, this);
+		},
+		draw : function(easeDecimal){
+			var animDecimal = (easeDecimal) ? easeDecimal : 1;
+			this.clear();
+			helpers.each(this.segments,function(segment,index){
+				segment.transition({
+					circumference : this.calculateCircumference(segment.value),
+					outerRadius : this.outerRadius,
+					innerRadius : (this.outerRadius/100) * this.options.percentageInnerCutout
+				},animDecimal);
+
+				segment.endAngle = segment.startAngle + segment.circumference;
+
+				segment.draw();
+				if (index === 0){
+					segment.startAngle = Math.PI * 1.5;
+				}
+				//Check to see if it's the last segment, if not get the next and update the start angle
+				if (index < this.segments.length-1){
+					this.segments[index+1].startAngle = segment.endAngle;
+				}
+			},this);
+
+		}
+	});
+
+	Chart.types.Doughnut.extend({
+		name : "Pie",
+		defaults : helpers.merge(defaultConfig,{percentageInnerCutout : 0})
+	});
+
+}).call(this);
+(function(){
+	"use strict";
+
+	var root = this,
+		Chart = root.Chart,
+		helpers = Chart.helpers;
+
+	var defaultConfig = {
+
+		///Boolean - Whether grid lines are shown across the chart
+		scaleShowGridLines : true,
+
+		//String - Colour of the grid lines
+		scaleGridLineColor : "rgba(0,0,0,.05)",
+
+		//Number - Width of the grid lines
+		scaleGridLineWidth : 1,
+
+		//Boolean - Whether to show horizontal lines (except X axis)
+		scaleShowHorizontalLines: true,
+
+		//Boolean - Whether to show vertical lines (except Y axis)
+		scaleShowVerticalLines: true,
+
+		//Boolean - Whether the line is curved between points
+		bezierCurve : true,
+
+		//Number - Tension of the bezier curve between points
+		bezierCurveTension : 0.4,
+
+		//Boolean - Whether to show a dot for each point
+		pointDot : true,
+
+		//Number - Radius of each point dot in pixels
+		pointDotRadius : 4,
+
+		//Number - Pixel width of point dot stroke
+		pointDotStrokeWidth : 1,
+
+		//Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+		pointHitDetectionRadius : 20,
+
+		//Boolean - Whether to show a stroke for datasets
+		datasetStroke : true,
+
+		//Number - Pixel width of dataset stroke
+		datasetStrokeWidth : 2,
+
+		//Boolean - Whether to fill the dataset with a colour
+		datasetFill : true,
+
+		//String - A legend template
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+
+	};
+
+
+	Chart.Type.extend({
+		name: "Line",
+		defaults : defaultConfig,
+		initialize:  function(data){
+			//Declare the extension of the default point, to cater for the options passed in to the constructor
+			this.PointClass = Chart.Point.extend({
+				strokeWidth : this.options.pointDotStrokeWidth,
+				radius : this.options.pointDotRadius,
+				display: this.options.pointDot,
+				hitDetectionRadius : this.options.pointHitDetectionRadius,
+				ctx : this.chart.ctx,
+				inRange : function(mouseX){
+					return (Math.pow(mouseX-this.x, 2) < Math.pow(this.radius + this.hitDetectionRadius,2));
+				}
+			});
+
+			this.datasets = [];
+
+			//Set up tooltip events on the chart
+			if (this.options.showTooltips){
+				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
+					var activePoints = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
+					this.eachPoints(function(point){
+						point.restore(['fillColor', 'strokeColor']);
+					});
+					helpers.each(activePoints, function(activePoint){
+						activePoint.fillColor = activePoint.highlightFill;
+						activePoint.strokeColor = activePoint.highlightStroke;
+					});
+					this.showTooltip(activePoints);
+				});
+			}
+
+			//Iterate through each of the datasets, and build this into a property of the chart
+			helpers.each(data.datasets,function(dataset){
+
+				var datasetObject = {
+					label : dataset.label || null,
+					fillColor : dataset.fillColor,
+					strokeColor : dataset.strokeColor,
+					pointColor : dataset.pointColor,
+					pointStrokeColor : dataset.pointStrokeColor,
+					points : []
+				};
+
+				this.datasets.push(datasetObject);
+
+
+				helpers.each(dataset.data,function(dataPoint,index){
+					//Add a new point for each piece of data, passing any required data to draw.
+					datasetObject.points.push(new this.PointClass({
+						value : dataPoint,
+						label : data.labels[index],
+						datasetLabel: dataset.label,
+						strokeColor : dataset.pointStrokeColor,
+						fillColor : dataset.pointColor,
+						highlightFill : dataset.pointHighlightFill || dataset.pointColor,
+						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor
+					}));
+				},this);
+
+				this.buildScale(data.labels);
+
+
+				this.eachPoints(function(point, index){
+					helpers.extend(point, {
+						x: this.scale.calculateX(index),
+						y: this.scale.endPoint
+					});
+					point.save();
+				}, this);
+
+			},this);
+
+
+			this.render();
+		},
+		update : function(){
+			this.scale.update();
+			// Reset any highlight colours before updating.
+			helpers.each(this.activeElements, function(activeElement){
+				activeElement.restore(['fillColor', 'strokeColor']);
+			});
+			this.eachPoints(function(point){
+				point.save();
+			});
+			this.render();
+		},
+		eachPoints : function(callback){
+			helpers.each(this.datasets,function(dataset){
+				helpers.each(dataset.points,callback,this);
+			},this);
+		},
+		getPointsAtEvent : function(e){
+			var pointsArray = [],
+				eventPosition = helpers.getRelativePosition(e);
+			helpers.each(this.datasets,function(dataset){
+				helpers.each(dataset.points,function(point){
+					if (point.inRange(eventPosition.x,eventPosition.y)) pointsArray.push(point);
+				});
+			},this);
+			return pointsArray;
+		},
+		buildScale : function(labels){
+			var self = this;
+
+			var dataTotal = function(){
+				var values = [];
+				self.eachPoints(function(point){
+					values.push(point.value);
+				});
+
+				return values;
+			};
+
+			var scaleOptions = {
+				templateString : this.options.scaleLabel,
+				height : this.chart.height,
+				width : this.chart.width,
+				ctx : this.chart.ctx,
+				textColor : this.options.scaleFontColor,
+				fontSize : this.options.scaleFontSize,
+				fontStyle : this.options.scaleFontStyle,
+				fontFamily : this.options.scaleFontFamily,
+				valuesCount : labels.length,
+				beginAtZero : this.options.scaleBeginAtZero,
+				integersOnly : this.options.scaleIntegersOnly,
+				calculateYRange : function(currentHeight){
+					var updatedRanges = helpers.calculateScaleRange(
+						dataTotal(),
+						currentHeight,
+						this.fontSize,
+						this.beginAtZero,
+						this.integersOnly
+					);
+					helpers.extend(this, updatedRanges);
+				},
+				xLabels : labels,
+				font : helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
+				lineWidth : this.options.scaleLineWidth,
+				lineColor : this.options.scaleLineColor,
+				showHorizontalLines : this.options.scaleShowHorizontalLines,
+				showVerticalLines : this.options.scaleShowVerticalLines,
+				gridLineWidth : (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
+				gridLineColor : (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+				padding: (this.options.showScale) ? 0 : this.options.pointDotRadius + this.options.pointDotStrokeWidth,
+				showLabels : this.options.scaleShowLabels,
+				display : this.options.showScale
+			};
+
+			if (this.options.scaleOverride){
+				helpers.extend(scaleOptions, {
+					calculateYRange: helpers.noop,
+					steps: this.options.scaleSteps,
+					stepValue: this.options.scaleStepWidth,
+					min: this.options.scaleStartValue,
+					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
+				});
+			}
+
+
+			this.scale = new Chart.Scale(scaleOptions);
+		},
+		addData : function(valuesArray,label){
+			//Map the values array for each of the datasets
+
+			helpers.each(valuesArray,function(value,datasetIndex){
+				//Add a new point for each piece of data, passing any required data to draw.
+				this.datasets[datasetIndex].points.push(new this.PointClass({
+					value : value,
+					label : label,
+					x: this.scale.calculateX(this.scale.valuesCount+1),
+					y: this.scale.endPoint,
+					strokeColor : this.datasets[datasetIndex].pointStrokeColor,
+					fillColor : this.datasets[datasetIndex].pointColor
+				}));
+			},this);
+
+			this.scale.addXLabel(label);
+			//Then re-render the chart.
+			this.update();
+		},
+		removeData : function(){
+			this.scale.removeXLabel();
+			//Then re-render the chart.
+			helpers.each(this.datasets,function(dataset){
+				dataset.points.shift();
+			},this);
+			this.update();
+		},
+		reflow : function(){
+			var newScaleProps = helpers.extend({
+				height : this.chart.height,
+				width : this.chart.width
+			});
+			this.scale.update(newScaleProps);
+		},
+		draw : function(ease){
+			var easingDecimal = ease || 1;
+			this.clear();
+
+			var ctx = this.chart.ctx;
+
+			// Some helper methods for getting the next/prev points
+			var hasValue = function(item){
+				return item.value !== null;
+			},
+			nextPoint = function(point, collection, index){
+				return helpers.findNextWhere(collection, hasValue, index) || point;
+			},
+			previousPoint = function(point, collection, index){
+				return helpers.findPreviousWhere(collection, hasValue, index) || point;
+			};
+
+			this.scale.draw(easingDecimal);
+
+
+			helpers.each(this.datasets,function(dataset){
+				var pointsWithValues = helpers.where(dataset.points, hasValue);
+
+				//Transition each point first so that the line and point drawing isn't out of sync
+				//We can use this extra loop to calculate the control points of this dataset also in this loop
+
+				helpers.each(dataset.points, function(point, index){
+					if (point.hasValue()){
+						point.transition({
+							y : this.scale.calculateY(point.value),
+							x : this.scale.calculateX(index)
+						}, easingDecimal);
+					}
+				},this);
+
+
+				// Control points need to be calculated in a seperate loop, because we need to know the current x/y of the point
+				// This would cause issues when there is no animation, because the y of the next point would be 0, so beziers would be skewed
+				if (this.options.bezierCurve){
+					helpers.each(pointsWithValues, function(point, index){
+						var tension = (index > 0 && index < pointsWithValues.length - 1) ? this.options.bezierCurveTension : 0;
+						point.controlPoints = helpers.splineCurve(
+							previousPoint(point, pointsWithValues, index),
+							point,
+							nextPoint(point, pointsWithValues, index),
+							tension
+						);
+
+						// Prevent the bezier going outside of the bounds of the graph
+
+						// Cap puter bezier handles to the upper/lower scale bounds
+						if (point.controlPoints.outer.y > this.scale.endPoint){
+							point.controlPoints.outer.y = this.scale.endPoint;
+						}
+						else if (point.controlPoints.outer.y < this.scale.startPoint){
+							point.controlPoints.outer.y = this.scale.startPoint;
+						}
+
+						// Cap inner bezier handles to the upper/lower scale bounds
+						if (point.controlPoints.inner.y > this.scale.endPoint){
+							point.controlPoints.inner.y = this.scale.endPoint;
+						}
+						else if (point.controlPoints.inner.y < this.scale.startPoint){
+							point.controlPoints.inner.y = this.scale.startPoint;
+						}
+					},this);
+				}
+
+
+				//Draw the line between all the points
+				ctx.lineWidth = this.options.datasetStrokeWidth;
+				ctx.strokeStyle = dataset.strokeColor;
+				ctx.beginPath();
+
+				helpers.each(pointsWithValues, function(point, index){
+					if (index === 0){
+						ctx.moveTo(point.x, point.y);
+					}
+					else{
+						if(this.options.bezierCurve){
+							var previous = previousPoint(point, pointsWithValues, index);
+
+							ctx.bezierCurveTo(
+								previous.controlPoints.outer.x,
+								previous.controlPoints.outer.y,
+								point.controlPoints.inner.x,
+								point.controlPoints.inner.y,
+								point.x,
+								point.y
+							);
+						}
+						else{
+							ctx.lineTo(point.x,point.y);
+						}
+					}
+				}, this);
+
+				ctx.stroke();
+
+				if (this.options.datasetFill && pointsWithValues.length > 0){
+					//Round off the line by going to the base of the chart, back to the start, then fill.
+					ctx.lineTo(pointsWithValues[pointsWithValues.length - 1].x, this.scale.endPoint);
+					ctx.lineTo(pointsWithValues[0].x, this.scale.endPoint);
+					ctx.fillStyle = dataset.fillColor;
+					ctx.closePath();
+					ctx.fill();
+				}
+
+				//Now draw the points over the line
+				//A little inefficient double looping, but better than the line
+				//lagging behind the point positions
+				helpers.each(pointsWithValues,function(point){
+					point.draw();
+				});
+			},this);
+		}
+	});
+
+
+}).call(this);
+
+(function(){
+	"use strict";
+
+	var root = this,
+		Chart = root.Chart,
+		//Cache a local reference to Chart.helpers
+		helpers = Chart.helpers;
+
+	var defaultConfig = {
+		//Boolean - Show a backdrop to the scale label
+		scaleShowLabelBackdrop : true,
+
+		//String - The colour of the label backdrop
+		scaleBackdropColor : "rgba(255,255,255,0.75)",
+
+		// Boolean - Whether the scale should begin at zero
+		scaleBeginAtZero : true,
+
+		//Number - The backdrop padding above & below the label in pixels
+		scaleBackdropPaddingY : 2,
+
+		//Number - The backdrop padding to the side of the label in pixels
+		scaleBackdropPaddingX : 2,
+
+		//Boolean - Show line for each value in the scale
+		scaleShowLine : true,
+
+		//Boolean - Stroke a line around each segment in the chart
+		segmentShowStroke : true,
+
+		//String - The colour of the stroke on each segement.
+		segmentStrokeColor : "#fff",
+
+		//Number - The width of the stroke value in pixels
+		segmentStrokeWidth : 2,
+
+		//Number - Amount of animation steps
+		animationSteps : 100,
+
+		//String - Animation easing effect.
+		animationEasing : "easeOutBounce",
+
+		//Boolean - Whether to animate the rotation of the chart
+		animateRotate : true,
+
+		//Boolean - Whether to animate scaling the chart from the centre
+		animateScale : false,
+
+		//String - A legend template
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+	};
+
+
+	Chart.Type.extend({
+		//Passing in a name registers this chart in the Chart namespace
+		name: "PolarArea",
+		//Providing a defaults will also register the deafults in the chart namespace
+		defaults : defaultConfig,
+		//Initialize is fired when the chart is initialized - Data is passed in as a parameter
+		//Config is automatically merged by the core of Chart.js, and is available at this.options
+		initialize:  function(data){
+			this.segments = [];
+			//Declare segment class as a chart instance specific class, so it can share props for this instance
+			this.SegmentArc = Chart.Arc.extend({
+				showStroke : this.options.segmentShowStroke,
+				strokeWidth : this.options.segmentStrokeWidth,
+				strokeColor : this.options.segmentStrokeColor,
+				ctx : this.chart.ctx,
+				innerRadius : 0,
+				x : this.chart.width/2,
+				y : this.chart.height/2
+			});
+			this.scale = new Chart.RadialScale({
+				display: this.options.showScale,
+				fontStyle: this.options.scaleFontStyle,
+				fontSize: this.options.scaleFontSize,
+				fontFamily: this.options.scaleFontFamily,
+				fontColor: this.options.scaleFontColor,
+				showLabels: this.options.scaleShowLabels,
+				showLabelBackdrop: this.options.scaleShowLabelBackdrop,
+				backdropColor: this.options.scaleBackdropColor,
+				backdropPaddingY : this.options.scaleBackdropPaddingY,
+				backdropPaddingX: this.options.scaleBackdropPaddingX,
+				lineWidth: (this.options.scaleShowLine) ? this.options.scaleLineWidth : 0,
+				lineColor: this.options.scaleLineColor,
+				lineArc: true,
+				width: this.chart.width,
+				height: this.chart.height,
+				xCenter: this.chart.width/2,
+				yCenter: this.chart.height/2,
+				ctx : this.chart.ctx,
+				templateString: this.options.scaleLabel,
+				valuesCount: data.length
+			});
+
+			this.updateScaleRange(data);
+
+			this.scale.update();
+
+			helpers.each(data,function(segment,index){
+				this.addData(segment,index,true);
+			},this);
+
+			//Set up tooltip events on the chart
+			if (this.options.showTooltips){
+				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
+					var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
+					helpers.each(this.segments,function(segment){
+						segment.restore(["fillColor"]);
+					});
+					helpers.each(activeSegments,function(activeSegment){
+						activeSegment.fillColor = activeSegment.highlightColor;
+					});
+					this.showTooltip(activeSegments);
+				});
+			}
+
+			this.render();
+		},
+		getSegmentsAtEvent : function(e){
+			var segmentsArray = [];
+
+			var location = helpers.getRelativePosition(e);
+
+			helpers.each(this.segments,function(segment){
+				if (segment.inRange(location.x,location.y)) segmentsArray.push(segment);
+			},this);
+			return segmentsArray;
+		},
+		addData : function(segment, atIndex, silent){
+			var index = atIndex || this.segments.length;
+
+			this.segments.splice(index, 0, new this.SegmentArc({
+				fillColor: segment.color,
+				highlightColor: segment.highlight || segment.color,
+				label: segment.label,
+				value: segment.value,
+				outerRadius: (this.options.animateScale) ? 0 : this.scale.calculateCenterOffset(segment.value),
+				circumference: (this.options.animateRotate) ? 0 : this.scale.getCircumference(),
+				startAngle: Math.PI * 1.5
+			}));
+			if (!silent){
+				this.reflow();
+				this.update();
+			}
+		},
+		removeData: function(atIndex){
+			var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length-1;
+			this.segments.splice(indexToDelete, 1);
+			this.reflow();
+			this.update();
+		},
+		calculateTotal: function(data){
+			this.total = 0;
+			helpers.each(data,function(segment){
+				this.total += segment.value;
+			},this);
+			this.scale.valuesCount = this.segments.length;
+		},
+		updateScaleRange: function(datapoints){
+			var valuesArray = [];
+			helpers.each(datapoints,function(segment){
+				valuesArray.push(segment.value);
+			});
+
+			var scaleSizes = (this.options.scaleOverride) ?
+				{
+					steps: this.options.scaleSteps,
+					stepValue: this.options.scaleStepWidth,
+					min: this.options.scaleStartValue,
+					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
+				} :
+				helpers.calculateScaleRange(
+					valuesArray,
+					helpers.min([this.chart.width, this.chart.height])/2,
+					this.options.scaleFontSize,
+					this.options.scaleBeginAtZero,
+					this.options.scaleIntegersOnly
+				);
+
+			helpers.extend(
+				this.scale,
+				scaleSizes,
+				{
+					size: helpers.min([this.chart.width, this.chart.height]),
+					xCenter: this.chart.width/2,
+					yCenter: this.chart.height/2
+				}
+			);
+
+		},
+		update : function(){
+			this.calculateTotal(this.segments);
+
+			helpers.each(this.segments,function(segment){
+				segment.save();
+			});
+			
+			this.reflow();
+			this.render();
+		},
+		reflow : function(){
+			helpers.extend(this.SegmentArc.prototype,{
+				x : this.chart.width/2,
+				y : this.chart.height/2
+			});
+			this.updateScaleRange(this.segments);
+			this.scale.update();
+
+			helpers.extend(this.scale,{
+				xCenter: this.chart.width/2,
+				yCenter: this.chart.height/2
+			});
+
+			helpers.each(this.segments, function(segment){
+				segment.update({
+					outerRadius : this.scale.calculateCenterOffset(segment.value)
+				});
+			}, this);
+
+		},
+		draw : function(ease){
+			var easingDecimal = ease || 1;
+			//Clear & draw the canvas
+			this.clear();
+			helpers.each(this.segments,function(segment, index){
+				segment.transition({
+					circumference : this.scale.getCircumference(),
+					outerRadius : this.scale.calculateCenterOffset(segment.value)
+				},easingDecimal);
+
+				segment.endAngle = segment.startAngle + segment.circumference;
+
+				// If we've removed the first segment we need to set the first one to
+				// start at the top.
+				if (index === 0){
+					segment.startAngle = Math.PI * 1.5;
+				}
+
+				//Check to see if it's the last segment, if not get the next and update the start angle
+				if (index < this.segments.length - 1){
+					this.segments[index+1].startAngle = segment.endAngle;
+				}
+				segment.draw();
+			}, this);
+			this.scale.draw();
+		}
+	});
+
+}).call(this);
+(function(){
+	"use strict";
+
+	var root = this,
+		Chart = root.Chart,
+		helpers = Chart.helpers;
+
+
+
+	Chart.Type.extend({
+		name: "Radar",
+		defaults:{
+			//Boolean - Whether to show lines for each scale point
+			scaleShowLine : true,
+
+			//Boolean - Whether we show the angle lines out of the radar
+			angleShowLineOut : true,
+
+			//Boolean - Whether to show labels on the scale
+			scaleShowLabels : false,
+
+			// Boolean - Whether the scale should begin at zero
+			scaleBeginAtZero : true,
+
+			//String - Colour of the angle line
+			angleLineColor : "rgba(0,0,0,.1)",
+
+			//Number - Pixel width of the angle line
+			angleLineWidth : 1,
+
+			//String - Point label font declaration
+			pointLabelFontFamily : "'Arial'",
+
+			//String - Point label font weight
+			pointLabelFontStyle : "normal",
+
+			//Number - Point label font size in pixels
+			pointLabelFontSize : 10,
+
+			//String - Point label font colour
+			pointLabelFontColor : "#666",
+
+			//Boolean - Whether to show a dot for each point
+			pointDot : true,
+
+			//Number - Radius of each point dot in pixels
+			pointDotRadius : 3,
+
+			//Number - Pixel width of point dot stroke
+			pointDotStrokeWidth : 1,
+
+			//Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+			pointHitDetectionRadius : 20,
+
+			//Boolean - Whether to show a stroke for datasets
+			datasetStroke : true,
+
+			//Number - Pixel width of dataset stroke
+			datasetStrokeWidth : 2,
+
+			//Boolean - Whether to fill the dataset with a colour
+			datasetFill : true,
+
+			//String - A legend template
+			legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+
+		},
+
+		initialize: function(data){
+			this.PointClass = Chart.Point.extend({
+				strokeWidth : this.options.pointDotStrokeWidth,
+				radius : this.options.pointDotRadius,
+				display: this.options.pointDot,
+				hitDetectionRadius : this.options.pointHitDetectionRadius,
+				ctx : this.chart.ctx
+			});
+
+			this.datasets = [];
+
+			this.buildScale(data);
+
+			//Set up tooltip events on the chart
+			if (this.options.showTooltips){
+				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
+					var activePointsCollection = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
+
+					this.eachPoints(function(point){
+						point.restore(['fillColor', 'strokeColor']);
+					});
+					helpers.each(activePointsCollection, function(activePoint){
+						activePoint.fillColor = activePoint.highlightFill;
+						activePoint.strokeColor = activePoint.highlightStroke;
+					});
+
+					this.showTooltip(activePointsCollection);
+				});
+			}
+
+			//Iterate through each of the datasets, and build this into a property of the chart
+			helpers.each(data.datasets,function(dataset){
+
+				var datasetObject = {
+					label: dataset.label || null,
+					fillColor : dataset.fillColor,
+					strokeColor : dataset.strokeColor,
+					pointColor : dataset.pointColor,
+					pointStrokeColor : dataset.pointStrokeColor,
+					points : []
+				};
+
+				this.datasets.push(datasetObject);
+
+				helpers.each(dataset.data,function(dataPoint,index){
+					//Add a new point for each piece of data, passing any required data to draw.
+					var pointPosition;
+					if (!this.scale.animation){
+						pointPosition = this.scale.getPointPosition(index, this.scale.calculateCenterOffset(dataPoint));
+					}
+					datasetObject.points.push(new this.PointClass({
+						value : dataPoint,
+						label : data.labels[index],
+						datasetLabel: dataset.label,
+						x: (this.options.animation) ? this.scale.xCenter : pointPosition.x,
+						y: (this.options.animation) ? this.scale.yCenter : pointPosition.y,
+						strokeColor : dataset.pointStrokeColor,
+						fillColor : dataset.pointColor,
+						highlightFill : dataset.pointHighlightFill || dataset.pointColor,
+						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor
+					}));
+				},this);
+
+			},this);
+
+			this.render();
+		},
+		eachPoints : function(callback){
+			helpers.each(this.datasets,function(dataset){
+				helpers.each(dataset.points,callback,this);
+			},this);
+		},
+
+		getPointsAtEvent : function(evt){
+			var mousePosition = helpers.getRelativePosition(evt),
+				fromCenter = helpers.getAngleFromPoint({
+					x: this.scale.xCenter,
+					y: this.scale.yCenter
+				}, mousePosition);
+
+			var anglePerIndex = (Math.PI * 2) /this.scale.valuesCount,
+				pointIndex = Math.round((fromCenter.angle - Math.PI * 1.5) / anglePerIndex),
+				activePointsCollection = [];
+
+			// If we're at the top, make the pointIndex 0 to get the first of the array.
+			if (pointIndex >= this.scale.valuesCount || pointIndex < 0){
+				pointIndex = 0;
+			}
+
+			if (fromCenter.distance <= this.scale.drawingArea){
+				helpers.each(this.datasets, function(dataset){
+					activePointsCollection.push(dataset.points[pointIndex]);
+				});
+			}
+
+			return activePointsCollection;
+		},
+
+		buildScale : function(data){
+			this.scale = new Chart.RadialScale({
+				display: this.options.showScale,
+				fontStyle: this.options.scaleFontStyle,
+				fontSize: this.options.scaleFontSize,
+				fontFamily: this.options.scaleFontFamily,
+				fontColor: this.options.scaleFontColor,
+				showLabels: this.options.scaleShowLabels,
+				showLabelBackdrop: this.options.scaleShowLabelBackdrop,
+				backdropColor: this.options.scaleBackdropColor,
+				backdropPaddingY : this.options.scaleBackdropPaddingY,
+				backdropPaddingX: this.options.scaleBackdropPaddingX,
+				lineWidth: (this.options.scaleShowLine) ? this.options.scaleLineWidth : 0,
+				lineColor: this.options.scaleLineColor,
+				angleLineColor : this.options.angleLineColor,
+				angleLineWidth : (this.options.angleShowLineOut) ? this.options.angleLineWidth : 0,
+				// Point labels at the edge of each line
+				pointLabelFontColor : this.options.pointLabelFontColor,
+				pointLabelFontSize : this.options.pointLabelFontSize,
+				pointLabelFontFamily : this.options.pointLabelFontFamily,
+				pointLabelFontStyle : this.options.pointLabelFontStyle,
+				height : this.chart.height,
+				width: this.chart.width,
+				xCenter: this.chart.width/2,
+				yCenter: this.chart.height/2,
+				ctx : this.chart.ctx,
+				templateString: this.options.scaleLabel,
+				labels: data.labels,
+				valuesCount: data.datasets[0].data.length
+			});
+
+			this.scale.setScaleSize();
+			this.updateScaleRange(data.datasets);
+			this.scale.buildYLabels();
+		},
+		updateScaleRange: function(datasets){
+			var valuesArray = (function(){
+				var totalDataArray = [];
+				helpers.each(datasets,function(dataset){
+					if (dataset.data){
+						totalDataArray = totalDataArray.concat(dataset.data);
+					}
+					else {
+						helpers.each(dataset.points, function(point){
+							totalDataArray.push(point.value);
+						});
+					}
+				});
+				return totalDataArray;
+			})();
+
+
+			var scaleSizes = (this.options.scaleOverride) ?
+				{
+					steps: this.options.scaleSteps,
+					stepValue: this.options.scaleStepWidth,
+					min: this.options.scaleStartValue,
+					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
+				} :
+				helpers.calculateScaleRange(
+					valuesArray,
+					helpers.min([this.chart.width, this.chart.height])/2,
+					this.options.scaleFontSize,
+					this.options.scaleBeginAtZero,
+					this.options.scaleIntegersOnly
+				);
+
+			helpers.extend(
+				this.scale,
+				scaleSizes
+			);
+
+		},
+		addData : function(valuesArray,label){
+			//Map the values array for each of the datasets
+			this.scale.valuesCount++;
+			helpers.each(valuesArray,function(value,datasetIndex){
+				var pointPosition = this.scale.getPointPosition(this.scale.valuesCount, this.scale.calculateCenterOffset(value));
+				this.datasets[datasetIndex].points.push(new this.PointClass({
+					value : value,
+					label : label,
+					x: pointPosition.x,
+					y: pointPosition.y,
+					strokeColor : this.datasets[datasetIndex].pointStrokeColor,
+					fillColor : this.datasets[datasetIndex].pointColor
+				}));
+			},this);
+
+			this.scale.labels.push(label);
+
+			this.reflow();
+
+			this.update();
+		},
+		removeData : function(){
+			this.scale.valuesCount--;
+			this.scale.labels.shift();
+			helpers.each(this.datasets,function(dataset){
+				dataset.points.shift();
+			},this);
+			this.reflow();
+			this.update();
+		},
+		update : function(){
+			this.eachPoints(function(point){
+				point.save();
+			});
+			this.reflow();
+			this.render();
+		},
+		reflow: function(){
+			helpers.extend(this.scale, {
+				width : this.chart.width,
+				height: this.chart.height,
+				size : helpers.min([this.chart.width, this.chart.height]),
+				xCenter: this.chart.width/2,
+				yCenter: this.chart.height/2
+			});
+			this.updateScaleRange(this.datasets);
+			this.scale.setScaleSize();
+			this.scale.buildYLabels();
+		},
+		draw : function(ease){
+			var easeDecimal = ease || 1,
+				ctx = this.chart.ctx;
+			this.clear();
+			this.scale.draw();
+
+			helpers.each(this.datasets,function(dataset){
+
+				//Transition each point first so that the line and point drawing isn't out of sync
+				helpers.each(dataset.points,function(point,index){
+					if (point.hasValue()){
+						point.transition(this.scale.getPointPosition(index, this.scale.calculateCenterOffset(point.value)), easeDecimal);
+					}
+				},this);
+
+
+
+				//Draw the line between all the points
+				ctx.lineWidth = this.options.datasetStrokeWidth;
+				ctx.strokeStyle = dataset.strokeColor;
+				ctx.beginPath();
+				helpers.each(dataset.points,function(point,index){
+					if (index === 0){
+						ctx.moveTo(point.x,point.y);
+					}
+					else{
+						ctx.lineTo(point.x,point.y);
+					}
+				},this);
+				ctx.closePath();
+				ctx.stroke();
+
+				ctx.fillStyle = dataset.fillColor;
+				ctx.fill();
+
+				//Now draw the points over the line
+				//A little inefficient double looping, but better than the line
+				//lagging behind the point positions
+				helpers.each(dataset.points,function(point){
+					if (point.hasValue()){
+						point.draw();
+					}
+				});
+
+			},this);
+
+		}
+
+	});
+
+
+
+
+
+}).call(this);
+},{}],3:[function(require,module,exports){
 /*!
   Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
@@ -10676,7 +14061,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":1}],6:[function(require,module,exports){
+},{"_process":32}],6:[function(require,module,exports){
 /**
  * Indicates that navigation was caused by a call to history.push.
  */
@@ -10806,7 +14191,7 @@ function readState(key) {
   return null;
 }
 }).call(this,require('_process'))
-},{"_process":1,"warning":28}],9:[function(require,module,exports){
+},{"_process":32,"warning":28}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10936,7 +14321,7 @@ function createDOMHistory(options) {
 exports['default'] = createDOMHistory;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./DOMUtils":9,"./ExecutionEnvironment":10,"./createHistory":13,"_process":1,"invariant":25}],12:[function(require,module,exports){
+},{"./DOMUtils":9,"./ExecutionEnvironment":10,"./createHistory":13,"_process":32,"invariant":25}],12:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -11187,7 +14572,7 @@ function createHashHistory() {
 exports['default'] = createHashHistory;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./Actions":6,"./DOMStateStorage":8,"./DOMUtils":9,"./ExecutionEnvironment":10,"./createDOMHistory":11,"./parsePath":18,"_process":1,"invariant":25,"warning":28}],13:[function(require,module,exports){
+},{"./Actions":6,"./DOMStateStorage":8,"./DOMUtils":9,"./ExecutionEnvironment":10,"./createDOMHistory":11,"./parsePath":18,"_process":32,"invariant":25,"warning":28}],13:[function(require,module,exports){
 //import warning from 'warning'
 'use strict';
 
@@ -11692,7 +15077,7 @@ function createMemoryHistory() {
 exports['default'] = createMemoryHistory;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./Actions":6,"./createHistory":13,"./parsePath":18,"_process":1,"invariant":25,"warning":28}],16:[function(require,module,exports){
+},{"./Actions":6,"./createHistory":13,"./parsePath":18,"_process":32,"invariant":25,"warning":28}],16:[function(require,module,exports){
 //import warning from 'warning'
 
 "use strict";
@@ -11769,7 +15154,7 @@ function parsePath(path) {
 exports['default'] = parsePath;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./extractPath":17,"_process":1,"warning":28}],19:[function(require,module,exports){
+},{"./extractPath":17,"_process":32,"warning":28}],19:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -11796,7 +15181,7 @@ function runTransitionHook(hook, location, callback) {
 exports['default'] = runTransitionHook;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"_process":1,"warning":28}],20:[function(require,module,exports){
+},{"_process":32,"warning":28}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12112,7 +15497,7 @@ function useQueries(createHistory) {
 exports['default'] = useQueries;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./deprecate":16,"./parsePath":18,"./runTransitionHook":19,"_process":1,"query-string":26,"warning":28}],22:[function(require,module,exports){
+},{"./deprecate":16,"./parsePath":18,"./runTransitionHook":19,"_process":32,"query-string":26,"warning":28}],22:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -12265,7 +15650,7 @@ function shim (obj) {
  */
 
 var invariant = function(condition, format, a, b, c, d, e, f) {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     if (format === undefined) {
       throw new Error('invariant requires an error message argument');
     }
@@ -12391,7 +15776,7 @@ module.exports = function (str) {
 
 var warning = function() {};
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   warning = function(condition, format, args) {
     var len = arguments.length;
     args = new Array(len > 2 ? len - 2 : 0);
@@ -12824,11 +16209,17868 @@ module.exports = self.fetch.bind(self);
 })();
 
 },{}],31:[function(require,module,exports){
+/*
+ Leaflet, a JavaScript library for mobile-friendly interactive maps. http://leafletjs.com
+ (c) 2010-2013, Vladimir Agafonkin
+ (c) 2010-2011, CloudMade
+*/
+(function (window, document, undefined) {
+var oldL = window.L,
+    L = {};
+
+L.version = '0.7.7';
+
+// define Leaflet for Node module pattern loaders, including Browserify
+if (typeof module === 'object' && typeof module.exports === 'object') {
+	module.exports = L;
+
+// define Leaflet as an AMD module
+} else if (typeof define === 'function' && define.amd) {
+	define(L);
+}
+
+// define Leaflet as a global L variable, saving the original L to restore later if needed
+
+L.noConflict = function () {
+	window.L = oldL;
+	return this;
+};
+
+window.L = L;
+
+
+/*
+ * L.Util contains various utility functions used throughout Leaflet code.
+ */
+
+L.Util = {
+	extend: function (dest) { // (Object[, Object, ...]) ->
+		var sources = Array.prototype.slice.call(arguments, 1),
+		    i, j, len, src;
+
+		for (j = 0, len = sources.length; j < len; j++) {
+			src = sources[j] || {};
+			for (i in src) {
+				if (src.hasOwnProperty(i)) {
+					dest[i] = src[i];
+				}
+			}
+		}
+		return dest;
+	},
+
+	bind: function (fn, obj) { // (Function, Object) -> Function
+		var args = arguments.length > 2 ? Array.prototype.slice.call(arguments, 2) : null;
+		return function () {
+			return fn.apply(obj, args || arguments);
+		};
+	},
+
+	stamp: (function () {
+		var lastId = 0,
+		    key = '_leaflet_id';
+		return function (obj) {
+			obj[key] = obj[key] || ++lastId;
+			return obj[key];
+		};
+	}()),
+
+	invokeEach: function (obj, method, context) {
+		var i, args;
+
+		if (typeof obj === 'object') {
+			args = Array.prototype.slice.call(arguments, 3);
+
+			for (i in obj) {
+				method.apply(context, [i, obj[i]].concat(args));
+			}
+			return true;
+		}
+
+		return false;
+	},
+
+	limitExecByInterval: function (fn, time, context) {
+		var lock, execOnUnlock;
+
+		return function wrapperFn() {
+			var args = arguments;
+
+			if (lock) {
+				execOnUnlock = true;
+				return;
+			}
+
+			lock = true;
+
+			setTimeout(function () {
+				lock = false;
+
+				if (execOnUnlock) {
+					wrapperFn.apply(context, args);
+					execOnUnlock = false;
+				}
+			}, time);
+
+			fn.apply(context, args);
+		};
+	},
+
+	falseFn: function () {
+		return false;
+	},
+
+	formatNum: function (num, digits) {
+		var pow = Math.pow(10, digits || 5);
+		return Math.round(num * pow) / pow;
+	},
+
+	trim: function (str) {
+		return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+	},
+
+	splitWords: function (str) {
+		return L.Util.trim(str).split(/\s+/);
+	},
+
+	setOptions: function (obj, options) {
+		obj.options = L.extend({}, obj.options, options);
+		return obj.options;
+	},
+
+	getParamString: function (obj, existingUrl, uppercase) {
+		var params = [];
+		for (var i in obj) {
+			params.push(encodeURIComponent(uppercase ? i.toUpperCase() : i) + '=' + encodeURIComponent(obj[i]));
+		}
+		return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
+	},
+	template: function (str, data) {
+		return str.replace(/\{ *([\w_]+) *\}/g, function (str, key) {
+			var value = data[key];
+			if (value === undefined) {
+				throw new Error('No value provided for variable ' + str);
+			} else if (typeof value === 'function') {
+				value = value(data);
+			}
+			return value;
+		});
+	},
+
+	isArray: Array.isArray || function (obj) {
+		return (Object.prototype.toString.call(obj) === '[object Array]');
+	},
+
+	emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+};
+
+(function () {
+
+	// inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+
+	function getPrefixed(name) {
+		var i, fn,
+		    prefixes = ['webkit', 'moz', 'o', 'ms'];
+
+		for (i = 0; i < prefixes.length && !fn; i++) {
+			fn = window[prefixes[i] + name];
+		}
+
+		return fn;
+	}
+
+	var lastTime = 0;
+
+	function timeoutDefer(fn) {
+		var time = +new Date(),
+		    timeToCall = Math.max(0, 16 - (time - lastTime));
+
+		lastTime = time + timeToCall;
+		return window.setTimeout(fn, timeToCall);
+	}
+
+	var requestFn = window.requestAnimationFrame ||
+	        getPrefixed('RequestAnimationFrame') || timeoutDefer;
+
+	var cancelFn = window.cancelAnimationFrame ||
+	        getPrefixed('CancelAnimationFrame') ||
+	        getPrefixed('CancelRequestAnimationFrame') ||
+	        function (id) { window.clearTimeout(id); };
+
+
+	L.Util.requestAnimFrame = function (fn, context, immediate, element) {
+		fn = L.bind(fn, context);
+
+		if (immediate && requestFn === timeoutDefer) {
+			fn();
+		} else {
+			return requestFn.call(window, fn, element);
+		}
+	};
+
+	L.Util.cancelAnimFrame = function (id) {
+		if (id) {
+			cancelFn.call(window, id);
+		}
+	};
+
+}());
+
+// shortcuts for most used utility functions
+L.extend = L.Util.extend;
+L.bind = L.Util.bind;
+L.stamp = L.Util.stamp;
+L.setOptions = L.Util.setOptions;
+
+
+/*
+ * L.Class powers the OOP facilities of the library.
+ * Thanks to John Resig and Dean Edwards for inspiration!
+ */
+
+L.Class = function () {};
+
+L.Class.extend = function (props) {
+
+	// extended class with the new prototype
+	var NewClass = function () {
+
+		// call the constructor
+		if (this.initialize) {
+			this.initialize.apply(this, arguments);
+		}
+
+		// call all constructor hooks
+		if (this._initHooks) {
+			this.callInitHooks();
+		}
+	};
+
+	// instantiate class without calling constructor
+	var F = function () {};
+	F.prototype = this.prototype;
+
+	var proto = new F();
+	proto.constructor = NewClass;
+
+	NewClass.prototype = proto;
+
+	//inherit parent's statics
+	for (var i in this) {
+		if (this.hasOwnProperty(i) && i !== 'prototype') {
+			NewClass[i] = this[i];
+		}
+	}
+
+	// mix static properties into the class
+	if (props.statics) {
+		L.extend(NewClass, props.statics);
+		delete props.statics;
+	}
+
+	// mix includes into the prototype
+	if (props.includes) {
+		L.Util.extend.apply(null, [proto].concat(props.includes));
+		delete props.includes;
+	}
+
+	// merge options
+	if (props.options && proto.options) {
+		props.options = L.extend({}, proto.options, props.options);
+	}
+
+	// mix given properties into the prototype
+	L.extend(proto, props);
+
+	proto._initHooks = [];
+
+	var parent = this;
+	// jshint camelcase: false
+	NewClass.__super__ = parent.prototype;
+
+	// add method for calling all hooks
+	proto.callInitHooks = function () {
+
+		if (this._initHooksCalled) { return; }
+
+		if (parent.prototype.callInitHooks) {
+			parent.prototype.callInitHooks.call(this);
+		}
+
+		this._initHooksCalled = true;
+
+		for (var i = 0, len = proto._initHooks.length; i < len; i++) {
+			proto._initHooks[i].call(this);
+		}
+	};
+
+	return NewClass;
+};
+
+
+// method for adding properties to prototype
+L.Class.include = function (props) {
+	L.extend(this.prototype, props);
+};
+
+// merge new default options to the Class
+L.Class.mergeOptions = function (options) {
+	L.extend(this.prototype.options, options);
+};
+
+// add a constructor hook
+L.Class.addInitHook = function (fn) { // (Function) || (String, args...)
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	var init = typeof fn === 'function' ? fn : function () {
+		this[fn].apply(this, args);
+	};
+
+	this.prototype._initHooks = this.prototype._initHooks || [];
+	this.prototype._initHooks.push(init);
+};
+
+
+/*
+ * L.Mixin.Events is used to add custom events functionality to Leaflet classes.
+ */
+
+var eventsKey = '_leaflet_events';
+
+L.Mixin = {};
+
+L.Mixin.Events = {
+
+	addEventListener: function (types, fn, context) { // (String, Function[, Object]) or (Object[, Object])
+
+		// types can be a map of types/handlers
+		if (L.Util.invokeEach(types, this.addEventListener, this, fn, context)) { return this; }
+
+		var events = this[eventsKey] = this[eventsKey] || {},
+		    contextId = context && context !== this && L.stamp(context),
+		    i, len, event, type, indexKey, indexLenKey, typeIndex;
+
+		// types can be a string of space-separated words
+		types = L.Util.splitWords(types);
+
+		for (i = 0, len = types.length; i < len; i++) {
+			event = {
+				action: fn,
+				context: context || this
+			};
+			type = types[i];
+
+			if (contextId) {
+				// store listeners of a particular context in a separate hash (if it has an id)
+				// gives a major performance boost when removing thousands of map layers
+
+				indexKey = type + '_idx';
+				indexLenKey = indexKey + '_len';
+
+				typeIndex = events[indexKey] = events[indexKey] || {};
+
+				if (!typeIndex[contextId]) {
+					typeIndex[contextId] = [];
+
+					// keep track of the number of keys in the index to quickly check if it's empty
+					events[indexLenKey] = (events[indexLenKey] || 0) + 1;
+				}
+
+				typeIndex[contextId].push(event);
+
+
+			} else {
+				events[type] = events[type] || [];
+				events[type].push(event);
+			}
+		}
+
+		return this;
+	},
+
+	hasEventListeners: function (type) { // (String) -> Boolean
+		var events = this[eventsKey];
+		return !!events && ((type in events && events[type].length > 0) ||
+		                    (type + '_idx' in events && events[type + '_idx_len'] > 0));
+	},
+
+	removeEventListener: function (types, fn, context) { // ([String, Function, Object]) or (Object[, Object])
+
+		if (!this[eventsKey]) {
+			return this;
+		}
+
+		if (!types) {
+			return this.clearAllEventListeners();
+		}
+
+		if (L.Util.invokeEach(types, this.removeEventListener, this, fn, context)) { return this; }
+
+		var events = this[eventsKey],
+		    contextId = context && context !== this && L.stamp(context),
+		    i, len, type, listeners, j, indexKey, indexLenKey, typeIndex, removed;
+
+		types = L.Util.splitWords(types);
+
+		for (i = 0, len = types.length; i < len; i++) {
+			type = types[i];
+			indexKey = type + '_idx';
+			indexLenKey = indexKey + '_len';
+
+			typeIndex = events[indexKey];
+
+			if (!fn) {
+				// clear all listeners for a type if function isn't specified
+				delete events[type];
+				delete events[indexKey];
+				delete events[indexLenKey];
+
+			} else {
+				listeners = contextId && typeIndex ? typeIndex[contextId] : events[type];
+
+				if (listeners) {
+					for (j = listeners.length - 1; j >= 0; j--) {
+						if ((listeners[j].action === fn) && (!context || (listeners[j].context === context))) {
+							removed = listeners.splice(j, 1);
+							// set the old action to a no-op, because it is possible
+							// that the listener is being iterated over as part of a dispatch
+							removed[0].action = L.Util.falseFn;
+						}
+					}
+
+					if (context && typeIndex && (listeners.length === 0)) {
+						delete typeIndex[contextId];
+						events[indexLenKey]--;
+					}
+				}
+			}
+		}
+
+		return this;
+	},
+
+	clearAllEventListeners: function () {
+		delete this[eventsKey];
+		return this;
+	},
+
+	fireEvent: function (type, data) { // (String[, Object])
+		if (!this.hasEventListeners(type)) {
+			return this;
+		}
+
+		var event = L.Util.extend({}, data, { type: type, target: this });
+
+		var events = this[eventsKey],
+		    listeners, i, len, typeIndex, contextId;
+
+		if (events[type]) {
+			// make sure adding/removing listeners inside other listeners won't cause infinite loop
+			listeners = events[type].slice();
+
+			for (i = 0, len = listeners.length; i < len; i++) {
+				listeners[i].action.call(listeners[i].context, event);
+			}
+		}
+
+		// fire event for the context-indexed listeners as well
+		typeIndex = events[type + '_idx'];
+
+		for (contextId in typeIndex) {
+			listeners = typeIndex[contextId].slice();
+
+			if (listeners) {
+				for (i = 0, len = listeners.length; i < len; i++) {
+					listeners[i].action.call(listeners[i].context, event);
+				}
+			}
+		}
+
+		return this;
+	},
+
+	addOneTimeEventListener: function (types, fn, context) {
+
+		if (L.Util.invokeEach(types, this.addOneTimeEventListener, this, fn, context)) { return this; }
+
+		var handler = L.bind(function () {
+			this
+			    .removeEventListener(types, fn, context)
+			    .removeEventListener(types, handler, context);
+		}, this);
+
+		return this
+		    .addEventListener(types, fn, context)
+		    .addEventListener(types, handler, context);
+	}
+};
+
+L.Mixin.Events.on = L.Mixin.Events.addEventListener;
+L.Mixin.Events.off = L.Mixin.Events.removeEventListener;
+L.Mixin.Events.once = L.Mixin.Events.addOneTimeEventListener;
+L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
+
+
+/*
+ * L.Browser handles different browser and feature detections for internal Leaflet use.
+ */
+
+(function () {
+
+	var ie = 'ActiveXObject' in window,
+		ielt9 = ie && !document.addEventListener,
+
+	    // terrible browser detection to work around Safari / iOS / Android browser bugs
+	    ua = navigator.userAgent.toLowerCase(),
+	    webkit = ua.indexOf('webkit') !== -1,
+	    chrome = ua.indexOf('chrome') !== -1,
+	    phantomjs = ua.indexOf('phantom') !== -1,
+	    android = ua.indexOf('android') !== -1,
+	    android23 = ua.search('android [23]') !== -1,
+		gecko = ua.indexOf('gecko') !== -1,
+
+	    mobile = typeof orientation !== undefined + '',
+	    msPointer = !window.PointerEvent && window.MSPointerEvent,
+		pointer = (window.PointerEvent && window.navigator.pointerEnabled) ||
+				  msPointer,
+	    retina = ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+	             ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+	              window.matchMedia('(min-resolution:144dpi)').matches),
+
+	    doc = document.documentElement,
+	    ie3d = ie && ('transition' in doc.style),
+	    webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23,
+	    gecko3d = 'MozPerspective' in doc.style,
+	    opera3d = 'OTransition' in doc.style,
+	    any3d = !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d || opera3d) && !phantomjs;
+
+	var touch = !window.L_NO_TOUCH && !phantomjs && (pointer || 'ontouchstart' in window ||
+		(window.DocumentTouch && document instanceof window.DocumentTouch));
+
+	L.Browser = {
+		ie: ie,
+		ielt9: ielt9,
+		webkit: webkit,
+		gecko: gecko && !webkit && !window.opera && !ie,
+
+		android: android,
+		android23: android23,
+
+		chrome: chrome,
+
+		ie3d: ie3d,
+		webkit3d: webkit3d,
+		gecko3d: gecko3d,
+		opera3d: opera3d,
+		any3d: any3d,
+
+		mobile: mobile,
+		mobileWebkit: mobile && webkit,
+		mobileWebkit3d: mobile && webkit3d,
+		mobileOpera: mobile && window.opera,
+
+		touch: touch,
+		msPointer: msPointer,
+		pointer: pointer,
+
+		retina: retina
+	};
+
+}());
+
+
+/*
+ * L.Point represents a point with x and y coordinates.
+ */
+
+L.Point = function (/*Number*/ x, /*Number*/ y, /*Boolean*/ round) {
+	this.x = (round ? Math.round(x) : x);
+	this.y = (round ? Math.round(y) : y);
+};
+
+L.Point.prototype = {
+
+	clone: function () {
+		return new L.Point(this.x, this.y);
+	},
+
+	// non-destructive, returns a new point
+	add: function (point) {
+		return this.clone()._add(L.point(point));
+	},
+
+	// destructive, used directly for performance in situations where it's safe to modify existing point
+	_add: function (point) {
+		this.x += point.x;
+		this.y += point.y;
+		return this;
+	},
+
+	subtract: function (point) {
+		return this.clone()._subtract(L.point(point));
+	},
+
+	_subtract: function (point) {
+		this.x -= point.x;
+		this.y -= point.y;
+		return this;
+	},
+
+	divideBy: function (num) {
+		return this.clone()._divideBy(num);
+	},
+
+	_divideBy: function (num) {
+		this.x /= num;
+		this.y /= num;
+		return this;
+	},
+
+	multiplyBy: function (num) {
+		return this.clone()._multiplyBy(num);
+	},
+
+	_multiplyBy: function (num) {
+		this.x *= num;
+		this.y *= num;
+		return this;
+	},
+
+	round: function () {
+		return this.clone()._round();
+	},
+
+	_round: function () {
+		this.x = Math.round(this.x);
+		this.y = Math.round(this.y);
+		return this;
+	},
+
+	floor: function () {
+		return this.clone()._floor();
+	},
+
+	_floor: function () {
+		this.x = Math.floor(this.x);
+		this.y = Math.floor(this.y);
+		return this;
+	},
+
+	distanceTo: function (point) {
+		point = L.point(point);
+
+		var x = point.x - this.x,
+		    y = point.y - this.y;
+
+		return Math.sqrt(x * x + y * y);
+	},
+
+	equals: function (point) {
+		point = L.point(point);
+
+		return point.x === this.x &&
+		       point.y === this.y;
+	},
+
+	contains: function (point) {
+		point = L.point(point);
+
+		return Math.abs(point.x) <= Math.abs(this.x) &&
+		       Math.abs(point.y) <= Math.abs(this.y);
+	},
+
+	toString: function () {
+		return 'Point(' +
+		        L.Util.formatNum(this.x) + ', ' +
+		        L.Util.formatNum(this.y) + ')';
+	}
+};
+
+L.point = function (x, y, round) {
+	if (x instanceof L.Point) {
+		return x;
+	}
+	if (L.Util.isArray(x)) {
+		return new L.Point(x[0], x[1]);
+	}
+	if (x === undefined || x === null) {
+		return x;
+	}
+	return new L.Point(x, y, round);
+};
+
+
+/*
+ * L.Bounds represents a rectangular area on the screen in pixel coordinates.
+ */
+
+L.Bounds = function (a, b) { //(Point, Point) or Point[]
+	if (!a) { return; }
+
+	var points = b ? [a, b] : a;
+
+	for (var i = 0, len = points.length; i < len; i++) {
+		this.extend(points[i]);
+	}
+};
+
+L.Bounds.prototype = {
+	// extend the bounds to contain the given point
+	extend: function (point) { // (Point)
+		point = L.point(point);
+
+		if (!this.min && !this.max) {
+			this.min = point.clone();
+			this.max = point.clone();
+		} else {
+			this.min.x = Math.min(point.x, this.min.x);
+			this.max.x = Math.max(point.x, this.max.x);
+			this.min.y = Math.min(point.y, this.min.y);
+			this.max.y = Math.max(point.y, this.max.y);
+		}
+		return this;
+	},
+
+	getCenter: function (round) { // (Boolean) -> Point
+		return new L.Point(
+		        (this.min.x + this.max.x) / 2,
+		        (this.min.y + this.max.y) / 2, round);
+	},
+
+	getBottomLeft: function () { // -> Point
+		return new L.Point(this.min.x, this.max.y);
+	},
+
+	getTopRight: function () { // -> Point
+		return new L.Point(this.max.x, this.min.y);
+	},
+
+	getSize: function () {
+		return this.max.subtract(this.min);
+	},
+
+	contains: function (obj) { // (Bounds) or (Point) -> Boolean
+		var min, max;
+
+		if (typeof obj[0] === 'number' || obj instanceof L.Point) {
+			obj = L.point(obj);
+		} else {
+			obj = L.bounds(obj);
+		}
+
+		if (obj instanceof L.Bounds) {
+			min = obj.min;
+			max = obj.max;
+		} else {
+			min = max = obj;
+		}
+
+		return (min.x >= this.min.x) &&
+		       (max.x <= this.max.x) &&
+		       (min.y >= this.min.y) &&
+		       (max.y <= this.max.y);
+	},
+
+	intersects: function (bounds) { // (Bounds) -> Boolean
+		bounds = L.bounds(bounds);
+
+		var min = this.min,
+		    max = this.max,
+		    min2 = bounds.min,
+		    max2 = bounds.max,
+		    xIntersects = (max2.x >= min.x) && (min2.x <= max.x),
+		    yIntersects = (max2.y >= min.y) && (min2.y <= max.y);
+
+		return xIntersects && yIntersects;
+	},
+
+	isValid: function () {
+		return !!(this.min && this.max);
+	}
+};
+
+L.bounds = function (a, b) { // (Bounds) or (Point, Point) or (Point[])
+	if (!a || a instanceof L.Bounds) {
+		return a;
+	}
+	return new L.Bounds(a, b);
+};
+
+
+/*
+ * L.Transformation is an utility class to perform simple point transformations through a 2d-matrix.
+ */
+
+L.Transformation = function (a, b, c, d) {
+	this._a = a;
+	this._b = b;
+	this._c = c;
+	this._d = d;
+};
+
+L.Transformation.prototype = {
+	transform: function (point, scale) { // (Point, Number) -> Point
+		return this._transform(point.clone(), scale);
+	},
+
+	// destructive transform (faster)
+	_transform: function (point, scale) {
+		scale = scale || 1;
+		point.x = scale * (this._a * point.x + this._b);
+		point.y = scale * (this._c * point.y + this._d);
+		return point;
+	},
+
+	untransform: function (point, scale) {
+		scale = scale || 1;
+		return new L.Point(
+		        (point.x / scale - this._b) / this._a,
+		        (point.y / scale - this._d) / this._c);
+	}
+};
+
+
+/*
+ * L.DomUtil contains various utility functions for working with DOM.
+ */
+
+L.DomUtil = {
+	get: function (id) {
+		return (typeof id === 'string' ? document.getElementById(id) : id);
+	},
+
+	getStyle: function (el, style) {
+
+		var value = el.style[style];
+
+		if (!value && el.currentStyle) {
+			value = el.currentStyle[style];
+		}
+
+		if ((!value || value === 'auto') && document.defaultView) {
+			var css = document.defaultView.getComputedStyle(el, null);
+			value = css ? css[style] : null;
+		}
+
+		return value === 'auto' ? null : value;
+	},
+
+	getViewportOffset: function (element) {
+
+		var top = 0,
+		    left = 0,
+		    el = element,
+		    docBody = document.body,
+		    docEl = document.documentElement,
+		    pos;
+
+		do {
+			top  += el.offsetTop  || 0;
+			left += el.offsetLeft || 0;
+
+			//add borders
+			top += parseInt(L.DomUtil.getStyle(el, 'borderTopWidth'), 10) || 0;
+			left += parseInt(L.DomUtil.getStyle(el, 'borderLeftWidth'), 10) || 0;
+
+			pos = L.DomUtil.getStyle(el, 'position');
+
+			if (el.offsetParent === docBody && pos === 'absolute') { break; }
+
+			if (pos === 'fixed') {
+				top  += docBody.scrollTop  || docEl.scrollTop  || 0;
+				left += docBody.scrollLeft || docEl.scrollLeft || 0;
+				break;
+			}
+
+			if (pos === 'relative' && !el.offsetLeft) {
+				var width = L.DomUtil.getStyle(el, 'width'),
+				    maxWidth = L.DomUtil.getStyle(el, 'max-width'),
+				    r = el.getBoundingClientRect();
+
+				if (width !== 'none' || maxWidth !== 'none') {
+					left += r.left + el.clientLeft;
+				}
+
+				//calculate full y offset since we're breaking out of the loop
+				top += r.top + (docBody.scrollTop  || docEl.scrollTop  || 0);
+
+				break;
+			}
+
+			el = el.offsetParent;
+
+		} while (el);
+
+		el = element;
+
+		do {
+			if (el === docBody) { break; }
+
+			top  -= el.scrollTop  || 0;
+			left -= el.scrollLeft || 0;
+
+			el = el.parentNode;
+		} while (el);
+
+		return new L.Point(left, top);
+	},
+
+	documentIsLtr: function () {
+		if (!L.DomUtil._docIsLtrCached) {
+			L.DomUtil._docIsLtrCached = true;
+			L.DomUtil._docIsLtr = L.DomUtil.getStyle(document.body, 'direction') === 'ltr';
+		}
+		return L.DomUtil._docIsLtr;
+	},
+
+	create: function (tagName, className, container) {
+
+		var el = document.createElement(tagName);
+		el.className = className;
+
+		if (container) {
+			container.appendChild(el);
+		}
+
+		return el;
+	},
+
+	hasClass: function (el, name) {
+		if (el.classList !== undefined) {
+			return el.classList.contains(name);
+		}
+		var className = L.DomUtil._getClass(el);
+		return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
+	},
+
+	addClass: function (el, name) {
+		if (el.classList !== undefined) {
+			var classes = L.Util.splitWords(name);
+			for (var i = 0, len = classes.length; i < len; i++) {
+				el.classList.add(classes[i]);
+			}
+		} else if (!L.DomUtil.hasClass(el, name)) {
+			var className = L.DomUtil._getClass(el);
+			L.DomUtil._setClass(el, (className ? className + ' ' : '') + name);
+		}
+	},
+
+	removeClass: function (el, name) {
+		if (el.classList !== undefined) {
+			el.classList.remove(name);
+		} else {
+			L.DomUtil._setClass(el, L.Util.trim((' ' + L.DomUtil._getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
+		}
+	},
+
+	_setClass: function (el, name) {
+		if (el.className.baseVal === undefined) {
+			el.className = name;
+		} else {
+			// in case of SVG element
+			el.className.baseVal = name;
+		}
+	},
+
+	_getClass: function (el) {
+		return el.className.baseVal === undefined ? el.className : el.className.baseVal;
+	},
+
+	setOpacity: function (el, value) {
+
+		if ('opacity' in el.style) {
+			el.style.opacity = value;
+
+		} else if ('filter' in el.style) {
+
+			var filter = false,
+			    filterName = 'DXImageTransform.Microsoft.Alpha';
+
+			// filters collection throws an error if we try to retrieve a filter that doesn't exist
+			try {
+				filter = el.filters.item(filterName);
+			} catch (e) {
+				// don't set opacity to 1 if we haven't already set an opacity,
+				// it isn't needed and breaks transparent pngs.
+				if (value === 1) { return; }
+			}
+
+			value = Math.round(value * 100);
+
+			if (filter) {
+				filter.Enabled = (value !== 100);
+				filter.Opacity = value;
+			} else {
+				el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+			}
+		}
+	},
+
+	testProp: function (props) {
+
+		var style = document.documentElement.style;
+
+		for (var i = 0; i < props.length; i++) {
+			if (props[i] in style) {
+				return props[i];
+			}
+		}
+		return false;
+	},
+
+	getTranslateString: function (point) {
+		// on WebKit browsers (Chrome/Safari/iOS Safari/Android) using translate3d instead of translate
+		// makes animation smoother as it ensures HW accel is used. Firefox 13 doesn't care
+		// (same speed either way), Opera 12 doesn't support translate3d
+
+		var is3d = L.Browser.webkit3d,
+		    open = 'translate' + (is3d ? '3d' : '') + '(',
+		    close = (is3d ? ',0' : '') + ')';
+
+		return open + point.x + 'px,' + point.y + 'px' + close;
+	},
+
+	getScaleString: function (scale, origin) {
+
+		var preTranslateStr = L.DomUtil.getTranslateString(origin.add(origin.multiplyBy(-1 * scale))),
+		    scaleStr = ' scale(' + scale + ') ';
+
+		return preTranslateStr + scaleStr;
+	},
+
+	setPosition: function (el, point, disable3D) { // (HTMLElement, Point[, Boolean])
+
+		// jshint camelcase: false
+		el._leaflet_pos = point;
+
+		if (!disable3D && L.Browser.any3d) {
+			el.style[L.DomUtil.TRANSFORM] =  L.DomUtil.getTranslateString(point);
+		} else {
+			el.style.left = point.x + 'px';
+			el.style.top = point.y + 'px';
+		}
+	},
+
+	getPosition: function (el) {
+		// this method is only used for elements previously positioned using setPosition,
+		// so it's safe to cache the position for performance
+
+		// jshint camelcase: false
+		return el._leaflet_pos;
+	}
+};
+
+
+// prefix style property names
+
+L.DomUtil.TRANSFORM = L.DomUtil.testProp(
+        ['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform']);
+
+// webkitTransition comes first because some browser versions that drop vendor prefix don't do
+// the same for the transitionend event, in particular the Android 4.1 stock browser
+
+L.DomUtil.TRANSITION = L.DomUtil.testProp(
+        ['webkitTransition', 'transition', 'OTransition', 'MozTransition', 'msTransition']);
+
+L.DomUtil.TRANSITION_END =
+        L.DomUtil.TRANSITION === 'webkitTransition' || L.DomUtil.TRANSITION === 'OTransition' ?
+        L.DomUtil.TRANSITION + 'End' : 'transitionend';
+
+(function () {
+    if ('onselectstart' in document) {
+        L.extend(L.DomUtil, {
+            disableTextSelection: function () {
+                L.DomEvent.on(window, 'selectstart', L.DomEvent.preventDefault);
+            },
+
+            enableTextSelection: function () {
+                L.DomEvent.off(window, 'selectstart', L.DomEvent.preventDefault);
+            }
+        });
+    } else {
+        var userSelectProperty = L.DomUtil.testProp(
+            ['userSelect', 'WebkitUserSelect', 'OUserSelect', 'MozUserSelect', 'msUserSelect']);
+
+        L.extend(L.DomUtil, {
+            disableTextSelection: function () {
+                if (userSelectProperty) {
+                    var style = document.documentElement.style;
+                    this._userSelect = style[userSelectProperty];
+                    style[userSelectProperty] = 'none';
+                }
+            },
+
+            enableTextSelection: function () {
+                if (userSelectProperty) {
+                    document.documentElement.style[userSelectProperty] = this._userSelect;
+                    delete this._userSelect;
+                }
+            }
+        });
+    }
+
+	L.extend(L.DomUtil, {
+		disableImageDrag: function () {
+			L.DomEvent.on(window, 'dragstart', L.DomEvent.preventDefault);
+		},
+
+		enableImageDrag: function () {
+			L.DomEvent.off(window, 'dragstart', L.DomEvent.preventDefault);
+		}
+	});
+})();
+
+
+/*
+ * L.LatLng represents a geographical point with latitude and longitude coordinates.
+ */
+
+L.LatLng = function (lat, lng, alt) { // (Number, Number, Number)
+	lat = parseFloat(lat);
+	lng = parseFloat(lng);
+
+	if (isNaN(lat) || isNaN(lng)) {
+		throw new Error('Invalid LatLng object: (' + lat + ', ' + lng + ')');
+	}
+
+	this.lat = lat;
+	this.lng = lng;
+
+	if (alt !== undefined) {
+		this.alt = parseFloat(alt);
+	}
+};
+
+L.extend(L.LatLng, {
+	DEG_TO_RAD: Math.PI / 180,
+	RAD_TO_DEG: 180 / Math.PI,
+	MAX_MARGIN: 1.0E-9 // max margin of error for the "equals" check
+});
+
+L.LatLng.prototype = {
+	equals: function (obj) { // (LatLng) -> Boolean
+		if (!obj) { return false; }
+
+		obj = L.latLng(obj);
+
+		var margin = Math.max(
+		        Math.abs(this.lat - obj.lat),
+		        Math.abs(this.lng - obj.lng));
+
+		return margin <= L.LatLng.MAX_MARGIN;
+	},
+
+	toString: function (precision) { // (Number) -> String
+		return 'LatLng(' +
+		        L.Util.formatNum(this.lat, precision) + ', ' +
+		        L.Util.formatNum(this.lng, precision) + ')';
+	},
+
+	// Haversine distance formula, see http://en.wikipedia.org/wiki/Haversine_formula
+	// TODO move to projection code, LatLng shouldn't know about Earth
+	distanceTo: function (other) { // (LatLng) -> Number
+		other = L.latLng(other);
+
+		var R = 6378137, // earth radius in meters
+		    d2r = L.LatLng.DEG_TO_RAD,
+		    dLat = (other.lat - this.lat) * d2r,
+		    dLon = (other.lng - this.lng) * d2r,
+		    lat1 = this.lat * d2r,
+		    lat2 = other.lat * d2r,
+		    sin1 = Math.sin(dLat / 2),
+		    sin2 = Math.sin(dLon / 2);
+
+		var a = sin1 * sin1 + sin2 * sin2 * Math.cos(lat1) * Math.cos(lat2);
+
+		return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	},
+
+	wrap: function (a, b) { // (Number, Number) -> LatLng
+		var lng = this.lng;
+
+		a = a || -180;
+		b = b ||  180;
+
+		lng = (lng + b) % (b - a) + (lng < a || lng === b ? b : a);
+
+		return new L.LatLng(this.lat, lng);
+	}
+};
+
+L.latLng = function (a, b) { // (LatLng) or ([Number, Number]) or (Number, Number)
+	if (a instanceof L.LatLng) {
+		return a;
+	}
+	if (L.Util.isArray(a)) {
+		if (typeof a[0] === 'number' || typeof a[0] === 'string') {
+			return new L.LatLng(a[0], a[1], a[2]);
+		} else {
+			return null;
+		}
+	}
+	if (a === undefined || a === null) {
+		return a;
+	}
+	if (typeof a === 'object' && 'lat' in a) {
+		return new L.LatLng(a.lat, 'lng' in a ? a.lng : a.lon);
+	}
+	if (b === undefined) {
+		return null;
+	}
+	return new L.LatLng(a, b);
+};
+
+
+
+/*
+ * L.LatLngBounds represents a rectangular area on the map in geographical coordinates.
+ */
+
+L.LatLngBounds = function (southWest, northEast) { // (LatLng, LatLng) or (LatLng[])
+	if (!southWest) { return; }
+
+	var latlngs = northEast ? [southWest, northEast] : southWest;
+
+	for (var i = 0, len = latlngs.length; i < len; i++) {
+		this.extend(latlngs[i]);
+	}
+};
+
+L.LatLngBounds.prototype = {
+	// extend the bounds to contain the given point or bounds
+	extend: function (obj) { // (LatLng) or (LatLngBounds)
+		if (!obj) { return this; }
+
+		var latLng = L.latLng(obj);
+		if (latLng !== null) {
+			obj = latLng;
+		} else {
+			obj = L.latLngBounds(obj);
+		}
+
+		if (obj instanceof L.LatLng) {
+			if (!this._southWest && !this._northEast) {
+				this._southWest = new L.LatLng(obj.lat, obj.lng);
+				this._northEast = new L.LatLng(obj.lat, obj.lng);
+			} else {
+				this._southWest.lat = Math.min(obj.lat, this._southWest.lat);
+				this._southWest.lng = Math.min(obj.lng, this._southWest.lng);
+
+				this._northEast.lat = Math.max(obj.lat, this._northEast.lat);
+				this._northEast.lng = Math.max(obj.lng, this._northEast.lng);
+			}
+		} else if (obj instanceof L.LatLngBounds) {
+			this.extend(obj._southWest);
+			this.extend(obj._northEast);
+		}
+		return this;
+	},
+
+	// extend the bounds by a percentage
+	pad: function (bufferRatio) { // (Number) -> LatLngBounds
+		var sw = this._southWest,
+		    ne = this._northEast,
+		    heightBuffer = Math.abs(sw.lat - ne.lat) * bufferRatio,
+		    widthBuffer = Math.abs(sw.lng - ne.lng) * bufferRatio;
+
+		return new L.LatLngBounds(
+		        new L.LatLng(sw.lat - heightBuffer, sw.lng - widthBuffer),
+		        new L.LatLng(ne.lat + heightBuffer, ne.lng + widthBuffer));
+	},
+
+	getCenter: function () { // -> LatLng
+		return new L.LatLng(
+		        (this._southWest.lat + this._northEast.lat) / 2,
+		        (this._southWest.lng + this._northEast.lng) / 2);
+	},
+
+	getSouthWest: function () {
+		return this._southWest;
+	},
+
+	getNorthEast: function () {
+		return this._northEast;
+	},
+
+	getNorthWest: function () {
+		return new L.LatLng(this.getNorth(), this.getWest());
+	},
+
+	getSouthEast: function () {
+		return new L.LatLng(this.getSouth(), this.getEast());
+	},
+
+	getWest: function () {
+		return this._southWest.lng;
+	},
+
+	getSouth: function () {
+		return this._southWest.lat;
+	},
+
+	getEast: function () {
+		return this._northEast.lng;
+	},
+
+	getNorth: function () {
+		return this._northEast.lat;
+	},
+
+	contains: function (obj) { // (LatLngBounds) or (LatLng) -> Boolean
+		if (typeof obj[0] === 'number' || obj instanceof L.LatLng) {
+			obj = L.latLng(obj);
+		} else {
+			obj = L.latLngBounds(obj);
+		}
+
+		var sw = this._southWest,
+		    ne = this._northEast,
+		    sw2, ne2;
+
+		if (obj instanceof L.LatLngBounds) {
+			sw2 = obj.getSouthWest();
+			ne2 = obj.getNorthEast();
+		} else {
+			sw2 = ne2 = obj;
+		}
+
+		return (sw2.lat >= sw.lat) && (ne2.lat <= ne.lat) &&
+		       (sw2.lng >= sw.lng) && (ne2.lng <= ne.lng);
+	},
+
+	intersects: function (bounds) { // (LatLngBounds)
+		bounds = L.latLngBounds(bounds);
+
+		var sw = this._southWest,
+		    ne = this._northEast,
+		    sw2 = bounds.getSouthWest(),
+		    ne2 = bounds.getNorthEast(),
+
+		    latIntersects = (ne2.lat >= sw.lat) && (sw2.lat <= ne.lat),
+		    lngIntersects = (ne2.lng >= sw.lng) && (sw2.lng <= ne.lng);
+
+		return latIntersects && lngIntersects;
+	},
+
+	toBBoxString: function () {
+		return [this.getWest(), this.getSouth(), this.getEast(), this.getNorth()].join(',');
+	},
+
+	equals: function (bounds) { // (LatLngBounds)
+		if (!bounds) { return false; }
+
+		bounds = L.latLngBounds(bounds);
+
+		return this._southWest.equals(bounds.getSouthWest()) &&
+		       this._northEast.equals(bounds.getNorthEast());
+	},
+
+	isValid: function () {
+		return !!(this._southWest && this._northEast);
+	}
+};
+
+//TODO International date line?
+
+L.latLngBounds = function (a, b) { // (LatLngBounds) or (LatLng, LatLng)
+	if (!a || a instanceof L.LatLngBounds) {
+		return a;
+	}
+	return new L.LatLngBounds(a, b);
+};
+
+
+/*
+ * L.Projection contains various geographical projections used by CRS classes.
+ */
+
+L.Projection = {};
+
+
+/*
+ * Spherical Mercator is the most popular map projection, used by EPSG:3857 CRS used by default.
+ */
+
+L.Projection.SphericalMercator = {
+	MAX_LATITUDE: 85.0511287798,
+
+	project: function (latlng) { // (LatLng) -> Point
+		var d = L.LatLng.DEG_TO_RAD,
+		    max = this.MAX_LATITUDE,
+		    lat = Math.max(Math.min(max, latlng.lat), -max),
+		    x = latlng.lng * d,
+		    y = lat * d;
+
+		y = Math.log(Math.tan((Math.PI / 4) + (y / 2)));
+
+		return new L.Point(x, y);
+	},
+
+	unproject: function (point) { // (Point, Boolean) -> LatLng
+		var d = L.LatLng.RAD_TO_DEG,
+		    lng = point.x * d,
+		    lat = (2 * Math.atan(Math.exp(point.y)) - (Math.PI / 2)) * d;
+
+		return new L.LatLng(lat, lng);
+	}
+};
+
+
+/*
+ * Simple equirectangular (Plate Carree) projection, used by CRS like EPSG:4326 and Simple.
+ */
+
+L.Projection.LonLat = {
+	project: function (latlng) {
+		return new L.Point(latlng.lng, latlng.lat);
+	},
+
+	unproject: function (point) {
+		return new L.LatLng(point.y, point.x);
+	}
+};
+
+
+/*
+ * L.CRS is a base object for all defined CRS (Coordinate Reference Systems) in Leaflet.
+ */
+
+L.CRS = {
+	latLngToPoint: function (latlng, zoom) { // (LatLng, Number) -> Point
+		var projectedPoint = this.projection.project(latlng),
+		    scale = this.scale(zoom);
+
+		return this.transformation._transform(projectedPoint, scale);
+	},
+
+	pointToLatLng: function (point, zoom) { // (Point, Number[, Boolean]) -> LatLng
+		var scale = this.scale(zoom),
+		    untransformedPoint = this.transformation.untransform(point, scale);
+
+		return this.projection.unproject(untransformedPoint);
+	},
+
+	project: function (latlng) {
+		return this.projection.project(latlng);
+	},
+
+	scale: function (zoom) {
+		return 256 * Math.pow(2, zoom);
+	},
+
+	getSize: function (zoom) {
+		var s = this.scale(zoom);
+		return L.point(s, s);
+	}
+};
+
+
+/*
+ * A simple CRS that can be used for flat non-Earth maps like panoramas or game maps.
+ */
+
+L.CRS.Simple = L.extend({}, L.CRS, {
+	projection: L.Projection.LonLat,
+	transformation: new L.Transformation(1, 0, -1, 0),
+
+	scale: function (zoom) {
+		return Math.pow(2, zoom);
+	}
+});
+
+
+/*
+ * L.CRS.EPSG3857 (Spherical Mercator) is the most common CRS for web mapping
+ * and is used by Leaflet by default.
+ */
+
+L.CRS.EPSG3857 = L.extend({}, L.CRS, {
+	code: 'EPSG:3857',
+
+	projection: L.Projection.SphericalMercator,
+	transformation: new L.Transformation(0.5 / Math.PI, 0.5, -0.5 / Math.PI, 0.5),
+
+	project: function (latlng) { // (LatLng) -> Point
+		var projectedPoint = this.projection.project(latlng),
+		    earthRadius = 6378137;
+		return projectedPoint.multiplyBy(earthRadius);
+	}
+});
+
+L.CRS.EPSG900913 = L.extend({}, L.CRS.EPSG3857, {
+	code: 'EPSG:900913'
+});
+
+
+/*
+ * L.CRS.EPSG4326 is a CRS popular among advanced GIS specialists.
+ */
+
+L.CRS.EPSG4326 = L.extend({}, L.CRS, {
+	code: 'EPSG:4326',
+
+	projection: L.Projection.LonLat,
+	transformation: new L.Transformation(1 / 360, 0.5, -1 / 360, 0.5)
+});
+
+
+/*
+ * L.Map is the central class of the API - it is used to create a map.
+ */
+
+L.Map = L.Class.extend({
+
+	includes: L.Mixin.Events,
+
+	options: {
+		crs: L.CRS.EPSG3857,
+
+		/*
+		center: LatLng,
+		zoom: Number,
+		layers: Array,
+		*/
+
+		fadeAnimation: L.DomUtil.TRANSITION && !L.Browser.android23,
+		trackResize: true,
+		markerZoomAnimation: L.DomUtil.TRANSITION && L.Browser.any3d
+	},
+
+	initialize: function (id, options) { // (HTMLElement or String, Object)
+		options = L.setOptions(this, options);
+
+
+		this._initContainer(id);
+		this._initLayout();
+
+		// hack for https://github.com/Leaflet/Leaflet/issues/1980
+		this._onResize = L.bind(this._onResize, this);
+
+		this._initEvents();
+
+		if (options.maxBounds) {
+			this.setMaxBounds(options.maxBounds);
+		}
+
+		if (options.center && options.zoom !== undefined) {
+			this.setView(L.latLng(options.center), options.zoom, {reset: true});
+		}
+
+		this._handlers = [];
+
+		this._layers = {};
+		this._zoomBoundLayers = {};
+		this._tileLayersNum = 0;
+
+		this.callInitHooks();
+
+		this._addLayers(options.layers);
+	},
+
+
+	// public methods that modify map state
+
+	// replaced by animation-powered implementation in Map.PanAnimation.js
+	setView: function (center, zoom) {
+		zoom = zoom === undefined ? this.getZoom() : zoom;
+		this._resetView(L.latLng(center), this._limitZoom(zoom));
+		return this;
+	},
+
+	setZoom: function (zoom, options) {
+		if (!this._loaded) {
+			this._zoom = this._limitZoom(zoom);
+			return this;
+		}
+		return this.setView(this.getCenter(), zoom, {zoom: options});
+	},
+
+	zoomIn: function (delta, options) {
+		return this.setZoom(this._zoom + (delta || 1), options);
+	},
+
+	zoomOut: function (delta, options) {
+		return this.setZoom(this._zoom - (delta || 1), options);
+	},
+
+	setZoomAround: function (latlng, zoom, options) {
+		var scale = this.getZoomScale(zoom),
+		    viewHalf = this.getSize().divideBy(2),
+		    containerPoint = latlng instanceof L.Point ? latlng : this.latLngToContainerPoint(latlng),
+
+		    centerOffset = containerPoint.subtract(viewHalf).multiplyBy(1 - 1 / scale),
+		    newCenter = this.containerPointToLatLng(viewHalf.add(centerOffset));
+
+		return this.setView(newCenter, zoom, {zoom: options});
+	},
+
+	fitBounds: function (bounds, options) {
+
+		options = options || {};
+		bounds = bounds.getBounds ? bounds.getBounds() : L.latLngBounds(bounds);
+
+		var paddingTL = L.point(options.paddingTopLeft || options.padding || [0, 0]),
+		    paddingBR = L.point(options.paddingBottomRight || options.padding || [0, 0]),
+
+		    zoom = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR));
+
+		zoom = (options.maxZoom) ? Math.min(options.maxZoom, zoom) : zoom;
+
+		var paddingOffset = paddingBR.subtract(paddingTL).divideBy(2),
+
+		    swPoint = this.project(bounds.getSouthWest(), zoom),
+		    nePoint = this.project(bounds.getNorthEast(), zoom),
+		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom);
+
+		return this.setView(center, zoom, options);
+	},
+
+	fitWorld: function (options) {
+		return this.fitBounds([[-90, -180], [90, 180]], options);
+	},
+
+	panTo: function (center, options) { // (LatLng)
+		return this.setView(center, this._zoom, {pan: options});
+	},
+
+	panBy: function (offset) { // (Point)
+		// replaced with animated panBy in Map.PanAnimation.js
+		this.fire('movestart');
+
+		this._rawPanBy(L.point(offset));
+
+		this.fire('move');
+		return this.fire('moveend');
+	},
+
+	setMaxBounds: function (bounds) {
+		bounds = L.latLngBounds(bounds);
+
+		this.options.maxBounds = bounds;
+
+		if (!bounds) {
+			return this.off('moveend', this._panInsideMaxBounds, this);
+		}
+
+		if (this._loaded) {
+			this._panInsideMaxBounds();
+		}
+
+		return this.on('moveend', this._panInsideMaxBounds, this);
+	},
+
+	panInsideBounds: function (bounds, options) {
+		var center = this.getCenter(),
+			newCenter = this._limitCenter(center, this._zoom, bounds);
+
+		if (center.equals(newCenter)) { return this; }
+
+		return this.panTo(newCenter, options);
+	},
+
+	addLayer: function (layer) {
+		// TODO method is too big, refactor
+
+		var id = L.stamp(layer);
+
+		if (this._layers[id]) { return this; }
+
+		this._layers[id] = layer;
+
+		// TODO getMaxZoom, getMinZoom in ILayer (instead of options)
+		if (layer.options && (!isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom))) {
+			this._zoomBoundLayers[id] = layer;
+			this._updateZoomLevels();
+		}
+
+		// TODO looks ugly, refactor!!!
+		if (this.options.zoomAnimation && L.TileLayer && (layer instanceof L.TileLayer)) {
+			this._tileLayersNum++;
+			this._tileLayersToLoad++;
+			layer.on('load', this._onTileLayerLoad, this);
+		}
+
+		if (this._loaded) {
+			this._layerAdd(layer);
+		}
+
+		return this;
+	},
+
+	removeLayer: function (layer) {
+		var id = L.stamp(layer);
+
+		if (!this._layers[id]) { return this; }
+
+		if (this._loaded) {
+			layer.onRemove(this);
+		}
+
+		delete this._layers[id];
+
+		if (this._loaded) {
+			this.fire('layerremove', {layer: layer});
+		}
+
+		if (this._zoomBoundLayers[id]) {
+			delete this._zoomBoundLayers[id];
+			this._updateZoomLevels();
+		}
+
+		// TODO looks ugly, refactor
+		if (this.options.zoomAnimation && L.TileLayer && (layer instanceof L.TileLayer)) {
+			this._tileLayersNum--;
+			this._tileLayersToLoad--;
+			layer.off('load', this._onTileLayerLoad, this);
+		}
+
+		return this;
+	},
+
+	hasLayer: function (layer) {
+		if (!layer) { return false; }
+
+		return (L.stamp(layer) in this._layers);
+	},
+
+	eachLayer: function (method, context) {
+		for (var i in this._layers) {
+			method.call(context, this._layers[i]);
+		}
+		return this;
+	},
+
+	invalidateSize: function (options) {
+		if (!this._loaded) { return this; }
+
+		options = L.extend({
+			animate: false,
+			pan: true
+		}, options === true ? {animate: true} : options);
+
+		var oldSize = this.getSize();
+		this._sizeChanged = true;
+		this._initialCenter = null;
+
+		var newSize = this.getSize(),
+		    oldCenter = oldSize.divideBy(2).round(),
+		    newCenter = newSize.divideBy(2).round(),
+		    offset = oldCenter.subtract(newCenter);
+
+		if (!offset.x && !offset.y) { return this; }
+
+		if (options.animate && options.pan) {
+			this.panBy(offset);
+
+		} else {
+			if (options.pan) {
+				this._rawPanBy(offset);
+			}
+
+			this.fire('move');
+
+			if (options.debounceMoveend) {
+				clearTimeout(this._sizeTimer);
+				this._sizeTimer = setTimeout(L.bind(this.fire, this, 'moveend'), 200);
+			} else {
+				this.fire('moveend');
+			}
+		}
+
+		return this.fire('resize', {
+			oldSize: oldSize,
+			newSize: newSize
+		});
+	},
+
+	// TODO handler.addTo
+	addHandler: function (name, HandlerClass) {
+		if (!HandlerClass) { return this; }
+
+		var handler = this[name] = new HandlerClass(this);
+
+		this._handlers.push(handler);
+
+		if (this.options[name]) {
+			handler.enable();
+		}
+
+		return this;
+	},
+
+	remove: function () {
+		if (this._loaded) {
+			this.fire('unload');
+		}
+
+		this._initEvents('off');
+
+		try {
+			// throws error in IE6-8
+			delete this._container._leaflet;
+		} catch (e) {
+			this._container._leaflet = undefined;
+		}
+
+		this._clearPanes();
+		if (this._clearControlPos) {
+			this._clearControlPos();
+		}
+
+		this._clearHandlers();
+
+		return this;
+	},
+
+
+	// public methods for getting map state
+
+	getCenter: function () { // (Boolean) -> LatLng
+		this._checkIfLoaded();
+
+		if (this._initialCenter && !this._moved()) {
+			return this._initialCenter;
+		}
+		return this.layerPointToLatLng(this._getCenterLayerPoint());
+	},
+
+	getZoom: function () {
+		return this._zoom;
+	},
+
+	getBounds: function () {
+		var bounds = this.getPixelBounds(),
+		    sw = this.unproject(bounds.getBottomLeft()),
+		    ne = this.unproject(bounds.getTopRight());
+
+		return new L.LatLngBounds(sw, ne);
+	},
+
+	getMinZoom: function () {
+		return this.options.minZoom === undefined ?
+			(this._layersMinZoom === undefined ? 0 : this._layersMinZoom) :
+			this.options.minZoom;
+	},
+
+	getMaxZoom: function () {
+		return this.options.maxZoom === undefined ?
+			(this._layersMaxZoom === undefined ? Infinity : this._layersMaxZoom) :
+			this.options.maxZoom;
+	},
+
+	getBoundsZoom: function (bounds, inside, padding) { // (LatLngBounds[, Boolean, Point]) -> Number
+		bounds = L.latLngBounds(bounds);
+
+		var zoom = this.getMinZoom() - (inside ? 1 : 0),
+		    maxZoom = this.getMaxZoom(),
+		    size = this.getSize(),
+
+		    nw = bounds.getNorthWest(),
+		    se = bounds.getSouthEast(),
+
+		    zoomNotFound = true,
+		    boundsSize;
+
+		padding = L.point(padding || [0, 0]);
+
+		do {
+			zoom++;
+			boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)).add(padding);
+			zoomNotFound = !inside ? size.contains(boundsSize) : boundsSize.x < size.x || boundsSize.y < size.y;
+
+		} while (zoomNotFound && zoom <= maxZoom);
+
+		if (zoomNotFound && inside) {
+			return null;
+		}
+
+		return inside ? zoom : zoom - 1;
+	},
+
+	getSize: function () {
+		if (!this._size || this._sizeChanged) {
+			this._size = new L.Point(
+				this._container.clientWidth,
+				this._container.clientHeight);
+
+			this._sizeChanged = false;
+		}
+		return this._size.clone();
+	},
+
+	getPixelBounds: function () {
+		var topLeftPoint = this._getTopLeftPoint();
+		return new L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
+	},
+
+	getPixelOrigin: function () {
+		this._checkIfLoaded();
+		return this._initialTopLeftPoint;
+	},
+
+	getPanes: function () {
+		return this._panes;
+	},
+
+	getContainer: function () {
+		return this._container;
+	},
+
+
+	// TODO replace with universal implementation after refactoring projections
+
+	getZoomScale: function (toZoom) {
+		var crs = this.options.crs;
+		return crs.scale(toZoom) / crs.scale(this._zoom);
+	},
+
+	getScaleZoom: function (scale) {
+		return this._zoom + (Math.log(scale) / Math.LN2);
+	},
+
+
+	// conversion methods
+
+	project: function (latlng, zoom) { // (LatLng[, Number]) -> Point
+		zoom = zoom === undefined ? this._zoom : zoom;
+		return this.options.crs.latLngToPoint(L.latLng(latlng), zoom);
+	},
+
+	unproject: function (point, zoom) { // (Point[, Number]) -> LatLng
+		zoom = zoom === undefined ? this._zoom : zoom;
+		return this.options.crs.pointToLatLng(L.point(point), zoom);
+	},
+
+	layerPointToLatLng: function (point) { // (Point)
+		var projectedPoint = L.point(point).add(this.getPixelOrigin());
+		return this.unproject(projectedPoint);
+	},
+
+	latLngToLayerPoint: function (latlng) { // (LatLng)
+		var projectedPoint = this.project(L.latLng(latlng))._round();
+		return projectedPoint._subtract(this.getPixelOrigin());
+	},
+
+	containerPointToLayerPoint: function (point) { // (Point)
+		return L.point(point).subtract(this._getMapPanePos());
+	},
+
+	layerPointToContainerPoint: function (point) { // (Point)
+		return L.point(point).add(this._getMapPanePos());
+	},
+
+	containerPointToLatLng: function (point) {
+		var layerPoint = this.containerPointToLayerPoint(L.point(point));
+		return this.layerPointToLatLng(layerPoint);
+	},
+
+	latLngToContainerPoint: function (latlng) {
+		return this.layerPointToContainerPoint(this.latLngToLayerPoint(L.latLng(latlng)));
+	},
+
+	mouseEventToContainerPoint: function (e) { // (MouseEvent)
+		return L.DomEvent.getMousePosition(e, this._container);
+	},
+
+	mouseEventToLayerPoint: function (e) { // (MouseEvent)
+		return this.containerPointToLayerPoint(this.mouseEventToContainerPoint(e));
+	},
+
+	mouseEventToLatLng: function (e) { // (MouseEvent)
+		return this.layerPointToLatLng(this.mouseEventToLayerPoint(e));
+	},
+
+
+	// map initialization methods
+
+	_initContainer: function (id) {
+		var container = this._container = L.DomUtil.get(id);
+
+		if (!container) {
+			throw new Error('Map container not found.');
+		} else if (container._leaflet) {
+			throw new Error('Map container is already initialized.');
+		}
+
+		container._leaflet = true;
+	},
+
+	_initLayout: function () {
+		var container = this._container;
+
+		L.DomUtil.addClass(container, 'leaflet-container' +
+			(L.Browser.touch ? ' leaflet-touch' : '') +
+			(L.Browser.retina ? ' leaflet-retina' : '') +
+			(L.Browser.ielt9 ? ' leaflet-oldie' : '') +
+			(this.options.fadeAnimation ? ' leaflet-fade-anim' : ''));
+
+		var position = L.DomUtil.getStyle(container, 'position');
+
+		if (position !== 'absolute' && position !== 'relative' && position !== 'fixed') {
+			container.style.position = 'relative';
+		}
+
+		this._initPanes();
+
+		if (this._initControlPos) {
+			this._initControlPos();
+		}
+	},
+
+	_initPanes: function () {
+		var panes = this._panes = {};
+
+		this._mapPane = panes.mapPane = this._createPane('leaflet-map-pane', this._container);
+
+		this._tilePane = panes.tilePane = this._createPane('leaflet-tile-pane', this._mapPane);
+		panes.objectsPane = this._createPane('leaflet-objects-pane', this._mapPane);
+		panes.shadowPane = this._createPane('leaflet-shadow-pane');
+		panes.overlayPane = this._createPane('leaflet-overlay-pane');
+		panes.markerPane = this._createPane('leaflet-marker-pane');
+		panes.popupPane = this._createPane('leaflet-popup-pane');
+
+		var zoomHide = ' leaflet-zoom-hide';
+
+		if (!this.options.markerZoomAnimation) {
+			L.DomUtil.addClass(panes.markerPane, zoomHide);
+			L.DomUtil.addClass(panes.shadowPane, zoomHide);
+			L.DomUtil.addClass(panes.popupPane, zoomHide);
+		}
+	},
+
+	_createPane: function (className, container) {
+		return L.DomUtil.create('div', className, container || this._panes.objectsPane);
+	},
+
+	_clearPanes: function () {
+		this._container.removeChild(this._mapPane);
+	},
+
+	_addLayers: function (layers) {
+		layers = layers ? (L.Util.isArray(layers) ? layers : [layers]) : [];
+
+		for (var i = 0, len = layers.length; i < len; i++) {
+			this.addLayer(layers[i]);
+		}
+	},
+
+
+	// private methods that modify map state
+
+	_resetView: function (center, zoom, preserveMapOffset, afterZoomAnim) {
+
+		var zoomChanged = (this._zoom !== zoom);
+
+		if (!afterZoomAnim) {
+			this.fire('movestart');
+
+			if (zoomChanged) {
+				this.fire('zoomstart');
+			}
+		}
+
+		this._zoom = zoom;
+		this._initialCenter = center;
+
+		this._initialTopLeftPoint = this._getNewTopLeftPoint(center);
+
+		if (!preserveMapOffset) {
+			L.DomUtil.setPosition(this._mapPane, new L.Point(0, 0));
+		} else {
+			this._initialTopLeftPoint._add(this._getMapPanePos());
+		}
+
+		this._tileLayersToLoad = this._tileLayersNum;
+
+		var loading = !this._loaded;
+		this._loaded = true;
+
+		this.fire('viewreset', {hard: !preserveMapOffset});
+
+		if (loading) {
+			this.fire('load');
+			this.eachLayer(this._layerAdd, this);
+		}
+
+		this.fire('move');
+
+		if (zoomChanged || afterZoomAnim) {
+			this.fire('zoomend');
+		}
+
+		this.fire('moveend', {hard: !preserveMapOffset});
+	},
+
+	_rawPanBy: function (offset) {
+		L.DomUtil.setPosition(this._mapPane, this._getMapPanePos().subtract(offset));
+	},
+
+	_getZoomSpan: function () {
+		return this.getMaxZoom() - this.getMinZoom();
+	},
+
+	_updateZoomLevels: function () {
+		var i,
+			minZoom = Infinity,
+			maxZoom = -Infinity,
+			oldZoomSpan = this._getZoomSpan();
+
+		for (i in this._zoomBoundLayers) {
+			var layer = this._zoomBoundLayers[i];
+			if (!isNaN(layer.options.minZoom)) {
+				minZoom = Math.min(minZoom, layer.options.minZoom);
+			}
+			if (!isNaN(layer.options.maxZoom)) {
+				maxZoom = Math.max(maxZoom, layer.options.maxZoom);
+			}
+		}
+
+		if (i === undefined) { // we have no tilelayers
+			this._layersMaxZoom = this._layersMinZoom = undefined;
+		} else {
+			this._layersMaxZoom = maxZoom;
+			this._layersMinZoom = minZoom;
+		}
+
+		if (oldZoomSpan !== this._getZoomSpan()) {
+			this.fire('zoomlevelschange');
+		}
+	},
+
+	_panInsideMaxBounds: function () {
+		this.panInsideBounds(this.options.maxBounds);
+	},
+
+	_checkIfLoaded: function () {
+		if (!this._loaded) {
+			throw new Error('Set map center and zoom first.');
+		}
+	},
+
+	// map events
+
+	_initEvents: function (onOff) {
+		if (!L.DomEvent) { return; }
+
+		onOff = onOff || 'on';
+
+		L.DomEvent[onOff](this._container, 'click', this._onMouseClick, this);
+
+		var events = ['dblclick', 'mousedown', 'mouseup', 'mouseenter',
+		              'mouseleave', 'mousemove', 'contextmenu'],
+		    i, len;
+
+		for (i = 0, len = events.length; i < len; i++) {
+			L.DomEvent[onOff](this._container, events[i], this._fireMouseEvent, this);
+		}
+
+		if (this.options.trackResize) {
+			L.DomEvent[onOff](window, 'resize', this._onResize, this);
+		}
+	},
+
+	_onResize: function () {
+		L.Util.cancelAnimFrame(this._resizeRequest);
+		this._resizeRequest = L.Util.requestAnimFrame(
+		        function () { this.invalidateSize({debounceMoveend: true}); }, this, false, this._container);
+	},
+
+	_onMouseClick: function (e) {
+		if (!this._loaded || (!e._simulated &&
+		        ((this.dragging && this.dragging.moved()) ||
+		         (this.boxZoom  && this.boxZoom.moved()))) ||
+		            L.DomEvent._skipped(e)) { return; }
+
+		this.fire('preclick');
+		this._fireMouseEvent(e);
+	},
+
+	_fireMouseEvent: function (e) {
+		if (!this._loaded || L.DomEvent._skipped(e)) { return; }
+
+		var type = e.type;
+
+		type = (type === 'mouseenter' ? 'mouseover' : (type === 'mouseleave' ? 'mouseout' : type));
+
+		if (!this.hasEventListeners(type)) { return; }
+
+		if (type === 'contextmenu') {
+			L.DomEvent.preventDefault(e);
+		}
+
+		var containerPoint = this.mouseEventToContainerPoint(e),
+		    layerPoint = this.containerPointToLayerPoint(containerPoint),
+		    latlng = this.layerPointToLatLng(layerPoint);
+
+		this.fire(type, {
+			latlng: latlng,
+			layerPoint: layerPoint,
+			containerPoint: containerPoint,
+			originalEvent: e
+		});
+	},
+
+	_onTileLayerLoad: function () {
+		this._tileLayersToLoad--;
+		if (this._tileLayersNum && !this._tileLayersToLoad) {
+			this.fire('tilelayersload');
+		}
+	},
+
+	_clearHandlers: function () {
+		for (var i = 0, len = this._handlers.length; i < len; i++) {
+			this._handlers[i].disable();
+		}
+	},
+
+	whenReady: function (callback, context) {
+		if (this._loaded) {
+			callback.call(context || this, this);
+		} else {
+			this.on('load', callback, context);
+		}
+		return this;
+	},
+
+	_layerAdd: function (layer) {
+		layer.onAdd(this);
+		this.fire('layeradd', {layer: layer});
+	},
+
+
+	// private methods for getting map state
+
+	_getMapPanePos: function () {
+		return L.DomUtil.getPosition(this._mapPane);
+	},
+
+	_moved: function () {
+		var pos = this._getMapPanePos();
+		return pos && !pos.equals([0, 0]);
+	},
+
+	_getTopLeftPoint: function () {
+		return this.getPixelOrigin().subtract(this._getMapPanePos());
+	},
+
+	_getNewTopLeftPoint: function (center, zoom) {
+		var viewHalf = this.getSize()._divideBy(2);
+		// TODO round on display, not calculation to increase precision?
+		return this.project(center, zoom)._subtract(viewHalf)._round();
+	},
+
+	_latLngToNewLayerPoint: function (latlng, newZoom, newCenter) {
+		var topLeft = this._getNewTopLeftPoint(newCenter, newZoom).add(this._getMapPanePos());
+		return this.project(latlng, newZoom)._subtract(topLeft);
+	},
+
+	// layer point of the current center
+	_getCenterLayerPoint: function () {
+		return this.containerPointToLayerPoint(this.getSize()._divideBy(2));
+	},
+
+	// offset of the specified place to the current center in pixels
+	_getCenterOffset: function (latlng) {
+		return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
+	},
+
+	// adjust center for view to get inside bounds
+	_limitCenter: function (center, zoom, bounds) {
+
+		if (!bounds) { return center; }
+
+		var centerPoint = this.project(center, zoom),
+		    viewHalf = this.getSize().divideBy(2),
+		    viewBounds = new L.Bounds(centerPoint.subtract(viewHalf), centerPoint.add(viewHalf)),
+		    offset = this._getBoundsOffset(viewBounds, bounds, zoom);
+
+		return this.unproject(centerPoint.add(offset), zoom);
+	},
+
+	// adjust offset for view to get inside bounds
+	_limitOffset: function (offset, bounds) {
+		if (!bounds) { return offset; }
+
+		var viewBounds = this.getPixelBounds(),
+		    newBounds = new L.Bounds(viewBounds.min.add(offset), viewBounds.max.add(offset));
+
+		return offset.add(this._getBoundsOffset(newBounds, bounds));
+	},
+
+	// returns offset needed for pxBounds to get inside maxBounds at a specified zoom
+	_getBoundsOffset: function (pxBounds, maxBounds, zoom) {
+		var nwOffset = this.project(maxBounds.getNorthWest(), zoom).subtract(pxBounds.min),
+		    seOffset = this.project(maxBounds.getSouthEast(), zoom).subtract(pxBounds.max),
+
+		    dx = this._rebound(nwOffset.x, -seOffset.x),
+		    dy = this._rebound(nwOffset.y, -seOffset.y);
+
+		return new L.Point(dx, dy);
+	},
+
+	_rebound: function (left, right) {
+		return left + right > 0 ?
+			Math.round(left - right) / 2 :
+			Math.max(0, Math.ceil(left)) - Math.max(0, Math.floor(right));
+	},
+
+	_limitZoom: function (zoom) {
+		var min = this.getMinZoom(),
+		    max = this.getMaxZoom();
+
+		return Math.max(min, Math.min(max, zoom));
+	}
+});
+
+L.map = function (id, options) {
+	return new L.Map(id, options);
+};
+
+
+/*
+ * Mercator projection that takes into account that the Earth is not a perfect sphere.
+ * Less popular than spherical mercator; used by projections like EPSG:3395.
+ */
+
+L.Projection.Mercator = {
+	MAX_LATITUDE: 85.0840591556,
+
+	R_MINOR: 6356752.314245179,
+	R_MAJOR: 6378137,
+
+	project: function (latlng) { // (LatLng) -> Point
+		var d = L.LatLng.DEG_TO_RAD,
+		    max = this.MAX_LATITUDE,
+		    lat = Math.max(Math.min(max, latlng.lat), -max),
+		    r = this.R_MAJOR,
+		    r2 = this.R_MINOR,
+		    x = latlng.lng * d * r,
+		    y = lat * d,
+		    tmp = r2 / r,
+		    eccent = Math.sqrt(1.0 - tmp * tmp),
+		    con = eccent * Math.sin(y);
+
+		con = Math.pow((1 - con) / (1 + con), eccent * 0.5);
+
+		var ts = Math.tan(0.5 * ((Math.PI * 0.5) - y)) / con;
+		y = -r * Math.log(ts);
+
+		return new L.Point(x, y);
+	},
+
+	unproject: function (point) { // (Point, Boolean) -> LatLng
+		var d = L.LatLng.RAD_TO_DEG,
+		    r = this.R_MAJOR,
+		    r2 = this.R_MINOR,
+		    lng = point.x * d / r,
+		    tmp = r2 / r,
+		    eccent = Math.sqrt(1 - (tmp * tmp)),
+		    ts = Math.exp(- point.y / r),
+		    phi = (Math.PI / 2) - 2 * Math.atan(ts),
+		    numIter = 15,
+		    tol = 1e-7,
+		    i = numIter,
+		    dphi = 0.1,
+		    con;
+
+		while ((Math.abs(dphi) > tol) && (--i > 0)) {
+			con = eccent * Math.sin(phi);
+			dphi = (Math.PI / 2) - 2 * Math.atan(ts *
+			            Math.pow((1.0 - con) / (1.0 + con), 0.5 * eccent)) - phi;
+			phi += dphi;
+		}
+
+		return new L.LatLng(phi * d, lng);
+	}
+};
+
+
+
+L.CRS.EPSG3395 = L.extend({}, L.CRS, {
+	code: 'EPSG:3395',
+
+	projection: L.Projection.Mercator,
+
+	transformation: (function () {
+		var m = L.Projection.Mercator,
+		    r = m.R_MAJOR,
+		    scale = 0.5 / (Math.PI * r);
+
+		return new L.Transformation(scale, 0.5, -scale, 0.5);
+	}())
+});
+
+
+/*
+ * L.TileLayer is used for standard xyz-numbered tile layers.
+ */
+
+L.TileLayer = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	options: {
+		minZoom: 0,
+		maxZoom: 18,
+		tileSize: 256,
+		subdomains: 'abc',
+		errorTileUrl: '',
+		attribution: '',
+		zoomOffset: 0,
+		opacity: 1,
+		/*
+		maxNativeZoom: null,
+		zIndex: null,
+		tms: false,
+		continuousWorld: false,
+		noWrap: false,
+		zoomReverse: false,
+		detectRetina: false,
+		reuseTiles: false,
+		bounds: false,
+		*/
+		unloadInvisibleTiles: L.Browser.mobile,
+		updateWhenIdle: L.Browser.mobile
+	},
+
+	initialize: function (url, options) {
+		options = L.setOptions(this, options);
+
+		// detecting retina displays, adjusting tileSize and zoom levels
+		if (options.detectRetina && L.Browser.retina && options.maxZoom > 0) {
+
+			options.tileSize = Math.floor(options.tileSize / 2);
+			options.zoomOffset++;
+
+			if (options.minZoom > 0) {
+				options.minZoom--;
+			}
+			this.options.maxZoom--;
+		}
+
+		if (options.bounds) {
+			options.bounds = L.latLngBounds(options.bounds);
+		}
+
+		this._url = url;
+
+		var subdomains = this.options.subdomains;
+
+		if (typeof subdomains === 'string') {
+			this.options.subdomains = subdomains.split('');
+		}
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+		this._animated = map._zoomAnimated;
+
+		// create a container div for tiles
+		this._initContainer();
+
+		// set up events
+		map.on({
+			'viewreset': this._reset,
+			'moveend': this._update
+		}, this);
+
+		if (this._animated) {
+			map.on({
+				'zoomanim': this._animateZoom,
+				'zoomend': this._endZoomAnim
+			}, this);
+		}
+
+		if (!this.options.updateWhenIdle) {
+			this._limitedUpdate = L.Util.limitExecByInterval(this._update, 150, this);
+			map.on('move', this._limitedUpdate, this);
+		}
+
+		this._reset();
+		this._update();
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		this._container.parentNode.removeChild(this._container);
+
+		map.off({
+			'viewreset': this._reset,
+			'moveend': this._update
+		}, this);
+
+		if (this._animated) {
+			map.off({
+				'zoomanim': this._animateZoom,
+				'zoomend': this._endZoomAnim
+			}, this);
+		}
+
+		if (!this.options.updateWhenIdle) {
+			map.off('move', this._limitedUpdate, this);
+		}
+
+		this._container = null;
+		this._map = null;
+	},
+
+	bringToFront: function () {
+		var pane = this._map._panes.tilePane;
+
+		if (this._container) {
+			pane.appendChild(this._container);
+			this._setAutoZIndex(pane, Math.max);
+		}
+
+		return this;
+	},
+
+	bringToBack: function () {
+		var pane = this._map._panes.tilePane;
+
+		if (this._container) {
+			pane.insertBefore(this._container, pane.firstChild);
+			this._setAutoZIndex(pane, Math.min);
+		}
+
+		return this;
+	},
+
+	getAttribution: function () {
+		return this.options.attribution;
+	},
+
+	getContainer: function () {
+		return this._container;
+	},
+
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
+
+		if (this._map) {
+			this._updateOpacity();
+		}
+
+		return this;
+	},
+
+	setZIndex: function (zIndex) {
+		this.options.zIndex = zIndex;
+		this._updateZIndex();
+
+		return this;
+	},
+
+	setUrl: function (url, noRedraw) {
+		this._url = url;
+
+		if (!noRedraw) {
+			this.redraw();
+		}
+
+		return this;
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this._reset({hard: true});
+			this._update();
+		}
+		return this;
+	},
+
+	_updateZIndex: function () {
+		if (this._container && this.options.zIndex !== undefined) {
+			this._container.style.zIndex = this.options.zIndex;
+		}
+	},
+
+	_setAutoZIndex: function (pane, compare) {
+
+		var layers = pane.children,
+		    edgeZIndex = -compare(Infinity, -Infinity), // -Infinity for max, Infinity for min
+		    zIndex, i, len;
+
+		for (i = 0, len = layers.length; i < len; i++) {
+
+			if (layers[i] !== this._container) {
+				zIndex = parseInt(layers[i].style.zIndex, 10);
+
+				if (!isNaN(zIndex)) {
+					edgeZIndex = compare(edgeZIndex, zIndex);
+				}
+			}
+		}
+
+		this.options.zIndex = this._container.style.zIndex =
+		        (isFinite(edgeZIndex) ? edgeZIndex : 0) + compare(1, -1);
+	},
+
+	_updateOpacity: function () {
+		var i,
+		    tiles = this._tiles;
+
+		if (L.Browser.ielt9) {
+			for (i in tiles) {
+				L.DomUtil.setOpacity(tiles[i], this.options.opacity);
+			}
+		} else {
+			L.DomUtil.setOpacity(this._container, this.options.opacity);
+		}
+	},
+
+	_initContainer: function () {
+		var tilePane = this._map._panes.tilePane;
+
+		if (!this._container) {
+			this._container = L.DomUtil.create('div', 'leaflet-layer');
+
+			this._updateZIndex();
+
+			if (this._animated) {
+				var className = 'leaflet-tile-container';
+
+				this._bgBuffer = L.DomUtil.create('div', className, this._container);
+				this._tileContainer = L.DomUtil.create('div', className, this._container);
+
+			} else {
+				this._tileContainer = this._container;
+			}
+
+			tilePane.appendChild(this._container);
+
+			if (this.options.opacity < 1) {
+				this._updateOpacity();
+			}
+		}
+	},
+
+	_reset: function (e) {
+		for (var key in this._tiles) {
+			this.fire('tileunload', {tile: this._tiles[key]});
+		}
+
+		this._tiles = {};
+		this._tilesToLoad = 0;
+
+		if (this.options.reuseTiles) {
+			this._unusedTiles = [];
+		}
+
+		this._tileContainer.innerHTML = '';
+
+		if (this._animated && e && e.hard) {
+			this._clearBgBuffer();
+		}
+
+		this._initContainer();
+	},
+
+	_getTileSize: function () {
+		var map = this._map,
+		    zoom = map.getZoom() + this.options.zoomOffset,
+		    zoomN = this.options.maxNativeZoom,
+		    tileSize = this.options.tileSize;
+
+		if (zoomN && zoom > zoomN) {
+			tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
+		}
+
+		return tileSize;
+	},
+
+	_update: function () {
+
+		if (!this._map) { return; }
+
+		var map = this._map,
+		    bounds = map.getPixelBounds(),
+		    zoom = map.getZoom(),
+		    tileSize = this._getTileSize();
+
+		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+			return;
+		}
+
+		var tileBounds = L.bounds(
+		        bounds.min.divideBy(tileSize)._floor(),
+		        bounds.max.divideBy(tileSize)._floor());
+
+		this._addTilesFromCenterOut(tileBounds);
+
+		if (this.options.unloadInvisibleTiles || this.options.reuseTiles) {
+			this._removeOtherTiles(tileBounds);
+		}
+	},
+
+	_addTilesFromCenterOut: function (bounds) {
+		var queue = [],
+		    center = bounds.getCenter();
+
+		var j, i, point;
+
+		for (j = bounds.min.y; j <= bounds.max.y; j++) {
+			for (i = bounds.min.x; i <= bounds.max.x; i++) {
+				point = new L.Point(i, j);
+
+				if (this._tileShouldBeLoaded(point)) {
+					queue.push(point);
+				}
+			}
+		}
+
+		var tilesToLoad = queue.length;
+
+		if (tilesToLoad === 0) { return; }
+
+		// load tiles in order of their distance to center
+		queue.sort(function (a, b) {
+			return a.distanceTo(center) - b.distanceTo(center);
+		});
+
+		var fragment = document.createDocumentFragment();
+
+		// if its the first batch of tiles to load
+		if (!this._tilesToLoad) {
+			this.fire('loading');
+		}
+
+		this._tilesToLoad += tilesToLoad;
+
+		for (i = 0; i < tilesToLoad; i++) {
+			this._addTile(queue[i], fragment);
+		}
+
+		this._tileContainer.appendChild(fragment);
+	},
+
+	_tileShouldBeLoaded: function (tilePoint) {
+		if ((tilePoint.x + ':' + tilePoint.y) in this._tiles) {
+			return false; // already loaded
+		}
+
+		var options = this.options;
+
+		if (!options.continuousWorld) {
+			var limit = this._getWrapTileNum();
+
+			// don't load if exceeds world bounds
+			if ((options.noWrap && (tilePoint.x < 0 || tilePoint.x >= limit.x)) ||
+				tilePoint.y < 0 || tilePoint.y >= limit.y) { return false; }
+		}
+
+		if (options.bounds) {
+			var tileSize = this._getTileSize(),
+			    nwPoint = tilePoint.multiplyBy(tileSize),
+			    sePoint = nwPoint.add([tileSize, tileSize]),
+			    nw = this._map.unproject(nwPoint),
+			    se = this._map.unproject(sePoint);
+
+			// TODO temporary hack, will be removed after refactoring projections
+			// https://github.com/Leaflet/Leaflet/issues/1618
+			if (!options.continuousWorld && !options.noWrap) {
+				nw = nw.wrap();
+				se = se.wrap();
+			}
+
+			if (!options.bounds.intersects([nw, se])) { return false; }
+		}
+
+		return true;
+	},
+
+	_removeOtherTiles: function (bounds) {
+		var kArr, x, y, key;
+
+		for (key in this._tiles) {
+			kArr = key.split(':');
+			x = parseInt(kArr[0], 10);
+			y = parseInt(kArr[1], 10);
+
+			// remove tile if it's out of bounds
+			if (x < bounds.min.x || x > bounds.max.x || y < bounds.min.y || y > bounds.max.y) {
+				this._removeTile(key);
+			}
+		}
+	},
+
+	_removeTile: function (key) {
+		var tile = this._tiles[key];
+
+		this.fire('tileunload', {tile: tile, url: tile.src});
+
+		if (this.options.reuseTiles) {
+			L.DomUtil.removeClass(tile, 'leaflet-tile-loaded');
+			this._unusedTiles.push(tile);
+
+		} else if (tile.parentNode === this._tileContainer) {
+			this._tileContainer.removeChild(tile);
+		}
+
+		// for https://github.com/CloudMade/Leaflet/issues/137
+		if (!L.Browser.android) {
+			tile.onload = null;
+			tile.src = L.Util.emptyImageUrl;
+		}
+
+		delete this._tiles[key];
+	},
+
+	_addTile: function (tilePoint, container) {
+		var tilePos = this._getTilePos(tilePoint);
+
+		// get unused tile - or create a new tile
+		var tile = this._getTile();
+
+		/*
+		Chrome 20 layouts much faster with top/left (verify with timeline, frames)
+		Android 4 browser has display issues with top/left and requires transform instead
+		(other browsers don't currently care) - see debug/hacks/jitter.html for an example
+		*/
+		L.DomUtil.setPosition(tile, tilePos, L.Browser.chrome);
+
+		this._tiles[tilePoint.x + ':' + tilePoint.y] = tile;
+
+		this._loadTile(tile, tilePoint);
+
+		if (tile.parentNode !== this._tileContainer) {
+			container.appendChild(tile);
+		}
+	},
+
+	_getZoomForUrl: function () {
+
+		var options = this.options,
+		    zoom = this._map.getZoom();
+
+		if (options.zoomReverse) {
+			zoom = options.maxZoom - zoom;
+		}
+
+		zoom += options.zoomOffset;
+
+		return options.maxNativeZoom ? Math.min(zoom, options.maxNativeZoom) : zoom;
+	},
+
+	_getTilePos: function (tilePoint) {
+		var origin = this._map.getPixelOrigin(),
+		    tileSize = this._getTileSize();
+
+		return tilePoint.multiplyBy(tileSize).subtract(origin);
+	},
+
+	// image-specific code (override to implement e.g. Canvas or SVG tile layer)
+
+	getTileUrl: function (tilePoint) {
+		return L.Util.template(this._url, L.extend({
+			s: this._getSubdomain(tilePoint),
+			z: tilePoint.z,
+			x: tilePoint.x,
+			y: tilePoint.y
+		}, this.options));
+	},
+
+	_getWrapTileNum: function () {
+		var crs = this._map.options.crs,
+		    size = crs.getSize(this._map.getZoom());
+		return size.divideBy(this._getTileSize())._floor();
+	},
+
+	_adjustTilePoint: function (tilePoint) {
+
+		var limit = this._getWrapTileNum();
+
+		// wrap tile coordinates
+		if (!this.options.continuousWorld && !this.options.noWrap) {
+			tilePoint.x = ((tilePoint.x % limit.x) + limit.x) % limit.x;
+		}
+
+		if (this.options.tms) {
+			tilePoint.y = limit.y - tilePoint.y - 1;
+		}
+
+		tilePoint.z = this._getZoomForUrl();
+	},
+
+	_getSubdomain: function (tilePoint) {
+		var index = Math.abs(tilePoint.x + tilePoint.y) % this.options.subdomains.length;
+		return this.options.subdomains[index];
+	},
+
+	_getTile: function () {
+		if (this.options.reuseTiles && this._unusedTiles.length > 0) {
+			var tile = this._unusedTiles.pop();
+			this._resetTile(tile);
+			return tile;
+		}
+		return this._createTile();
+	},
+
+	// Override if data stored on a tile needs to be cleaned up before reuse
+	_resetTile: function (/*tile*/) {},
+
+	_createTile: function () {
+		var tile = L.DomUtil.create('img', 'leaflet-tile');
+		tile.style.width = tile.style.height = this._getTileSize() + 'px';
+		tile.galleryimg = 'no';
+
+		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+
+		if (L.Browser.ielt9 && this.options.opacity !== undefined) {
+			L.DomUtil.setOpacity(tile, this.options.opacity);
+		}
+		// without this hack, tiles disappear after zoom on Chrome for Android
+		// https://github.com/Leaflet/Leaflet/issues/2078
+		if (L.Browser.mobileWebkit3d) {
+			tile.style.WebkitBackfaceVisibility = 'hidden';
+		}
+		return tile;
+	},
+
+	_loadTile: function (tile, tilePoint) {
+		tile._layer  = this;
+		tile.onload  = this._tileOnLoad;
+		tile.onerror = this._tileOnError;
+
+		this._adjustTilePoint(tilePoint);
+		tile.src     = this.getTileUrl(tilePoint);
+
+		this.fire('tileloadstart', {
+			tile: tile,
+			url: tile.src
+		});
+	},
+
+	_tileLoaded: function () {
+		this._tilesToLoad--;
+
+		if (this._animated) {
+			L.DomUtil.addClass(this._tileContainer, 'leaflet-zoom-animated');
+		}
+
+		if (!this._tilesToLoad) {
+			this.fire('load');
+
+			if (this._animated) {
+				// clear scaled tiles after all new tiles are loaded (for performance)
+				clearTimeout(this._clearBgBufferTimer);
+				this._clearBgBufferTimer = setTimeout(L.bind(this._clearBgBuffer, this), 500);
+			}
+		}
+	},
+
+	_tileOnLoad: function () {
+		var layer = this._layer;
+
+		//Only if we are loading an actual image
+		if (this.src !== L.Util.emptyImageUrl) {
+			L.DomUtil.addClass(this, 'leaflet-tile-loaded');
+
+			layer.fire('tileload', {
+				tile: this,
+				url: this.src
+			});
+		}
+
+		layer._tileLoaded();
+	},
+
+	_tileOnError: function () {
+		var layer = this._layer;
+
+		layer.fire('tileerror', {
+			tile: this,
+			url: this.src
+		});
+
+		var newUrl = layer.options.errorTileUrl;
+		if (newUrl) {
+			this.src = newUrl;
+		}
+
+		layer._tileLoaded();
+	}
+});
+
+L.tileLayer = function (url, options) {
+	return new L.TileLayer(url, options);
+};
+
+
+/*
+ * L.TileLayer.WMS is used for putting WMS tile layers on the map.
+ */
+
+L.TileLayer.WMS = L.TileLayer.extend({
+
+	defaultWmsParams: {
+		service: 'WMS',
+		request: 'GetMap',
+		version: '1.1.1',
+		layers: '',
+		styles: '',
+		format: 'image/jpeg',
+		transparent: false
+	},
+
+	initialize: function (url, options) { // (String, Object)
+
+		this._url = url;
+
+		var wmsParams = L.extend({}, this.defaultWmsParams),
+		    tileSize = options.tileSize || this.options.tileSize;
+
+		if (options.detectRetina && L.Browser.retina) {
+			wmsParams.width = wmsParams.height = tileSize * 2;
+		} else {
+			wmsParams.width = wmsParams.height = tileSize;
+		}
+
+		for (var i in options) {
+			// all keys that are not TileLayer options go to WMS params
+			if (!this.options.hasOwnProperty(i) && i !== 'crs') {
+				wmsParams[i] = options[i];
+			}
+		}
+
+		this.wmsParams = wmsParams;
+
+		L.setOptions(this, options);
+	},
+
+	onAdd: function (map) {
+
+		this._crs = this.options.crs || map.options.crs;
+
+		this._wmsVersion = parseFloat(this.wmsParams.version);
+
+		var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
+		this.wmsParams[projectionKey] = this._crs.code;
+
+		L.TileLayer.prototype.onAdd.call(this, map);
+	},
+
+	getTileUrl: function (tilePoint) { // (Point, Number) -> String
+
+		var map = this._map,
+		    tileSize = this.options.tileSize,
+
+		    nwPoint = tilePoint.multiplyBy(tileSize),
+		    sePoint = nwPoint.add([tileSize, tileSize]),
+
+		    nw = this._crs.project(map.unproject(nwPoint, tilePoint.z)),
+		    se = this._crs.project(map.unproject(sePoint, tilePoint.z)),
+		    bbox = this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
+		        [se.y, nw.x, nw.y, se.x].join(',') :
+		        [nw.x, se.y, se.x, nw.y].join(','),
+
+		    url = L.Util.template(this._url, {s: this._getSubdomain(tilePoint)});
+
+		return url + L.Util.getParamString(this.wmsParams, url, true) + '&BBOX=' + bbox;
+	},
+
+	setParams: function (params, noRedraw) {
+
+		L.extend(this.wmsParams, params);
+
+		if (!noRedraw) {
+			this.redraw();
+		}
+
+		return this;
+	}
+});
+
+L.tileLayer.wms = function (url, options) {
+	return new L.TileLayer.WMS(url, options);
+};
+
+
+/*
+ * L.TileLayer.Canvas is a class that you can use as a base for creating
+ * dynamically drawn Canvas-based tile layers.
+ */
+
+L.TileLayer.Canvas = L.TileLayer.extend({
+	options: {
+		async: false
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this._reset({hard: true});
+			this._update();
+		}
+
+		for (var i in this._tiles) {
+			this._redrawTile(this._tiles[i]);
+		}
+		return this;
+	},
+
+	_redrawTile: function (tile) {
+		this.drawTile(tile, tile._tilePoint, this._map._zoom);
+	},
+
+	_createTile: function () {
+		var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+		tile.width = tile.height = this.options.tileSize;
+		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+		return tile;
+	},
+
+	_loadTile: function (tile, tilePoint) {
+		tile._layer = this;
+		tile._tilePoint = tilePoint;
+
+		this._redrawTile(tile);
+
+		if (!this.options.async) {
+			this.tileDrawn(tile);
+		}
+	},
+
+	drawTile: function (/*tile, tilePoint*/) {
+		// override with rendering code
+	},
+
+	tileDrawn: function (tile) {
+		this._tileOnLoad.call(tile);
+	}
+});
+
+
+L.tileLayer.canvas = function (options) {
+	return new L.TileLayer.Canvas(options);
+};
+
+
+/*
+ * L.ImageOverlay is used to overlay images over the map (to specific geographical bounds).
+ */
+
+L.ImageOverlay = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	options: {
+		opacity: 1
+	},
+
+	initialize: function (url, bounds, options) { // (String, LatLngBounds, Object)
+		this._url = url;
+		this._bounds = L.latLngBounds(bounds);
+
+		L.setOptions(this, options);
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		if (!this._image) {
+			this._initImage();
+		}
+
+		map._panes.overlayPane.appendChild(this._image);
+
+		map.on('viewreset', this._reset, this);
+
+		if (map.options.zoomAnimation && L.Browser.any3d) {
+			map.on('zoomanim', this._animateZoom, this);
+		}
+
+		this._reset();
+	},
+
+	onRemove: function (map) {
+		map.getPanes().overlayPane.removeChild(this._image);
+
+		map.off('viewreset', this._reset, this);
+
+		if (map.options.zoomAnimation) {
+			map.off('zoomanim', this._animateZoom, this);
+		}
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
+		this._updateOpacity();
+		return this;
+	},
+
+	// TODO remove bringToFront/bringToBack duplication from TileLayer/Path
+	bringToFront: function () {
+		if (this._image) {
+			this._map._panes.overlayPane.appendChild(this._image);
+		}
+		return this;
+	},
+
+	bringToBack: function () {
+		var pane = this._map._panes.overlayPane;
+		if (this._image) {
+			pane.insertBefore(this._image, pane.firstChild);
+		}
+		return this;
+	},
+
+	setUrl: function (url) {
+		this._url = url;
+		this._image.src = this._url;
+	},
+
+	getAttribution: function () {
+		return this.options.attribution;
+	},
+
+	_initImage: function () {
+		this._image = L.DomUtil.create('img', 'leaflet-image-layer');
+
+		if (this._map.options.zoomAnimation && L.Browser.any3d) {
+			L.DomUtil.addClass(this._image, 'leaflet-zoom-animated');
+		} else {
+			L.DomUtil.addClass(this._image, 'leaflet-zoom-hide');
+		}
+
+		this._updateOpacity();
+
+		//TODO createImage util method to remove duplication
+		L.extend(this._image, {
+			galleryimg: 'no',
+			onselectstart: L.Util.falseFn,
+			onmousemove: L.Util.falseFn,
+			onload: L.bind(this._onImageLoad, this),
+			src: this._url
+		});
+	},
+
+	_animateZoom: function (e) {
+		var map = this._map,
+		    image = this._image,
+		    scale = map.getZoomScale(e.zoom),
+		    nw = this._bounds.getNorthWest(),
+		    se = this._bounds.getSouthEast(),
+
+		    topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center),
+		    size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
+		    origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
+
+		image.style[L.DomUtil.TRANSFORM] =
+		        L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+	},
+
+	_reset: function () {
+		var image   = this._image,
+		    topLeft = this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
+		    size = this._map.latLngToLayerPoint(this._bounds.getSouthEast())._subtract(topLeft);
+
+		L.DomUtil.setPosition(image, topLeft);
+
+		image.style.width  = size.x + 'px';
+		image.style.height = size.y + 'px';
+	},
+
+	_onImageLoad: function () {
+		this.fire('load');
+	},
+
+	_updateOpacity: function () {
+		L.DomUtil.setOpacity(this._image, this.options.opacity);
+	}
+});
+
+L.imageOverlay = function (url, bounds, options) {
+	return new L.ImageOverlay(url, bounds, options);
+};
+
+
+/*
+ * L.Icon is an image-based icon class that you can use with L.Marker for custom markers.
+ */
+
+L.Icon = L.Class.extend({
+	options: {
+		/*
+		iconUrl: (String) (required)
+		iconRetinaUrl: (String) (optional, used for retina devices if detected)
+		iconSize: (Point) (can be set through CSS)
+		iconAnchor: (Point) (centered by default, can be set in CSS with negative margins)
+		popupAnchor: (Point) (if not specified, popup opens in the anchor point)
+		shadowUrl: (String) (no shadow by default)
+		shadowRetinaUrl: (String) (optional, used for retina devices if detected)
+		shadowSize: (Point)
+		shadowAnchor: (Point)
+		*/
+		className: ''
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	createIcon: function (oldIcon) {
+		return this._createIcon('icon', oldIcon);
+	},
+
+	createShadow: function (oldIcon) {
+		return this._createIcon('shadow', oldIcon);
+	},
+
+	_createIcon: function (name, oldIcon) {
+		var src = this._getIconUrl(name);
+
+		if (!src) {
+			if (name === 'icon') {
+				throw new Error('iconUrl not set in Icon options (see the docs).');
+			}
+			return null;
+		}
+
+		var img;
+		if (!oldIcon || oldIcon.tagName !== 'IMG') {
+			img = this._createImg(src);
+		} else {
+			img = this._createImg(src, oldIcon);
+		}
+		this._setIconStyles(img, name);
+
+		return img;
+	},
+
+	_setIconStyles: function (img, name) {
+		var options = this.options,
+		    size = L.point(options[name + 'Size']),
+		    anchor;
+
+		if (name === 'shadow') {
+			anchor = L.point(options.shadowAnchor || options.iconAnchor);
+		} else {
+			anchor = L.point(options.iconAnchor);
+		}
+
+		if (!anchor && size) {
+			anchor = size.divideBy(2, true);
+		}
+
+		img.className = 'leaflet-marker-' + name + ' ' + options.className;
+
+		if (anchor) {
+			img.style.marginLeft = (-anchor.x) + 'px';
+			img.style.marginTop  = (-anchor.y) + 'px';
+		}
+
+		if (size) {
+			img.style.width  = size.x + 'px';
+			img.style.height = size.y + 'px';
+		}
+	},
+
+	_createImg: function (src, el) {
+		el = el || document.createElement('img');
+		el.src = src;
+		return el;
+	},
+
+	_getIconUrl: function (name) {
+		if (L.Browser.retina && this.options[name + 'RetinaUrl']) {
+			return this.options[name + 'RetinaUrl'];
+		}
+		return this.options[name + 'Url'];
+	}
+});
+
+L.icon = function (options) {
+	return new L.Icon(options);
+};
+
+
+/*
+ * L.Icon.Default is the blue marker icon used by default in Leaflet.
+ */
+
+L.Icon.Default = L.Icon.extend({
+
+	options: {
+		iconSize: [25, 41],
+		iconAnchor: [12, 41],
+		popupAnchor: [1, -34],
+
+		shadowSize: [41, 41]
+	},
+
+	_getIconUrl: function (name) {
+		var key = name + 'Url';
+
+		if (this.options[key]) {
+			return this.options[key];
+		}
+
+		if (L.Browser.retina && name === 'icon') {
+			name += '-2x';
+		}
+
+		var path = L.Icon.Default.imagePath;
+
+		if (!path) {
+			throw new Error('Couldn\'t autodetect L.Icon.Default.imagePath, set it manually.');
+		}
+
+		return path + '/marker-' + name + '.png';
+	}
+});
+
+L.Icon.Default.imagePath = (function () {
+	var scripts = document.getElementsByTagName('script'),
+	    leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
+
+	var i, len, src, matches, path;
+
+	for (i = 0, len = scripts.length; i < len; i++) {
+		src = scripts[i].src;
+		matches = src.match(leafletRe);
+
+		if (matches) {
+			path = src.split(leafletRe)[0];
+			return (path ? path + '/' : '') + 'images';
+		}
+	}
+}());
+
+
+/*
+ * L.Marker is used to display clickable/draggable icons on the map.
+ */
+
+L.Marker = L.Class.extend({
+
+	includes: L.Mixin.Events,
+
+	options: {
+		icon: new L.Icon.Default(),
+		title: '',
+		alt: '',
+		clickable: true,
+		draggable: false,
+		keyboard: true,
+		zIndexOffset: 0,
+		opacity: 1,
+		riseOnHover: false,
+		riseOffset: 250
+	},
+
+	initialize: function (latlng, options) {
+		L.setOptions(this, options);
+		this._latlng = L.latLng(latlng);
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		map.on('viewreset', this.update, this);
+
+		this._initIcon();
+		this.update();
+		this.fire('add');
+
+		if (map.options.zoomAnimation && map.options.markerZoomAnimation) {
+			map.on('zoomanim', this._animateZoom, this);
+		}
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		if (this.dragging) {
+			this.dragging.disable();
+		}
+
+		this._removeIcon();
+		this._removeShadow();
+
+		this.fire('remove');
+
+		map.off({
+			'viewreset': this.update,
+			'zoomanim': this._animateZoom
+		}, this);
+
+		this._map = null;
+	},
+
+	getLatLng: function () {
+		return this._latlng;
+	},
+
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+
+		this.update();
+
+		return this.fire('move', { latlng: this._latlng });
+	},
+
+	setZIndexOffset: function (offset) {
+		this.options.zIndexOffset = offset;
+		this.update();
+
+		return this;
+	},
+
+	setIcon: function (icon) {
+
+		this.options.icon = icon;
+
+		if (this._map) {
+			this._initIcon();
+			this.update();
+		}
+
+		if (this._popup) {
+			this.bindPopup(this._popup);
+		}
+
+		return this;
+	},
+
+	update: function () {
+		if (this._icon) {
+			this._setPos(this._map.latLngToLayerPoint(this._latlng).round());
+		}
+		return this;
+	},
+
+	_initIcon: function () {
+		var options = this.options,
+		    map = this._map,
+		    animation = (map.options.zoomAnimation && map.options.markerZoomAnimation),
+		    classToAdd = animation ? 'leaflet-zoom-animated' : 'leaflet-zoom-hide';
+
+		var icon = options.icon.createIcon(this._icon),
+			addIcon = false;
+
+		// if we're not reusing the icon, remove the old one and init new one
+		if (icon !== this._icon) {
+			if (this._icon) {
+				this._removeIcon();
+			}
+			addIcon = true;
+
+			if (options.title) {
+				icon.title = options.title;
+			}
+
+			if (options.alt) {
+				icon.alt = options.alt;
+			}
+		}
+
+		L.DomUtil.addClass(icon, classToAdd);
+
+		if (options.keyboard) {
+			icon.tabIndex = '0';
+		}
+
+		this._icon = icon;
+
+		this._initInteraction();
+
+		if (options.riseOnHover) {
+			L.DomEvent
+				.on(icon, 'mouseover', this._bringToFront, this)
+				.on(icon, 'mouseout', this._resetZIndex, this);
+		}
+
+		var newShadow = options.icon.createShadow(this._shadow),
+			addShadow = false;
+
+		if (newShadow !== this._shadow) {
+			this._removeShadow();
+			addShadow = true;
+		}
+
+		if (newShadow) {
+			L.DomUtil.addClass(newShadow, classToAdd);
+		}
+		this._shadow = newShadow;
+
+
+		if (options.opacity < 1) {
+			this._updateOpacity();
+		}
+
+
+		var panes = this._map._panes;
+
+		if (addIcon) {
+			panes.markerPane.appendChild(this._icon);
+		}
+
+		if (newShadow && addShadow) {
+			panes.shadowPane.appendChild(this._shadow);
+		}
+	},
+
+	_removeIcon: function () {
+		if (this.options.riseOnHover) {
+			L.DomEvent
+			    .off(this._icon, 'mouseover', this._bringToFront)
+			    .off(this._icon, 'mouseout', this._resetZIndex);
+		}
+
+		this._map._panes.markerPane.removeChild(this._icon);
+
+		this._icon = null;
+	},
+
+	_removeShadow: function () {
+		if (this._shadow) {
+			this._map._panes.shadowPane.removeChild(this._shadow);
+		}
+		this._shadow = null;
+	},
+
+	_setPos: function (pos) {
+		L.DomUtil.setPosition(this._icon, pos);
+
+		if (this._shadow) {
+			L.DomUtil.setPosition(this._shadow, pos);
+		}
+
+		this._zIndex = pos.y + this.options.zIndexOffset;
+
+		this._resetZIndex();
+	},
+
+	_updateZIndex: function (offset) {
+		this._icon.style.zIndex = this._zIndex + offset;
+	},
+
+	_animateZoom: function (opt) {
+		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center).round();
+
+		this._setPos(pos);
+	},
+
+	_initInteraction: function () {
+
+		if (!this.options.clickable) { return; }
+
+		// TODO refactor into something shared with Map/Path/etc. to DRY it up
+
+		var icon = this._icon,
+		    events = ['dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
+
+		L.DomUtil.addClass(icon, 'leaflet-clickable');
+		L.DomEvent.on(icon, 'click', this._onMouseClick, this);
+		L.DomEvent.on(icon, 'keypress', this._onKeyPress, this);
+
+		for (var i = 0; i < events.length; i++) {
+			L.DomEvent.on(icon, events[i], this._fireMouseEvent, this);
+		}
+
+		if (L.Handler.MarkerDrag) {
+			this.dragging = new L.Handler.MarkerDrag(this);
+
+			if (this.options.draggable) {
+				this.dragging.enable();
+			}
+		}
+	},
+
+	_onMouseClick: function (e) {
+		var wasDragged = this.dragging && this.dragging.moved();
+
+		if (this.hasEventListeners(e.type) || wasDragged) {
+			L.DomEvent.stopPropagation(e);
+		}
+
+		if (wasDragged) { return; }
+
+		if ((!this.dragging || !this.dragging._enabled) && this._map.dragging && this._map.dragging.moved()) { return; }
+
+		this.fire(e.type, {
+			originalEvent: e,
+			latlng: this._latlng
+		});
+	},
+
+	_onKeyPress: function (e) {
+		if (e.keyCode === 13) {
+			this.fire('click', {
+				originalEvent: e,
+				latlng: this._latlng
+			});
+		}
+	},
+
+	_fireMouseEvent: function (e) {
+
+		this.fire(e.type, {
+			originalEvent: e,
+			latlng: this._latlng
+		});
+
+		// TODO proper custom event propagation
+		// this line will always be called if marker is in a FeatureGroup
+		if (e.type === 'contextmenu' && this.hasEventListeners(e.type)) {
+			L.DomEvent.preventDefault(e);
+		}
+		if (e.type !== 'mousedown') {
+			L.DomEvent.stopPropagation(e);
+		} else {
+			L.DomEvent.preventDefault(e);
+		}
+	},
+
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
+		if (this._map) {
+			this._updateOpacity();
+		}
+
+		return this;
+	},
+
+	_updateOpacity: function () {
+		L.DomUtil.setOpacity(this._icon, this.options.opacity);
+		if (this._shadow) {
+			L.DomUtil.setOpacity(this._shadow, this.options.opacity);
+		}
+	},
+
+	_bringToFront: function () {
+		this._updateZIndex(this.options.riseOffset);
+	},
+
+	_resetZIndex: function () {
+		this._updateZIndex(0);
+	}
+});
+
+L.marker = function (latlng, options) {
+	return new L.Marker(latlng, options);
+};
+
+
+/*
+ * L.DivIcon is a lightweight HTML-based icon class (as opposed to the image-based L.Icon)
+ * to use with L.Marker.
+ */
+
+L.DivIcon = L.Icon.extend({
+	options: {
+		iconSize: [12, 12], // also can be set through CSS
+		/*
+		iconAnchor: (Point)
+		popupAnchor: (Point)
+		html: (String)
+		bgPos: (Point)
+		*/
+		className: 'leaflet-div-icon',
+		html: false
+	},
+
+	createIcon: function (oldIcon) {
+		var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
+		    options = this.options;
+
+		if (options.html !== false) {
+			div.innerHTML = options.html;
+		} else {
+			div.innerHTML = '';
+		}
+
+		if (options.bgPos) {
+			div.style.backgroundPosition =
+			        (-options.bgPos.x) + 'px ' + (-options.bgPos.y) + 'px';
+		}
+
+		this._setIconStyles(div, 'icon');
+		return div;
+	},
+
+	createShadow: function () {
+		return null;
+	}
+});
+
+L.divIcon = function (options) {
+	return new L.DivIcon(options);
+};
+
+
+/*
+ * L.Popup is used for displaying popups on the map.
+ */
+
+L.Map.mergeOptions({
+	closePopupOnClick: true
+});
+
+L.Popup = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	options: {
+		minWidth: 50,
+		maxWidth: 300,
+		// maxHeight: null,
+		autoPan: true,
+		closeButton: true,
+		offset: [0, 7],
+		autoPanPadding: [5, 5],
+		// autoPanPaddingTopLeft: null,
+		// autoPanPaddingBottomRight: null,
+		keepInView: false,
+		className: '',
+		zoomAnimation: true
+	},
+
+	initialize: function (options, source) {
+		L.setOptions(this, options);
+
+		this._source = source;
+		this._animated = L.Browser.any3d && this.options.zoomAnimation;
+		this._isOpen = false;
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		if (!this._container) {
+			this._initLayout();
+		}
+
+		var animFade = map.options.fadeAnimation;
+
+		if (animFade) {
+			L.DomUtil.setOpacity(this._container, 0);
+		}
+		map._panes.popupPane.appendChild(this._container);
+
+		map.on(this._getEvents(), this);
+
+		this.update();
+
+		if (animFade) {
+			L.DomUtil.setOpacity(this._container, 1);
+		}
+
+		this.fire('open');
+
+		map.fire('popupopen', {popup: this});
+
+		if (this._source) {
+			this._source.fire('popupopen', {popup: this});
+		}
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	openOn: function (map) {
+		map.openPopup(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		map._panes.popupPane.removeChild(this._container);
+
+		L.Util.falseFn(this._container.offsetWidth); // force reflow
+
+		map.off(this._getEvents(), this);
+
+		if (map.options.fadeAnimation) {
+			L.DomUtil.setOpacity(this._container, 0);
+		}
+
+		this._map = null;
+
+		this.fire('close');
+
+		map.fire('popupclose', {popup: this});
+
+		if (this._source) {
+			this._source.fire('popupclose', {popup: this});
+		}
+	},
+
+	getLatLng: function () {
+		return this._latlng;
+	},
+
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+		if (this._map) {
+			this._updatePosition();
+			this._adjustPan();
+		}
+		return this;
+	},
+
+	getContent: function () {
+		return this._content;
+	},
+
+	setContent: function (content) {
+		this._content = content;
+		this.update();
+		return this;
+	},
+
+	update: function () {
+		if (!this._map) { return; }
+
+		this._container.style.visibility = 'hidden';
+
+		this._updateContent();
+		this._updateLayout();
+		this._updatePosition();
+
+		this._container.style.visibility = '';
+
+		this._adjustPan();
+	},
+
+	_getEvents: function () {
+		var events = {
+			viewreset: this._updatePosition
+		};
+
+		if (this._animated) {
+			events.zoomanim = this._zoomAnimation;
+		}
+		if ('closeOnClick' in this.options ? this.options.closeOnClick : this._map.options.closePopupOnClick) {
+			events.preclick = this._close;
+		}
+		if (this.options.keepInView) {
+			events.moveend = this._adjustPan;
+		}
+
+		return events;
+	},
+
+	_close: function () {
+		if (this._map) {
+			this._map.closePopup(this);
+		}
+	},
+
+	_initLayout: function () {
+		var prefix = 'leaflet-popup',
+			containerClass = prefix + ' ' + this.options.className + ' leaflet-zoom-' +
+			        (this._animated ? 'animated' : 'hide'),
+			container = this._container = L.DomUtil.create('div', containerClass),
+			closeButton;
+
+		if (this.options.closeButton) {
+			closeButton = this._closeButton =
+			        L.DomUtil.create('a', prefix + '-close-button', container);
+			closeButton.href = '#close';
+			closeButton.innerHTML = '&#215;';
+			L.DomEvent.disableClickPropagation(closeButton);
+
+			L.DomEvent.on(closeButton, 'click', this._onCloseButtonClick, this);
+		}
+
+		var wrapper = this._wrapper =
+		        L.DomUtil.create('div', prefix + '-content-wrapper', container);
+		L.DomEvent.disableClickPropagation(wrapper);
+
+		this._contentNode = L.DomUtil.create('div', prefix + '-content', wrapper);
+
+		L.DomEvent.disableScrollPropagation(this._contentNode);
+		L.DomEvent.on(wrapper, 'contextmenu', L.DomEvent.stopPropagation);
+
+		this._tipContainer = L.DomUtil.create('div', prefix + '-tip-container', container);
+		this._tip = L.DomUtil.create('div', prefix + '-tip', this._tipContainer);
+	},
+
+	_updateContent: function () {
+		if (!this._content) { return; }
+
+		if (typeof this._content === 'string') {
+			this._contentNode.innerHTML = this._content;
+		} else {
+			while (this._contentNode.hasChildNodes()) {
+				this._contentNode.removeChild(this._contentNode.firstChild);
+			}
+			this._contentNode.appendChild(this._content);
+		}
+		this.fire('contentupdate');
+	},
+
+	_updateLayout: function () {
+		var container = this._contentNode,
+		    style = container.style;
+
+		style.width = '';
+		style.whiteSpace = 'nowrap';
+
+		var width = container.offsetWidth;
+		width = Math.min(width, this.options.maxWidth);
+		width = Math.max(width, this.options.minWidth);
+
+		style.width = (width + 1) + 'px';
+		style.whiteSpace = '';
+
+		style.height = '';
+
+		var height = container.offsetHeight,
+		    maxHeight = this.options.maxHeight,
+		    scrolledClass = 'leaflet-popup-scrolled';
+
+		if (maxHeight && height > maxHeight) {
+			style.height = maxHeight + 'px';
+			L.DomUtil.addClass(container, scrolledClass);
+		} else {
+			L.DomUtil.removeClass(container, scrolledClass);
+		}
+
+		this._containerWidth = this._container.offsetWidth;
+	},
+
+	_updatePosition: function () {
+		if (!this._map) { return; }
+
+		var pos = this._map.latLngToLayerPoint(this._latlng),
+		    animated = this._animated,
+		    offset = L.point(this.options.offset);
+
+		if (animated) {
+			L.DomUtil.setPosition(this._container, pos);
+		}
+
+		this._containerBottom = -offset.y - (animated ? 0 : pos.y);
+		this._containerLeft = -Math.round(this._containerWidth / 2) + offset.x + (animated ? 0 : pos.x);
+
+		// bottom position the popup in case the height of the popup changes (images loading etc)
+		this._container.style.bottom = this._containerBottom + 'px';
+		this._container.style.left = this._containerLeft + 'px';
+	},
+
+	_zoomAnimation: function (opt) {
+		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center);
+
+		L.DomUtil.setPosition(this._container, pos);
+	},
+
+	_adjustPan: function () {
+		if (!this.options.autoPan) { return; }
+
+		var map = this._map,
+		    containerHeight = this._container.offsetHeight,
+		    containerWidth = this._containerWidth,
+
+		    layerPos = new L.Point(this._containerLeft, -containerHeight - this._containerBottom);
+
+		if (this._animated) {
+			layerPos._add(L.DomUtil.getPosition(this._container));
+		}
+
+		var containerPos = map.layerPointToContainerPoint(layerPos),
+		    padding = L.point(this.options.autoPanPadding),
+		    paddingTL = L.point(this.options.autoPanPaddingTopLeft || padding),
+		    paddingBR = L.point(this.options.autoPanPaddingBottomRight || padding),
+		    size = map.getSize(),
+		    dx = 0,
+		    dy = 0;
+
+		if (containerPos.x + containerWidth + paddingBR.x > size.x) { // right
+			dx = containerPos.x + containerWidth - size.x + paddingBR.x;
+		}
+		if (containerPos.x - dx - paddingTL.x < 0) { // left
+			dx = containerPos.x - paddingTL.x;
+		}
+		if (containerPos.y + containerHeight + paddingBR.y > size.y) { // bottom
+			dy = containerPos.y + containerHeight - size.y + paddingBR.y;
+		}
+		if (containerPos.y - dy - paddingTL.y < 0) { // top
+			dy = containerPos.y - paddingTL.y;
+		}
+
+		if (dx || dy) {
+			map
+			    .fire('autopanstart')
+			    .panBy([dx, dy]);
+		}
+	},
+
+	_onCloseButtonClick: function (e) {
+		this._close();
+		L.DomEvent.stop(e);
+	}
+});
+
+L.popup = function (options, source) {
+	return new L.Popup(options, source);
+};
+
+
+L.Map.include({
+	openPopup: function (popup, latlng, options) { // (Popup) or (String || HTMLElement, LatLng[, Object])
+		this.closePopup();
+
+		if (!(popup instanceof L.Popup)) {
+			var content = popup;
+
+			popup = new L.Popup(options)
+			    .setLatLng(latlng)
+			    .setContent(content);
+		}
+		popup._isOpen = true;
+
+		this._popup = popup;
+		return this.addLayer(popup);
+	},
+
+	closePopup: function (popup) {
+		if (!popup || popup === this._popup) {
+			popup = this._popup;
+			this._popup = null;
+		}
+		if (popup) {
+			this.removeLayer(popup);
+			popup._isOpen = false;
+		}
+		return this;
+	}
+});
+
+
+/*
+ * Popup extension to L.Marker, adding popup-related methods.
+ */
+
+L.Marker.include({
+	openPopup: function () {
+		if (this._popup && this._map && !this._map.hasLayer(this._popup)) {
+			this._popup.setLatLng(this._latlng);
+			this._map.openPopup(this._popup);
+		}
+
+		return this;
+	},
+
+	closePopup: function () {
+		if (this._popup) {
+			this._popup._close();
+		}
+		return this;
+	},
+
+	togglePopup: function () {
+		if (this._popup) {
+			if (this._popup._isOpen) {
+				this.closePopup();
+			} else {
+				this.openPopup();
+			}
+		}
+		return this;
+	},
+
+	bindPopup: function (content, options) {
+		var anchor = L.point(this.options.icon.options.popupAnchor || [0, 0]);
+
+		anchor = anchor.add(L.Popup.prototype.options.offset);
+
+		if (options && options.offset) {
+			anchor = anchor.add(options.offset);
+		}
+
+		options = L.extend({offset: anchor}, options);
+
+		if (!this._popupHandlersAdded) {
+			this
+			    .on('click', this.togglePopup, this)
+			    .on('remove', this.closePopup, this)
+			    .on('move', this._movePopup, this);
+			this._popupHandlersAdded = true;
+		}
+
+		if (content instanceof L.Popup) {
+			L.setOptions(content, options);
+			this._popup = content;
+			content._source = this;
+		} else {
+			this._popup = new L.Popup(options, this)
+				.setContent(content);
+		}
+
+		return this;
+	},
+
+	setPopupContent: function (content) {
+		if (this._popup) {
+			this._popup.setContent(content);
+		}
+		return this;
+	},
+
+	unbindPopup: function () {
+		if (this._popup) {
+			this._popup = null;
+			this
+			    .off('click', this.togglePopup, this)
+			    .off('remove', this.closePopup, this)
+			    .off('move', this._movePopup, this);
+			this._popupHandlersAdded = false;
+		}
+		return this;
+	},
+
+	getPopup: function () {
+		return this._popup;
+	},
+
+	_movePopup: function (e) {
+		this._popup.setLatLng(e.latlng);
+	}
+});
+
+
+/*
+ * L.LayerGroup is a class to combine several layers into one so that
+ * you can manipulate the group (e.g. add/remove it) as one layer.
+ */
+
+L.LayerGroup = L.Class.extend({
+	initialize: function (layers) {
+		this._layers = {};
+
+		var i, len;
+
+		if (layers) {
+			for (i = 0, len = layers.length; i < len; i++) {
+				this.addLayer(layers[i]);
+			}
+		}
+	},
+
+	addLayer: function (layer) {
+		var id = this.getLayerId(layer);
+
+		this._layers[id] = layer;
+
+		if (this._map) {
+			this._map.addLayer(layer);
+		}
+
+		return this;
+	},
+
+	removeLayer: function (layer) {
+		var id = layer in this._layers ? layer : this.getLayerId(layer);
+
+		if (this._map && this._layers[id]) {
+			this._map.removeLayer(this._layers[id]);
+		}
+
+		delete this._layers[id];
+
+		return this;
+	},
+
+	hasLayer: function (layer) {
+		if (!layer) { return false; }
+
+		return (layer in this._layers || this.getLayerId(layer) in this._layers);
+	},
+
+	clearLayers: function () {
+		this.eachLayer(this.removeLayer, this);
+		return this;
+	},
+
+	invoke: function (methodName) {
+		var args = Array.prototype.slice.call(arguments, 1),
+		    i, layer;
+
+		for (i in this._layers) {
+			layer = this._layers[i];
+
+			if (layer[methodName]) {
+				layer[methodName].apply(layer, args);
+			}
+		}
+
+		return this;
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+		this.eachLayer(map.addLayer, map);
+	},
+
+	onRemove: function (map) {
+		this.eachLayer(map.removeLayer, map);
+		this._map = null;
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	eachLayer: function (method, context) {
+		for (var i in this._layers) {
+			method.call(context, this._layers[i]);
+		}
+		return this;
+	},
+
+	getLayer: function (id) {
+		return this._layers[id];
+	},
+
+	getLayers: function () {
+		var layers = [];
+
+		for (var i in this._layers) {
+			layers.push(this._layers[i]);
+		}
+		return layers;
+	},
+
+	setZIndex: function (zIndex) {
+		return this.invoke('setZIndex', zIndex);
+	},
+
+	getLayerId: function (layer) {
+		return L.stamp(layer);
+	}
+});
+
+L.layerGroup = function (layers) {
+	return new L.LayerGroup(layers);
+};
+
+
+/*
+ * L.FeatureGroup extends L.LayerGroup by introducing mouse events and additional methods
+ * shared between a group of interactive layers (like vectors or markers).
+ */
+
+L.FeatureGroup = L.LayerGroup.extend({
+	includes: L.Mixin.Events,
+
+	statics: {
+		EVENTS: 'click dblclick mouseover mouseout mousemove contextmenu popupopen popupclose'
+	},
+
+	addLayer: function (layer) {
+		if (this.hasLayer(layer)) {
+			return this;
+		}
+
+		if ('on' in layer) {
+			layer.on(L.FeatureGroup.EVENTS, this._propagateEvent, this);
+		}
+
+		L.LayerGroup.prototype.addLayer.call(this, layer);
+
+		if (this._popupContent && layer.bindPopup) {
+			layer.bindPopup(this._popupContent, this._popupOptions);
+		}
+
+		return this.fire('layeradd', {layer: layer});
+	},
+
+	removeLayer: function (layer) {
+		if (!this.hasLayer(layer)) {
+			return this;
+		}
+		if (layer in this._layers) {
+			layer = this._layers[layer];
+		}
+
+		if ('off' in layer) {
+			layer.off(L.FeatureGroup.EVENTS, this._propagateEvent, this);
+		}
+
+		L.LayerGroup.prototype.removeLayer.call(this, layer);
+
+		if (this._popupContent) {
+			this.invoke('unbindPopup');
+		}
+
+		return this.fire('layerremove', {layer: layer});
+	},
+
+	bindPopup: function (content, options) {
+		this._popupContent = content;
+		this._popupOptions = options;
+		return this.invoke('bindPopup', content, options);
+	},
+
+	openPopup: function (latlng) {
+		// open popup on the first layer
+		for (var id in this._layers) {
+			this._layers[id].openPopup(latlng);
+			break;
+		}
+		return this;
+	},
+
+	setStyle: function (style) {
+		return this.invoke('setStyle', style);
+	},
+
+	bringToFront: function () {
+		return this.invoke('bringToFront');
+	},
+
+	bringToBack: function () {
+		return this.invoke('bringToBack');
+	},
+
+	getBounds: function () {
+		var bounds = new L.LatLngBounds();
+
+		this.eachLayer(function (layer) {
+			bounds.extend(layer instanceof L.Marker ? layer.getLatLng() : layer.getBounds());
+		});
+
+		return bounds;
+	},
+
+	_propagateEvent: function (e) {
+		e = L.extend({
+			layer: e.target,
+			target: this
+		}, e);
+		this.fire(e.type, e);
+	}
+});
+
+L.featureGroup = function (layers) {
+	return new L.FeatureGroup(layers);
+};
+
+
+/*
+ * L.Path is a base class for rendering vector paths on a map. Inherited by Polyline, Circle, etc.
+ */
+
+L.Path = L.Class.extend({
+	includes: [L.Mixin.Events],
+
+	statics: {
+		// how much to extend the clip area around the map view
+		// (relative to its size, e.g. 0.5 is half the screen in each direction)
+		// set it so that SVG element doesn't exceed 1280px (vectors flicker on dragend if it is)
+		CLIP_PADDING: (function () {
+			var max = L.Browser.mobile ? 1280 : 2000,
+			    target = (max / Math.max(window.outerWidth, window.outerHeight) - 1) / 2;
+			return Math.max(0, Math.min(0.5, target));
+		})()
+	},
+
+	options: {
+		stroke: true,
+		color: '#0033ff',
+		dashArray: null,
+		lineCap: null,
+		lineJoin: null,
+		weight: 5,
+		opacity: 0.5,
+
+		fill: false,
+		fillColor: null, //same as color by default
+		fillOpacity: 0.2,
+
+		clickable: true
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		if (!this._container) {
+			this._initElements();
+			this._initEvents();
+		}
+
+		this.projectLatlngs();
+		this._updatePath();
+
+		if (this._container) {
+			this._map._pathRoot.appendChild(this._container);
+		}
+
+		this.fire('add');
+
+		map.on({
+			'viewreset': this.projectLatlngs,
+			'moveend': this._updatePath
+		}, this);
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		map._pathRoot.removeChild(this._container);
+
+		// Need to fire remove event before we set _map to null as the event hooks might need the object
+		this.fire('remove');
+		this._map = null;
+
+		if (L.Browser.vml) {
+			this._container = null;
+			this._stroke = null;
+			this._fill = null;
+		}
+
+		map.off({
+			'viewreset': this.projectLatlngs,
+			'moveend': this._updatePath
+		}, this);
+	},
+
+	projectLatlngs: function () {
+		// do all projection stuff here
+	},
+
+	setStyle: function (style) {
+		L.setOptions(this, style);
+
+		if (this._container) {
+			this._updateStyle();
+		}
+
+		return this;
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this.projectLatlngs();
+			this._updatePath();
+		}
+		return this;
+	}
+});
+
+L.Map.include({
+	_updatePathViewport: function () {
+		var p = L.Path.CLIP_PADDING,
+		    size = this.getSize(),
+		    panePos = L.DomUtil.getPosition(this._mapPane),
+		    min = panePos.multiplyBy(-1)._subtract(size.multiplyBy(p)._round()),
+		    max = min.add(size.multiplyBy(1 + p * 2)._round());
+
+		this._pathViewport = new L.Bounds(min, max);
+	}
+});
+
+
+/*
+ * Extends L.Path with SVG-specific rendering code.
+ */
+
+L.Path.SVG_NS = 'http://www.w3.org/2000/svg';
+
+L.Browser.svg = !!(document.createElementNS && document.createElementNS(L.Path.SVG_NS, 'svg').createSVGRect);
+
+L.Path = L.Path.extend({
+	statics: {
+		SVG: L.Browser.svg
+	},
+
+	bringToFront: function () {
+		var root = this._map._pathRoot,
+		    path = this._container;
+
+		if (path && root.lastChild !== path) {
+			root.appendChild(path);
+		}
+		return this;
+	},
+
+	bringToBack: function () {
+		var root = this._map._pathRoot,
+		    path = this._container,
+		    first = root.firstChild;
+
+		if (path && first !== path) {
+			root.insertBefore(path, first);
+		}
+		return this;
+	},
+
+	getPathString: function () {
+		// form path string here
+	},
+
+	_createElement: function (name) {
+		return document.createElementNS(L.Path.SVG_NS, name);
+	},
+
+	_initElements: function () {
+		this._map._initPathRoot();
+		this._initPath();
+		this._initStyle();
+	},
+
+	_initPath: function () {
+		this._container = this._createElement('g');
+
+		this._path = this._createElement('path');
+
+		if (this.options.className) {
+			L.DomUtil.addClass(this._path, this.options.className);
+		}
+
+		this._container.appendChild(this._path);
+	},
+
+	_initStyle: function () {
+		if (this.options.stroke) {
+			this._path.setAttribute('stroke-linejoin', 'round');
+			this._path.setAttribute('stroke-linecap', 'round');
+		}
+		if (this.options.fill) {
+			this._path.setAttribute('fill-rule', 'evenodd');
+		}
+		if (this.options.pointerEvents) {
+			this._path.setAttribute('pointer-events', this.options.pointerEvents);
+		}
+		if (!this.options.clickable && !this.options.pointerEvents) {
+			this._path.setAttribute('pointer-events', 'none');
+		}
+		this._updateStyle();
+	},
+
+	_updateStyle: function () {
+		if (this.options.stroke) {
+			this._path.setAttribute('stroke', this.options.color);
+			this._path.setAttribute('stroke-opacity', this.options.opacity);
+			this._path.setAttribute('stroke-width', this.options.weight);
+			if (this.options.dashArray) {
+				this._path.setAttribute('stroke-dasharray', this.options.dashArray);
+			} else {
+				this._path.removeAttribute('stroke-dasharray');
+			}
+			if (this.options.lineCap) {
+				this._path.setAttribute('stroke-linecap', this.options.lineCap);
+			}
+			if (this.options.lineJoin) {
+				this._path.setAttribute('stroke-linejoin', this.options.lineJoin);
+			}
+		} else {
+			this._path.setAttribute('stroke', 'none');
+		}
+		if (this.options.fill) {
+			this._path.setAttribute('fill', this.options.fillColor || this.options.color);
+			this._path.setAttribute('fill-opacity', this.options.fillOpacity);
+		} else {
+			this._path.setAttribute('fill', 'none');
+		}
+	},
+
+	_updatePath: function () {
+		var str = this.getPathString();
+		if (!str) {
+			// fix webkit empty string parsing bug
+			str = 'M0 0';
+		}
+		this._path.setAttribute('d', str);
+	},
+
+	// TODO remove duplication with L.Map
+	_initEvents: function () {
+		if (this.options.clickable) {
+			if (L.Browser.svg || !L.Browser.vml) {
+				L.DomUtil.addClass(this._path, 'leaflet-clickable');
+			}
+
+			L.DomEvent.on(this._container, 'click', this._onMouseClick, this);
+
+			var events = ['dblclick', 'mousedown', 'mouseover',
+			              'mouseout', 'mousemove', 'contextmenu'];
+			for (var i = 0; i < events.length; i++) {
+				L.DomEvent.on(this._container, events[i], this._fireMouseEvent, this);
+			}
+		}
+	},
+
+	_onMouseClick: function (e) {
+		if (this._map.dragging && this._map.dragging.moved()) { return; }
+
+		this._fireMouseEvent(e);
+	},
+
+	_fireMouseEvent: function (e) {
+		if (!this._map || !this.hasEventListeners(e.type)) { return; }
+
+		var map = this._map,
+		    containerPoint = map.mouseEventToContainerPoint(e),
+		    layerPoint = map.containerPointToLayerPoint(containerPoint),
+		    latlng = map.layerPointToLatLng(layerPoint);
+
+		this.fire(e.type, {
+			latlng: latlng,
+			layerPoint: layerPoint,
+			containerPoint: containerPoint,
+			originalEvent: e
+		});
+
+		if (e.type === 'contextmenu') {
+			L.DomEvent.preventDefault(e);
+		}
+		if (e.type !== 'mousemove') {
+			L.DomEvent.stopPropagation(e);
+		}
+	}
+});
+
+L.Map.include({
+	_initPathRoot: function () {
+		if (!this._pathRoot) {
+			this._pathRoot = L.Path.prototype._createElement('svg');
+			this._panes.overlayPane.appendChild(this._pathRoot);
+
+			if (this.options.zoomAnimation && L.Browser.any3d) {
+				L.DomUtil.addClass(this._pathRoot, 'leaflet-zoom-animated');
+
+				this.on({
+					'zoomanim': this._animatePathZoom,
+					'zoomend': this._endPathZoom
+				});
+			} else {
+				L.DomUtil.addClass(this._pathRoot, 'leaflet-zoom-hide');
+			}
+
+			this.on('moveend', this._updateSvgViewport);
+			this._updateSvgViewport();
+		}
+	},
+
+	_animatePathZoom: function (e) {
+		var scale = this.getZoomScale(e.zoom),
+		    offset = this._getCenterOffset(e.center)._multiplyBy(-scale)._add(this._pathViewport.min);
+
+		this._pathRoot.style[L.DomUtil.TRANSFORM] =
+		        L.DomUtil.getTranslateString(offset) + ' scale(' + scale + ') ';
+
+		this._pathZooming = true;
+	},
+
+	_endPathZoom: function () {
+		this._pathZooming = false;
+	},
+
+	_updateSvgViewport: function () {
+
+		if (this._pathZooming) {
+			// Do not update SVGs while a zoom animation is going on otherwise the animation will break.
+			// When the zoom animation ends we will be updated again anyway
+			// This fixes the case where you do a momentum move and zoom while the move is still ongoing.
+			return;
+		}
+
+		this._updatePathViewport();
+
+		var vp = this._pathViewport,
+		    min = vp.min,
+		    max = vp.max,
+		    width = max.x - min.x,
+		    height = max.y - min.y,
+		    root = this._pathRoot,
+		    pane = this._panes.overlayPane;
+
+		// Hack to make flicker on drag end on mobile webkit less irritating
+		if (L.Browser.mobileWebkit) {
+			pane.removeChild(root);
+		}
+
+		L.DomUtil.setPosition(root, min);
+		root.setAttribute('width', width);
+		root.setAttribute('height', height);
+		root.setAttribute('viewBox', [min.x, min.y, width, height].join(' '));
+
+		if (L.Browser.mobileWebkit) {
+			pane.appendChild(root);
+		}
+	}
+});
+
+
+/*
+ * Popup extension to L.Path (polylines, polygons, circles), adding popup-related methods.
+ */
+
+L.Path.include({
+
+	bindPopup: function (content, options) {
+
+		if (content instanceof L.Popup) {
+			this._popup = content;
+		} else {
+			if (!this._popup || options) {
+				this._popup = new L.Popup(options, this);
+			}
+			this._popup.setContent(content);
+		}
+
+		if (!this._popupHandlersAdded) {
+			this
+			    .on('click', this._openPopup, this)
+			    .on('remove', this.closePopup, this);
+
+			this._popupHandlersAdded = true;
+		}
+
+		return this;
+	},
+
+	unbindPopup: function () {
+		if (this._popup) {
+			this._popup = null;
+			this
+			    .off('click', this._openPopup)
+			    .off('remove', this.closePopup);
+
+			this._popupHandlersAdded = false;
+		}
+		return this;
+	},
+
+	openPopup: function (latlng) {
+
+		if (this._popup) {
+			// open the popup from one of the path's points if not specified
+			latlng = latlng || this._latlng ||
+			         this._latlngs[Math.floor(this._latlngs.length / 2)];
+
+			this._openPopup({latlng: latlng});
+		}
+
+		return this;
+	},
+
+	closePopup: function () {
+		if (this._popup) {
+			this._popup._close();
+		}
+		return this;
+	},
+
+	_openPopup: function (e) {
+		this._popup.setLatLng(e.latlng);
+		this._map.openPopup(this._popup);
+	}
+});
+
+
+/*
+ * Vector rendering for IE6-8 through VML.
+ * Thanks to Dmitry Baranovsky and his Raphael library for inspiration!
+ */
+
+L.Browser.vml = !L.Browser.svg && (function () {
+	try {
+		var div = document.createElement('div');
+		div.innerHTML = '<v:shape adj="1"/>';
+
+		var shape = div.firstChild;
+		shape.style.behavior = 'url(#default#VML)';
+
+		return shape && (typeof shape.adj === 'object');
+
+	} catch (e) {
+		return false;
+	}
+}());
+
+L.Path = L.Browser.svg || !L.Browser.vml ? L.Path : L.Path.extend({
+	statics: {
+		VML: true,
+		CLIP_PADDING: 0.02
+	},
+
+	_createElement: (function () {
+		try {
+			document.namespaces.add('lvml', 'urn:schemas-microsoft-com:vml');
+			return function (name) {
+				return document.createElement('<lvml:' + name + ' class="lvml">');
+			};
+		} catch (e) {
+			return function (name) {
+				return document.createElement(
+				        '<' + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
+			};
+		}
+	}()),
+
+	_initPath: function () {
+		var container = this._container = this._createElement('shape');
+
+		L.DomUtil.addClass(container, 'leaflet-vml-shape' +
+			(this.options.className ? ' ' + this.options.className : ''));
+
+		if (this.options.clickable) {
+			L.DomUtil.addClass(container, 'leaflet-clickable');
+		}
+
+		container.coordsize = '1 1';
+
+		this._path = this._createElement('path');
+		container.appendChild(this._path);
+
+		this._map._pathRoot.appendChild(container);
+	},
+
+	_initStyle: function () {
+		this._updateStyle();
+	},
+
+	_updateStyle: function () {
+		var stroke = this._stroke,
+		    fill = this._fill,
+		    options = this.options,
+		    container = this._container;
+
+		container.stroked = options.stroke;
+		container.filled = options.fill;
+
+		if (options.stroke) {
+			if (!stroke) {
+				stroke = this._stroke = this._createElement('stroke');
+				stroke.endcap = 'round';
+				container.appendChild(stroke);
+			}
+			stroke.weight = options.weight + 'px';
+			stroke.color = options.color;
+			stroke.opacity = options.opacity;
+
+			if (options.dashArray) {
+				stroke.dashStyle = L.Util.isArray(options.dashArray) ?
+				    options.dashArray.join(' ') :
+				    options.dashArray.replace(/( *, *)/g, ' ');
+			} else {
+				stroke.dashStyle = '';
+			}
+			if (options.lineCap) {
+				stroke.endcap = options.lineCap.replace('butt', 'flat');
+			}
+			if (options.lineJoin) {
+				stroke.joinstyle = options.lineJoin;
+			}
+
+		} else if (stroke) {
+			container.removeChild(stroke);
+			this._stroke = null;
+		}
+
+		if (options.fill) {
+			if (!fill) {
+				fill = this._fill = this._createElement('fill');
+				container.appendChild(fill);
+			}
+			fill.color = options.fillColor || options.color;
+			fill.opacity = options.fillOpacity;
+
+		} else if (fill) {
+			container.removeChild(fill);
+			this._fill = null;
+		}
+	},
+
+	_updatePath: function () {
+		var style = this._container.style;
+
+		style.display = 'none';
+		this._path.v = this.getPathString() + ' '; // the space fixes IE empty path string bug
+		style.display = '';
+	}
+});
+
+L.Map.include(L.Browser.svg || !L.Browser.vml ? {} : {
+	_initPathRoot: function () {
+		if (this._pathRoot) { return; }
+
+		var root = this._pathRoot = document.createElement('div');
+		root.className = 'leaflet-vml-container';
+		this._panes.overlayPane.appendChild(root);
+
+		this.on('moveend', this._updatePathViewport);
+		this._updatePathViewport();
+	}
+});
+
+
+/*
+ * Vector rendering for all browsers that support canvas.
+ */
+
+L.Browser.canvas = (function () {
+	return !!document.createElement('canvas').getContext;
+}());
+
+L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path : L.Path.extend({
+	statics: {
+		//CLIP_PADDING: 0.02, // not sure if there's a need to set it to a small value
+		CANVAS: true,
+		SVG: false
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this.projectLatlngs();
+			this._requestUpdate();
+		}
+		return this;
+	},
+
+	setStyle: function (style) {
+		L.setOptions(this, style);
+
+		if (this._map) {
+			this._updateStyle();
+			this._requestUpdate();
+		}
+		return this;
+	},
+
+	onRemove: function (map) {
+		map
+		    .off('viewreset', this.projectLatlngs, this)
+		    .off('moveend', this._updatePath, this);
+
+		if (this.options.clickable) {
+			this._map.off('click', this._onClick, this);
+			this._map.off('mousemove', this._onMouseMove, this);
+		}
+
+		this._requestUpdate();
+		
+		this.fire('remove');
+		this._map = null;
+	},
+
+	_requestUpdate: function () {
+		if (this._map && !L.Path._updateRequest) {
+			L.Path._updateRequest = L.Util.requestAnimFrame(this._fireMapMoveEnd, this._map);
+		}
+	},
+
+	_fireMapMoveEnd: function () {
+		L.Path._updateRequest = null;
+		this.fire('moveend');
+	},
+
+	_initElements: function () {
+		this._map._initPathRoot();
+		this._ctx = this._map._canvasCtx;
+	},
+
+	_updateStyle: function () {
+		var options = this.options;
+
+		if (options.stroke) {
+			this._ctx.lineWidth = options.weight;
+			this._ctx.strokeStyle = options.color;
+		}
+		if (options.fill) {
+			this._ctx.fillStyle = options.fillColor || options.color;
+		}
+
+		if (options.lineCap) {
+			this._ctx.lineCap = options.lineCap;
+		}
+		if (options.lineJoin) {
+			this._ctx.lineJoin = options.lineJoin;
+		}
+	},
+
+	_drawPath: function () {
+		var i, j, len, len2, point, drawMethod;
+
+		this._ctx.beginPath();
+
+		for (i = 0, len = this._parts.length; i < len; i++) {
+			for (j = 0, len2 = this._parts[i].length; j < len2; j++) {
+				point = this._parts[i][j];
+				drawMethod = (j === 0 ? 'move' : 'line') + 'To';
+
+				this._ctx[drawMethod](point.x, point.y);
+			}
+			// TODO refactor ugly hack
+			if (this instanceof L.Polygon) {
+				this._ctx.closePath();
+			}
+		}
+	},
+
+	_checkIfEmpty: function () {
+		return !this._parts.length;
+	},
+
+	_updatePath: function () {
+		if (this._checkIfEmpty()) { return; }
+
+		var ctx = this._ctx,
+		    options = this.options;
+
+		this._drawPath();
+		ctx.save();
+		this._updateStyle();
+
+		if (options.fill) {
+			ctx.globalAlpha = options.fillOpacity;
+			ctx.fill(options.fillRule || 'evenodd');
+		}
+
+		if (options.stroke) {
+			ctx.globalAlpha = options.opacity;
+			ctx.stroke();
+		}
+
+		ctx.restore();
+
+		// TODO optimization: 1 fill/stroke for all features with equal style instead of 1 for each feature
+	},
+
+	_initEvents: function () {
+		if (this.options.clickable) {
+			this._map.on('mousemove', this._onMouseMove, this);
+			this._map.on('click dblclick contextmenu', this._fireMouseEvent, this);
+		}
+	},
+
+	_fireMouseEvent: function (e) {
+		if (this._containsPoint(e.layerPoint)) {
+			this.fire(e.type, e);
+		}
+	},
+
+	_onMouseMove: function (e) {
+		if (!this._map || this._map._animatingZoom) { return; }
+
+		// TODO don't do on each move
+		if (this._containsPoint(e.layerPoint)) {
+			this._ctx.canvas.style.cursor = 'pointer';
+			this._mouseInside = true;
+			this.fire('mouseover', e);
+
+		} else if (this._mouseInside) {
+			this._ctx.canvas.style.cursor = '';
+			this._mouseInside = false;
+			this.fire('mouseout', e);
+		}
+	}
+});
+
+L.Map.include((L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? {} : {
+	_initPathRoot: function () {
+		var root = this._pathRoot,
+		    ctx;
+
+		if (!root) {
+			root = this._pathRoot = document.createElement('canvas');
+			root.style.position = 'absolute';
+			ctx = this._canvasCtx = root.getContext('2d');
+
+			ctx.lineCap = 'round';
+			ctx.lineJoin = 'round';
+
+			this._panes.overlayPane.appendChild(root);
+
+			if (this.options.zoomAnimation) {
+				this._pathRoot.className = 'leaflet-zoom-animated';
+				this.on('zoomanim', this._animatePathZoom);
+				this.on('zoomend', this._endPathZoom);
+			}
+			this.on('moveend', this._updateCanvasViewport);
+			this._updateCanvasViewport();
+		}
+	},
+
+	_updateCanvasViewport: function () {
+		// don't redraw while zooming. See _updateSvgViewport for more details
+		if (this._pathZooming) { return; }
+		this._updatePathViewport();
+
+		var vp = this._pathViewport,
+		    min = vp.min,
+		    size = vp.max.subtract(min),
+		    root = this._pathRoot;
+
+		//TODO check if this works properly on mobile webkit
+		L.DomUtil.setPosition(root, min);
+		root.width = size.x;
+		root.height = size.y;
+		root.getContext('2d').translate(-min.x, -min.y);
+	}
+});
+
+
+/*
+ * L.LineUtil contains different utility functions for line segments
+ * and polylines (clipping, simplification, distances, etc.)
+ */
+
+/*jshint bitwise:false */ // allow bitwise operations for this file
+
+L.LineUtil = {
+
+	// Simplify polyline with vertex reduction and Douglas-Peucker simplification.
+	// Improves rendering performance dramatically by lessening the number of points to draw.
+
+	simplify: function (/*Point[]*/ points, /*Number*/ tolerance) {
+		if (!tolerance || !points.length) {
+			return points.slice();
+		}
+
+		var sqTolerance = tolerance * tolerance;
+
+		// stage 1: vertex reduction
+		points = this._reducePoints(points, sqTolerance);
+
+		// stage 2: Douglas-Peucker simplification
+		points = this._simplifyDP(points, sqTolerance);
+
+		return points;
+	},
+
+	// distance from a point to a segment between two points
+	pointToSegmentDistance:  function (/*Point*/ p, /*Point*/ p1, /*Point*/ p2) {
+		return Math.sqrt(this._sqClosestPointOnSegment(p, p1, p2, true));
+	},
+
+	closestPointOnSegment: function (/*Point*/ p, /*Point*/ p1, /*Point*/ p2) {
+		return this._sqClosestPointOnSegment(p, p1, p2);
+	},
+
+	// Douglas-Peucker simplification, see http://en.wikipedia.org/wiki/Douglas-Peucker_algorithm
+	_simplifyDP: function (points, sqTolerance) {
+
+		var len = points.length,
+		    ArrayConstructor = typeof Uint8Array !== undefined + '' ? Uint8Array : Array,
+		    markers = new ArrayConstructor(len);
+
+		markers[0] = markers[len - 1] = 1;
+
+		this._simplifyDPStep(points, markers, sqTolerance, 0, len - 1);
+
+		var i,
+		    newPoints = [];
+
+		for (i = 0; i < len; i++) {
+			if (markers[i]) {
+				newPoints.push(points[i]);
+			}
+		}
+
+		return newPoints;
+	},
+
+	_simplifyDPStep: function (points, markers, sqTolerance, first, last) {
+
+		var maxSqDist = 0,
+		    index, i, sqDist;
+
+		for (i = first + 1; i <= last - 1; i++) {
+			sqDist = this._sqClosestPointOnSegment(points[i], points[first], points[last], true);
+
+			if (sqDist > maxSqDist) {
+				index = i;
+				maxSqDist = sqDist;
+			}
+		}
+
+		if (maxSqDist > sqTolerance) {
+			markers[index] = 1;
+
+			this._simplifyDPStep(points, markers, sqTolerance, first, index);
+			this._simplifyDPStep(points, markers, sqTolerance, index, last);
+		}
+	},
+
+	// reduce points that are too close to each other to a single point
+	_reducePoints: function (points, sqTolerance) {
+		var reducedPoints = [points[0]];
+
+		for (var i = 1, prev = 0, len = points.length; i < len; i++) {
+			if (this._sqDist(points[i], points[prev]) > sqTolerance) {
+				reducedPoints.push(points[i]);
+				prev = i;
+			}
+		}
+		if (prev < len - 1) {
+			reducedPoints.push(points[len - 1]);
+		}
+		return reducedPoints;
+	},
+
+	// Cohen-Sutherland line clipping algorithm.
+	// Used to avoid rendering parts of a polyline that are not currently visible.
+
+	clipSegment: function (a, b, bounds, useLastCode) {
+		var codeA = useLastCode ? this._lastCode : this._getBitCode(a, bounds),
+		    codeB = this._getBitCode(b, bounds),
+
+		    codeOut, p, newCode;
+
+		// save 2nd code to avoid calculating it on the next segment
+		this._lastCode = codeB;
+
+		while (true) {
+			// if a,b is inside the clip window (trivial accept)
+			if (!(codeA | codeB)) {
+				return [a, b];
+			// if a,b is outside the clip window (trivial reject)
+			} else if (codeA & codeB) {
+				return false;
+			// other cases
+			} else {
+				codeOut = codeA || codeB;
+				p = this._getEdgeIntersection(a, b, codeOut, bounds);
+				newCode = this._getBitCode(p, bounds);
+
+				if (codeOut === codeA) {
+					a = p;
+					codeA = newCode;
+				} else {
+					b = p;
+					codeB = newCode;
+				}
+			}
+		}
+	},
+
+	_getEdgeIntersection: function (a, b, code, bounds) {
+		var dx = b.x - a.x,
+		    dy = b.y - a.y,
+		    min = bounds.min,
+		    max = bounds.max;
+
+		if (code & 8) { // top
+			return new L.Point(a.x + dx * (max.y - a.y) / dy, max.y);
+		} else if (code & 4) { // bottom
+			return new L.Point(a.x + dx * (min.y - a.y) / dy, min.y);
+		} else if (code & 2) { // right
+			return new L.Point(max.x, a.y + dy * (max.x - a.x) / dx);
+		} else if (code & 1) { // left
+			return new L.Point(min.x, a.y + dy * (min.x - a.x) / dx);
+		}
+	},
+
+	_getBitCode: function (/*Point*/ p, bounds) {
+		var code = 0;
+
+		if (p.x < bounds.min.x) { // left
+			code |= 1;
+		} else if (p.x > bounds.max.x) { // right
+			code |= 2;
+		}
+		if (p.y < bounds.min.y) { // bottom
+			code |= 4;
+		} else if (p.y > bounds.max.y) { // top
+			code |= 8;
+		}
+
+		return code;
+	},
+
+	// square distance (to avoid unnecessary Math.sqrt calls)
+	_sqDist: function (p1, p2) {
+		var dx = p2.x - p1.x,
+		    dy = p2.y - p1.y;
+		return dx * dx + dy * dy;
+	},
+
+	// return closest point on segment or distance to that point
+	_sqClosestPointOnSegment: function (p, p1, p2, sqDist) {
+		var x = p1.x,
+		    y = p1.y,
+		    dx = p2.x - x,
+		    dy = p2.y - y,
+		    dot = dx * dx + dy * dy,
+		    t;
+
+		if (dot > 0) {
+			t = ((p.x - x) * dx + (p.y - y) * dy) / dot;
+
+			if (t > 1) {
+				x = p2.x;
+				y = p2.y;
+			} else if (t > 0) {
+				x += dx * t;
+				y += dy * t;
+			}
+		}
+
+		dx = p.x - x;
+		dy = p.y - y;
+
+		return sqDist ? dx * dx + dy * dy : new L.Point(x, y);
+	}
+};
+
+
+/*
+ * L.Polyline is used to display polylines on a map.
+ */
+
+L.Polyline = L.Path.extend({
+	initialize: function (latlngs, options) {
+		L.Path.prototype.initialize.call(this, options);
+
+		this._latlngs = this._convertLatLngs(latlngs);
+	},
+
+	options: {
+		// how much to simplify the polyline on each zoom level
+		// more = better performance and smoother look, less = more accurate
+		smoothFactor: 1.0,
+		noClip: false
+	},
+
+	projectLatlngs: function () {
+		this._originalPoints = [];
+
+		for (var i = 0, len = this._latlngs.length; i < len; i++) {
+			this._originalPoints[i] = this._map.latLngToLayerPoint(this._latlngs[i]);
+		}
+	},
+
+	getPathString: function () {
+		for (var i = 0, len = this._parts.length, str = ''; i < len; i++) {
+			str += this._getPathPartStr(this._parts[i]);
+		}
+		return str;
+	},
+
+	getLatLngs: function () {
+		return this._latlngs;
+	},
+
+	setLatLngs: function (latlngs) {
+		this._latlngs = this._convertLatLngs(latlngs);
+		return this.redraw();
+	},
+
+	addLatLng: function (latlng) {
+		this._latlngs.push(L.latLng(latlng));
+		return this.redraw();
+	},
+
+	spliceLatLngs: function () { // (Number index, Number howMany)
+		var removed = [].splice.apply(this._latlngs, arguments);
+		this._convertLatLngs(this._latlngs, true);
+		this.redraw();
+		return removed;
+	},
+
+	closestLayerPoint: function (p) {
+		var minDistance = Infinity, parts = this._parts, p1, p2, minPoint = null;
+
+		for (var j = 0, jLen = parts.length; j < jLen; j++) {
+			var points = parts[j];
+			for (var i = 1, len = points.length; i < len; i++) {
+				p1 = points[i - 1];
+				p2 = points[i];
+				var sqDist = L.LineUtil._sqClosestPointOnSegment(p, p1, p2, true);
+				if (sqDist < minDistance) {
+					minDistance = sqDist;
+					minPoint = L.LineUtil._sqClosestPointOnSegment(p, p1, p2);
+				}
+			}
+		}
+		if (minPoint) {
+			minPoint.distance = Math.sqrt(minDistance);
+		}
+		return minPoint;
+	},
+
+	getBounds: function () {
+		return new L.LatLngBounds(this.getLatLngs());
+	},
+
+	_convertLatLngs: function (latlngs, overwrite) {
+		var i, len, target = overwrite ? latlngs : [];
+
+		for (i = 0, len = latlngs.length; i < len; i++) {
+			if (L.Util.isArray(latlngs[i]) && typeof latlngs[i][0] !== 'number') {
+				return;
+			}
+			target[i] = L.latLng(latlngs[i]);
+		}
+		return target;
+	},
+
+	_initEvents: function () {
+		L.Path.prototype._initEvents.call(this);
+	},
+
+	_getPathPartStr: function (points) {
+		var round = L.Path.VML;
+
+		for (var j = 0, len2 = points.length, str = '', p; j < len2; j++) {
+			p = points[j];
+			if (round) {
+				p._round();
+			}
+			str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
+		}
+		return str;
+	},
+
+	_clipPoints: function () {
+		var points = this._originalPoints,
+		    len = points.length,
+		    i, k, segment;
+
+		if (this.options.noClip) {
+			this._parts = [points];
+			return;
+		}
+
+		this._parts = [];
+
+		var parts = this._parts,
+		    vp = this._map._pathViewport,
+		    lu = L.LineUtil;
+
+		for (i = 0, k = 0; i < len - 1; i++) {
+			segment = lu.clipSegment(points[i], points[i + 1], vp, i);
+			if (!segment) {
+				continue;
+			}
+
+			parts[k] = parts[k] || [];
+			parts[k].push(segment[0]);
+
+			// if segment goes out of screen, or it's the last one, it's the end of the line part
+			if ((segment[1] !== points[i + 1]) || (i === len - 2)) {
+				parts[k].push(segment[1]);
+				k++;
+			}
+		}
+	},
+
+	// simplify each clipped part of the polyline
+	_simplifyPoints: function () {
+		var parts = this._parts,
+		    lu = L.LineUtil;
+
+		for (var i = 0, len = parts.length; i < len; i++) {
+			parts[i] = lu.simplify(parts[i], this.options.smoothFactor);
+		}
+	},
+
+	_updatePath: function () {
+		if (!this._map) { return; }
+
+		this._clipPoints();
+		this._simplifyPoints();
+
+		L.Path.prototype._updatePath.call(this);
+	}
+});
+
+L.polyline = function (latlngs, options) {
+	return new L.Polyline(latlngs, options);
+};
+
+
+/*
+ * L.PolyUtil contains utility functions for polygons (clipping, etc.).
+ */
+
+/*jshint bitwise:false */ // allow bitwise operations here
+
+L.PolyUtil = {};
+
+/*
+ * Sutherland-Hodgeman polygon clipping algorithm.
+ * Used to avoid rendering parts of a polygon that are not currently visible.
+ */
+L.PolyUtil.clipPolygon = function (points, bounds) {
+	var clippedPoints,
+	    edges = [1, 4, 2, 8],
+	    i, j, k,
+	    a, b,
+	    len, edge, p,
+	    lu = L.LineUtil;
+
+	for (i = 0, len = points.length; i < len; i++) {
+		points[i]._code = lu._getBitCode(points[i], bounds);
+	}
+
+	// for each edge (left, bottom, right, top)
+	for (k = 0; k < 4; k++) {
+		edge = edges[k];
+		clippedPoints = [];
+
+		for (i = 0, len = points.length, j = len - 1; i < len; j = i++) {
+			a = points[i];
+			b = points[j];
+
+			// if a is inside the clip window
+			if (!(a._code & edge)) {
+				// if b is outside the clip window (a->b goes out of screen)
+				if (b._code & edge) {
+					p = lu._getEdgeIntersection(b, a, edge, bounds);
+					p._code = lu._getBitCode(p, bounds);
+					clippedPoints.push(p);
+				}
+				clippedPoints.push(a);
+
+			// else if b is inside the clip window (a->b enters the screen)
+			} else if (!(b._code & edge)) {
+				p = lu._getEdgeIntersection(b, a, edge, bounds);
+				p._code = lu._getBitCode(p, bounds);
+				clippedPoints.push(p);
+			}
+		}
+		points = clippedPoints;
+	}
+
+	return points;
+};
+
+
+/*
+ * L.Polygon is used to display polygons on a map.
+ */
+
+L.Polygon = L.Polyline.extend({
+	options: {
+		fill: true
+	},
+
+	initialize: function (latlngs, options) {
+		L.Polyline.prototype.initialize.call(this, latlngs, options);
+		this._initWithHoles(latlngs);
+	},
+
+	_initWithHoles: function (latlngs) {
+		var i, len, hole;
+		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
+			this._latlngs = this._convertLatLngs(latlngs[0]);
+			this._holes = latlngs.slice(1);
+
+			for (i = 0, len = this._holes.length; i < len; i++) {
+				hole = this._holes[i] = this._convertLatLngs(this._holes[i]);
+				if (hole[0].equals(hole[hole.length - 1])) {
+					hole.pop();
+				}
+			}
+		}
+
+		// filter out last point if its equal to the first one
+		latlngs = this._latlngs;
+
+		if (latlngs.length >= 2 && latlngs[0].equals(latlngs[latlngs.length - 1])) {
+			latlngs.pop();
+		}
+	},
+
+	projectLatlngs: function () {
+		L.Polyline.prototype.projectLatlngs.call(this);
+
+		// project polygon holes points
+		// TODO move this logic to Polyline to get rid of duplication
+		this._holePoints = [];
+
+		if (!this._holes) { return; }
+
+		var i, j, len, len2;
+
+		for (i = 0, len = this._holes.length; i < len; i++) {
+			this._holePoints[i] = [];
+
+			for (j = 0, len2 = this._holes[i].length; j < len2; j++) {
+				this._holePoints[i][j] = this._map.latLngToLayerPoint(this._holes[i][j]);
+			}
+		}
+	},
+
+	setLatLngs: function (latlngs) {
+		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
+			this._initWithHoles(latlngs);
+			return this.redraw();
+		} else {
+			return L.Polyline.prototype.setLatLngs.call(this, latlngs);
+		}
+	},
+
+	_clipPoints: function () {
+		var points = this._originalPoints,
+		    newParts = [];
+
+		this._parts = [points].concat(this._holePoints);
+
+		if (this.options.noClip) { return; }
+
+		for (var i = 0, len = this._parts.length; i < len; i++) {
+			var clipped = L.PolyUtil.clipPolygon(this._parts[i], this._map._pathViewport);
+			if (clipped.length) {
+				newParts.push(clipped);
+			}
+		}
+
+		this._parts = newParts;
+	},
+
+	_getPathPartStr: function (points) {
+		var str = L.Polyline.prototype._getPathPartStr.call(this, points);
+		return str + (L.Browser.svg ? 'z' : 'x');
+	}
+});
+
+L.polygon = function (latlngs, options) {
+	return new L.Polygon(latlngs, options);
+};
+
+
+/*
+ * Contains L.MultiPolyline and L.MultiPolygon layers.
+ */
+
+(function () {
+	function createMulti(Klass) {
+
+		return L.FeatureGroup.extend({
+
+			initialize: function (latlngs, options) {
+				this._layers = {};
+				this._options = options;
+				this.setLatLngs(latlngs);
+			},
+
+			setLatLngs: function (latlngs) {
+				var i = 0,
+				    len = latlngs.length;
+
+				this.eachLayer(function (layer) {
+					if (i < len) {
+						layer.setLatLngs(latlngs[i++]);
+					} else {
+						this.removeLayer(layer);
+					}
+				}, this);
+
+				while (i < len) {
+					this.addLayer(new Klass(latlngs[i++], this._options));
+				}
+
+				return this;
+			},
+
+			getLatLngs: function () {
+				var latlngs = [];
+
+				this.eachLayer(function (layer) {
+					latlngs.push(layer.getLatLngs());
+				});
+
+				return latlngs;
+			}
+		});
+	}
+
+	L.MultiPolyline = createMulti(L.Polyline);
+	L.MultiPolygon = createMulti(L.Polygon);
+
+	L.multiPolyline = function (latlngs, options) {
+		return new L.MultiPolyline(latlngs, options);
+	};
+
+	L.multiPolygon = function (latlngs, options) {
+		return new L.MultiPolygon(latlngs, options);
+	};
+}());
+
+
+/*
+ * L.Rectangle extends Polygon and creates a rectangle when passed a LatLngBounds object.
+ */
+
+L.Rectangle = L.Polygon.extend({
+	initialize: function (latLngBounds, options) {
+		L.Polygon.prototype.initialize.call(this, this._boundsToLatLngs(latLngBounds), options);
+	},
+
+	setBounds: function (latLngBounds) {
+		this.setLatLngs(this._boundsToLatLngs(latLngBounds));
+	},
+
+	_boundsToLatLngs: function (latLngBounds) {
+		latLngBounds = L.latLngBounds(latLngBounds);
+		return [
+			latLngBounds.getSouthWest(),
+			latLngBounds.getNorthWest(),
+			latLngBounds.getNorthEast(),
+			latLngBounds.getSouthEast()
+		];
+	}
+});
+
+L.rectangle = function (latLngBounds, options) {
+	return new L.Rectangle(latLngBounds, options);
+};
+
+
+/*
+ * L.Circle is a circle overlay (with a certain radius in meters).
+ */
+
+L.Circle = L.Path.extend({
+	initialize: function (latlng, radius, options) {
+		L.Path.prototype.initialize.call(this, options);
+
+		this._latlng = L.latLng(latlng);
+		this._mRadius = radius;
+	},
+
+	options: {
+		fill: true
+	},
+
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+		return this.redraw();
+	},
+
+	setRadius: function (radius) {
+		this._mRadius = radius;
+		return this.redraw();
+	},
+
+	projectLatlngs: function () {
+		var lngRadius = this._getLngRadius(),
+		    latlng = this._latlng,
+		    pointLeft = this._map.latLngToLayerPoint([latlng.lat, latlng.lng - lngRadius]);
+
+		this._point = this._map.latLngToLayerPoint(latlng);
+		this._radius = Math.max(this._point.x - pointLeft.x, 1);
+	},
+
+	getBounds: function () {
+		var lngRadius = this._getLngRadius(),
+		    latRadius = (this._mRadius / 40075017) * 360,
+		    latlng = this._latlng;
+
+		return new L.LatLngBounds(
+		        [latlng.lat - latRadius, latlng.lng - lngRadius],
+		        [latlng.lat + latRadius, latlng.lng + lngRadius]);
+	},
+
+	getLatLng: function () {
+		return this._latlng;
+	},
+
+	getPathString: function () {
+		var p = this._point,
+		    r = this._radius;
+
+		if (this._checkIfEmpty()) {
+			return '';
+		}
+
+		if (L.Browser.svg) {
+			return 'M' + p.x + ',' + (p.y - r) +
+			       'A' + r + ',' + r + ',0,1,1,' +
+			       (p.x - 0.1) + ',' + (p.y - r) + ' z';
+		} else {
+			p._round();
+			r = Math.round(r);
+			return 'AL ' + p.x + ',' + p.y + ' ' + r + ',' + r + ' 0,' + (65535 * 360);
+		}
+	},
+
+	getRadius: function () {
+		return this._mRadius;
+	},
+
+	// TODO Earth hardcoded, move into projection code!
+
+	_getLatRadius: function () {
+		return (this._mRadius / 40075017) * 360;
+	},
+
+	_getLngRadius: function () {
+		return this._getLatRadius() / Math.cos(L.LatLng.DEG_TO_RAD * this._latlng.lat);
+	},
+
+	_checkIfEmpty: function () {
+		if (!this._map) {
+			return false;
+		}
+		var vp = this._map._pathViewport,
+		    r = this._radius,
+		    p = this._point;
+
+		return p.x - r > vp.max.x || p.y - r > vp.max.y ||
+		       p.x + r < vp.min.x || p.y + r < vp.min.y;
+	}
+});
+
+L.circle = function (latlng, radius, options) {
+	return new L.Circle(latlng, radius, options);
+};
+
+
+/*
+ * L.CircleMarker is a circle overlay with a permanent pixel radius.
+ */
+
+L.CircleMarker = L.Circle.extend({
+	options: {
+		radius: 10,
+		weight: 2
+	},
+
+	initialize: function (latlng, options) {
+		L.Circle.prototype.initialize.call(this, latlng, null, options);
+		this._radius = this.options.radius;
+	},
+
+	projectLatlngs: function () {
+		this._point = this._map.latLngToLayerPoint(this._latlng);
+	},
+
+	_updateStyle : function () {
+		L.Circle.prototype._updateStyle.call(this);
+		this.setRadius(this.options.radius);
+	},
+
+	setLatLng: function (latlng) {
+		L.Circle.prototype.setLatLng.call(this, latlng);
+		if (this._popup && this._popup._isOpen) {
+			this._popup.setLatLng(latlng);
+		}
+		return this;
+	},
+
+	setRadius: function (radius) {
+		this.options.radius = this._radius = radius;
+		return this.redraw();
+	},
+
+	getRadius: function () {
+		return this._radius;
+	}
+});
+
+L.circleMarker = function (latlng, options) {
+	return new L.CircleMarker(latlng, options);
+};
+
+
+/*
+ * Extends L.Polyline to be able to manually detect clicks on Canvas-rendered polylines.
+ */
+
+L.Polyline.include(!L.Path.CANVAS ? {} : {
+	_containsPoint: function (p, closed) {
+		var i, j, k, len, len2, dist, part,
+		    w = this.options.weight / 2;
+
+		if (L.Browser.touch) {
+			w += 10; // polyline click tolerance on touch devices
+		}
+
+		for (i = 0, len = this._parts.length; i < len; i++) {
+			part = this._parts[i];
+			for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
+				if (!closed && (j === 0)) {
+					continue;
+				}
+
+				dist = L.LineUtil.pointToSegmentDistance(p, part[k], part[j]);
+
+				if (dist <= w) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+});
+
+
+/*
+ * Extends L.Polygon to be able to manually detect clicks on Canvas-rendered polygons.
+ */
+
+L.Polygon.include(!L.Path.CANVAS ? {} : {
+	_containsPoint: function (p) {
+		var inside = false,
+		    part, p1, p2,
+		    i, j, k,
+		    len, len2;
+
+		// TODO optimization: check if within bounds first
+
+		if (L.Polyline.prototype._containsPoint.call(this, p, true)) {
+			// click on polygon border
+			return true;
+		}
+
+		// ray casting algorithm for detecting if point is in polygon
+
+		for (i = 0, len = this._parts.length; i < len; i++) {
+			part = this._parts[i];
+
+			for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
+				p1 = part[j];
+				p2 = part[k];
+
+				if (((p1.y > p.y) !== (p2.y > p.y)) &&
+						(p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x)) {
+					inside = !inside;
+				}
+			}
+		}
+
+		return inside;
+	}
+});
+
+
+/*
+ * Extends L.Circle with Canvas-specific code.
+ */
+
+L.Circle.include(!L.Path.CANVAS ? {} : {
+	_drawPath: function () {
+		var p = this._point;
+		this._ctx.beginPath();
+		this._ctx.arc(p.x, p.y, this._radius, 0, Math.PI * 2, false);
+	},
+
+	_containsPoint: function (p) {
+		var center = this._point,
+		    w2 = this.options.stroke ? this.options.weight / 2 : 0;
+
+		return (p.distanceTo(center) <= this._radius + w2);
+	}
+});
+
+
+/*
+ * CircleMarker canvas specific drawing parts.
+ */
+
+L.CircleMarker.include(!L.Path.CANVAS ? {} : {
+	_updateStyle: function () {
+		L.Path.prototype._updateStyle.call(this);
+	}
+});
+
+
+/*
+ * L.GeoJSON turns any GeoJSON data into a Leaflet layer.
+ */
+
+L.GeoJSON = L.FeatureGroup.extend({
+
+	initialize: function (geojson, options) {
+		L.setOptions(this, options);
+
+		this._layers = {};
+
+		if (geojson) {
+			this.addData(geojson);
+		}
+	},
+
+	addData: function (geojson) {
+		var features = L.Util.isArray(geojson) ? geojson : geojson.features,
+		    i, len, feature;
+
+		if (features) {
+			for (i = 0, len = features.length; i < len; i++) {
+				// Only add this if geometry or geometries are set and not null
+				feature = features[i];
+				if (feature.geometries || feature.geometry || feature.features || feature.coordinates) {
+					this.addData(features[i]);
+				}
+			}
+			return this;
+		}
+
+		var options = this.options;
+
+		if (options.filter && !options.filter(geojson)) { return; }
+
+		var layer = L.GeoJSON.geometryToLayer(geojson, options.pointToLayer, options.coordsToLatLng, options);
+		layer.feature = L.GeoJSON.asFeature(geojson);
+
+		layer.defaultOptions = layer.options;
+		this.resetStyle(layer);
+
+		if (options.onEachFeature) {
+			options.onEachFeature(geojson, layer);
+		}
+
+		return this.addLayer(layer);
+	},
+
+	resetStyle: function (layer) {
+		var style = this.options.style;
+		if (style) {
+			// reset any custom styles
+			L.Util.extend(layer.options, layer.defaultOptions);
+
+			this._setLayerStyle(layer, style);
+		}
+	},
+
+	setStyle: function (style) {
+		this.eachLayer(function (layer) {
+			this._setLayerStyle(layer, style);
+		}, this);
+	},
+
+	_setLayerStyle: function (layer, style) {
+		if (typeof style === 'function') {
+			style = style(layer.feature);
+		}
+		if (layer.setStyle) {
+			layer.setStyle(style);
+		}
+	}
+});
+
+L.extend(L.GeoJSON, {
+	geometryToLayer: function (geojson, pointToLayer, coordsToLatLng, vectorOptions) {
+		var geometry = geojson.type === 'Feature' ? geojson.geometry : geojson,
+		    coords = geometry.coordinates,
+		    layers = [],
+		    latlng, latlngs, i, len;
+
+		coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
+
+		switch (geometry.type) {
+		case 'Point':
+			latlng = coordsToLatLng(coords);
+			return pointToLayer ? pointToLayer(geojson, latlng) : new L.Marker(latlng);
+
+		case 'MultiPoint':
+			for (i = 0, len = coords.length; i < len; i++) {
+				latlng = coordsToLatLng(coords[i]);
+				layers.push(pointToLayer ? pointToLayer(geojson, latlng) : new L.Marker(latlng));
+			}
+			return new L.FeatureGroup(layers);
+
+		case 'LineString':
+			latlngs = this.coordsToLatLngs(coords, 0, coordsToLatLng);
+			return new L.Polyline(latlngs, vectorOptions);
+
+		case 'Polygon':
+			if (coords.length === 2 && !coords[1].length) {
+				throw new Error('Invalid GeoJSON object.');
+			}
+			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
+			return new L.Polygon(latlngs, vectorOptions);
+
+		case 'MultiLineString':
+			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
+			return new L.MultiPolyline(latlngs, vectorOptions);
+
+		case 'MultiPolygon':
+			latlngs = this.coordsToLatLngs(coords, 2, coordsToLatLng);
+			return new L.MultiPolygon(latlngs, vectorOptions);
+
+		case 'GeometryCollection':
+			for (i = 0, len = geometry.geometries.length; i < len; i++) {
+
+				layers.push(this.geometryToLayer({
+					geometry: geometry.geometries[i],
+					type: 'Feature',
+					properties: geojson.properties
+				}, pointToLayer, coordsToLatLng, vectorOptions));
+			}
+			return new L.FeatureGroup(layers);
+
+		default:
+			throw new Error('Invalid GeoJSON object.');
+		}
+	},
+
+	coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
+		return new L.LatLng(coords[1], coords[0], coords[2]);
+	},
+
+	coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng) { // (Array[, Number, Function]) -> Array
+		var latlng, i, len,
+		    latlngs = [];
+
+		for (i = 0, len = coords.length; i < len; i++) {
+			latlng = levelsDeep ?
+			        this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng) :
+			        (coordsToLatLng || this.coordsToLatLng)(coords[i]);
+
+			latlngs.push(latlng);
+		}
+
+		return latlngs;
+	},
+
+	latLngToCoords: function (latlng) {
+		var coords = [latlng.lng, latlng.lat];
+
+		if (latlng.alt !== undefined) {
+			coords.push(latlng.alt);
+		}
+		return coords;
+	},
+
+	latLngsToCoords: function (latLngs) {
+		var coords = [];
+
+		for (var i = 0, len = latLngs.length; i < len; i++) {
+			coords.push(L.GeoJSON.latLngToCoords(latLngs[i]));
+		}
+
+		return coords;
+	},
+
+	getFeature: function (layer, newGeometry) {
+		return layer.feature ? L.extend({}, layer.feature, {geometry: newGeometry}) : L.GeoJSON.asFeature(newGeometry);
+	},
+
+	asFeature: function (geoJSON) {
+		if (geoJSON.type === 'Feature') {
+			return geoJSON;
+		}
+
+		return {
+			type: 'Feature',
+			properties: {},
+			geometry: geoJSON
+		};
+	}
+});
+
+var PointToGeoJSON = {
+	toGeoJSON: function () {
+		return L.GeoJSON.getFeature(this, {
+			type: 'Point',
+			coordinates: L.GeoJSON.latLngToCoords(this.getLatLng())
+		});
+	}
+};
+
+L.Marker.include(PointToGeoJSON);
+L.Circle.include(PointToGeoJSON);
+L.CircleMarker.include(PointToGeoJSON);
+
+L.Polyline.include({
+	toGeoJSON: function () {
+		return L.GeoJSON.getFeature(this, {
+			type: 'LineString',
+			coordinates: L.GeoJSON.latLngsToCoords(this.getLatLngs())
+		});
+	}
+});
+
+L.Polygon.include({
+	toGeoJSON: function () {
+		var coords = [L.GeoJSON.latLngsToCoords(this.getLatLngs())],
+		    i, len, hole;
+
+		coords[0].push(coords[0][0]);
+
+		if (this._holes) {
+			for (i = 0, len = this._holes.length; i < len; i++) {
+				hole = L.GeoJSON.latLngsToCoords(this._holes[i]);
+				hole.push(hole[0]);
+				coords.push(hole);
+			}
+		}
+
+		return L.GeoJSON.getFeature(this, {
+			type: 'Polygon',
+			coordinates: coords
+		});
+	}
+});
+
+(function () {
+	function multiToGeoJSON(type) {
+		return function () {
+			var coords = [];
+
+			this.eachLayer(function (layer) {
+				coords.push(layer.toGeoJSON().geometry.coordinates);
+			});
+
+			return L.GeoJSON.getFeature(this, {
+				type: type,
+				coordinates: coords
+			});
+		};
+	}
+
+	L.MultiPolyline.include({toGeoJSON: multiToGeoJSON('MultiLineString')});
+	L.MultiPolygon.include({toGeoJSON: multiToGeoJSON('MultiPolygon')});
+
+	L.LayerGroup.include({
+		toGeoJSON: function () {
+
+			var geometry = this.feature && this.feature.geometry,
+				jsons = [],
+				json;
+
+			if (geometry && geometry.type === 'MultiPoint') {
+				return multiToGeoJSON('MultiPoint').call(this);
+			}
+
+			var isGeometryCollection = geometry && geometry.type === 'GeometryCollection';
+
+			this.eachLayer(function (layer) {
+				if (layer.toGeoJSON) {
+					json = layer.toGeoJSON();
+					jsons.push(isGeometryCollection ? json.geometry : L.GeoJSON.asFeature(json));
+				}
+			});
+
+			if (isGeometryCollection) {
+				return L.GeoJSON.getFeature(this, {
+					geometries: jsons,
+					type: 'GeometryCollection'
+				});
+			}
+
+			return {
+				type: 'FeatureCollection',
+				features: jsons
+			};
+		}
+	});
+}());
+
+L.geoJson = function (geojson, options) {
+	return new L.GeoJSON(geojson, options);
+};
+
+
+/*
+ * L.DomEvent contains functions for working with DOM events.
+ */
+
+L.DomEvent = {
+	/* inspired by John Resig, Dean Edwards and YUI addEvent implementations */
+	addListener: function (obj, type, fn, context) { // (HTMLElement, String, Function[, Object])
+
+		var id = L.stamp(fn),
+		    key = '_leaflet_' + type + id,
+		    handler, originalHandler, newType;
+
+		if (obj[key]) { return this; }
+
+		handler = function (e) {
+			return fn.call(context || obj, e || L.DomEvent._getEvent());
+		};
+
+		if (L.Browser.pointer && type.indexOf('touch') === 0) {
+			return this.addPointerListener(obj, type, handler, id);
+		}
+		if (L.Browser.touch && (type === 'dblclick') && this.addDoubleTapListener) {
+			this.addDoubleTapListener(obj, handler, id);
+		}
+
+		if ('addEventListener' in obj) {
+
+			if (type === 'mousewheel') {
+				obj.addEventListener('DOMMouseScroll', handler, false);
+				obj.addEventListener(type, handler, false);
+
+			} else if ((type === 'mouseenter') || (type === 'mouseleave')) {
+
+				originalHandler = handler;
+				newType = (type === 'mouseenter' ? 'mouseover' : 'mouseout');
+
+				handler = function (e) {
+					if (!L.DomEvent._checkMouse(obj, e)) { return; }
+					return originalHandler(e);
+				};
+
+				obj.addEventListener(newType, handler, false);
+
+			} else if (type === 'click' && L.Browser.android) {
+				originalHandler = handler;
+				handler = function (e) {
+					return L.DomEvent._filterClick(e, originalHandler);
+				};
+
+				obj.addEventListener(type, handler, false);
+			} else {
+				obj.addEventListener(type, handler, false);
+			}
+
+		} else if ('attachEvent' in obj) {
+			obj.attachEvent('on' + type, handler);
+		}
+
+		obj[key] = handler;
+
+		return this;
+	},
+
+	removeListener: function (obj, type, fn) {  // (HTMLElement, String, Function)
+
+		var id = L.stamp(fn),
+		    key = '_leaflet_' + type + id,
+		    handler = obj[key];
+
+		if (!handler) { return this; }
+
+		if (L.Browser.pointer && type.indexOf('touch') === 0) {
+			this.removePointerListener(obj, type, id);
+		} else if (L.Browser.touch && (type === 'dblclick') && this.removeDoubleTapListener) {
+			this.removeDoubleTapListener(obj, id);
+
+		} else if ('removeEventListener' in obj) {
+
+			if (type === 'mousewheel') {
+				obj.removeEventListener('DOMMouseScroll', handler, false);
+				obj.removeEventListener(type, handler, false);
+
+			} else if ((type === 'mouseenter') || (type === 'mouseleave')) {
+				obj.removeEventListener((type === 'mouseenter' ? 'mouseover' : 'mouseout'), handler, false);
+			} else {
+				obj.removeEventListener(type, handler, false);
+			}
+		} else if ('detachEvent' in obj) {
+			obj.detachEvent('on' + type, handler);
+		}
+
+		obj[key] = null;
+
+		return this;
+	},
+
+	stopPropagation: function (e) {
+
+		if (e.stopPropagation) {
+			e.stopPropagation();
+		} else {
+			e.cancelBubble = true;
+		}
+		L.DomEvent._skipped(e);
+
+		return this;
+	},
+
+	disableScrollPropagation: function (el) {
+		var stop = L.DomEvent.stopPropagation;
+
+		return L.DomEvent
+			.on(el, 'mousewheel', stop)
+			.on(el, 'MozMousePixelScroll', stop);
+	},
+
+	disableClickPropagation: function (el) {
+		var stop = L.DomEvent.stopPropagation;
+
+		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
+			L.DomEvent.on(el, L.Draggable.START[i], stop);
+		}
+
+		return L.DomEvent
+			.on(el, 'click', L.DomEvent._fakeStop)
+			.on(el, 'dblclick', stop);
+	},
+
+	preventDefault: function (e) {
+
+		if (e.preventDefault) {
+			e.preventDefault();
+		} else {
+			e.returnValue = false;
+		}
+		return this;
+	},
+
+	stop: function (e) {
+		return L.DomEvent
+			.preventDefault(e)
+			.stopPropagation(e);
+	},
+
+	getMousePosition: function (e, container) {
+		if (!container) {
+			return new L.Point(e.clientX, e.clientY);
+		}
+
+		var rect = container.getBoundingClientRect();
+
+		return new L.Point(
+			e.clientX - rect.left - container.clientLeft,
+			e.clientY - rect.top - container.clientTop);
+	},
+
+	getWheelDelta: function (e) {
+
+		var delta = 0;
+
+		if (e.wheelDelta) {
+			delta = e.wheelDelta / 120;
+		}
+		if (e.detail) {
+			delta = -e.detail / 3;
+		}
+		return delta;
+	},
+
+	_skipEvents: {},
+
+	_fakeStop: function (e) {
+		// fakes stopPropagation by setting a special event flag, checked/reset with L.DomEvent._skipped(e)
+		L.DomEvent._skipEvents[e.type] = true;
+	},
+
+	_skipped: function (e) {
+		var skipped = this._skipEvents[e.type];
+		// reset when checking, as it's only used in map container and propagates outside of the map
+		this._skipEvents[e.type] = false;
+		return skipped;
+	},
+
+	// check if element really left/entered the event target (for mouseenter/mouseleave)
+	_checkMouse: function (el, e) {
+
+		var related = e.relatedTarget;
+
+		if (!related) { return true; }
+
+		try {
+			while (related && (related !== el)) {
+				related = related.parentNode;
+			}
+		} catch (err) {
+			return false;
+		}
+		return (related !== el);
+	},
+
+	_getEvent: function () { // evil magic for IE
+		/*jshint noarg:false */
+		var e = window.event;
+		if (!e) {
+			var caller = arguments.callee.caller;
+			while (caller) {
+				e = caller['arguments'][0];
+				if (e && window.Event === e.constructor) {
+					break;
+				}
+				caller = caller.caller;
+			}
+		}
+		return e;
+	},
+
+	// this is a horrible workaround for a bug in Android where a single touch triggers two click events
+	_filterClick: function (e, handler) {
+		var timeStamp = (e.timeStamp || e.originalEvent.timeStamp),
+			elapsed = L.DomEvent._lastClick && (timeStamp - L.DomEvent._lastClick);
+
+		// are they closer together than 500ms yet more than 100ms?
+		// Android typically triggers them ~300ms apart while multiple listeners
+		// on the same event should be triggered far faster;
+		// or check if click is simulated on the element, and if it is, reject any non-simulated events
+
+		if ((elapsed && elapsed > 100 && elapsed < 500) || (e.target._simulatedClick && !e._simulated)) {
+			L.DomEvent.stop(e);
+			return;
+		}
+		L.DomEvent._lastClick = timeStamp;
+
+		return handler(e);
+	}
+};
+
+L.DomEvent.on = L.DomEvent.addListener;
+L.DomEvent.off = L.DomEvent.removeListener;
+
+
+/*
+ * L.Draggable allows you to add dragging capabilities to any element. Supports mobile devices too.
+ */
+
+L.Draggable = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	statics: {
+		START: L.Browser.touch ? ['touchstart', 'mousedown'] : ['mousedown'],
+		END: {
+			mousedown: 'mouseup',
+			touchstart: 'touchend',
+			pointerdown: 'touchend',
+			MSPointerDown: 'touchend'
+		},
+		MOVE: {
+			mousedown: 'mousemove',
+			touchstart: 'touchmove',
+			pointerdown: 'touchmove',
+			MSPointerDown: 'touchmove'
+		}
+	},
+
+	initialize: function (element, dragStartTarget) {
+		this._element = element;
+		this._dragStartTarget = dragStartTarget || element;
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
+			L.DomEvent.on(this._dragStartTarget, L.Draggable.START[i], this._onDown, this);
+		}
+
+		this._enabled = true;
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
+			L.DomEvent.off(this._dragStartTarget, L.Draggable.START[i], this._onDown, this);
+		}
+
+		this._enabled = false;
+		this._moved = false;
+	},
+
+	_onDown: function (e) {
+		this._moved = false;
+
+		if (e.shiftKey || ((e.which !== 1) && (e.button !== 1) && !e.touches)) { return; }
+
+		L.DomEvent.stopPropagation(e);
+
+		if (L.Draggable._disabled) { return; }
+
+		L.DomUtil.disableImageDrag();
+		L.DomUtil.disableTextSelection();
+
+		if (this._moving) { return; }
+
+		var first = e.touches ? e.touches[0] : e;
+
+		this._startPoint = new L.Point(first.clientX, first.clientY);
+		this._startPos = this._newPos = L.DomUtil.getPosition(this._element);
+
+		L.DomEvent
+		    .on(document, L.Draggable.MOVE[e.type], this._onMove, this)
+		    .on(document, L.Draggable.END[e.type], this._onUp, this);
+	},
+
+	_onMove: function (e) {
+		if (e.touches && e.touches.length > 1) {
+			this._moved = true;
+			return;
+		}
+
+		var first = (e.touches && e.touches.length === 1 ? e.touches[0] : e),
+		    newPoint = new L.Point(first.clientX, first.clientY),
+		    offset = newPoint.subtract(this._startPoint);
+
+		if (!offset.x && !offset.y) { return; }
+		if (L.Browser.touch && Math.abs(offset.x) + Math.abs(offset.y) < 3) { return; }
+
+		L.DomEvent.preventDefault(e);
+
+		if (!this._moved) {
+			this.fire('dragstart');
+
+			this._moved = true;
+			this._startPos = L.DomUtil.getPosition(this._element).subtract(offset);
+
+			L.DomUtil.addClass(document.body, 'leaflet-dragging');
+			this._lastTarget = e.target || e.srcElement;
+			L.DomUtil.addClass(this._lastTarget, 'leaflet-drag-target');
+		}
+
+		this._newPos = this._startPos.add(offset);
+		this._moving = true;
+
+		L.Util.cancelAnimFrame(this._animRequest);
+		this._animRequest = L.Util.requestAnimFrame(this._updatePosition, this, true, this._dragStartTarget);
+	},
+
+	_updatePosition: function () {
+		this.fire('predrag');
+		L.DomUtil.setPosition(this._element, this._newPos);
+		this.fire('drag');
+	},
+
+	_onUp: function () {
+		L.DomUtil.removeClass(document.body, 'leaflet-dragging');
+
+		if (this._lastTarget) {
+			L.DomUtil.removeClass(this._lastTarget, 'leaflet-drag-target');
+			this._lastTarget = null;
+		}
+
+		for (var i in L.Draggable.MOVE) {
+			L.DomEvent
+			    .off(document, L.Draggable.MOVE[i], this._onMove)
+			    .off(document, L.Draggable.END[i], this._onUp);
+		}
+
+		L.DomUtil.enableImageDrag();
+		L.DomUtil.enableTextSelection();
+
+		if (this._moved && this._moving) {
+			// ensure drag is not fired after dragend
+			L.Util.cancelAnimFrame(this._animRequest);
+
+			this.fire('dragend', {
+				distance: this._newPos.distanceTo(this._startPos)
+			});
+		}
+
+		this._moving = false;
+	}
+});
+
+
+/*
+	L.Handler is a base class for handler classes that are used internally to inject
+	interaction features like dragging to classes like Map and Marker.
+*/
+
+L.Handler = L.Class.extend({
+	initialize: function (map) {
+		this._map = map;
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		this._enabled = true;
+		this.addHooks();
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		this._enabled = false;
+		this.removeHooks();
+	},
+
+	enabled: function () {
+		return !!this._enabled;
+	}
+});
+
+
+/*
+ * L.Handler.MapDrag is used to make the map draggable (with panning inertia), enabled by default.
+ */
+
+L.Map.mergeOptions({
+	dragging: true,
+
+	inertia: !L.Browser.android23,
+	inertiaDeceleration: 3400, // px/s^2
+	inertiaMaxSpeed: Infinity, // px/s
+	inertiaThreshold: L.Browser.touch ? 32 : 18, // ms
+	easeLinearity: 0.25,
+
+	// TODO refactor, move to CRS
+	worldCopyJump: false
+});
+
+L.Map.Drag = L.Handler.extend({
+	addHooks: function () {
+		if (!this._draggable) {
+			var map = this._map;
+
+			this._draggable = new L.Draggable(map._mapPane, map._container);
+
+			this._draggable.on({
+				'dragstart': this._onDragStart,
+				'drag': this._onDrag,
+				'dragend': this._onDragEnd
+			}, this);
+
+			if (map.options.worldCopyJump) {
+				this._draggable.on('predrag', this._onPreDrag, this);
+				map.on('viewreset', this._onViewReset, this);
+
+				map.whenReady(this._onViewReset, this);
+			}
+		}
+		this._draggable.enable();
+	},
+
+	removeHooks: function () {
+		this._draggable.disable();
+	},
+
+	moved: function () {
+		return this._draggable && this._draggable._moved;
+	},
+
+	_onDragStart: function () {
+		var map = this._map;
+
+		if (map._panAnim) {
+			map._panAnim.stop();
+		}
+
+		map
+		    .fire('movestart')
+		    .fire('dragstart');
+
+		if (map.options.inertia) {
+			this._positions = [];
+			this._times = [];
+		}
+	},
+
+	_onDrag: function () {
+		if (this._map.options.inertia) {
+			var time = this._lastTime = +new Date(),
+			    pos = this._lastPos = this._draggable._newPos;
+
+			this._positions.push(pos);
+			this._times.push(time);
+
+			if (time - this._times[0] > 200) {
+				this._positions.shift();
+				this._times.shift();
+			}
+		}
+
+		this._map
+		    .fire('move')
+		    .fire('drag');
+	},
+
+	_onViewReset: function () {
+		// TODO fix hardcoded Earth values
+		var pxCenter = this._map.getSize()._divideBy(2),
+		    pxWorldCenter = this._map.latLngToLayerPoint([0, 0]);
+
+		this._initialWorldOffset = pxWorldCenter.subtract(pxCenter).x;
+		this._worldWidth = this._map.project([0, 180]).x;
+	},
+
+	_onPreDrag: function () {
+		// TODO refactor to be able to adjust map pane position after zoom
+		var worldWidth = this._worldWidth,
+		    halfWidth = Math.round(worldWidth / 2),
+		    dx = this._initialWorldOffset,
+		    x = this._draggable._newPos.x,
+		    newX1 = (x - halfWidth + dx) % worldWidth + halfWidth - dx,
+		    newX2 = (x + halfWidth + dx) % worldWidth - halfWidth - dx,
+		    newX = Math.abs(newX1 + dx) < Math.abs(newX2 + dx) ? newX1 : newX2;
+
+		this._draggable._newPos.x = newX;
+	},
+
+	_onDragEnd: function (e) {
+		var map = this._map,
+		    options = map.options,
+		    delay = +new Date() - this._lastTime,
+
+		    noInertia = !options.inertia || delay > options.inertiaThreshold || !this._positions[0];
+
+		map.fire('dragend', e);
+
+		if (noInertia) {
+			map.fire('moveend');
+
+		} else {
+
+			var direction = this._lastPos.subtract(this._positions[0]),
+			    duration = (this._lastTime + delay - this._times[0]) / 1000,
+			    ease = options.easeLinearity,
+
+			    speedVector = direction.multiplyBy(ease / duration),
+			    speed = speedVector.distanceTo([0, 0]),
+
+			    limitedSpeed = Math.min(options.inertiaMaxSpeed, speed),
+			    limitedSpeedVector = speedVector.multiplyBy(limitedSpeed / speed),
+
+			    decelerationDuration = limitedSpeed / (options.inertiaDeceleration * ease),
+			    offset = limitedSpeedVector.multiplyBy(-decelerationDuration / 2).round();
+
+			if (!offset.x || !offset.y) {
+				map.fire('moveend');
+
+			} else {
+				offset = map._limitOffset(offset, map.options.maxBounds);
+
+				L.Util.requestAnimFrame(function () {
+					map.panBy(offset, {
+						duration: decelerationDuration,
+						easeLinearity: ease,
+						noMoveStart: true
+					});
+				});
+			}
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'dragging', L.Map.Drag);
+
+
+/*
+ * L.Handler.DoubleClickZoom is used to handle double-click zoom on the map, enabled by default.
+ */
+
+L.Map.mergeOptions({
+	doubleClickZoom: true
+});
+
+L.Map.DoubleClickZoom = L.Handler.extend({
+	addHooks: function () {
+		this._map.on('dblclick', this._onDoubleClick, this);
+	},
+
+	removeHooks: function () {
+		this._map.off('dblclick', this._onDoubleClick, this);
+	},
+
+	_onDoubleClick: function (e) {
+		var map = this._map,
+		    zoom = map.getZoom() + (e.originalEvent.shiftKey ? -1 : 1);
+
+		if (map.options.doubleClickZoom === 'center') {
+			map.setZoom(zoom);
+		} else {
+			map.setZoomAround(e.containerPoint, zoom);
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'doubleClickZoom', L.Map.DoubleClickZoom);
+
+
+/*
+ * L.Handler.ScrollWheelZoom is used by L.Map to enable mouse scroll wheel zoom on the map.
+ */
+
+L.Map.mergeOptions({
+	scrollWheelZoom: true
+});
+
+L.Map.ScrollWheelZoom = L.Handler.extend({
+	addHooks: function () {
+		L.DomEvent.on(this._map._container, 'mousewheel', this._onWheelScroll, this);
+		L.DomEvent.on(this._map._container, 'MozMousePixelScroll', L.DomEvent.preventDefault);
+		this._delta = 0;
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._map._container, 'mousewheel', this._onWheelScroll);
+		L.DomEvent.off(this._map._container, 'MozMousePixelScroll', L.DomEvent.preventDefault);
+	},
+
+	_onWheelScroll: function (e) {
+		var delta = L.DomEvent.getWheelDelta(e);
+
+		this._delta += delta;
+		this._lastMousePos = this._map.mouseEventToContainerPoint(e);
+
+		if (!this._startTime) {
+			this._startTime = +new Date();
+		}
+
+		var left = Math.max(40 - (+new Date() - this._startTime), 0);
+
+		clearTimeout(this._timer);
+		this._timer = setTimeout(L.bind(this._performZoom, this), left);
+
+		L.DomEvent.preventDefault(e);
+		L.DomEvent.stopPropagation(e);
+	},
+
+	_performZoom: function () {
+		var map = this._map,
+		    delta = this._delta,
+		    zoom = map.getZoom();
+
+		delta = delta > 0 ? Math.ceil(delta) : Math.floor(delta);
+		delta = Math.max(Math.min(delta, 4), -4);
+		delta = map._limitZoom(zoom + delta) - zoom;
+
+		this._delta = 0;
+		this._startTime = null;
+
+		if (!delta) { return; }
+
+		if (map.options.scrollWheelZoom === 'center') {
+			map.setZoom(zoom + delta);
+		} else {
+			map.setZoomAround(this._lastMousePos, zoom + delta);
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'scrollWheelZoom', L.Map.ScrollWheelZoom);
+
+
+/*
+ * Extends the event handling code with double tap support for mobile browsers.
+ */
+
+L.extend(L.DomEvent, {
+
+	_touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
+	_touchend: L.Browser.msPointer ? 'MSPointerUp' : L.Browser.pointer ? 'pointerup' : 'touchend',
+
+	// inspired by Zepto touch code by Thomas Fuchs
+	addDoubleTapListener: function (obj, handler, id) {
+		var last,
+		    doubleTap = false,
+		    delay = 250,
+		    touch,
+		    pre = '_leaflet_',
+		    touchstart = this._touchstart,
+		    touchend = this._touchend,
+		    trackedTouches = [];
+
+		function onTouchStart(e) {
+			var count;
+
+			if (L.Browser.pointer) {
+				trackedTouches.push(e.pointerId);
+				count = trackedTouches.length;
+			} else {
+				count = e.touches.length;
+			}
+			if (count > 1) {
+				return;
+			}
+
+			var now = Date.now(),
+				delta = now - (last || now);
+
+			touch = e.touches ? e.touches[0] : e;
+			doubleTap = (delta > 0 && delta <= delay);
+			last = now;
+		}
+
+		function onTouchEnd(e) {
+			if (L.Browser.pointer) {
+				var idx = trackedTouches.indexOf(e.pointerId);
+				if (idx === -1) {
+					return;
+				}
+				trackedTouches.splice(idx, 1);
+			}
+
+			if (doubleTap) {
+				if (L.Browser.pointer) {
+					// work around .type being readonly with MSPointer* events
+					var newTouch = { },
+						prop;
+
+					// jshint forin:false
+					for (var i in touch) {
+						prop = touch[i];
+						if (typeof prop === 'function') {
+							newTouch[i] = prop.bind(touch);
+						} else {
+							newTouch[i] = prop;
+						}
+					}
+					touch = newTouch;
+				}
+				touch.type = 'dblclick';
+				handler(touch);
+				last = null;
+			}
+		}
+		obj[pre + touchstart + id] = onTouchStart;
+		obj[pre + touchend + id] = onTouchEnd;
+
+		// on pointer we need to listen on the document, otherwise a drag starting on the map and moving off screen
+		// will not come through to us, so we will lose track of how many touches are ongoing
+		var endElement = L.Browser.pointer ? document.documentElement : obj;
+
+		obj.addEventListener(touchstart, onTouchStart, false);
+		endElement.addEventListener(touchend, onTouchEnd, false);
+
+		if (L.Browser.pointer) {
+			endElement.addEventListener(L.DomEvent.POINTER_CANCEL, onTouchEnd, false);
+		}
+
+		return this;
+	},
+
+	removeDoubleTapListener: function (obj, id) {
+		var pre = '_leaflet_';
+
+		obj.removeEventListener(this._touchstart, obj[pre + this._touchstart + id], false);
+		(L.Browser.pointer ? document.documentElement : obj).removeEventListener(
+		        this._touchend, obj[pre + this._touchend + id], false);
+
+		if (L.Browser.pointer) {
+			document.documentElement.removeEventListener(L.DomEvent.POINTER_CANCEL, obj[pre + this._touchend + id],
+				false);
+		}
+
+		return this;
+	}
+});
+
+
+/*
+ * Extends L.DomEvent to provide touch support for Internet Explorer and Windows-based devices.
+ */
+
+L.extend(L.DomEvent, {
+
+	//static
+	POINTER_DOWN: L.Browser.msPointer ? 'MSPointerDown' : 'pointerdown',
+	POINTER_MOVE: L.Browser.msPointer ? 'MSPointerMove' : 'pointermove',
+	POINTER_UP: L.Browser.msPointer ? 'MSPointerUp' : 'pointerup',
+	POINTER_CANCEL: L.Browser.msPointer ? 'MSPointerCancel' : 'pointercancel',
+
+	_pointers: [],
+	_pointerDocumentListener: false,
+
+	// Provides a touch events wrapper for (ms)pointer events.
+	// Based on changes by veproza https://github.com/CloudMade/Leaflet/pull/1019
+	//ref http://www.w3.org/TR/pointerevents/ https://www.w3.org/Bugs/Public/show_bug.cgi?id=22890
+
+	addPointerListener: function (obj, type, handler, id) {
+
+		switch (type) {
+		case 'touchstart':
+			return this.addPointerListenerStart(obj, type, handler, id);
+		case 'touchend':
+			return this.addPointerListenerEnd(obj, type, handler, id);
+		case 'touchmove':
+			return this.addPointerListenerMove(obj, type, handler, id);
+		default:
+			throw 'Unknown touch event type';
+		}
+	},
+
+	addPointerListenerStart: function (obj, type, handler, id) {
+		var pre = '_leaflet_',
+		    pointers = this._pointers;
+
+		var cb = function (e) {
+			if (e.pointerType !== 'mouse' && e.pointerType !== e.MSPOINTER_TYPE_MOUSE) {
+				L.DomEvent.preventDefault(e);
+			}
+
+			var alreadyInArray = false;
+			for (var i = 0; i < pointers.length; i++) {
+				if (pointers[i].pointerId === e.pointerId) {
+					alreadyInArray = true;
+					break;
+				}
+			}
+			if (!alreadyInArray) {
+				pointers.push(e);
+			}
+
+			e.touches = pointers.slice();
+			e.changedTouches = [e];
+
+			handler(e);
+		};
+
+		obj[pre + 'touchstart' + id] = cb;
+		obj.addEventListener(this.POINTER_DOWN, cb, false);
+
+		// need to also listen for end events to keep the _pointers list accurate
+		// this needs to be on the body and never go away
+		if (!this._pointerDocumentListener) {
+			var internalCb = function (e) {
+				for (var i = 0; i < pointers.length; i++) {
+					if (pointers[i].pointerId === e.pointerId) {
+						pointers.splice(i, 1);
+						break;
+					}
+				}
+			};
+			//We listen on the documentElement as any drags that end by moving the touch off the screen get fired there
+			document.documentElement.addEventListener(this.POINTER_UP, internalCb, false);
+			document.documentElement.addEventListener(this.POINTER_CANCEL, internalCb, false);
+
+			this._pointerDocumentListener = true;
+		}
+
+		return this;
+	},
+
+	addPointerListenerMove: function (obj, type, handler, id) {
+		var pre = '_leaflet_',
+		    touches = this._pointers;
+
+		function cb(e) {
+
+			// don't fire touch moves when mouse isn't down
+			if ((e.pointerType === e.MSPOINTER_TYPE_MOUSE || e.pointerType === 'mouse') && e.buttons === 0) { return; }
+
+			for (var i = 0; i < touches.length; i++) {
+				if (touches[i].pointerId === e.pointerId) {
+					touches[i] = e;
+					break;
+				}
+			}
+
+			e.touches = touches.slice();
+			e.changedTouches = [e];
+
+			handler(e);
+		}
+
+		obj[pre + 'touchmove' + id] = cb;
+		obj.addEventListener(this.POINTER_MOVE, cb, false);
+
+		return this;
+	},
+
+	addPointerListenerEnd: function (obj, type, handler, id) {
+		var pre = '_leaflet_',
+		    touches = this._pointers;
+
+		var cb = function (e) {
+			for (var i = 0; i < touches.length; i++) {
+				if (touches[i].pointerId === e.pointerId) {
+					touches.splice(i, 1);
+					break;
+				}
+			}
+
+			e.touches = touches.slice();
+			e.changedTouches = [e];
+
+			handler(e);
+		};
+
+		obj[pre + 'touchend' + id] = cb;
+		obj.addEventListener(this.POINTER_UP, cb, false);
+		obj.addEventListener(this.POINTER_CANCEL, cb, false);
+
+		return this;
+	},
+
+	removePointerListener: function (obj, type, id) {
+		var pre = '_leaflet_',
+		    cb = obj[pre + type + id];
+
+		switch (type) {
+		case 'touchstart':
+			obj.removeEventListener(this.POINTER_DOWN, cb, false);
+			break;
+		case 'touchmove':
+			obj.removeEventListener(this.POINTER_MOVE, cb, false);
+			break;
+		case 'touchend':
+			obj.removeEventListener(this.POINTER_UP, cb, false);
+			obj.removeEventListener(this.POINTER_CANCEL, cb, false);
+			break;
+		}
+
+		return this;
+	}
+});
+
+
+/*
+ * L.Handler.TouchZoom is used by L.Map to add pinch zoom on supported mobile browsers.
+ */
+
+L.Map.mergeOptions({
+	touchZoom: L.Browser.touch && !L.Browser.android23,
+	bounceAtZoomLimits: true
+});
+
+L.Map.TouchZoom = L.Handler.extend({
+	addHooks: function () {
+		L.DomEvent.on(this._map._container, 'touchstart', this._onTouchStart, this);
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._map._container, 'touchstart', this._onTouchStart, this);
+	},
+
+	_onTouchStart: function (e) {
+		var map = this._map;
+
+		if (!e.touches || e.touches.length !== 2 || map._animatingZoom || this._zooming) { return; }
+
+		var p1 = map.mouseEventToLayerPoint(e.touches[0]),
+		    p2 = map.mouseEventToLayerPoint(e.touches[1]),
+		    viewCenter = map._getCenterLayerPoint();
+
+		this._startCenter = p1.add(p2)._divideBy(2);
+		this._startDist = p1.distanceTo(p2);
+
+		this._moved = false;
+		this._zooming = true;
+
+		this._centerOffset = viewCenter.subtract(this._startCenter);
+
+		if (map._panAnim) {
+			map._panAnim.stop();
+		}
+
+		L.DomEvent
+		    .on(document, 'touchmove', this._onTouchMove, this)
+		    .on(document, 'touchend', this._onTouchEnd, this);
+
+		L.DomEvent.preventDefault(e);
+	},
+
+	_onTouchMove: function (e) {
+		var map = this._map;
+
+		if (!e.touches || e.touches.length !== 2 || !this._zooming) { return; }
+
+		var p1 = map.mouseEventToLayerPoint(e.touches[0]),
+		    p2 = map.mouseEventToLayerPoint(e.touches[1]);
+
+		this._scale = p1.distanceTo(p2) / this._startDist;
+		this._delta = p1._add(p2)._divideBy(2)._subtract(this._startCenter);
+
+		if (this._scale === 1) { return; }
+
+		if (!map.options.bounceAtZoomLimits) {
+			if ((map.getZoom() === map.getMinZoom() && this._scale < 1) ||
+			    (map.getZoom() === map.getMaxZoom() && this._scale > 1)) { return; }
+		}
+
+		if (!this._moved) {
+			L.DomUtil.addClass(map._mapPane, 'leaflet-touching');
+
+			map
+			    .fire('movestart')
+			    .fire('zoomstart');
+
+			this._moved = true;
+		}
+
+		L.Util.cancelAnimFrame(this._animRequest);
+		this._animRequest = L.Util.requestAnimFrame(
+		        this._updateOnMove, this, true, this._map._container);
+
+		L.DomEvent.preventDefault(e);
+	},
+
+	_updateOnMove: function () {
+		var map = this._map,
+		    origin = this._getScaleOrigin(),
+		    center = map.layerPointToLatLng(origin),
+		    zoom = map.getScaleZoom(this._scale);
+
+		map._animateZoom(center, zoom, this._startCenter, this._scale, this._delta, false, true);
+	},
+
+	_onTouchEnd: function () {
+		if (!this._moved || !this._zooming) {
+			this._zooming = false;
+			return;
+		}
+
+		var map = this._map;
+
+		this._zooming = false;
+		L.DomUtil.removeClass(map._mapPane, 'leaflet-touching');
+		L.Util.cancelAnimFrame(this._animRequest);
+
+		L.DomEvent
+		    .off(document, 'touchmove', this._onTouchMove)
+		    .off(document, 'touchend', this._onTouchEnd);
+
+		var origin = this._getScaleOrigin(),
+		    center = map.layerPointToLatLng(origin),
+
+		    oldZoom = map.getZoom(),
+		    floatZoomDelta = map.getScaleZoom(this._scale) - oldZoom,
+		    roundZoomDelta = (floatZoomDelta > 0 ?
+		            Math.ceil(floatZoomDelta) : Math.floor(floatZoomDelta)),
+
+		    zoom = map._limitZoom(oldZoom + roundZoomDelta),
+		    scale = map.getZoomScale(zoom) / this._scale;
+
+		map._animateZoom(center, zoom, origin, scale);
+	},
+
+	_getScaleOrigin: function () {
+		var centerOffset = this._centerOffset.subtract(this._delta).divideBy(this._scale);
+		return this._startCenter.add(centerOffset);
+	}
+});
+
+L.Map.addInitHook('addHandler', 'touchZoom', L.Map.TouchZoom);
+
+
+/*
+ * L.Map.Tap is used to enable mobile hacks like quick taps and long hold.
+ */
+
+L.Map.mergeOptions({
+	tap: true,
+	tapTolerance: 15
+});
+
+L.Map.Tap = L.Handler.extend({
+	addHooks: function () {
+		L.DomEvent.on(this._map._container, 'touchstart', this._onDown, this);
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._map._container, 'touchstart', this._onDown, this);
+	},
+
+	_onDown: function (e) {
+		if (!e.touches) { return; }
+
+		L.DomEvent.preventDefault(e);
+
+		this._fireClick = true;
+
+		// don't simulate click or track longpress if more than 1 touch
+		if (e.touches.length > 1) {
+			this._fireClick = false;
+			clearTimeout(this._holdTimeout);
+			return;
+		}
+
+		var first = e.touches[0],
+		    el = first.target;
+
+		this._startPos = this._newPos = new L.Point(first.clientX, first.clientY);
+
+		// if touching a link, highlight it
+		if (el.tagName && el.tagName.toLowerCase() === 'a') {
+			L.DomUtil.addClass(el, 'leaflet-active');
+		}
+
+		// simulate long hold but setting a timeout
+		this._holdTimeout = setTimeout(L.bind(function () {
+			if (this._isTapValid()) {
+				this._fireClick = false;
+				this._onUp();
+				this._simulateEvent('contextmenu', first);
+			}
+		}, this), 1000);
+
+		L.DomEvent
+			.on(document, 'touchmove', this._onMove, this)
+			.on(document, 'touchend', this._onUp, this);
+	},
+
+	_onUp: function (e) {
+		clearTimeout(this._holdTimeout);
+
+		L.DomEvent
+			.off(document, 'touchmove', this._onMove, this)
+			.off(document, 'touchend', this._onUp, this);
+
+		if (this._fireClick && e && e.changedTouches) {
+
+			var first = e.changedTouches[0],
+			    el = first.target;
+
+			if (el && el.tagName && el.tagName.toLowerCase() === 'a') {
+				L.DomUtil.removeClass(el, 'leaflet-active');
+			}
+
+			// simulate click if the touch didn't move too much
+			if (this._isTapValid()) {
+				this._simulateEvent('click', first);
+			}
+		}
+	},
+
+	_isTapValid: function () {
+		return this._newPos.distanceTo(this._startPos) <= this._map.options.tapTolerance;
+	},
+
+	_onMove: function (e) {
+		var first = e.touches[0];
+		this._newPos = new L.Point(first.clientX, first.clientY);
+	},
+
+	_simulateEvent: function (type, e) {
+		var simulatedEvent = document.createEvent('MouseEvents');
+
+		simulatedEvent._simulated = true;
+		e.target._simulatedClick = true;
+
+		simulatedEvent.initMouseEvent(
+		        type, true, true, window, 1,
+		        e.screenX, e.screenY,
+		        e.clientX, e.clientY,
+		        false, false, false, false, 0, null);
+
+		e.target.dispatchEvent(simulatedEvent);
+	}
+});
+
+if (L.Browser.touch && !L.Browser.pointer) {
+	L.Map.addInitHook('addHandler', 'tap', L.Map.Tap);
+}
+
+
+/*
+ * L.Handler.ShiftDragZoom is used to add shift-drag zoom interaction to the map
+  * (zoom to a selected bounding box), enabled by default.
+ */
+
+L.Map.mergeOptions({
+	boxZoom: true
+});
+
+L.Map.BoxZoom = L.Handler.extend({
+	initialize: function (map) {
+		this._map = map;
+		this._container = map._container;
+		this._pane = map._panes.overlayPane;
+		this._moved = false;
+	},
+
+	addHooks: function () {
+		L.DomEvent.on(this._container, 'mousedown', this._onMouseDown, this);
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._container, 'mousedown', this._onMouseDown);
+		this._moved = false;
+	},
+
+	moved: function () {
+		return this._moved;
+	},
+
+	_onMouseDown: function (e) {
+		this._moved = false;
+
+		if (!e.shiftKey || ((e.which !== 1) && (e.button !== 1))) { return false; }
+
+		L.DomUtil.disableTextSelection();
+		L.DomUtil.disableImageDrag();
+
+		this._startLayerPoint = this._map.mouseEventToLayerPoint(e);
+
+		L.DomEvent
+		    .on(document, 'mousemove', this._onMouseMove, this)
+		    .on(document, 'mouseup', this._onMouseUp, this)
+		    .on(document, 'keydown', this._onKeyDown, this);
+	},
+
+	_onMouseMove: function (e) {
+		if (!this._moved) {
+			this._box = L.DomUtil.create('div', 'leaflet-zoom-box', this._pane);
+			L.DomUtil.setPosition(this._box, this._startLayerPoint);
+
+			//TODO refactor: move cursor to styles
+			this._container.style.cursor = 'crosshair';
+			this._map.fire('boxzoomstart');
+		}
+
+		var startPoint = this._startLayerPoint,
+		    box = this._box,
+
+		    layerPoint = this._map.mouseEventToLayerPoint(e),
+		    offset = layerPoint.subtract(startPoint),
+
+		    newPos = new L.Point(
+		        Math.min(layerPoint.x, startPoint.x),
+		        Math.min(layerPoint.y, startPoint.y));
+
+		L.DomUtil.setPosition(box, newPos);
+
+		this._moved = true;
+
+		// TODO refactor: remove hardcoded 4 pixels
+		box.style.width  = (Math.max(0, Math.abs(offset.x) - 4)) + 'px';
+		box.style.height = (Math.max(0, Math.abs(offset.y) - 4)) + 'px';
+	},
+
+	_finish: function () {
+		if (this._moved) {
+			this._pane.removeChild(this._box);
+			this._container.style.cursor = '';
+		}
+
+		L.DomUtil.enableTextSelection();
+		L.DomUtil.enableImageDrag();
+
+		L.DomEvent
+		    .off(document, 'mousemove', this._onMouseMove)
+		    .off(document, 'mouseup', this._onMouseUp)
+		    .off(document, 'keydown', this._onKeyDown);
+	},
+
+	_onMouseUp: function (e) {
+
+		this._finish();
+
+		var map = this._map,
+		    layerPoint = map.mouseEventToLayerPoint(e);
+
+		if (this._startLayerPoint.equals(layerPoint)) { return; }
+
+		var bounds = new L.LatLngBounds(
+		        map.layerPointToLatLng(this._startLayerPoint),
+		        map.layerPointToLatLng(layerPoint));
+
+		map.fitBounds(bounds);
+
+		map.fire('boxzoomend', {
+			boxZoomBounds: bounds
+		});
+	},
+
+	_onKeyDown: function (e) {
+		if (e.keyCode === 27) {
+			this._finish();
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'boxZoom', L.Map.BoxZoom);
+
+
+/*
+ * L.Map.Keyboard is handling keyboard interaction with the map, enabled by default.
+ */
+
+L.Map.mergeOptions({
+	keyboard: true,
+	keyboardPanOffset: 80,
+	keyboardZoomOffset: 1
+});
+
+L.Map.Keyboard = L.Handler.extend({
+
+	keyCodes: {
+		left:    [37],
+		right:   [39],
+		down:    [40],
+		up:      [38],
+		zoomIn:  [187, 107, 61, 171],
+		zoomOut: [189, 109, 173]
+	},
+
+	initialize: function (map) {
+		this._map = map;
+
+		this._setPanOffset(map.options.keyboardPanOffset);
+		this._setZoomOffset(map.options.keyboardZoomOffset);
+	},
+
+	addHooks: function () {
+		var container = this._map._container;
+
+		// make the container focusable by tabbing
+		if (container.tabIndex === -1) {
+			container.tabIndex = '0';
+		}
+
+		L.DomEvent
+		    .on(container, 'focus', this._onFocus, this)
+		    .on(container, 'blur', this._onBlur, this)
+		    .on(container, 'mousedown', this._onMouseDown, this);
+
+		this._map
+		    .on('focus', this._addHooks, this)
+		    .on('blur', this._removeHooks, this);
+	},
+
+	removeHooks: function () {
+		this._removeHooks();
+
+		var container = this._map._container;
+
+		L.DomEvent
+		    .off(container, 'focus', this._onFocus, this)
+		    .off(container, 'blur', this._onBlur, this)
+		    .off(container, 'mousedown', this._onMouseDown, this);
+
+		this._map
+		    .off('focus', this._addHooks, this)
+		    .off('blur', this._removeHooks, this);
+	},
+
+	_onMouseDown: function () {
+		if (this._focused) { return; }
+
+		var body = document.body,
+		    docEl = document.documentElement,
+		    top = body.scrollTop || docEl.scrollTop,
+		    left = body.scrollLeft || docEl.scrollLeft;
+
+		this._map._container.focus();
+
+		window.scrollTo(left, top);
+	},
+
+	_onFocus: function () {
+		this._focused = true;
+		this._map.fire('focus');
+	},
+
+	_onBlur: function () {
+		this._focused = false;
+		this._map.fire('blur');
+	},
+
+	_setPanOffset: function (pan) {
+		var keys = this._panKeys = {},
+		    codes = this.keyCodes,
+		    i, len;
+
+		for (i = 0, len = codes.left.length; i < len; i++) {
+			keys[codes.left[i]] = [-1 * pan, 0];
+		}
+		for (i = 0, len = codes.right.length; i < len; i++) {
+			keys[codes.right[i]] = [pan, 0];
+		}
+		for (i = 0, len = codes.down.length; i < len; i++) {
+			keys[codes.down[i]] = [0, pan];
+		}
+		for (i = 0, len = codes.up.length; i < len; i++) {
+			keys[codes.up[i]] = [0, -1 * pan];
+		}
+	},
+
+	_setZoomOffset: function (zoom) {
+		var keys = this._zoomKeys = {},
+		    codes = this.keyCodes,
+		    i, len;
+
+		for (i = 0, len = codes.zoomIn.length; i < len; i++) {
+			keys[codes.zoomIn[i]] = zoom;
+		}
+		for (i = 0, len = codes.zoomOut.length; i < len; i++) {
+			keys[codes.zoomOut[i]] = -zoom;
+		}
+	},
+
+	_addHooks: function () {
+		L.DomEvent.on(document, 'keydown', this._onKeyDown, this);
+	},
+
+	_removeHooks: function () {
+		L.DomEvent.off(document, 'keydown', this._onKeyDown, this);
+	},
+
+	_onKeyDown: function (e) {
+		var key = e.keyCode,
+		    map = this._map;
+
+		if (key in this._panKeys) {
+
+			if (map._panAnim && map._panAnim._inProgress) { return; }
+
+			map.panBy(this._panKeys[key]);
+
+			if (map.options.maxBounds) {
+				map.panInsideBounds(map.options.maxBounds);
+			}
+
+		} else if (key in this._zoomKeys) {
+			map.setZoom(map.getZoom() + this._zoomKeys[key]);
+
+		} else {
+			return;
+		}
+
+		L.DomEvent.stop(e);
+	}
+});
+
+L.Map.addInitHook('addHandler', 'keyboard', L.Map.Keyboard);
+
+
+/*
+ * L.Handler.MarkerDrag is used internally by L.Marker to make the markers draggable.
+ */
+
+L.Handler.MarkerDrag = L.Handler.extend({
+	initialize: function (marker) {
+		this._marker = marker;
+	},
+
+	addHooks: function () {
+		var icon = this._marker._icon;
+		if (!this._draggable) {
+			this._draggable = new L.Draggable(icon, icon);
+		}
+
+		this._draggable
+			.on('dragstart', this._onDragStart, this)
+			.on('drag', this._onDrag, this)
+			.on('dragend', this._onDragEnd, this);
+		this._draggable.enable();
+		L.DomUtil.addClass(this._marker._icon, 'leaflet-marker-draggable');
+	},
+
+	removeHooks: function () {
+		this._draggable
+			.off('dragstart', this._onDragStart, this)
+			.off('drag', this._onDrag, this)
+			.off('dragend', this._onDragEnd, this);
+
+		this._draggable.disable();
+		L.DomUtil.removeClass(this._marker._icon, 'leaflet-marker-draggable');
+	},
+
+	moved: function () {
+		return this._draggable && this._draggable._moved;
+	},
+
+	_onDragStart: function () {
+		this._marker
+		    .closePopup()
+		    .fire('movestart')
+		    .fire('dragstart');
+	},
+
+	_onDrag: function () {
+		var marker = this._marker,
+		    shadow = marker._shadow,
+		    iconPos = L.DomUtil.getPosition(marker._icon),
+		    latlng = marker._map.layerPointToLatLng(iconPos);
+
+		// update shadow position
+		if (shadow) {
+			L.DomUtil.setPosition(shadow, iconPos);
+		}
+
+		marker._latlng = latlng;
+
+		marker
+		    .fire('move', {latlng: latlng})
+		    .fire('drag');
+	},
+
+	_onDragEnd: function (e) {
+		this._marker
+		    .fire('moveend')
+		    .fire('dragend', e);
+	}
+});
+
+
+/*
+ * L.Control is a base class for implementing map controls. Handles positioning.
+ * All other controls extend from this class.
+ */
+
+L.Control = L.Class.extend({
+	options: {
+		position: 'topright'
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	getPosition: function () {
+		return this.options.position;
+	},
+
+	setPosition: function (position) {
+		var map = this._map;
+
+		if (map) {
+			map.removeControl(this);
+		}
+
+		this.options.position = position;
+
+		if (map) {
+			map.addControl(this);
+		}
+
+		return this;
+	},
+
+	getContainer: function () {
+		return this._container;
+	},
+
+	addTo: function (map) {
+		this._map = map;
+
+		var container = this._container = this.onAdd(map),
+		    pos = this.getPosition(),
+		    corner = map._controlCorners[pos];
+
+		L.DomUtil.addClass(container, 'leaflet-control');
+
+		if (pos.indexOf('bottom') !== -1) {
+			corner.insertBefore(container, corner.firstChild);
+		} else {
+			corner.appendChild(container);
+		}
+
+		return this;
+	},
+
+	removeFrom: function (map) {
+		var pos = this.getPosition(),
+		    corner = map._controlCorners[pos];
+
+		corner.removeChild(this._container);
+		this._map = null;
+
+		if (this.onRemove) {
+			this.onRemove(map);
+		}
+
+		return this;
+	},
+
+	_refocusOnMap: function () {
+		if (this._map) {
+			this._map.getContainer().focus();
+		}
+	}
+});
+
+L.control = function (options) {
+	return new L.Control(options);
+};
+
+
+// adds control-related methods to L.Map
+
+L.Map.include({
+	addControl: function (control) {
+		control.addTo(this);
+		return this;
+	},
+
+	removeControl: function (control) {
+		control.removeFrom(this);
+		return this;
+	},
+
+	_initControlPos: function () {
+		var corners = this._controlCorners = {},
+		    l = 'leaflet-',
+		    container = this._controlContainer =
+		            L.DomUtil.create('div', l + 'control-container', this._container);
+
+		function createCorner(vSide, hSide) {
+			var className = l + vSide + ' ' + l + hSide;
+
+			corners[vSide + hSide] = L.DomUtil.create('div', className, container);
+		}
+
+		createCorner('top', 'left');
+		createCorner('top', 'right');
+		createCorner('bottom', 'left');
+		createCorner('bottom', 'right');
+	},
+
+	_clearControlPos: function () {
+		this._container.removeChild(this._controlContainer);
+	}
+});
+
+
+/*
+ * L.Control.Zoom is used for the default zoom buttons on the map.
+ */
+
+L.Control.Zoom = L.Control.extend({
+	options: {
+		position: 'topleft',
+		zoomInText: '+',
+		zoomInTitle: 'Zoom in',
+		zoomOutText: '-',
+		zoomOutTitle: 'Zoom out'
+	},
+
+	onAdd: function (map) {
+		var zoomName = 'leaflet-control-zoom',
+		    container = L.DomUtil.create('div', zoomName + ' leaflet-bar');
+
+		this._map = map;
+
+		this._zoomInButton  = this._createButton(
+		        this.options.zoomInText, this.options.zoomInTitle,
+		        zoomName + '-in',  container, this._zoomIn,  this);
+		this._zoomOutButton = this._createButton(
+		        this.options.zoomOutText, this.options.zoomOutTitle,
+		        zoomName + '-out', container, this._zoomOut, this);
+
+		this._updateDisabled();
+		map.on('zoomend zoomlevelschange', this._updateDisabled, this);
+
+		return container;
+	},
+
+	onRemove: function (map) {
+		map.off('zoomend zoomlevelschange', this._updateDisabled, this);
+	},
+
+	_zoomIn: function (e) {
+		this._map.zoomIn(e.shiftKey ? 3 : 1);
+	},
+
+	_zoomOut: function (e) {
+		this._map.zoomOut(e.shiftKey ? 3 : 1);
+	},
+
+	_createButton: function (html, title, className, container, fn, context) {
+		var link = L.DomUtil.create('a', className, container);
+		link.innerHTML = html;
+		link.href = '#';
+		link.title = title;
+
+		var stop = L.DomEvent.stopPropagation;
+
+		L.DomEvent
+		    .on(link, 'click', stop)
+		    .on(link, 'mousedown', stop)
+		    .on(link, 'dblclick', stop)
+		    .on(link, 'click', L.DomEvent.preventDefault)
+		    .on(link, 'click', fn, context)
+		    .on(link, 'click', this._refocusOnMap, context);
+
+		return link;
+	},
+
+	_updateDisabled: function () {
+		var map = this._map,
+			className = 'leaflet-disabled';
+
+		L.DomUtil.removeClass(this._zoomInButton, className);
+		L.DomUtil.removeClass(this._zoomOutButton, className);
+
+		if (map._zoom === map.getMinZoom()) {
+			L.DomUtil.addClass(this._zoomOutButton, className);
+		}
+		if (map._zoom === map.getMaxZoom()) {
+			L.DomUtil.addClass(this._zoomInButton, className);
+		}
+	}
+});
+
+L.Map.mergeOptions({
+	zoomControl: true
+});
+
+L.Map.addInitHook(function () {
+	if (this.options.zoomControl) {
+		this.zoomControl = new L.Control.Zoom();
+		this.addControl(this.zoomControl);
+	}
+});
+
+L.control.zoom = function (options) {
+	return new L.Control.Zoom(options);
+};
+
+
+
+/*
+ * L.Control.Attribution is used for displaying attribution on the map (added by default).
+ */
+
+L.Control.Attribution = L.Control.extend({
+	options: {
+		position: 'bottomright',
+		prefix: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>'
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+
+		this._attributions = {};
+	},
+
+	onAdd: function (map) {
+		this._container = L.DomUtil.create('div', 'leaflet-control-attribution');
+		L.DomEvent.disableClickPropagation(this._container);
+
+		for (var i in map._layers) {
+			if (map._layers[i].getAttribution) {
+				this.addAttribution(map._layers[i].getAttribution());
+			}
+		}
+		
+		map
+		    .on('layeradd', this._onLayerAdd, this)
+		    .on('layerremove', this._onLayerRemove, this);
+
+		this._update();
+
+		return this._container;
+	},
+
+	onRemove: function (map) {
+		map
+		    .off('layeradd', this._onLayerAdd)
+		    .off('layerremove', this._onLayerRemove);
+
+	},
+
+	setPrefix: function (prefix) {
+		this.options.prefix = prefix;
+		this._update();
+		return this;
+	},
+
+	addAttribution: function (text) {
+		if (!text) { return; }
+
+		if (!this._attributions[text]) {
+			this._attributions[text] = 0;
+		}
+		this._attributions[text]++;
+
+		this._update();
+
+		return this;
+	},
+
+	removeAttribution: function (text) {
+		if (!text) { return; }
+
+		if (this._attributions[text]) {
+			this._attributions[text]--;
+			this._update();
+		}
+
+		return this;
+	},
+
+	_update: function () {
+		if (!this._map) { return; }
+
+		var attribs = [];
+
+		for (var i in this._attributions) {
+			if (this._attributions[i]) {
+				attribs.push(i);
+			}
+		}
+
+		var prefixAndAttribs = [];
+
+		if (this.options.prefix) {
+			prefixAndAttribs.push(this.options.prefix);
+		}
+		if (attribs.length) {
+			prefixAndAttribs.push(attribs.join(', '));
+		}
+
+		this._container.innerHTML = prefixAndAttribs.join(' | ');
+	},
+
+	_onLayerAdd: function (e) {
+		if (e.layer.getAttribution) {
+			this.addAttribution(e.layer.getAttribution());
+		}
+	},
+
+	_onLayerRemove: function (e) {
+		if (e.layer.getAttribution) {
+			this.removeAttribution(e.layer.getAttribution());
+		}
+	}
+});
+
+L.Map.mergeOptions({
+	attributionControl: true
+});
+
+L.Map.addInitHook(function () {
+	if (this.options.attributionControl) {
+		this.attributionControl = (new L.Control.Attribution()).addTo(this);
+	}
+});
+
+L.control.attribution = function (options) {
+	return new L.Control.Attribution(options);
+};
+
+
+/*
+ * L.Control.Scale is used for displaying metric/imperial scale on the map.
+ */
+
+L.Control.Scale = L.Control.extend({
+	options: {
+		position: 'bottomleft',
+		maxWidth: 100,
+		metric: true,
+		imperial: true,
+		updateWhenIdle: false
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		var className = 'leaflet-control-scale',
+		    container = L.DomUtil.create('div', className),
+		    options = this.options;
+
+		this._addScales(options, className, container);
+
+		map.on(options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+		map.whenReady(this._update, this);
+
+		return container;
+	},
+
+	onRemove: function (map) {
+		map.off(this.options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+	},
+
+	_addScales: function (options, className, container) {
+		if (options.metric) {
+			this._mScale = L.DomUtil.create('div', className + '-line', container);
+		}
+		if (options.imperial) {
+			this._iScale = L.DomUtil.create('div', className + '-line', container);
+		}
+	},
+
+	_update: function () {
+		var bounds = this._map.getBounds(),
+		    centerLat = bounds.getCenter().lat,
+		    halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180),
+		    dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180,
+
+		    size = this._map.getSize(),
+		    options = this.options,
+		    maxMeters = 0;
+
+		if (size.x > 0) {
+			maxMeters = dist * (options.maxWidth / size.x);
+		}
+
+		this._updateScales(options, maxMeters);
+	},
+
+	_updateScales: function (options, maxMeters) {
+		if (options.metric && maxMeters) {
+			this._updateMetric(maxMeters);
+		}
+
+		if (options.imperial && maxMeters) {
+			this._updateImperial(maxMeters);
+		}
+	},
+
+	_updateMetric: function (maxMeters) {
+		var meters = this._getRoundNum(maxMeters);
+
+		this._mScale.style.width = this._getScaleWidth(meters / maxMeters) + 'px';
+		this._mScale.innerHTML = meters < 1000 ? meters + ' m' : (meters / 1000) + ' km';
+	},
+
+	_updateImperial: function (maxMeters) {
+		var maxFeet = maxMeters * 3.2808399,
+		    scale = this._iScale,
+		    maxMiles, miles, feet;
+
+		if (maxFeet > 5280) {
+			maxMiles = maxFeet / 5280;
+			miles = this._getRoundNum(maxMiles);
+
+			scale.style.width = this._getScaleWidth(miles / maxMiles) + 'px';
+			scale.innerHTML = miles + ' mi';
+
+		} else {
+			feet = this._getRoundNum(maxFeet);
+
+			scale.style.width = this._getScaleWidth(feet / maxFeet) + 'px';
+			scale.innerHTML = feet + ' ft';
+		}
+	},
+
+	_getScaleWidth: function (ratio) {
+		return Math.round(this.options.maxWidth * ratio) - 10;
+	},
+
+	_getRoundNum: function (num) {
+		var pow10 = Math.pow(10, (Math.floor(num) + '').length - 1),
+		    d = num / pow10;
+
+		d = d >= 10 ? 10 : d >= 5 ? 5 : d >= 3 ? 3 : d >= 2 ? 2 : 1;
+
+		return pow10 * d;
+	}
+});
+
+L.control.scale = function (options) {
+	return new L.Control.Scale(options);
+};
+
+
+/*
+ * L.Control.Layers is a control to allow users to switch between different layers on the map.
+ */
+
+L.Control.Layers = L.Control.extend({
+	options: {
+		collapsed: true,
+		position: 'topright',
+		autoZIndex: true
+	},
+
+	initialize: function (baseLayers, overlays, options) {
+		L.setOptions(this, options);
+
+		this._layers = {};
+		this._lastZIndex = 0;
+		this._handlingClick = false;
+
+		for (var i in baseLayers) {
+			this._addLayer(baseLayers[i], i);
+		}
+
+		for (i in overlays) {
+			this._addLayer(overlays[i], i, true);
+		}
+	},
+
+	onAdd: function (map) {
+		this._initLayout();
+		this._update();
+
+		map
+		    .on('layeradd', this._onLayerChange, this)
+		    .on('layerremove', this._onLayerChange, this);
+
+		return this._container;
+	},
+
+	onRemove: function (map) {
+		map
+		    .off('layeradd', this._onLayerChange, this)
+		    .off('layerremove', this._onLayerChange, this);
+	},
+
+	addBaseLayer: function (layer, name) {
+		this._addLayer(layer, name);
+		this._update();
+		return this;
+	},
+
+	addOverlay: function (layer, name) {
+		this._addLayer(layer, name, true);
+		this._update();
+		return this;
+	},
+
+	removeLayer: function (layer) {
+		var id = L.stamp(layer);
+		delete this._layers[id];
+		this._update();
+		return this;
+	},
+
+	_initLayout: function () {
+		var className = 'leaflet-control-layers',
+		    container = this._container = L.DomUtil.create('div', className);
+
+		//Makes this work on IE10 Touch devices by stopping it from firing a mouseout event when the touch is released
+		container.setAttribute('aria-haspopup', true);
+
+		if (!L.Browser.touch) {
+			L.DomEvent
+				.disableClickPropagation(container)
+				.disableScrollPropagation(container);
+		} else {
+			L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+		}
+
+		var form = this._form = L.DomUtil.create('form', className + '-list');
+
+		if (this.options.collapsed) {
+			if (!L.Browser.android) {
+				L.DomEvent
+				    .on(container, 'mouseover', this._expand, this)
+				    .on(container, 'mouseout', this._collapse, this);
+			}
+			var link = this._layersLink = L.DomUtil.create('a', className + '-toggle', container);
+			link.href = '#';
+			link.title = 'Layers';
+
+			if (L.Browser.touch) {
+				L.DomEvent
+				    .on(link, 'click', L.DomEvent.stop)
+				    .on(link, 'click', this._expand, this);
+			}
+			else {
+				L.DomEvent.on(link, 'focus', this._expand, this);
+			}
+			//Work around for Firefox android issue https://github.com/Leaflet/Leaflet/issues/2033
+			L.DomEvent.on(form, 'click', function () {
+				setTimeout(L.bind(this._onInputClick, this), 0);
+			}, this);
+
+			this._map.on('click', this._collapse, this);
+			// TODO keyboard accessibility
+		} else {
+			this._expand();
+		}
+
+		this._baseLayersList = L.DomUtil.create('div', className + '-base', form);
+		this._separator = L.DomUtil.create('div', className + '-separator', form);
+		this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
+
+		container.appendChild(form);
+	},
+
+	_addLayer: function (layer, name, overlay) {
+		var id = L.stamp(layer);
+
+		this._layers[id] = {
+			layer: layer,
+			name: name,
+			overlay: overlay
+		};
+
+		if (this.options.autoZIndex && layer.setZIndex) {
+			this._lastZIndex++;
+			layer.setZIndex(this._lastZIndex);
+		}
+	},
+
+	_update: function () {
+		if (!this._container) {
+			return;
+		}
+
+		this._baseLayersList.innerHTML = '';
+		this._overlaysList.innerHTML = '';
+
+		var baseLayersPresent = false,
+		    overlaysPresent = false,
+		    i, obj;
+
+		for (i in this._layers) {
+			obj = this._layers[i];
+			this._addItem(obj);
+			overlaysPresent = overlaysPresent || obj.overlay;
+			baseLayersPresent = baseLayersPresent || !obj.overlay;
+		}
+
+		this._separator.style.display = overlaysPresent && baseLayersPresent ? '' : 'none';
+	},
+
+	_onLayerChange: function (e) {
+		var obj = this._layers[L.stamp(e.layer)];
+
+		if (!obj) { return; }
+
+		if (!this._handlingClick) {
+			this._update();
+		}
+
+		var type = obj.overlay ?
+			(e.type === 'layeradd' ? 'overlayadd' : 'overlayremove') :
+			(e.type === 'layeradd' ? 'baselayerchange' : null);
+
+		if (type) {
+			this._map.fire(type, obj);
+		}
+	},
+
+	// IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see http://bit.ly/PqYLBe)
+	_createRadioElement: function (name, checked) {
+
+		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"';
+		if (checked) {
+			radioHtml += ' checked="checked"';
+		}
+		radioHtml += '/>';
+
+		var radioFragment = document.createElement('div');
+		radioFragment.innerHTML = radioHtml;
+
+		return radioFragment.firstChild;
+	},
+
+	_addItem: function (obj) {
+		var label = document.createElement('label'),
+		    input,
+		    checked = this._map.hasLayer(obj.layer);
+
+		if (obj.overlay) {
+			input = document.createElement('input');
+			input.type = 'checkbox';
+			input.className = 'leaflet-control-layers-selector';
+			input.defaultChecked = checked;
+		} else {
+			input = this._createRadioElement('leaflet-base-layers', checked);
+		}
+
+		input.layerId = L.stamp(obj.layer);
+
+		L.DomEvent.on(input, 'click', this._onInputClick, this);
+
+		var name = document.createElement('span');
+		name.innerHTML = ' ' + obj.name;
+
+		label.appendChild(input);
+		label.appendChild(name);
+
+		var container = obj.overlay ? this._overlaysList : this._baseLayersList;
+		container.appendChild(label);
+
+		return label;
+	},
+
+	_onInputClick: function () {
+		var i, input, obj,
+		    inputs = this._form.getElementsByTagName('input'),
+		    inputsLen = inputs.length;
+
+		this._handlingClick = true;
+
+		for (i = 0; i < inputsLen; i++) {
+			input = inputs[i];
+			obj = this._layers[input.layerId];
+
+			if (input.checked && !this._map.hasLayer(obj.layer)) {
+				this._map.addLayer(obj.layer);
+
+			} else if (!input.checked && this._map.hasLayer(obj.layer)) {
+				this._map.removeLayer(obj.layer);
+			}
+		}
+
+		this._handlingClick = false;
+
+		this._refocusOnMap();
+	},
+
+	_expand: function () {
+		L.DomUtil.addClass(this._container, 'leaflet-control-layers-expanded');
+	},
+
+	_collapse: function () {
+		this._container.className = this._container.className.replace(' leaflet-control-layers-expanded', '');
+	}
+});
+
+L.control.layers = function (baseLayers, overlays, options) {
+	return new L.Control.Layers(baseLayers, overlays, options);
+};
+
+
+/*
+ * L.PosAnimation is used by Leaflet internally for pan animations.
+ */
+
+L.PosAnimation = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	run: function (el, newPos, duration, easeLinearity) { // (HTMLElement, Point[, Number, Number])
+		this.stop();
+
+		this._el = el;
+		this._inProgress = true;
+		this._newPos = newPos;
+
+		this.fire('start');
+
+		el.style[L.DomUtil.TRANSITION] = 'all ' + (duration || 0.25) +
+		        's cubic-bezier(0,0,' + (easeLinearity || 0.5) + ',1)';
+
+		L.DomEvent.on(el, L.DomUtil.TRANSITION_END, this._onTransitionEnd, this);
+		L.DomUtil.setPosition(el, newPos);
+
+		// toggle reflow, Chrome flickers for some reason if you don't do this
+		L.Util.falseFn(el.offsetWidth);
+
+		// there's no native way to track value updates of transitioned properties, so we imitate this
+		this._stepTimer = setInterval(L.bind(this._onStep, this), 50);
+	},
+
+	stop: function () {
+		if (!this._inProgress) { return; }
+
+		// if we just removed the transition property, the element would jump to its final position,
+		// so we need to make it stay at the current position
+
+		L.DomUtil.setPosition(this._el, this._getPos());
+		this._onTransitionEnd();
+		L.Util.falseFn(this._el.offsetWidth); // force reflow in case we are about to start a new animation
+	},
+
+	_onStep: function () {
+		var stepPos = this._getPos();
+		if (!stepPos) {
+			this._onTransitionEnd();
+			return;
+		}
+		// jshint camelcase: false
+		// make L.DomUtil.getPosition return intermediate position value during animation
+		this._el._leaflet_pos = stepPos;
+
+		this.fire('step');
+	},
+
+	// you can't easily get intermediate values of properties animated with CSS3 Transitions,
+	// we need to parse computed style (in case of transform it returns matrix string)
+
+	_transformRe: /([-+]?(?:\d*\.)?\d+)\D*, ([-+]?(?:\d*\.)?\d+)\D*\)/,
+
+	_getPos: function () {
+		var left, top, matches,
+		    el = this._el,
+		    style = window.getComputedStyle(el);
+
+		if (L.Browser.any3d) {
+			matches = style[L.DomUtil.TRANSFORM].match(this._transformRe);
+			if (!matches) { return; }
+			left = parseFloat(matches[1]);
+			top  = parseFloat(matches[2]);
+		} else {
+			left = parseFloat(style.left);
+			top  = parseFloat(style.top);
+		}
+
+		return new L.Point(left, top, true);
+	},
+
+	_onTransitionEnd: function () {
+		L.DomEvent.off(this._el, L.DomUtil.TRANSITION_END, this._onTransitionEnd, this);
+
+		if (!this._inProgress) { return; }
+		this._inProgress = false;
+
+		this._el.style[L.DomUtil.TRANSITION] = '';
+
+		// jshint camelcase: false
+		// make sure L.DomUtil.getPosition returns the final position value after animation
+		this._el._leaflet_pos = this._newPos;
+
+		clearInterval(this._stepTimer);
+
+		this.fire('step').fire('end');
+	}
+
+});
+
+
+/*
+ * Extends L.Map to handle panning animations.
+ */
+
+L.Map.include({
+
+	setView: function (center, zoom, options) {
+
+		zoom = zoom === undefined ? this._zoom : this._limitZoom(zoom);
+		center = this._limitCenter(L.latLng(center), zoom, this.options.maxBounds);
+		options = options || {};
+
+		if (this._panAnim) {
+			this._panAnim.stop();
+		}
+
+		if (this._loaded && !options.reset && options !== true) {
+
+			if (options.animate !== undefined) {
+				options.zoom = L.extend({animate: options.animate}, options.zoom);
+				options.pan = L.extend({animate: options.animate}, options.pan);
+			}
+
+			// try animating pan or zoom
+			var animated = (this._zoom !== zoom) ?
+				this._tryAnimatedZoom && this._tryAnimatedZoom(center, zoom, options.zoom) :
+				this._tryAnimatedPan(center, options.pan);
+
+			if (animated) {
+				// prevent resize handler call, the view will refresh after animation anyway
+				clearTimeout(this._sizeTimer);
+				return this;
+			}
+		}
+
+		// animation didn't start, just reset the map view
+		this._resetView(center, zoom);
+
+		return this;
+	},
+
+	panBy: function (offset, options) {
+		offset = L.point(offset).round();
+		options = options || {};
+
+		if (!offset.x && !offset.y) {
+			return this;
+		}
+
+		if (!this._panAnim) {
+			this._panAnim = new L.PosAnimation();
+
+			this._panAnim.on({
+				'step': this._onPanTransitionStep,
+				'end': this._onPanTransitionEnd
+			}, this);
+		}
+
+		// don't fire movestart if animating inertia
+		if (!options.noMoveStart) {
+			this.fire('movestart');
+		}
+
+		// animate pan unless animate: false specified
+		if (options.animate !== false) {
+			L.DomUtil.addClass(this._mapPane, 'leaflet-pan-anim');
+
+			var newPos = this._getMapPanePos().subtract(offset);
+			this._panAnim.run(this._mapPane, newPos, options.duration || 0.25, options.easeLinearity);
+		} else {
+			this._rawPanBy(offset);
+			this.fire('move').fire('moveend');
+		}
+
+		return this;
+	},
+
+	_onPanTransitionStep: function () {
+		this.fire('move');
+	},
+
+	_onPanTransitionEnd: function () {
+		L.DomUtil.removeClass(this._mapPane, 'leaflet-pan-anim');
+		this.fire('moveend');
+	},
+
+	_tryAnimatedPan: function (center, options) {
+		// difference between the new and current centers in pixels
+		var offset = this._getCenterOffset(center)._floor();
+
+		// don't animate too far unless animate: true specified in options
+		if ((options && options.animate) !== true && !this.getSize().contains(offset)) { return false; }
+
+		this.panBy(offset, options);
+
+		return true;
+	}
+});
+
+
+/*
+ * L.PosAnimation fallback implementation that powers Leaflet pan animations
+ * in browsers that don't support CSS3 Transitions.
+ */
+
+L.PosAnimation = L.DomUtil.TRANSITION ? L.PosAnimation : L.PosAnimation.extend({
+
+	run: function (el, newPos, duration, easeLinearity) { // (HTMLElement, Point[, Number, Number])
+		this.stop();
+
+		this._el = el;
+		this._inProgress = true;
+		this._duration = duration || 0.25;
+		this._easeOutPower = 1 / Math.max(easeLinearity || 0.5, 0.2);
+
+		this._startPos = L.DomUtil.getPosition(el);
+		this._offset = newPos.subtract(this._startPos);
+		this._startTime = +new Date();
+
+		this.fire('start');
+
+		this._animate();
+	},
+
+	stop: function () {
+		if (!this._inProgress) { return; }
+
+		this._step();
+		this._complete();
+	},
+
+	_animate: function () {
+		// animation loop
+		this._animId = L.Util.requestAnimFrame(this._animate, this);
+		this._step();
+	},
+
+	_step: function () {
+		var elapsed = (+new Date()) - this._startTime,
+		    duration = this._duration * 1000;
+
+		if (elapsed < duration) {
+			this._runFrame(this._easeOut(elapsed / duration));
+		} else {
+			this._runFrame(1);
+			this._complete();
+		}
+	},
+
+	_runFrame: function (progress) {
+		var pos = this._startPos.add(this._offset.multiplyBy(progress));
+		L.DomUtil.setPosition(this._el, pos);
+
+		this.fire('step');
+	},
+
+	_complete: function () {
+		L.Util.cancelAnimFrame(this._animId);
+
+		this._inProgress = false;
+		this.fire('end');
+	},
+
+	_easeOut: function (t) {
+		return 1 - Math.pow(1 - t, this._easeOutPower);
+	}
+});
+
+
+/*
+ * Extends L.Map to handle zoom animations.
+ */
+
+L.Map.mergeOptions({
+	zoomAnimation: true,
+	zoomAnimationThreshold: 4
+});
+
+if (L.DomUtil.TRANSITION) {
+
+	L.Map.addInitHook(function () {
+		// don't animate on browsers without hardware-accelerated transitions or old Android/Opera
+		this._zoomAnimated = this.options.zoomAnimation && L.DomUtil.TRANSITION &&
+				L.Browser.any3d && !L.Browser.android23 && !L.Browser.mobileOpera;
+
+		// zoom transitions run with the same duration for all layers, so if one of transitionend events
+		// happens after starting zoom animation (propagating to the map pane), we know that it ended globally
+		if (this._zoomAnimated) {
+			L.DomEvent.on(this._mapPane, L.DomUtil.TRANSITION_END, this._catchTransitionEnd, this);
+		}
+	});
+}
+
+L.Map.include(!L.DomUtil.TRANSITION ? {} : {
+
+	_catchTransitionEnd: function (e) {
+		if (this._animatingZoom && e.propertyName.indexOf('transform') >= 0) {
+			this._onZoomTransitionEnd();
+		}
+	},
+
+	_nothingToAnimate: function () {
+		return !this._container.getElementsByClassName('leaflet-zoom-animated').length;
+	},
+
+	_tryAnimatedZoom: function (center, zoom, options) {
+
+		if (this._animatingZoom) { return true; }
+
+		options = options || {};
+
+		// don't animate if disabled, not supported or zoom difference is too large
+		if (!this._zoomAnimated || options.animate === false || this._nothingToAnimate() ||
+		        Math.abs(zoom - this._zoom) > this.options.zoomAnimationThreshold) { return false; }
+
+		// offset is the pixel coords of the zoom origin relative to the current center
+		var scale = this.getZoomScale(zoom),
+		    offset = this._getCenterOffset(center)._divideBy(1 - 1 / scale),
+			origin = this._getCenterLayerPoint()._add(offset);
+
+		// don't animate if the zoom origin isn't within one screen from the current center, unless forced
+		if (options.animate !== true && !this.getSize().contains(offset)) { return false; }
+
+		this
+		    .fire('movestart')
+		    .fire('zoomstart');
+
+		this._animateZoom(center, zoom, origin, scale, null, true);
+
+		return true;
+	},
+
+	_animateZoom: function (center, zoom, origin, scale, delta, backwards, forTouchZoom) {
+
+		if (!forTouchZoom) {
+			this._animatingZoom = true;
+		}
+
+		// put transform transition on all layers with leaflet-zoom-animated class
+		L.DomUtil.addClass(this._mapPane, 'leaflet-zoom-anim');
+
+		// remember what center/zoom to set after animation
+		this._animateToCenter = center;
+		this._animateToZoom = zoom;
+
+		// disable any dragging during animation
+		if (L.Draggable) {
+			L.Draggable._disabled = true;
+		}
+
+		L.Util.requestAnimFrame(function () {
+			this.fire('zoomanim', {
+				center: center,
+				zoom: zoom,
+				origin: origin,
+				scale: scale,
+				delta: delta,
+				backwards: backwards
+			});
+			// horrible hack to work around a Chrome bug https://github.com/Leaflet/Leaflet/issues/3689
+			setTimeout(L.bind(this._onZoomTransitionEnd, this), 250);
+		}, this);
+	},
+
+	_onZoomTransitionEnd: function () {
+		if (!this._animatingZoom) { return; }
+
+		this._animatingZoom = false;
+
+		L.DomUtil.removeClass(this._mapPane, 'leaflet-zoom-anim');
+
+		L.Util.requestAnimFrame(function () {
+			this._resetView(this._animateToCenter, this._animateToZoom, true, true);
+
+			if (L.Draggable) {
+				L.Draggable._disabled = false;
+			}
+		}, this);
+	}
+});
+
+
+/*
+	Zoom animation logic for L.TileLayer.
+*/
+
+L.TileLayer.include({
+	_animateZoom: function (e) {
+		if (!this._animating) {
+			this._animating = true;
+			this._prepareBgBuffer();
+		}
+
+		var bg = this._bgBuffer,
+		    transform = L.DomUtil.TRANSFORM,
+		    initialTransform = e.delta ? L.DomUtil.getTranslateString(e.delta) : bg.style[transform],
+		    scaleStr = L.DomUtil.getScaleString(e.scale, e.origin);
+
+		bg.style[transform] = e.backwards ?
+				scaleStr + ' ' + initialTransform :
+				initialTransform + ' ' + scaleStr;
+	},
+
+	_endZoomAnim: function () {
+		var front = this._tileContainer,
+		    bg = this._bgBuffer;
+
+		front.style.visibility = '';
+		front.parentNode.appendChild(front); // Bring to fore
+
+		// force reflow
+		L.Util.falseFn(bg.offsetWidth);
+
+		var zoom = this._map.getZoom();
+		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+			this._clearBgBuffer();
+		}
+
+		this._animating = false;
+	},
+
+	_clearBgBuffer: function () {
+		var map = this._map;
+
+		if (map && !map._animatingZoom && !map.touchZoom._zooming) {
+			this._bgBuffer.innerHTML = '';
+			this._bgBuffer.style[L.DomUtil.TRANSFORM] = '';
+		}
+	},
+
+	_prepareBgBuffer: function () {
+
+		var front = this._tileContainer,
+		    bg = this._bgBuffer;
+
+		// if foreground layer doesn't have many tiles but bg layer does,
+		// keep the existing bg layer and just zoom it some more
+
+		var bgLoaded = this._getLoadedTilesPercentage(bg),
+		    frontLoaded = this._getLoadedTilesPercentage(front);
+
+		if (bg && bgLoaded > 0.5 && frontLoaded < 0.5) {
+
+			front.style.visibility = 'hidden';
+			this._stopLoadingImages(front);
+			return;
+		}
+
+		// prepare the buffer to become the front tile pane
+		bg.style.visibility = 'hidden';
+		bg.style[L.DomUtil.TRANSFORM] = '';
+
+		// switch out the current layer to be the new bg layer (and vice-versa)
+		this._tileContainer = bg;
+		bg = this._bgBuffer = front;
+
+		this._stopLoadingImages(bg);
+
+		//prevent bg buffer from clearing right after zoom
+		clearTimeout(this._clearBgBufferTimer);
+	},
+
+	_getLoadedTilesPercentage: function (container) {
+		var tiles = container.getElementsByTagName('img'),
+		    i, len, count = 0;
+
+		for (i = 0, len = tiles.length; i < len; i++) {
+			if (tiles[i].complete) {
+				count++;
+			}
+		}
+		return count / len;
+	},
+
+	// stops loading all tiles in the background layer
+	_stopLoadingImages: function (container) {
+		var tiles = Array.prototype.slice.call(container.getElementsByTagName('img')),
+		    i, len, tile;
+
+		for (i = 0, len = tiles.length; i < len; i++) {
+			tile = tiles[i];
+
+			if (!tile.complete) {
+				tile.onload = L.Util.falseFn;
+				tile.onerror = L.Util.falseFn;
+				tile.src = L.Util.emptyImageUrl;
+
+				tile.parentNode.removeChild(tile);
+			}
+		}
+	}
+});
+
+
+/*
+ * Provides L.Map with convenient shortcuts for using browser geolocation features.
+ */
+
+L.Map.include({
+	_defaultLocateOptions: {
+		watch: false,
+		setView: false,
+		maxZoom: Infinity,
+		timeout: 10000,
+		maximumAge: 0,
+		enableHighAccuracy: false
+	},
+
+	locate: function (/*Object*/ options) {
+
+		options = this._locateOptions = L.extend(this._defaultLocateOptions, options);
+
+		if (!navigator.geolocation) {
+			this._handleGeolocationError({
+				code: 0,
+				message: 'Geolocation not supported.'
+			});
+			return this;
+		}
+
+		var onResponse = L.bind(this._handleGeolocationResponse, this),
+			onError = L.bind(this._handleGeolocationError, this);
+
+		if (options.watch) {
+			this._locationWatchId =
+			        navigator.geolocation.watchPosition(onResponse, onError, options);
+		} else {
+			navigator.geolocation.getCurrentPosition(onResponse, onError, options);
+		}
+		return this;
+	},
+
+	stopLocate: function () {
+		if (navigator.geolocation) {
+			navigator.geolocation.clearWatch(this._locationWatchId);
+		}
+		if (this._locateOptions) {
+			this._locateOptions.setView = false;
+		}
+		return this;
+	},
+
+	_handleGeolocationError: function (error) {
+		var c = error.code,
+		    message = error.message ||
+		            (c === 1 ? 'permission denied' :
+		            (c === 2 ? 'position unavailable' : 'timeout'));
+
+		if (this._locateOptions.setView && !this._loaded) {
+			this.fitWorld();
+		}
+
+		this.fire('locationerror', {
+			code: c,
+			message: 'Geolocation error: ' + message + '.'
+		});
+	},
+
+	_handleGeolocationResponse: function (pos) {
+		var lat = pos.coords.latitude,
+		    lng = pos.coords.longitude,
+		    latlng = new L.LatLng(lat, lng),
+
+		    latAccuracy = 180 * pos.coords.accuracy / 40075017,
+		    lngAccuracy = latAccuracy / Math.cos(L.LatLng.DEG_TO_RAD * lat),
+
+		    bounds = L.latLngBounds(
+		            [lat - latAccuracy, lng - lngAccuracy],
+		            [lat + latAccuracy, lng + lngAccuracy]),
+
+		    options = this._locateOptions;
+
+		if (options.setView) {
+			var zoom = Math.min(this.getBoundsZoom(bounds), options.maxZoom);
+			this.setView(latlng, zoom);
+		}
+
+		var data = {
+			latlng: latlng,
+			bounds: bounds,
+			timestamp: pos.timestamp
+		};
+
+		for (var i in pos.coords) {
+			if (typeof pos.coords[i] === 'number') {
+				data[i] = pos.coords[i];
+			}
+		}
+
+		this.fire('locationfound', data);
+	}
+});
+
+
+}(window, document));
+},{}],32:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],33:[function(require,module,exports){
+//  Ramda v0.19.1
+//  https://github.com/ramda/ramda
+//  (c) 2013-2016 Scott Sauyet, Michael Hurley, and David Chambers
+//  Ramda may be freely distributed under the MIT license.
+
+;(function() {
+
+  'use strict';
+
+  /**
+     * A special placeholder value used to specify "gaps" within curried functions,
+     * allowing partial application of any combination of arguments, regardless of
+     * their positions.
+     *
+     * If `g` is a curried ternary function and `_` is `R.__`, the following are
+     * equivalent:
+     *
+     *   - `g(1, 2, 3)`
+     *   - `g(_, 2, 3)(1)`
+     *   - `g(_, _, 3)(1)(2)`
+     *   - `g(_, _, 3)(1, 2)`
+     *   - `g(_, 2, _)(1, 3)`
+     *   - `g(_, 2)(1)(3)`
+     *   - `g(_, 2)(1, 3)`
+     *   - `g(_, 2)(_, 3)(1)`
+     *
+     * @constant
+     * @memberOf R
+     * @since v0.6.0
+     * @category Function
+     * @example
+     *
+     *      var greet = R.replace('{name}', R.__, 'Hello, {name}!');
+     *      greet('Alice'); //=> 'Hello, Alice!'
+     */
+    var __ = { '@@functional/placeholder': true };
+
+    /* eslint-disable no-unused-vars */
+    var _arity = function _arity(n, fn) {
+        /* eslint-disable no-unused-vars */
+        switch (n) {
+        case 0:
+            return function () {
+                return fn.apply(this, arguments);
+            };
+        case 1:
+            return function (a0) {
+                return fn.apply(this, arguments);
+            };
+        case 2:
+            return function (a0, a1) {
+                return fn.apply(this, arguments);
+            };
+        case 3:
+            return function (a0, a1, a2) {
+                return fn.apply(this, arguments);
+            };
+        case 4:
+            return function (a0, a1, a2, a3) {
+                return fn.apply(this, arguments);
+            };
+        case 5:
+            return function (a0, a1, a2, a3, a4) {
+                return fn.apply(this, arguments);
+            };
+        case 6:
+            return function (a0, a1, a2, a3, a4, a5) {
+                return fn.apply(this, arguments);
+            };
+        case 7:
+            return function (a0, a1, a2, a3, a4, a5, a6) {
+                return fn.apply(this, arguments);
+            };
+        case 8:
+            return function (a0, a1, a2, a3, a4, a5, a6, a7) {
+                return fn.apply(this, arguments);
+            };
+        case 9:
+            return function (a0, a1, a2, a3, a4, a5, a6, a7, a8) {
+                return fn.apply(this, arguments);
+            };
+        case 10:
+            return function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+                return fn.apply(this, arguments);
+            };
+        default:
+            throw new Error('First argument to _arity must be a non-negative integer no greater than ten');
+        }
+    };
+
+    var _arrayFromIterator = function _arrayFromIterator(iter) {
+        var list = [];
+        var next;
+        while (!(next = iter.next()).done) {
+            list.push(next.value);
+        }
+        return list;
+    };
+
+    var _cloneRegExp = function _cloneRegExp(pattern) {
+        return new RegExp(pattern.source, (pattern.global ? 'g' : '') + (pattern.ignoreCase ? 'i' : '') + (pattern.multiline ? 'm' : '') + (pattern.sticky ? 'y' : '') + (pattern.unicode ? 'u' : ''));
+    };
+
+    var _complement = function _complement(f) {
+        return function () {
+            return !f.apply(this, arguments);
+        };
+    };
+
+    /**
+     * Private `concat` function to merge two array-like objects.
+     *
+     * @private
+     * @param {Array|Arguments} [set1=[]] An array-like object.
+     * @param {Array|Arguments} [set2=[]] An array-like object.
+     * @return {Array} A new, merged array.
+     * @example
+     *
+     *      _concat([4, 5, 6], [1, 2, 3]); //=> [4, 5, 6, 1, 2, 3]
+     */
+    var _concat = function _concat(set1, set2) {
+        set1 = set1 || [];
+        set2 = set2 || [];
+        var idx;
+        var len1 = set1.length;
+        var len2 = set2.length;
+        var result = [];
+        idx = 0;
+        while (idx < len1) {
+            result[result.length] = set1[idx];
+            idx += 1;
+        }
+        idx = 0;
+        while (idx < len2) {
+            result[result.length] = set2[idx];
+            idx += 1;
+        }
+        return result;
+    };
+
+    var _containsWith = function _containsWith(pred, x, list) {
+        var idx = 0;
+        var len = list.length;
+        while (idx < len) {
+            if (pred(x, list[idx])) {
+                return true;
+            }
+            idx += 1;
+        }
+        return false;
+    };
+
+    var _filter = function _filter(fn, list) {
+        var idx = 0;
+        var len = list.length;
+        var result = [];
+        while (idx < len) {
+            if (fn(list[idx])) {
+                result[result.length] = list[idx];
+            }
+            idx += 1;
+        }
+        return result;
+    };
+
+    var _forceReduced = function _forceReduced(x) {
+        return {
+            '@@transducer/value': x,
+            '@@transducer/reduced': true
+        };
+    };
+
+    var _has = function _has(prop, obj) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+    };
+
+    var _identity = function _identity(x) {
+        return x;
+    };
+
+    var _isArguments = function () {
+        var toString = Object.prototype.toString;
+        return toString.call(arguments) === '[object Arguments]' ? function _isArguments(x) {
+            return toString.call(x) === '[object Arguments]';
+        } : function _isArguments(x) {
+            return _has('callee', x);
+        };
+    }();
+
+    /**
+     * Tests whether or not an object is an array.
+     *
+     * @private
+     * @param {*} val The object to test.
+     * @return {Boolean} `true` if `val` is an array, `false` otherwise.
+     * @example
+     *
+     *      _isArray([]); //=> true
+     *      _isArray(null); //=> false
+     *      _isArray({}); //=> false
+     */
+    var _isArray = Array.isArray || function _isArray(val) {
+        return val != null && val.length >= 0 && Object.prototype.toString.call(val) === '[object Array]';
+    };
+
+    /**
+     * Determine if the passed argument is an integer.
+     *
+     * @private
+     * @param {*} n
+     * @category Type
+     * @return {Boolean}
+     */
+    var _isInteger = Number.isInteger || function _isInteger(n) {
+        return n << 0 === n;
+    };
+
+    var _isNumber = function _isNumber(x) {
+        return Object.prototype.toString.call(x) === '[object Number]';
+    };
+
+    var _isObject = function _isObject(x) {
+        return Object.prototype.toString.call(x) === '[object Object]';
+    };
+
+    var _isPlaceholder = function _isPlaceholder(a) {
+        return a != null && typeof a === 'object' && a['@@functional/placeholder'] === true;
+    };
+
+    var _isRegExp = function _isRegExp(x) {
+        return Object.prototype.toString.call(x) === '[object RegExp]';
+    };
+
+    var _isString = function _isString(x) {
+        return Object.prototype.toString.call(x) === '[object String]';
+    };
+
+    var _isTransformer = function _isTransformer(obj) {
+        return typeof obj['@@transducer/step'] === 'function';
+    };
+
+    var _map = function _map(fn, functor) {
+        var idx = 0;
+        var len = functor.length;
+        var result = Array(len);
+        while (idx < len) {
+            result[idx] = fn(functor[idx]);
+            idx += 1;
+        }
+        return result;
+    };
+
+    var _of = function _of(x) {
+        return [x];
+    };
+
+    var _pipe = function _pipe(f, g) {
+        return function () {
+            return g.call(this, f.apply(this, arguments));
+        };
+    };
+
+    var _pipeP = function _pipeP(f, g) {
+        return function () {
+            var ctx = this;
+            return f.apply(ctx, arguments).then(function (x) {
+                return g.call(ctx, x);
+            });
+        };
+    };
+
+    // \b matches word boundary; [\b] matches backspace
+    var _quote = function _quote(s) {
+        var escaped = s.replace(/\\/g, '\\\\').replace(/[\b]/g, '\\b')    // \b matches word boundary; [\b] matches backspace
+    .replace(/\f/g, '\\f').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t').replace(/\v/g, '\\v').replace(/\0/g, '\\0');
+        return '"' + escaped.replace(/"/g, '\\"') + '"';
+    };
+
+    var _reduced = function _reduced(x) {
+        return x && x['@@transducer/reduced'] ? x : {
+            '@@transducer/value': x,
+            '@@transducer/reduced': true
+        };
+    };
+
+    /**
+     * An optimized, private array `slice` implementation.
+     *
+     * @private
+     * @param {Arguments|Array} args The array or arguments object to consider.
+     * @param {Number} [from=0] The array index to slice from, inclusive.
+     * @param {Number} [to=args.length] The array index to slice to, exclusive.
+     * @return {Array} A new, sliced array.
+     * @example
+     *
+     *      _slice([1, 2, 3, 4, 5], 1, 3); //=> [2, 3]
+     *
+     *      var firstThreeArgs = function(a, b, c, d) {
+     *        return _slice(arguments, 0, 3);
+     *      };
+     *      firstThreeArgs(1, 2, 3, 4); //=> [1, 2, 3]
+     */
+    var _slice = function _slice(args, from, to) {
+        switch (arguments.length) {
+        case 1:
+            return _slice(args, 0, args.length);
+        case 2:
+            return _slice(args, from, args.length);
+        default:
+            var list = [];
+            var idx = 0;
+            var len = Math.max(0, Math.min(args.length, to) - from);
+            while (idx < len) {
+                list[idx] = args[from + idx];
+                idx += 1;
+            }
+            return list;
+        }
+    };
+
+    /**
+     * Polyfill from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString>.
+     */
+    var _toISOString = function () {
+        var pad = function pad(n) {
+            return (n < 10 ? '0' : '') + n;
+        };
+        return typeof Date.prototype.toISOString === 'function' ? function _toISOString(d) {
+            return d.toISOString();
+        } : function _toISOString(d) {
+            return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds()) + '.' + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) + 'Z';
+        };
+    }();
+
+    var _xfBase = {
+        init: function () {
+            return this.xf['@@transducer/init']();
+        },
+        result: function (result) {
+            return this.xf['@@transducer/result'](result);
+        }
+    };
+
+    var _xwrap = function () {
+        function XWrap(fn) {
+            this.f = fn;
+        }
+        XWrap.prototype['@@transducer/init'] = function () {
+            throw new Error('init not implemented on XWrap');
+        };
+        XWrap.prototype['@@transducer/result'] = function (acc) {
+            return acc;
+        };
+        XWrap.prototype['@@transducer/step'] = function (acc, x) {
+            return this.f(acc, x);
+        };
+        return function _xwrap(fn) {
+            return new XWrap(fn);
+        };
+    }();
+
+    var _aperture = function _aperture(n, list) {
+        var idx = 0;
+        var limit = list.length - (n - 1);
+        var acc = new Array(limit >= 0 ? limit : 0);
+        while (idx < limit) {
+            acc[idx] = _slice(list, idx, idx + n);
+            idx += 1;
+        }
+        return acc;
+    };
+
+    /**
+     * Similar to hasMethod, this checks whether a function has a [methodname]
+     * function. If it isn't an array it will execute that function otherwise it
+     * will default to the ramda implementation.
+     *
+     * @private
+     * @param {Function} fn ramda implemtation
+     * @param {String} methodname property to check for a custom implementation
+     * @return {Object} Whatever the return value of the method is.
+     */
+    var _checkForMethod = function _checkForMethod(methodname, fn) {
+        return function () {
+            var length = arguments.length;
+            if (length === 0) {
+                return fn();
+            }
+            var obj = arguments[length - 1];
+            return _isArray(obj) || typeof obj[methodname] !== 'function' ? fn.apply(this, arguments) : obj[methodname].apply(obj, _slice(arguments, 0, length - 1));
+        };
+    };
+
+    /**
+     * Optimized internal one-arity curry function.
+     *
+     * @private
+     * @category Function
+     * @param {Function} fn The function to curry.
+     * @return {Function} The curried function.
+     */
+    var _curry1 = function _curry1(fn) {
+        return function f1(a) {
+            if (arguments.length === 0 || _isPlaceholder(a)) {
+                return f1;
+            } else {
+                return fn.apply(this, arguments);
+            }
+        };
+    };
+
+    /**
+     * Optimized internal two-arity curry function.
+     *
+     * @private
+     * @category Function
+     * @param {Function} fn The function to curry.
+     * @return {Function} The curried function.
+     */
+    var _curry2 = function _curry2(fn) {
+        return function f2(a, b) {
+            switch (arguments.length) {
+            case 0:
+                return f2;
+            case 1:
+                return _isPlaceholder(a) ? f2 : _curry1(function (_b) {
+                    return fn(a, _b);
+                });
+            default:
+                return _isPlaceholder(a) && _isPlaceholder(b) ? f2 : _isPlaceholder(a) ? _curry1(function (_a) {
+                    return fn(_a, b);
+                }) : _isPlaceholder(b) ? _curry1(function (_b) {
+                    return fn(a, _b);
+                }) : fn(a, b);
+            }
+        };
+    };
+
+    /**
+     * Optimized internal three-arity curry function.
+     *
+     * @private
+     * @category Function
+     * @param {Function} fn The function to curry.
+     * @return {Function} The curried function.
+     */
+    var _curry3 = function _curry3(fn) {
+        return function f3(a, b, c) {
+            switch (arguments.length) {
+            case 0:
+                return f3;
+            case 1:
+                return _isPlaceholder(a) ? f3 : _curry2(function (_b, _c) {
+                    return fn(a, _b, _c);
+                });
+            case 2:
+                return _isPlaceholder(a) && _isPlaceholder(b) ? f3 : _isPlaceholder(a) ? _curry2(function (_a, _c) {
+                    return fn(_a, b, _c);
+                }) : _isPlaceholder(b) ? _curry2(function (_b, _c) {
+                    return fn(a, _b, _c);
+                }) : _curry1(function (_c) {
+                    return fn(a, b, _c);
+                });
+            default:
+                return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c) ? f3 : _isPlaceholder(a) && _isPlaceholder(b) ? _curry2(function (_a, _b) {
+                    return fn(_a, _b, c);
+                }) : _isPlaceholder(a) && _isPlaceholder(c) ? _curry2(function (_a, _c) {
+                    return fn(_a, b, _c);
+                }) : _isPlaceholder(b) && _isPlaceholder(c) ? _curry2(function (_b, _c) {
+                    return fn(a, _b, _c);
+                }) : _isPlaceholder(a) ? _curry1(function (_a) {
+                    return fn(_a, b, c);
+                }) : _isPlaceholder(b) ? _curry1(function (_b) {
+                    return fn(a, _b, c);
+                }) : _isPlaceholder(c) ? _curry1(function (_c) {
+                    return fn(a, b, _c);
+                }) : fn(a, b, c);
+            }
+        };
+    };
+
+    /**
+     * Internal curryN function.
+     *
+     * @private
+     * @category Function
+     * @param {Number} length The arity of the curried function.
+     * @param {Array} received An array of arguments received thus far.
+     * @param {Function} fn The function to curry.
+     * @return {Function} The curried function.
+     */
+    var _curryN = function _curryN(length, received, fn) {
+        return function () {
+            var combined = [];
+            var argsIdx = 0;
+            var left = length;
+            var combinedIdx = 0;
+            while (combinedIdx < received.length || argsIdx < arguments.length) {
+                var result;
+                if (combinedIdx < received.length && (!_isPlaceholder(received[combinedIdx]) || argsIdx >= arguments.length)) {
+                    result = received[combinedIdx];
+                } else {
+                    result = arguments[argsIdx];
+                    argsIdx += 1;
+                }
+                combined[combinedIdx] = result;
+                if (!_isPlaceholder(result)) {
+                    left -= 1;
+                }
+                combinedIdx += 1;
+            }
+            return left <= 0 ? fn.apply(this, combined) : _arity(left, _curryN(length, combined, fn));
+        };
+    };
+
+    /**
+     * Returns a function that dispatches with different strategies based on the
+     * object in list position (last argument). If it is an array, executes [fn].
+     * Otherwise, if it has a function with [methodname], it will execute that
+     * function (functor case). Otherwise, if it is a transformer, uses transducer
+     * [xf] to return a new transformer (transducer case). Otherwise, it will
+     * default to executing [fn].
+     *
+     * @private
+     * @param {String} methodname property to check for a custom implementation
+     * @param {Function} xf transducer to initialize if object is transformer
+     * @param {Function} fn default ramda implementation
+     * @return {Function} A function that dispatches on object in list position
+     */
+    var _dispatchable = function _dispatchable(methodname, xf, fn) {
+        return function () {
+            var length = arguments.length;
+            if (length === 0) {
+                return fn();
+            }
+            var obj = arguments[length - 1];
+            if (!_isArray(obj)) {
+                var args = _slice(arguments, 0, length - 1);
+                if (typeof obj[methodname] === 'function') {
+                    return obj[methodname].apply(obj, args);
+                }
+                if (_isTransformer(obj)) {
+                    var transducer = xf.apply(null, args);
+                    return transducer(obj);
+                }
+            }
+            return fn.apply(this, arguments);
+        };
+    };
+
+    var _dropLastWhile = function dropLastWhile(pred, list) {
+        var idx = list.length - 1;
+        while (idx >= 0 && pred(list[idx])) {
+            idx -= 1;
+        }
+        return _slice(list, 0, idx + 1);
+    };
+
+    var _xall = function () {
+        function XAll(f, xf) {
+            this.xf = xf;
+            this.f = f;
+            this.all = true;
+        }
+        XAll.prototype['@@transducer/init'] = _xfBase.init;
+        XAll.prototype['@@transducer/result'] = function (result) {
+            if (this.all) {
+                result = this.xf['@@transducer/step'](result, true);
+            }
+            return this.xf['@@transducer/result'](result);
+        };
+        XAll.prototype['@@transducer/step'] = function (result, input) {
+            if (!this.f(input)) {
+                this.all = false;
+                result = _reduced(this.xf['@@transducer/step'](result, false));
+            }
+            return result;
+        };
+        return _curry2(function _xall(f, xf) {
+            return new XAll(f, xf);
+        });
+    }();
+
+    var _xany = function () {
+        function XAny(f, xf) {
+            this.xf = xf;
+            this.f = f;
+            this.any = false;
+        }
+        XAny.prototype['@@transducer/init'] = _xfBase.init;
+        XAny.prototype['@@transducer/result'] = function (result) {
+            if (!this.any) {
+                result = this.xf['@@transducer/step'](result, false);
+            }
+            return this.xf['@@transducer/result'](result);
+        };
+        XAny.prototype['@@transducer/step'] = function (result, input) {
+            if (this.f(input)) {
+                this.any = true;
+                result = _reduced(this.xf['@@transducer/step'](result, true));
+            }
+            return result;
+        };
+        return _curry2(function _xany(f, xf) {
+            return new XAny(f, xf);
+        });
+    }();
+
+    var _xaperture = function () {
+        function XAperture(n, xf) {
+            this.xf = xf;
+            this.pos = 0;
+            this.full = false;
+            this.acc = new Array(n);
+        }
+        XAperture.prototype['@@transducer/init'] = _xfBase.init;
+        XAperture.prototype['@@transducer/result'] = function (result) {
+            this.acc = null;
+            return this.xf['@@transducer/result'](result);
+        };
+        XAperture.prototype['@@transducer/step'] = function (result, input) {
+            this.store(input);
+            return this.full ? this.xf['@@transducer/step'](result, this.getCopy()) : result;
+        };
+        XAperture.prototype.store = function (input) {
+            this.acc[this.pos] = input;
+            this.pos += 1;
+            if (this.pos === this.acc.length) {
+                this.pos = 0;
+                this.full = true;
+            }
+        };
+        XAperture.prototype.getCopy = function () {
+            return _concat(_slice(this.acc, this.pos), _slice(this.acc, 0, this.pos));
+        };
+        return _curry2(function _xaperture(n, xf) {
+            return new XAperture(n, xf);
+        });
+    }();
+
+    var _xdrop = function () {
+        function XDrop(n, xf) {
+            this.xf = xf;
+            this.n = n;
+        }
+        XDrop.prototype['@@transducer/init'] = _xfBase.init;
+        XDrop.prototype['@@transducer/result'] = _xfBase.result;
+        XDrop.prototype['@@transducer/step'] = function (result, input) {
+            if (this.n > 0) {
+                this.n -= 1;
+                return result;
+            }
+            return this.xf['@@transducer/step'](result, input);
+        };
+        return _curry2(function _xdrop(n, xf) {
+            return new XDrop(n, xf);
+        });
+    }();
+
+    var _xdropLast = function () {
+        function XDropLast(n, xf) {
+            this.xf = xf;
+            this.pos = 0;
+            this.full = false;
+            this.acc = new Array(n);
+        }
+        XDropLast.prototype['@@transducer/init'] = _xfBase.init;
+        XDropLast.prototype['@@transducer/result'] = function (result) {
+            this.acc = null;
+            return this.xf['@@transducer/result'](result);
+        };
+        XDropLast.prototype['@@transducer/step'] = function (result, input) {
+            if (this.full) {
+                result = this.xf['@@transducer/step'](result, this.acc[this.pos]);
+            }
+            this.store(input);
+            return result;
+        };
+        XDropLast.prototype.store = function (input) {
+            this.acc[this.pos] = input;
+            this.pos += 1;
+            if (this.pos === this.acc.length) {
+                this.pos = 0;
+                this.full = true;
+            }
+        };
+        return _curry2(function _xdropLast(n, xf) {
+            return new XDropLast(n, xf);
+        });
+    }();
+
+    var _xdropRepeatsWith = function () {
+        function XDropRepeatsWith(pred, xf) {
+            this.xf = xf;
+            this.pred = pred;
+            this.lastValue = undefined;
+            this.seenFirstValue = false;
+        }
+        XDropRepeatsWith.prototype['@@transducer/init'] = function () {
+            return this.xf['@@transducer/init']();
+        };
+        XDropRepeatsWith.prototype['@@transducer/result'] = function (result) {
+            return this.xf['@@transducer/result'](result);
+        };
+        XDropRepeatsWith.prototype['@@transducer/step'] = function (result, input) {
+            var sameAsLast = false;
+            if (!this.seenFirstValue) {
+                this.seenFirstValue = true;
+            } else if (this.pred(this.lastValue, input)) {
+                sameAsLast = true;
+            }
+            this.lastValue = input;
+            return sameAsLast ? result : this.xf['@@transducer/step'](result, input);
+        };
+        return _curry2(function _xdropRepeatsWith(pred, xf) {
+            return new XDropRepeatsWith(pred, xf);
+        });
+    }();
+
+    var _xdropWhile = function () {
+        function XDropWhile(f, xf) {
+            this.xf = xf;
+            this.f = f;
+        }
+        XDropWhile.prototype['@@transducer/init'] = _xfBase.init;
+        XDropWhile.prototype['@@transducer/result'] = _xfBase.result;
+        XDropWhile.prototype['@@transducer/step'] = function (result, input) {
+            if (this.f) {
+                if (this.f(input)) {
+                    return result;
+                }
+                this.f = null;
+            }
+            return this.xf['@@transducer/step'](result, input);
+        };
+        return _curry2(function _xdropWhile(f, xf) {
+            return new XDropWhile(f, xf);
+        });
+    }();
+
+    var _xfilter = function () {
+        function XFilter(f, xf) {
+            this.xf = xf;
+            this.f = f;
+        }
+        XFilter.prototype['@@transducer/init'] = _xfBase.init;
+        XFilter.prototype['@@transducer/result'] = _xfBase.result;
+        XFilter.prototype['@@transducer/step'] = function (result, input) {
+            return this.f(input) ? this.xf['@@transducer/step'](result, input) : result;
+        };
+        return _curry2(function _xfilter(f, xf) {
+            return new XFilter(f, xf);
+        });
+    }();
+
+    var _xfind = function () {
+        function XFind(f, xf) {
+            this.xf = xf;
+            this.f = f;
+            this.found = false;
+        }
+        XFind.prototype['@@transducer/init'] = _xfBase.init;
+        XFind.prototype['@@transducer/result'] = function (result) {
+            if (!this.found) {
+                result = this.xf['@@transducer/step'](result, void 0);
+            }
+            return this.xf['@@transducer/result'](result);
+        };
+        XFind.prototype['@@transducer/step'] = function (result, input) {
+            if (this.f(input)) {
+                this.found = true;
+                result = _reduced(this.xf['@@transducer/step'](result, input));
+            }
+            return result;
+        };
+        return _curry2(function _xfind(f, xf) {
+            return new XFind(f, xf);
+        });
+    }();
+
+    var _xfindIndex = function () {
+        function XFindIndex(f, xf) {
+            this.xf = xf;
+            this.f = f;
+            this.idx = -1;
+            this.found = false;
+        }
+        XFindIndex.prototype['@@transducer/init'] = _xfBase.init;
+        XFindIndex.prototype['@@transducer/result'] = function (result) {
+            if (!this.found) {
+                result = this.xf['@@transducer/step'](result, -1);
+            }
+            return this.xf['@@transducer/result'](result);
+        };
+        XFindIndex.prototype['@@transducer/step'] = function (result, input) {
+            this.idx += 1;
+            if (this.f(input)) {
+                this.found = true;
+                result = _reduced(this.xf['@@transducer/step'](result, this.idx));
+            }
+            return result;
+        };
+        return _curry2(function _xfindIndex(f, xf) {
+            return new XFindIndex(f, xf);
+        });
+    }();
+
+    var _xfindLast = function () {
+        function XFindLast(f, xf) {
+            this.xf = xf;
+            this.f = f;
+        }
+        XFindLast.prototype['@@transducer/init'] = _xfBase.init;
+        XFindLast.prototype['@@transducer/result'] = function (result) {
+            return this.xf['@@transducer/result'](this.xf['@@transducer/step'](result, this.last));
+        };
+        XFindLast.prototype['@@transducer/step'] = function (result, input) {
+            if (this.f(input)) {
+                this.last = input;
+            }
+            return result;
+        };
+        return _curry2(function _xfindLast(f, xf) {
+            return new XFindLast(f, xf);
+        });
+    }();
+
+    var _xfindLastIndex = function () {
+        function XFindLastIndex(f, xf) {
+            this.xf = xf;
+            this.f = f;
+            this.idx = -1;
+            this.lastIdx = -1;
+        }
+        XFindLastIndex.prototype['@@transducer/init'] = _xfBase.init;
+        XFindLastIndex.prototype['@@transducer/result'] = function (result) {
+            return this.xf['@@transducer/result'](this.xf['@@transducer/step'](result, this.lastIdx));
+        };
+        XFindLastIndex.prototype['@@transducer/step'] = function (result, input) {
+            this.idx += 1;
+            if (this.f(input)) {
+                this.lastIdx = this.idx;
+            }
+            return result;
+        };
+        return _curry2(function _xfindLastIndex(f, xf) {
+            return new XFindLastIndex(f, xf);
+        });
+    }();
+
+    var _xmap = function () {
+        function XMap(f, xf) {
+            this.xf = xf;
+            this.f = f;
+        }
+        XMap.prototype['@@transducer/init'] = _xfBase.init;
+        XMap.prototype['@@transducer/result'] = _xfBase.result;
+        XMap.prototype['@@transducer/step'] = function (result, input) {
+            return this.xf['@@transducer/step'](result, this.f(input));
+        };
+        return _curry2(function _xmap(f, xf) {
+            return new XMap(f, xf);
+        });
+    }();
+
+    var _xtake = function () {
+        function XTake(n, xf) {
+            this.xf = xf;
+            this.n = n;
+        }
+        XTake.prototype['@@transducer/init'] = _xfBase.init;
+        XTake.prototype['@@transducer/result'] = _xfBase.result;
+        XTake.prototype['@@transducer/step'] = function (result, input) {
+            if (this.n === 0) {
+                return _reduced(result);
+            } else {
+                this.n -= 1;
+                return this.xf['@@transducer/step'](result, input);
+            }
+        };
+        return _curry2(function _xtake(n, xf) {
+            return new XTake(n, xf);
+        });
+    }();
+
+    var _xtakeWhile = function () {
+        function XTakeWhile(f, xf) {
+            this.xf = xf;
+            this.f = f;
+        }
+        XTakeWhile.prototype['@@transducer/init'] = _xfBase.init;
+        XTakeWhile.prototype['@@transducer/result'] = _xfBase.result;
+        XTakeWhile.prototype['@@transducer/step'] = function (result, input) {
+            return this.f(input) ? this.xf['@@transducer/step'](result, input) : _reduced(result);
+        };
+        return _curry2(function _xtakeWhile(f, xf) {
+            return new XTakeWhile(f, xf);
+        });
+    }();
+
+    /**
+     * Adds two numbers. Equivalent to `a + b` but curried.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Math
+     * @sig Number -> Number -> Number
+     * @param {Number} a
+     * @param {Number} b
+     * @return {Number}
+     * @see R.subtract
+     * @example
+     *
+     *      R.add(2, 3);       //=>  5
+     *      R.add(7)(10);      //=> 17
+     */
+    var add = _curry2(function add(a, b) {
+        return a + b;
+    });
+
+    /**
+     * Applies a function to the value at the given index of an array, returning a
+     * new copy of the array with the element at the given index replaced with the
+     * result of the function application.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category List
+     * @sig (a -> a) -> Number -> [a] -> [a]
+     * @param {Function} fn The function to apply.
+     * @param {Number} idx The index.
+     * @param {Array|Arguments} list An array-like object whose value
+     *        at the supplied index will be replaced.
+     * @return {Array} A copy of the supplied array-like object with
+     *         the element at index `idx` replaced with the value
+     *         returned by applying `fn` to the existing element.
+     * @see R.update
+     * @example
+     *
+     *      R.adjust(R.add(10), 1, [0, 1, 2]);     //=> [0, 11, 2]
+     *      R.adjust(R.add(10))(1)([0, 1, 2]);     //=> [0, 11, 2]
+     */
+    var adjust = _curry3(function adjust(fn, idx, list) {
+        if (idx >= list.length || idx < -list.length) {
+            return list;
+        }
+        var start = idx < 0 ? list.length : 0;
+        var _idx = start + idx;
+        var _list = _concat(list);
+        _list[_idx] = fn(list[_idx]);
+        return _list;
+    });
+
+    /**
+     * Returns `true` if all elements of the list match the predicate, `false` if
+     * there are any that don't.
+     *
+     * Dispatches to the `all` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> Boolean
+     * @param {Function} fn The predicate function.
+     * @param {Array} list The array to consider.
+     * @return {Boolean} `true` if the predicate is satisfied by every element, `false`
+     *         otherwise.
+     * @see R.any, R.none, R.transduce
+     * @example
+     *
+     *      var lessThan2 = R.flip(R.lt)(2);
+     *      var lessThan3 = R.flip(R.lt)(3);
+     *      R.all(lessThan2)([1, 2]); //=> false
+     *      R.all(lessThan3)([1, 2]); //=> true
+     */
+    var all = _curry2(_dispatchable('all', _xall, function all(fn, list) {
+        var idx = 0;
+        while (idx < list.length) {
+            if (!fn(list[idx])) {
+                return false;
+            }
+            idx += 1;
+        }
+        return true;
+    }));
+
+    /**
+     * Returns a function that always returns the given value. Note that for
+     * non-primitives the value returned is a reference to the original value.
+     *
+     * This function is known as `const`, `constant`, or `K` (for K combinator) in
+     * other languages and libraries.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig a -> (* -> a)
+     * @param {*} val The value to wrap in a function
+     * @return {Function} A Function :: * -> val.
+     * @example
+     *
+     *      var t = R.always('Tee');
+     *      t(); //=> 'Tee'
+     */
+    var always = _curry1(function always(val) {
+        return function () {
+            return val;
+        };
+    });
+
+    /**
+     * Returns `true` if both arguments are `true`; `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Logic
+     * @sig * -> * -> *
+     * @param {Boolean} a A boolean value
+     * @param {Boolean} b A boolean value
+     * @return {Boolean} `true` if both arguments are `true`, `false` otherwise
+     * @see R.both
+     * @example
+     *
+     *      R.and(true, true); //=> true
+     *      R.and(true, false); //=> false
+     *      R.and(false, true); //=> false
+     *      R.and(false, false); //=> false
+     */
+    var and = _curry2(function and(a, b) {
+        return a && b;
+    });
+
+    /**
+     * Returns `true` if at least one of elements of the list match the predicate,
+     * `false` otherwise.
+     *
+     * Dispatches to the `any` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> Boolean
+     * @param {Function} fn The predicate function.
+     * @param {Array} list The array to consider.
+     * @return {Boolean} `true` if the predicate is satisfied by at least one element, `false`
+     *         otherwise.
+     * @see R.all, R.none, R.transduce
+     * @example
+     *
+     *      var lessThan0 = R.flip(R.lt)(0);
+     *      var lessThan2 = R.flip(R.lt)(2);
+     *      R.any(lessThan0)([1, 2]); //=> false
+     *      R.any(lessThan2)([1, 2]); //=> true
+     */
+    var any = _curry2(_dispatchable('any', _xany, function any(fn, list) {
+        var idx = 0;
+        while (idx < list.length) {
+            if (fn(list[idx])) {
+                return true;
+            }
+            idx += 1;
+        }
+        return false;
+    }));
+
+    /**
+     * Returns a new list, composed of n-tuples of consecutive elements If `n` is
+     * greater than the length of the list, an empty list is returned.
+     *
+     * Dispatches to the `aperture` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category List
+     * @sig Number -> [a] -> [[a]]
+     * @param {Number} n The size of the tuples to create
+     * @param {Array} list The list to split into `n`-tuples
+     * @return {Array} The new list.
+     * @see R.transduce
+     * @example
+     *
+     *      R.aperture(2, [1, 2, 3, 4, 5]); //=> [[1, 2], [2, 3], [3, 4], [4, 5]]
+     *      R.aperture(3, [1, 2, 3, 4, 5]); //=> [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+     *      R.aperture(7, [1, 2, 3, 4, 5]); //=> []
+     */
+    var aperture = _curry2(_dispatchable('aperture', _xaperture, _aperture));
+
+    /**
+     * Returns a new list containing the contents of the given list, followed by
+     * the given element.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig a -> [a] -> [a]
+     * @param {*} el The element to add to the end of the new list.
+     * @param {Array} list The list whose contents will be added to the beginning of the output
+     *        list.
+     * @return {Array} A new list containing the contents of the old list followed by `el`.
+     * @see R.prepend
+     * @example
+     *
+     *      R.append('tests', ['write', 'more']); //=> ['write', 'more', 'tests']
+     *      R.append('tests', []); //=> ['tests']
+     *      R.append(['tests'], ['write', 'more']); //=> ['write', 'more', ['tests']]
+     */
+    var append = _curry2(function append(el, list) {
+        return _concat(list, [el]);
+    });
+
+    /**
+     * Applies function `fn` to the argument list `args`. This is useful for
+     * creating a fixed-arity function from a variadic function. `fn` should be a
+     * bound function if context is significant.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category Function
+     * @sig (*... -> a) -> [*] -> a
+     * @param {Function} fn
+     * @param {Array} args
+     * @return {*}
+     * @see R.call, R.unapply
+     * @example
+     *
+     *      var nums = [1, 2, 3, -99, 42, 6, 7];
+     *      R.apply(Math.max, nums); //=> 42
+     */
+    var apply = _curry2(function apply(fn, args) {
+        return fn.apply(this, args);
+    });
+
+    /**
+     * Makes a shallow clone of an object, setting or overriding the specified
+     * property with the given value. Note that this copies and flattens prototype
+     * properties onto the new object as well. All non-primitive properties are
+     * copied by reference.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Object
+     * @sig String -> a -> {k: v} -> {k: v}
+     * @param {String} prop the property name to set
+     * @param {*} val the new value
+     * @param {Object} obj the object to clone
+     * @return {Object} a new object similar to the original except for the specified property.
+     * @see R.dissoc
+     * @example
+     *
+     *      R.assoc('c', 3, {a: 1, b: 2}); //=> {a: 1, b: 2, c: 3}
+     */
+    var assoc = _curry3(function assoc(prop, val, obj) {
+        var result = {};
+        for (var p in obj) {
+            result[p] = obj[p];
+        }
+        result[prop] = val;
+        return result;
+    });
+
+    /**
+     * Makes a shallow clone of an object, setting or overriding the nodes required
+     * to create the given path, and placing the specific value at the tail end of
+     * that path. Note that this copies and flattens prototype properties onto the
+     * new object as well. All non-primitive properties are copied by reference.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Object
+     * @sig [String] -> a -> {k: v} -> {k: v}
+     * @param {Array} path the path to set
+     * @param {*} val the new value
+     * @param {Object} obj the object to clone
+     * @return {Object} a new object similar to the original except along the specified path.
+     * @see R.dissocPath
+     * @example
+     *
+     *      R.assocPath(['a', 'b', 'c'], 42, {a: {b: {c: 0}}}); //=> {a: {b: {c: 42}}}
+     */
+    var assocPath = _curry3(function assocPath(path, val, obj) {
+        switch (path.length) {
+        case 0:
+            return val;
+        case 1:
+            return assoc(path[0], val, obj);
+        default:
+            return assoc(path[0], assocPath(_slice(path, 1), val, Object(obj[path[0]])), obj);
+        }
+    });
+
+    /**
+     * Creates a function that is bound to a context.
+     * Note: `R.bind` does not provide the additional argument-binding capabilities of
+     * [Function.prototype.bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind).
+     *
+     * @func
+     * @memberOf R
+     * @since v0.6.0
+     * @category Function
+     * @category Object
+     * @sig (* -> *) -> {*} -> (* -> *)
+     * @param {Function} fn The function to bind to context
+     * @param {Object} thisObj The context to bind `fn` to
+     * @return {Function} A function that will execute in the context of `thisObj`.
+     * @see R.partial
+     */
+    var bind = _curry2(function bind(fn, thisObj) {
+        return _arity(fn.length, function () {
+            return fn.apply(thisObj, arguments);
+        });
+    });
+
+    /**
+     * A function wrapping calls to the two functions in an `&&` operation,
+     * returning the result of the first function if it is false-y and the result
+     * of the second function otherwise. Note that this is short-circuited,
+     * meaning that the second function will not be invoked if the first returns a
+     * false-y value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category Logic
+     * @sig (*... -> Boolean) -> (*... -> Boolean) -> (*... -> Boolean)
+     * @param {Function} f a predicate
+     * @param {Function} g another predicate
+     * @return {Function} a function that applies its arguments to `f` and `g` and `&&`s their outputs together.
+     * @see R.and
+     * @example
+     *
+     *      var gt10 = x => x > 10;
+     *      var even = x => x % 2 === 0;
+     *      var f = R.both(gt10, even);
+     *      f(100); //=> true
+     *      f(101); //=> false
+     */
+    var both = _curry2(function both(f, g) {
+        return function _both() {
+            return f.apply(this, arguments) && g.apply(this, arguments);
+        };
+    });
+
+    /**
+     * Makes a comparator function out of a function that reports whether the first
+     * element is less than the second.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (a, b -> Boolean) -> (a, b -> Number)
+     * @param {Function} pred A predicate function of arity two.
+     * @return {Function} A Function :: a -> b -> Int that returns `-1` if a < b, `1` if b < a, otherwise `0`.
+     * @example
+     *
+     *      var cmp = R.comparator((a, b) => a.age < b.age);
+     *      var people = [
+     *        // ...
+     *      ];
+     *      R.sort(cmp, people);
+     */
+    var comparator = _curry1(function comparator(pred) {
+        return function (a, b) {
+            return pred(a, b) ? -1 : pred(b, a) ? 1 : 0;
+        };
+    });
+
+    /**
+     * Returns a function, `fn`, which encapsulates if/else-if/else logic.
+     * `R.cond` takes a list of [predicate, transform] pairs. All of the arguments
+     * to `fn` are applied to each of the predicates in turn until one returns a
+     * "truthy" value, at which point `fn` returns the result of applying its
+     * arguments to the corresponding transformer. If none of the predicates
+     * matches, `fn` returns undefined.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.6.0
+     * @category Logic
+     * @sig [[(*... -> Boolean),(*... -> *)]] -> (*... -> *)
+     * @param {Array} pairs
+     * @return {Function}
+     * @example
+     *
+     *      var fn = R.cond([
+     *        [R.equals(0),   R.always('water freezes at 0°C')],
+     *        [R.equals(100), R.always('water boils at 100°C')],
+     *        [R.T,           temp => 'nothing special happens at ' + temp + '°C']
+     *      ]);
+     *      fn(0); //=> 'water freezes at 0°C'
+     *      fn(50); //=> 'nothing special happens at 50°C'
+     *      fn(100); //=> 'water boils at 100°C'
+     */
+    var cond = _curry1(function cond(pairs) {
+        return function () {
+            var idx = 0;
+            while (idx < pairs.length) {
+                if (pairs[idx][0].apply(this, arguments)) {
+                    return pairs[idx][1].apply(this, arguments);
+                }
+                idx += 1;
+            }
+        };
+    });
+
+    /**
+     * Counts the elements of a list according to how many match each value of a
+     * key generated by the supplied function. Returns an object mapping the keys
+     * produced by `fn` to the number of occurrences in the list. Note that all
+     * keys are coerced to strings because of how JavaScript objects work.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig (a -> String) -> [a] -> {*}
+     * @param {Function} fn The function used to map values to keys.
+     * @param {Array} list The list to count elements from.
+     * @return {Object} An object mapping keys to number of occurrences in the list.
+     * @example
+     *
+     *      var numbers = [1.0, 1.1, 1.2, 2.0, 3.0, 2.2];
+     *      var letters = R.split('', 'abcABCaaaBBc');
+     *      R.countBy(Math.floor)(numbers);    //=> {'1': 3, '2': 2, '3': 1}
+     *      R.countBy(R.toLower)(letters);   //=> {'a': 5, 'b': 4, 'c': 3}
+     */
+    var countBy = _curry2(function countBy(fn, list) {
+        var counts = {};
+        var len = list.length;
+        var idx = 0;
+        while (idx < len) {
+            var key = fn(list[idx]);
+            counts[key] = (_has(key, counts) ? counts[key] : 0) + 1;
+            idx += 1;
+        }
+        return counts;
+    });
+
+    /**
+     * Returns a curried equivalent of the provided function, with the specified
+     * arity. The curried function has two unusual capabilities. First, its
+     * arguments needn't be provided one at a time. If `g` is `R.curryN(3, f)`, the
+     * following are equivalent:
+     *
+     *   - `g(1)(2)(3)`
+     *   - `g(1)(2, 3)`
+     *   - `g(1, 2)(3)`
+     *   - `g(1, 2, 3)`
+     *
+     * Secondly, the special placeholder value `R.__` may be used to specify
+     * "gaps", allowing partial application of any combination of arguments,
+     * regardless of their positions. If `g` is as above and `_` is `R.__`, the
+     * following are equivalent:
+     *
+     *   - `g(1, 2, 3)`
+     *   - `g(_, 2, 3)(1)`
+     *   - `g(_, _, 3)(1)(2)`
+     *   - `g(_, _, 3)(1, 2)`
+     *   - `g(_, 2)(1)(3)`
+     *   - `g(_, 2)(1, 3)`
+     *   - `g(_, 2)(_, 3)(1)`
+     *
+     * @func
+     * @memberOf R
+     * @since v0.5.0
+     * @category Function
+     * @sig Number -> (* -> a) -> (* -> a)
+     * @param {Number} length The arity for the returned function.
+     * @param {Function} fn The function to curry.
+     * @return {Function} A new, curried function.
+     * @see R.curry
+     * @example
+     *
+     *      var sumArgs = (...args) => R.sum(args);
+     *
+     *      var curriedAddFourNumbers = R.curryN(4, sumArgs);
+     *      var f = curriedAddFourNumbers(1, 2);
+     *      var g = f(3);
+     *      g(4); //=> 10
+     */
+    var curryN = _curry2(function curryN(length, fn) {
+        if (length === 1) {
+            return _curry1(fn);
+        }
+        return _arity(length, _curryN(length, [], fn));
+    });
+
+    /**
+     * Decrements its argument.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Math
+     * @sig Number -> Number
+     * @param {Number} n
+     * @return {Number}
+     * @see R.inc
+     * @example
+     *
+     *      R.dec(42); //=> 41
+     */
+    var dec = add(-1);
+
+    /**
+     * Returns the second argument if it is not `null`, `undefined` or `NaN`
+     * otherwise the first argument is returned.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category Logic
+     * @sig a -> b -> a | b
+     * @param {a} val The default value.
+     * @param {b} val The value to return if it is not null or undefined
+     * @return {*} The the second value or the default value
+     * @example
+     *
+     *      var defaultTo42 = R.defaultTo(42);
+     *
+     *      defaultTo42(null);  //=> 42
+     *      defaultTo42(undefined);  //=> 42
+     *      defaultTo42('Ramda');  //=> 'Ramda'
+     *      defaultTo42(parseInt('string')); //=> 42
+     */
+    var defaultTo = _curry2(function defaultTo(d, v) {
+        return v == null || v !== v ? d : v;
+    });
+
+    /**
+     * Finds the set (i.e. no duplicates) of all elements in the first list not
+     * contained in the second list. Duplication is determined according to the
+     * value returned by applying the supplied predicate to two list elements.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig (a -> a -> Boolean) -> [*] -> [*] -> [*]
+     * @param {Function} pred A predicate used to test whether two items are equal.
+     * @param {Array} list1 The first list.
+     * @param {Array} list2 The second list.
+     * @return {Array} The elements in `list1` that are not in `list2`.
+     * @see R.difference
+     * @example
+     *
+     *      function cmp(x, y) => x.a === y.a;
+     *      var l1 = [{a: 1}, {a: 2}, {a: 3}];
+     *      var l2 = [{a: 3}, {a: 4}];
+     *      R.differenceWith(cmp, l1, l2); //=> [{a: 1}, {a: 2}]
+     */
+    var differenceWith = _curry3(function differenceWith(pred, first, second) {
+        var out = [];
+        var idx = 0;
+        var firstLen = first.length;
+        while (idx < firstLen) {
+            if (!_containsWith(pred, first[idx], second) && !_containsWith(pred, first[idx], out)) {
+                out.push(first[idx]);
+            }
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Returns a new object that does not contain a `prop` property.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category Object
+     * @sig String -> {k: v} -> {k: v}
+     * @param {String} prop the name of the property to dissociate
+     * @param {Object} obj the object to clone
+     * @return {Object} a new object similar to the original but without the specified property
+     * @see R.assoc
+     * @example
+     *
+     *      R.dissoc('b', {a: 1, b: 2, c: 3}); //=> {a: 1, c: 3}
+     */
+    var dissoc = _curry2(function dissoc(prop, obj) {
+        var result = {};
+        for (var p in obj) {
+            if (p !== prop) {
+                result[p] = obj[p];
+            }
+        }
+        return result;
+    });
+
+    /**
+     * Makes a shallow clone of an object, omitting the property at the given path.
+     * Note that this copies and flattens prototype properties onto the new object
+     * as well. All non-primitive properties are copied by reference.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.11.0
+     * @category Object
+     * @sig [String] -> {k: v} -> {k: v}
+     * @param {Array} path the path to set
+     * @param {Object} obj the object to clone
+     * @return {Object} a new object without the property at path
+     * @see R.assocPath
+     * @example
+     *
+     *      R.dissocPath(['a', 'b', 'c'], {a: {b: {c: 42}}}); //=> {a: {b: {}}}
+     */
+    var dissocPath = _curry2(function dissocPath(path, obj) {
+        switch (path.length) {
+        case 0:
+            return obj;
+        case 1:
+            return dissoc(path[0], obj);
+        default:
+            var head = path[0];
+            var tail = _slice(path, 1);
+            return obj[head] == null ? obj : assoc(head, dissocPath(tail, obj[head]), obj);
+        }
+    });
+
+    /**
+     * Divides two numbers. Equivalent to `a / b`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Math
+     * @sig Number -> Number -> Number
+     * @param {Number} a The first value.
+     * @param {Number} b The second value.
+     * @return {Number} The result of `a / b`.
+     * @see R.multiply
+     * @example
+     *
+     *      R.divide(71, 100); //=> 0.71
+     *
+     *      var half = R.divide(R.__, 2);
+     *      half(42); //=> 21
+     *
+     *      var reciprocal = R.divide(1);
+     *      reciprocal(4);   //=> 0.25
+     */
+    var divide = _curry2(function divide(a, b) {
+        return a / b;
+    });
+
+    /**
+     * Returns a new list containing the last `n` elements of a given list, passing
+     * each value to the supplied predicate function, skipping elements while the
+     * predicate function returns `true`. The predicate function is passed one
+     * argument: *(value)*.
+     *
+     * Dispatches to the `dropWhile` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> [a]
+     * @param {Function} fn The function called per iteration.
+     * @param {Array} list The collection to iterate over.
+     * @return {Array} A new array.
+     * @see R.takeWhile, R.transduce, R.addIndex
+     * @example
+     *
+     *      var lteTwo = x => x <= 2;
+     *
+     *      R.dropWhile(lteTwo, [1, 2, 3, 4, 3, 2, 1]); //=> [3, 4, 3, 2, 1]
+     */
+    var dropWhile = _curry2(_dispatchable('dropWhile', _xdropWhile, function dropWhile(pred, list) {
+        var idx = 0;
+        var len = list.length;
+        while (idx < len && pred(list[idx])) {
+            idx += 1;
+        }
+        return _slice(list, idx);
+    }));
+
+    /**
+     * A function wrapping calls to the two functions in an `||` operation,
+     * returning the result of the first function if it is truth-y and the result
+     * of the second function otherwise. Note that this is short-circuited,
+     * meaning that the second function will not be invoked if the first returns a
+     * truth-y value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category Logic
+     * @sig (*... -> Boolean) -> (*... -> Boolean) -> (*... -> Boolean)
+     * @param {Function} f a predicate
+     * @param {Function} g another predicate
+     * @return {Function} a function that applies its arguments to `f` and `g` and `||`s their outputs together.
+     * @see R.or
+     * @example
+     *
+     *      var gt10 = x => x > 10;
+     *      var even = x => x % 2 === 0;
+     *      var f = R.either(gt10, even);
+     *      f(101); //=> true
+     *      f(8); //=> true
+     */
+    var either = _curry2(function either(f, g) {
+        return function _either() {
+            return f.apply(this, arguments) || g.apply(this, arguments);
+        };
+    });
+
+    /**
+     * Returns the empty value of its argument's type. Ramda defines the empty
+     * value of Array (`[]`), Object (`{}`), String (`''`), and Arguments. Other
+     * types are supported if they define `<Type>.empty` and/or
+     * `<Type>.prototype.empty`.
+     *
+     * Dispatches to the `empty` method of the first argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category Function
+     * @sig a -> a
+     * @param {*} x
+     * @return {*}
+     * @example
+     *
+     *      R.empty(Just(42));      //=> Nothing()
+     *      R.empty([1, 2, 3]);     //=> []
+     *      R.empty('unicorns');    //=> ''
+     *      R.empty({x: 1, y: 2});  //=> {}
+     */
+    // else
+    var empty = _curry1(function empty(x) {
+        return x != null && typeof x.empty === 'function' ? x.empty() : x != null && x.constructor != null && typeof x.constructor.empty === 'function' ? x.constructor.empty() : _isArray(x) ? [] : _isString(x) ? '' : _isObject(x) ? {} : _isArguments(x) ? function () {
+            return arguments;
+        }() : // else
+        void 0;
+    });
+
+    /**
+     * Creates a new object by recursively evolving a shallow copy of `object`,
+     * according to the `transformation` functions. All non-primitive properties
+     * are copied by reference.
+     *
+     * A `transformation` function will not be invoked if its corresponding key
+     * does not exist in the evolved object.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Object
+     * @sig {k: (v -> v)} -> {k: v} -> {k: v}
+     * @param {Object} transformations The object specifying transformation functions to apply
+     *        to the object.
+     * @param {Object} object The object to be transformed.
+     * @return {Object} The transformed object.
+     * @example
+     *
+     *      var tomato  = {firstName: '  Tomato ', data: {elapsed: 100, remaining: 1400}, id:123};
+     *      var transformations = {
+     *        firstName: R.trim,
+     *        lastName: R.trim, // Will not get invoked.
+     *        data: {elapsed: R.add(1), remaining: R.add(-1)}
+     *      };
+     *      R.evolve(transformations, tomato); //=> {firstName: 'Tomato', data: {elapsed: 101, remaining: 1399}, id:123}
+     */
+    var evolve = _curry2(function evolve(transformations, object) {
+        var result = {};
+        var transformation, key, type;
+        for (key in object) {
+            transformation = transformations[key];
+            type = typeof transformation;
+            result[key] = type === 'function' ? transformation(object[key]) : type === 'object' ? evolve(transformations[key], object[key]) : object[key];
+        }
+        return result;
+    });
+
+    /**
+     * Returns the first element of the list which matches the predicate, or
+     * `undefined` if no element matches.
+     *
+     * Dispatches to the `find` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> a | undefined
+     * @param {Function} fn The predicate function used to determine if the element is the
+     *        desired one.
+     * @param {Array} list The array to consider.
+     * @return {Object} The element found, or `undefined`.
+     * @see R.transduce
+     * @example
+     *
+     *      var xs = [{a: 1}, {a: 2}, {a: 3}];
+     *      R.find(R.propEq('a', 2))(xs); //=> {a: 2}
+     *      R.find(R.propEq('a', 4))(xs); //=> undefined
+     */
+    var find = _curry2(_dispatchable('find', _xfind, function find(fn, list) {
+        var idx = 0;
+        var len = list.length;
+        while (idx < len) {
+            if (fn(list[idx])) {
+                return list[idx];
+            }
+            idx += 1;
+        }
+    }));
+
+    /**
+     * Returns the index of the first element of the list which matches the
+     * predicate, or `-1` if no element matches.
+     *
+     * Dispatches to the `findIndex` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> Number
+     * @param {Function} fn The predicate function used to determine if the element is the
+     * desired one.
+     * @param {Array} list The array to consider.
+     * @return {Number} The index of the element found, or `-1`.
+     * @see R.transduce
+     * @example
+     *
+     *      var xs = [{a: 1}, {a: 2}, {a: 3}];
+     *      R.findIndex(R.propEq('a', 2))(xs); //=> 1
+     *      R.findIndex(R.propEq('a', 4))(xs); //=> -1
+     */
+    var findIndex = _curry2(_dispatchable('findIndex', _xfindIndex, function findIndex(fn, list) {
+        var idx = 0;
+        var len = list.length;
+        while (idx < len) {
+            if (fn(list[idx])) {
+                return idx;
+            }
+            idx += 1;
+        }
+        return -1;
+    }));
+
+    /**
+     * Returns the last element of the list which matches the predicate, or
+     * `undefined` if no element matches.
+     *
+     * Dispatches to the `findLast` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> a | undefined
+     * @param {Function} fn The predicate function used to determine if the element is the
+     * desired one.
+     * @param {Array} list The array to consider.
+     * @return {Object} The element found, or `undefined`.
+     * @see R.transduce
+     * @example
+     *
+     *      var xs = [{a: 1, b: 0}, {a:1, b: 1}];
+     *      R.findLast(R.propEq('a', 1))(xs); //=> {a: 1, b: 1}
+     *      R.findLast(R.propEq('a', 4))(xs); //=> undefined
+     */
+    var findLast = _curry2(_dispatchable('findLast', _xfindLast, function findLast(fn, list) {
+        var idx = list.length - 1;
+        while (idx >= 0) {
+            if (fn(list[idx])) {
+                return list[idx];
+            }
+            idx -= 1;
+        }
+    }));
+
+    /**
+     * Returns the index of the last element of the list which matches the
+     * predicate, or `-1` if no element matches.
+     *
+     * Dispatches to the `findLastIndex` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> Number
+     * @param {Function} fn The predicate function used to determine if the element is the
+     * desired one.
+     * @param {Array} list The array to consider.
+     * @return {Number} The index of the element found, or `-1`.
+     * @see R.transduce
+     * @example
+     *
+     *      var xs = [{a: 1, b: 0}, {a:1, b: 1}];
+     *      R.findLastIndex(R.propEq('a', 1))(xs); //=> 1
+     *      R.findLastIndex(R.propEq('a', 4))(xs); //=> -1
+     */
+    var findLastIndex = _curry2(_dispatchable('findLastIndex', _xfindLastIndex, function findLastIndex(fn, list) {
+        var idx = list.length - 1;
+        while (idx >= 0) {
+            if (fn(list[idx])) {
+                return idx;
+            }
+            idx -= 1;
+        }
+        return -1;
+    }));
+
+    /**
+     * Iterate over an input `list`, calling a provided function `fn` for each
+     * element in the list.
+     *
+     * `fn` receives one argument: *(value)*.
+     *
+     * Note: `R.forEach` does not skip deleted or unassigned indices (sparse
+     * arrays), unlike the native `Array.prototype.forEach` method. For more
+     * details on this behavior, see:
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach#Description
+     *
+     * Also note that, unlike `Array.prototype.forEach`, Ramda's `forEach` returns
+     * the original array. In some libraries this function is named `each`.
+     *
+     * Dispatches to the `forEach` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category List
+     * @sig (a -> *) -> [a] -> [a]
+     * @param {Function} fn The function to invoke. Receives one argument, `value`.
+     * @param {Array} list The list to iterate over.
+     * @return {Array} The original list.
+     * @see R.addIndex
+     * @example
+     *
+     *      var printXPlusFive = x => console.log(x + 5);
+     *      R.forEach(printXPlusFive, [1, 2, 3]); //=> [1, 2, 3]
+     *      //-> 6
+     *      //-> 7
+     *      //-> 8
+     */
+    var forEach = _curry2(_checkForMethod('forEach', function forEach(fn, list) {
+        var len = list.length;
+        var idx = 0;
+        while (idx < len) {
+            fn(list[idx]);
+            idx += 1;
+        }
+        return list;
+    }));
+
+    /**
+     * Creates a new object out of a list key-value pairs.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category List
+     * @sig [[k,v]] -> {k: v}
+     * @param {Array} pairs An array of two-element arrays that will be the keys and values of the output object.
+     * @return {Object} The object made by pairing up `keys` and `values`.
+     * @see R.toPairs, R.pair
+     * @example
+     *
+     *      R.fromPairs([['a', 1], ['b', 2],  ['c', 3]]); //=> {a: 1, b: 2, c: 3}
+     */
+    var fromPairs = _curry1(function fromPairs(pairs) {
+        var idx = 0;
+        var len = pairs.length;
+        var out = {};
+        while (idx < len) {
+            if (_isArray(pairs[idx]) && pairs[idx].length) {
+                out[pairs[idx][0]] = pairs[idx][1];
+            }
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Returns `true` if the first argument is greater than the second; `false`
+     * otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord a => a -> a -> Boolean
+     * @param {*} a
+     * @param {*} b
+     * @return {Boolean}
+     * @see R.lt
+     * @example
+     *
+     *      R.gt(2, 1); //=> true
+     *      R.gt(2, 2); //=> false
+     *      R.gt(2, 3); //=> false
+     *      R.gt('a', 'z'); //=> false
+     *      R.gt('z', 'a'); //=> true
+     */
+    var gt = _curry2(function gt(a, b) {
+        return a > b;
+    });
+
+    /**
+     * Returns `true` if the first argument is greater than or equal to the second;
+     * `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord a => a -> a -> Boolean
+     * @param {Number} a
+     * @param {Number} b
+     * @return {Boolean}
+     * @see R.lte
+     * @example
+     *
+     *      R.gte(2, 1); //=> true
+     *      R.gte(2, 2); //=> true
+     *      R.gte(2, 3); //=> false
+     *      R.gte('a', 'z'); //=> false
+     *      R.gte('z', 'a'); //=> true
+     */
+    var gte = _curry2(function gte(a, b) {
+        return a >= b;
+    });
+
+    /**
+     * Returns whether or not an object has an own property with the specified name
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category Object
+     * @sig s -> {s: x} -> Boolean
+     * @param {String} prop The name of the property to check for.
+     * @param {Object} obj The object to query.
+     * @return {Boolean} Whether the property exists.
+     * @example
+     *
+     *      var hasName = R.has('name');
+     *      hasName({name: 'alice'});   //=> true
+     *      hasName({name: 'bob'});     //=> true
+     *      hasName({});                //=> false
+     *
+     *      var point = {x: 0, y: 0};
+     *      var pointHas = R.has(R.__, point);
+     *      pointHas('x');  //=> true
+     *      pointHas('y');  //=> true
+     *      pointHas('z');  //=> false
+     */
+    var has = _curry2(_has);
+
+    /**
+     * Returns whether or not an object or its prototype chain has a property with
+     * the specified name
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category Object
+     * @sig s -> {s: x} -> Boolean
+     * @param {String} prop The name of the property to check for.
+     * @param {Object} obj The object to query.
+     * @return {Boolean} Whether the property exists.
+     * @example
+     *
+     *      function Rectangle(width, height) {
+     *        this.width = width;
+     *        this.height = height;
+     *      }
+     *      Rectangle.prototype.area = function() {
+     *        return this.width * this.height;
+     *      };
+     *
+     *      var square = new Rectangle(2, 2);
+     *      R.hasIn('width', square);  //=> true
+     *      R.hasIn('area', square);  //=> true
+     */
+    var hasIn = _curry2(function hasIn(prop, obj) {
+        return prop in obj;
+    });
+
+    /**
+     * Returns true if its arguments are identical, false otherwise. Values are
+     * identical if they reference the same memory. `NaN` is identical to `NaN`;
+     * `0` and `-0` are not identical.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.15.0
+     * @category Relation
+     * @sig a -> a -> Boolean
+     * @param {*} a
+     * @param {*} b
+     * @return {Boolean}
+     * @example
+     *
+     *      var o = {};
+     *      R.identical(o, o); //=> true
+     *      R.identical(1, 1); //=> true
+     *      R.identical(1, '1'); //=> false
+     *      R.identical([], []); //=> false
+     *      R.identical(0, -0); //=> false
+     *      R.identical(NaN, NaN); //=> true
+     */
+    // SameValue algorithm
+    // Steps 1-5, 7-10
+    // Steps 6.b-6.e: +0 != -0
+    // Step 6.a: NaN == NaN
+    var identical = _curry2(function identical(a, b) {
+        // SameValue algorithm
+        if (a === b) {
+            // Steps 1-5, 7-10
+            // Steps 6.b-6.e: +0 != -0
+            return a !== 0 || 1 / a === 1 / b;
+        } else {
+            // Step 6.a: NaN == NaN
+            return a !== a && b !== b;
+        }
+    });
+
+    /**
+     * A function that does nothing but return the parameter supplied to it. Good
+     * as a default or placeholder function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig a -> a
+     * @param {*} x The value to return.
+     * @return {*} The input value, `x`.
+     * @example
+     *
+     *      R.identity(1); //=> 1
+     *
+     *      var obj = {};
+     *      R.identity(obj) === obj; //=> true
+     */
+    var identity = _curry1(_identity);
+
+    /**
+     * Creates a function that will process either the `onTrue` or the `onFalse`
+     * function depending upon the result of the `condition` predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Logic
+     * @sig (*... -> Boolean) -> (*... -> *) -> (*... -> *) -> (*... -> *)
+     * @param {Function} condition A predicate function
+     * @param {Function} onTrue A function to invoke when the `condition` evaluates to a truthy value.
+     * @param {Function} onFalse A function to invoke when the `condition` evaluates to a falsy value.
+     * @return {Function} A new unary function that will process either the `onTrue` or the `onFalse`
+     *                    function depending upon the result of the `condition` predicate.
+     * @see R.unless, R.when
+     * @example
+     *
+     *      var incCount = R.ifElse(
+     *        R.has('count'),
+     *        R.over(R.lensProp('count'), R.inc),
+     *        R.assoc('count', 1)
+     *      );
+     *      incCount({});           //=> { count: 1 }
+     *      incCount({ count: 1 }); //=> { count: 2 }
+     */
+    var ifElse = _curry3(function ifElse(condition, onTrue, onFalse) {
+        return curryN(Math.max(condition.length, onTrue.length, onFalse.length), function _ifElse() {
+            return condition.apply(this, arguments) ? onTrue.apply(this, arguments) : onFalse.apply(this, arguments);
+        });
+    });
+
+    /**
+     * Increments its argument.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Math
+     * @sig Number -> Number
+     * @param {Number} n
+     * @return {Number}
+     * @see R.dec
+     * @example
+     *
+     *      R.inc(42); //=> 43
+     */
+    var inc = add(1);
+
+    /**
+     * Inserts the supplied element into the list, at index `index`. _Note that
+     * this is not destructive_: it returns a copy of the list with the changes.
+     * <small>No lists have been harmed in the application of this function.</small>
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.2
+     * @category List
+     * @sig Number -> a -> [a] -> [a]
+     * @param {Number} index The position to insert the element
+     * @param {*} elt The element to insert into the Array
+     * @param {Array} list The list to insert into
+     * @return {Array} A new Array with `elt` inserted at `index`.
+     * @example
+     *
+     *      R.insert(2, 'x', [1,2,3,4]); //=> [1,2,'x',3,4]
+     */
+    var insert = _curry3(function insert(idx, elt, list) {
+        idx = idx < list.length && idx >= 0 ? idx : list.length;
+        var result = _slice(list);
+        result.splice(idx, 0, elt);
+        return result;
+    });
+
+    /**
+     * Inserts the sub-list into the list, at index `index`. _Note that this is not
+     * destructive_: it returns a copy of the list with the changes.
+     * <small>No lists have been harmed in the application of this function.</small>
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category List
+     * @sig Number -> [a] -> [a] -> [a]
+     * @param {Number} index The position to insert the sub-list
+     * @param {Array} elts The sub-list to insert into the Array
+     * @param {Array} list The list to insert the sub-list into
+     * @return {Array} A new Array with `elts` inserted starting at `index`.
+     * @example
+     *
+     *      R.insertAll(2, ['x','y','z'], [1,2,3,4]); //=> [1,2,'x','y','z',3,4]
+     */
+    var insertAll = _curry3(function insertAll(idx, elts, list) {
+        idx = idx < list.length && idx >= 0 ? idx : list.length;
+        return _concat(_concat(_slice(list, 0, idx), elts), _slice(list, idx));
+    });
+
+    /**
+     * Creates a new list with the separator interposed between elements.
+     *
+     * Dispatches to the `intersperse` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category List
+     * @sig a -> [a] -> [a]
+     * @param {*} separator The element to add to the list.
+     * @param {Array} list The list to be interposed.
+     * @return {Array} The new list.
+     * @example
+     *
+     *      R.intersperse('n', ['ba', 'a', 'a']); //=> ['ba', 'n', 'a', 'n', 'a']
+     */
+    var intersperse = _curry2(_checkForMethod('intersperse', function intersperse(separator, list) {
+        var out = [];
+        var idx = 0;
+        var length = list.length;
+        while (idx < length) {
+            if (idx === length - 1) {
+                out.push(list[idx]);
+            } else {
+                out.push(list[idx], separator);
+            }
+            idx += 1;
+        }
+        return out;
+    }));
+
+    /**
+     * See if an object (`val`) is an instance of the supplied constructor. This
+     * function will check up the inheritance chain, if any.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category Type
+     * @sig (* -> {*}) -> a -> Boolean
+     * @param {Object} ctor A constructor
+     * @param {*} val The value to test
+     * @return {Boolean}
+     * @example
+     *
+     *      R.is(Object, {}); //=> true
+     *      R.is(Number, 1); //=> true
+     *      R.is(Object, 1); //=> false
+     *      R.is(String, 's'); //=> true
+     *      R.is(String, new String('')); //=> true
+     *      R.is(Object, new String('')); //=> true
+     *      R.is(Object, 's'); //=> false
+     *      R.is(Number, {}); //=> false
+     */
+    var is = _curry2(function is(Ctor, val) {
+        return val != null && val.constructor === Ctor || val instanceof Ctor;
+    });
+
+    /**
+     * Tests whether or not an object is similar to an array.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.5.0
+     * @category Type
+     * @category List
+     * @sig * -> Boolean
+     * @param {*} x The object to test.
+     * @return {Boolean} `true` if `x` has a numeric length property and extreme indices defined; `false` otherwise.
+     * @example
+     *
+     *      R.isArrayLike([]); //=> true
+     *      R.isArrayLike(true); //=> false
+     *      R.isArrayLike({}); //=> false
+     *      R.isArrayLike({length: 10}); //=> false
+     *      R.isArrayLike({0: 'zero', 9: 'nine', length: 10}); //=> true
+     */
+    var isArrayLike = _curry1(function isArrayLike(x) {
+        if (_isArray(x)) {
+            return true;
+        }
+        if (!x) {
+            return false;
+        }
+        if (typeof x !== 'object') {
+            return false;
+        }
+        if (x instanceof String) {
+            return false;
+        }
+        if (x.nodeType === 1) {
+            return !!x.length;
+        }
+        if (x.length === 0) {
+            return true;
+        }
+        if (x.length > 0) {
+            return x.hasOwnProperty(0) && x.hasOwnProperty(x.length - 1);
+        }
+        return false;
+    });
+
+    /**
+     * Checks if the input value is `null` or `undefined`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Type
+     * @sig * -> Boolean
+     * @param {*} x The value to test.
+     * @return {Boolean} `true` if `x` is `undefined` or `null`, otherwise `false`.
+     * @example
+     *
+     *      R.isNil(null); //=> true
+     *      R.isNil(undefined); //=> true
+     *      R.isNil(0); //=> false
+     *      R.isNil([]); //=> false
+     */
+    var isNil = _curry1(function isNil(x) {
+        return x == null;
+    });
+
+    /**
+     * Returns a list containing the names of all the enumerable own properties of
+     * the supplied object.
+     * Note that the order of the output array is not guaranteed to be consistent
+     * across different JS platforms.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig {k: v} -> [k]
+     * @param {Object} obj The object to extract properties from
+     * @return {Array} An array of the object's own properties.
+     * @example
+     *
+     *      R.keys({a: 1, b: 2, c: 3}); //=> ['a', 'b', 'c']
+     */
+    // cover IE < 9 keys issues
+    // Safari bug
+    var keys = function () {
+        // cover IE < 9 keys issues
+        var hasEnumBug = !{ toString: null }.propertyIsEnumerable('toString');
+        var nonEnumerableProps = [
+            'constructor',
+            'valueOf',
+            'isPrototypeOf',
+            'toString',
+            'propertyIsEnumerable',
+            'hasOwnProperty',
+            'toLocaleString'
+        ];
+        // Safari bug
+        var hasArgsEnumBug = function () {
+            'use strict';
+            return arguments.propertyIsEnumerable('length');
+        }();
+        var contains = function contains(list, item) {
+            var idx = 0;
+            while (idx < list.length) {
+                if (list[idx] === item) {
+                    return true;
+                }
+                idx += 1;
+            }
+            return false;
+        };
+        return typeof Object.keys === 'function' && !hasArgsEnumBug ? _curry1(function keys(obj) {
+            return Object(obj) !== obj ? [] : Object.keys(obj);
+        }) : _curry1(function keys(obj) {
+            if (Object(obj) !== obj) {
+                return [];
+            }
+            var prop, nIdx;
+            var ks = [];
+            var checkArgsLength = hasArgsEnumBug && _isArguments(obj);
+            for (prop in obj) {
+                if (_has(prop, obj) && (!checkArgsLength || prop !== 'length')) {
+                    ks[ks.length] = prop;
+                }
+            }
+            if (hasEnumBug) {
+                nIdx = nonEnumerableProps.length - 1;
+                while (nIdx >= 0) {
+                    prop = nonEnumerableProps[nIdx];
+                    if (_has(prop, obj) && !contains(ks, prop)) {
+                        ks[ks.length] = prop;
+                    }
+                    nIdx -= 1;
+                }
+            }
+            return ks;
+        });
+    }();
+
+    /**
+     * Returns a list containing the names of all the properties of the supplied
+     * object, including prototype properties.
+     * Note that the order of the output array is not guaranteed to be consistent
+     * across different JS platforms.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.0
+     * @category Object
+     * @sig {k: v} -> [k]
+     * @param {Object} obj The object to extract properties from
+     * @return {Array} An array of the object's own and prototype properties.
+     * @example
+     *
+     *      var F = function() { this.x = 'X'; };
+     *      F.prototype.y = 'Y';
+     *      var f = new F();
+     *      R.keysIn(f); //=> ['x', 'y']
+     */
+    var keysIn = _curry1(function keysIn(obj) {
+        var prop;
+        var ks = [];
+        for (prop in obj) {
+            ks[ks.length] = prop;
+        }
+        return ks;
+    });
+
+    /**
+     * Returns the number of elements in the array by returning `list.length`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category List
+     * @sig [a] -> Number
+     * @param {Array} list The array to inspect.
+     * @return {Number} The length of the array.
+     * @example
+     *
+     *      R.length([]); //=> 0
+     *      R.length([1, 2, 3]); //=> 3
+     */
+    var length = _curry1(function length(list) {
+        return list != null && is(Number, list.length) ? list.length : NaN;
+    });
+
+    /**
+     * Returns `true` if the first argument is less than the second; `false`
+     * otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord a => a -> a -> Boolean
+     * @param {*} a
+     * @param {*} b
+     * @return {Boolean}
+     * @see R.gt
+     * @example
+     *
+     *      R.lt(2, 1); //=> false
+     *      R.lt(2, 2); //=> false
+     *      R.lt(2, 3); //=> true
+     *      R.lt('a', 'z'); //=> true
+     *      R.lt('z', 'a'); //=> false
+     */
+    var lt = _curry2(function lt(a, b) {
+        return a < b;
+    });
+
+    /**
+     * Returns `true` if the first argument is less than or equal to the second;
+     * `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord a => a -> a -> Boolean
+     * @param {Number} a
+     * @param {Number} b
+     * @return {Boolean}
+     * @see R.gte
+     * @example
+     *
+     *      R.lte(2, 1); //=> false
+     *      R.lte(2, 2); //=> true
+     *      R.lte(2, 3); //=> true
+     *      R.lte('a', 'z'); //=> true
+     *      R.lte('z', 'a'); //=> false
+     */
+    var lte = _curry2(function lte(a, b) {
+        return a <= b;
+    });
+
+    /**
+     * The mapAccum function behaves like a combination of map and reduce; it
+     * applies a function to each element of a list, passing an accumulating
+     * parameter from left to right, and returning a final value of this
+     * accumulator together with the new list.
+     *
+     * The iterator function receives two arguments, *acc* and *value*, and should
+     * return a tuple *[acc, value]*.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category List
+     * @sig (acc -> x -> (acc, y)) -> acc -> [x] -> (acc, [y])
+     * @param {Function} fn The function to be called on every element of the input `list`.
+     * @param {*} acc The accumulator value.
+     * @param {Array} list The list to iterate over.
+     * @return {*} The final, accumulated value.
+     * @see R.addIndex
+     * @example
+     *
+     *      var digits = ['1', '2', '3', '4'];
+     *      var append = (a, b) => [a + b, a + b];
+     *
+     *      R.mapAccum(append, 0, digits); //=> ['01234', ['01', '012', '0123', '01234']]
+     */
+    var mapAccum = _curry3(function mapAccum(fn, acc, list) {
+        var idx = 0;
+        var len = list.length;
+        var result = [];
+        var tuple = [acc];
+        while (idx < len) {
+            tuple = fn(tuple[0], list[idx]);
+            result[idx] = tuple[1];
+            idx += 1;
+        }
+        return [
+            tuple[0],
+            result
+        ];
+    });
+
+    /**
+     * The mapAccumRight function behaves like a combination of map and reduce; it
+     * applies a function to each element of a list, passing an accumulating
+     * parameter from right to left, and returning a final value of this
+     * accumulator together with the new list.
+     *
+     * Similar to `mapAccum`, except moves through the input list from the right to
+     * the left.
+     *
+     * The iterator function receives two arguments, *acc* and *value*, and should
+     * return a tuple *[acc, value]*.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category List
+     * @sig (acc -> x -> (acc, y)) -> acc -> [x] -> (acc, [y])
+     * @param {Function} fn The function to be called on every element of the input `list`.
+     * @param {*} acc The accumulator value.
+     * @param {Array} list The list to iterate over.
+     * @return {*} The final, accumulated value.
+     * @see R.addIndex
+     * @example
+     *
+     *      var digits = ['1', '2', '3', '4'];
+     *      var append = (a, b) => [a + b, a + b];
+     *
+     *      R.mapAccumRight(append, 0, digits); //=> ['04321', ['04321', '0432', '043', '04']]
+     */
+    var mapAccumRight = _curry3(function mapAccumRight(fn, acc, list) {
+        var idx = list.length - 1;
+        var result = [];
+        var tuple = [acc];
+        while (idx >= 0) {
+            tuple = fn(tuple[0], list[idx]);
+            result[idx] = tuple[1];
+            idx -= 1;
+        }
+        return [
+            tuple[0],
+            result
+        ];
+    });
+
+    /**
+     * Tests a regular expression against a String. Note that this function will
+     * return an empty array when there are no matches. This differs from
+     * [`String.prototype.match`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
+     * which returns `null` when there are no matches.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category String
+     * @sig RegExp -> String -> [String | Undefined]
+     * @param {RegExp} rx A regular expression.
+     * @param {String} str The string to match against
+     * @return {Array} The list of matches or empty array.
+     * @see R.test
+     * @example
+     *
+     *      R.match(/([a-z]a)/g, 'bananas'); //=> ['ba', 'na', 'na']
+     *      R.match(/a/, 'b'); //=> []
+     *      R.match(/a/, null); //=> TypeError: null does not have a method named "match"
+     */
+    var match = _curry2(function match(rx, str) {
+        return str.match(rx) || [];
+    });
+
+    /**
+     * mathMod behaves like the modulo operator should mathematically, unlike the
+     * `%` operator (and by extension, R.modulo). So while "-17 % 5" is -2,
+     * mathMod(-17, 5) is 3. mathMod requires Integer arguments, and returns NaN
+     * when the modulus is zero or negative.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category Math
+     * @sig Number -> Number -> Number
+     * @param {Number} m The dividend.
+     * @param {Number} p the modulus.
+     * @return {Number} The result of `b mod a`.
+     * @example
+     *
+     *      R.mathMod(-17, 5);  //=> 3
+     *      R.mathMod(17, 5);   //=> 2
+     *      R.mathMod(17, -5);  //=> NaN
+     *      R.mathMod(17, 0);   //=> NaN
+     *      R.mathMod(17.2, 5); //=> NaN
+     *      R.mathMod(17, 5.3); //=> NaN
+     *
+     *      var clock = R.mathMod(R.__, 12);
+     *      clock(15); //=> 3
+     *      clock(24); //=> 0
+     *
+     *      var seventeenMod = R.mathMod(17);
+     *      seventeenMod(3);  //=> 2
+     *      seventeenMod(4);  //=> 1
+     *      seventeenMod(10); //=> 7
+     */
+    var mathMod = _curry2(function mathMod(m, p) {
+        if (!_isInteger(m)) {
+            return NaN;
+        }
+        if (!_isInteger(p) || p < 1) {
+            return NaN;
+        }
+        return (m % p + p) % p;
+    });
+
+    /**
+     * Returns the larger of its two arguments.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord a => a -> a -> a
+     * @param {*} a
+     * @param {*} b
+     * @return {*}
+     * @see R.maxBy, R.min
+     * @example
+     *
+     *      R.max(789, 123); //=> 789
+     *      R.max('a', 'b'); //=> 'b'
+     */
+    var max = _curry2(function max(a, b) {
+        return b > a ? b : a;
+    });
+
+    /**
+     * Takes a function and two values, and returns whichever value produces the
+     * larger result when passed to the provided function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Relation
+     * @sig Ord b => (a -> b) -> a -> a -> a
+     * @param {Function} f
+     * @param {*} a
+     * @param {*} b
+     * @return {*}
+     * @see R.max, R.minBy
+     * @example
+     *
+     *      //  square :: Number -> Number
+     *      var square = n => n * n;
+     *
+     *      R.maxBy(square, -3, 2); //=> -3
+     *
+     *      R.reduce(R.maxBy(square), 0, [3, -5, 4, 1, -2]); //=> -5
+     *      R.reduce(R.maxBy(square), 0, []); //=> 0
+     */
+    var maxBy = _curry3(function maxBy(f, a, b) {
+        return f(b) > f(a) ? b : a;
+    });
+
+    /**
+     * Creates a new object with the own properties of the two provided objects. If
+     * a key exists in both objects, the provided function is applied to the key
+     * and the values associated with the key in each object, with the result being
+     * used as the value associated with the key in the returned object. The key
+     * will be excluded from the returned object if the resulting value is
+     * `undefined`.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Object
+     * @sig (String -> a -> a -> a) -> {a} -> {a} -> {a}
+     * @param {Function} fn
+     * @param {Object} l
+     * @param {Object} r
+     * @return {Object}
+     * @see R.merge, R.mergeWith
+     * @example
+     *
+     *      let concatValues = (k, l, r) => k == 'values' ? R.concat(l, r) : r
+     *      R.mergeWithKey(concatValues,
+     *                     { a: true, thing: 'foo', values: [10, 20] },
+     *                     { b: true, thing: 'bar', values: [15, 35] });
+     *      //=> { a: true, b: true, thing: 'bar', values: [10, 20, 15, 35] }
+     */
+    var mergeWithKey = _curry3(function mergeWithKey(fn, l, r) {
+        var result = {};
+        var k;
+        for (k in l) {
+            if (_has(k, l)) {
+                result[k] = _has(k, r) ? fn(k, l[k], r[k]) : l[k];
+            }
+        }
+        for (k in r) {
+            if (_has(k, r) && !_has(k, result)) {
+                result[k] = r[k];
+            }
+        }
+        return result;
+    });
+
+    /**
+     * Returns the smaller of its two arguments.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord a => a -> a -> a
+     * @param {*} a
+     * @param {*} b
+     * @return {*}
+     * @see R.minBy, R.max
+     * @example
+     *
+     *      R.min(789, 123); //=> 123
+     *      R.min('a', 'b'); //=> 'a'
+     */
+    var min = _curry2(function min(a, b) {
+        return b < a ? b : a;
+    });
+
+    /**
+     * Takes a function and two values, and returns whichever value produces the
+     * smaller result when passed to the provided function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Relation
+     * @sig Ord b => (a -> b) -> a -> a -> a
+     * @param {Function} f
+     * @param {*} a
+     * @param {*} b
+     * @return {*}
+     * @see R.min, R.maxBy
+     * @example
+     *
+     *      //  square :: Number -> Number
+     *      var square = n => n * n;
+     *
+     *      R.minBy(square, -3, 2); //=> 2
+     *
+     *      R.reduce(R.minBy(square), Infinity, [3, -5, 4, 1, -2]); //=> 1
+     *      R.reduce(R.minBy(square), Infinity, []); //=> Infinity
+     */
+    var minBy = _curry3(function minBy(f, a, b) {
+        return f(b) < f(a) ? b : a;
+    });
+
+    /**
+     * Divides the second parameter by the first and returns the remainder. Note
+     * that this function preserves the JavaScript-style behavior for modulo. For
+     * mathematical modulo see `mathMod`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category Math
+     * @sig Number -> Number -> Number
+     * @param {Number} a The value to the divide.
+     * @param {Number} b The pseudo-modulus
+     * @return {Number} The result of `b % a`.
+     * @see R.mathMod
+     * @example
+     *
+     *      R.modulo(17, 3); //=> 2
+     *      // JS behavior:
+     *      R.modulo(-17, 3); //=> -2
+     *      R.modulo(17, -3); //=> 2
+     *
+     *      var isOdd = R.modulo(R.__, 2);
+     *      isOdd(42); //=> 0
+     *      isOdd(21); //=> 1
+     */
+    var modulo = _curry2(function modulo(a, b) {
+        return a % b;
+    });
+
+    /**
+     * Multiplies two numbers. Equivalent to `a * b` but curried.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Math
+     * @sig Number -> Number -> Number
+     * @param {Number} a The first value.
+     * @param {Number} b The second value.
+     * @return {Number} The result of `a * b`.
+     * @see R.divide
+     * @example
+     *
+     *      var double = R.multiply(2);
+     *      var triple = R.multiply(3);
+     *      double(3);       //=>  6
+     *      triple(4);       //=> 12
+     *      R.multiply(2, 5);  //=> 10
+     */
+    var multiply = _curry2(function multiply(a, b) {
+        return a * b;
+    });
+
+    /**
+     * Wraps a function of any arity (including nullary) in a function that accepts
+     * exactly `n` parameters. Any extraneous parameters will not be passed to the
+     * supplied function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig Number -> (* -> a) -> (* -> a)
+     * @param {Number} n The desired arity of the new function.
+     * @param {Function} fn The function to wrap.
+     * @return {Function} A new function wrapping `fn`. The new function is guaranteed to be of
+     *         arity `n`.
+     * @example
+     *
+     *      var takesTwoArgs = (a, b) => [a, b];
+     *
+     *      takesTwoArgs.length; //=> 2
+     *      takesTwoArgs(1, 2); //=> [1, 2]
+     *
+     *      var takesOneArg = R.nAry(1, takesTwoArgs);
+     *      takesOneArg.length; //=> 1
+     *      // Only `n` arguments are passed to the wrapped function
+     *      takesOneArg(1, 2); //=> [1, undefined]
+     */
+    var nAry = _curry2(function nAry(n, fn) {
+        switch (n) {
+        case 0:
+            return function () {
+                return fn.call(this);
+            };
+        case 1:
+            return function (a0) {
+                return fn.call(this, a0);
+            };
+        case 2:
+            return function (a0, a1) {
+                return fn.call(this, a0, a1);
+            };
+        case 3:
+            return function (a0, a1, a2) {
+                return fn.call(this, a0, a1, a2);
+            };
+        case 4:
+            return function (a0, a1, a2, a3) {
+                return fn.call(this, a0, a1, a2, a3);
+            };
+        case 5:
+            return function (a0, a1, a2, a3, a4) {
+                return fn.call(this, a0, a1, a2, a3, a4);
+            };
+        case 6:
+            return function (a0, a1, a2, a3, a4, a5) {
+                return fn.call(this, a0, a1, a2, a3, a4, a5);
+            };
+        case 7:
+            return function (a0, a1, a2, a3, a4, a5, a6) {
+                return fn.call(this, a0, a1, a2, a3, a4, a5, a6);
+            };
+        case 8:
+            return function (a0, a1, a2, a3, a4, a5, a6, a7) {
+                return fn.call(this, a0, a1, a2, a3, a4, a5, a6, a7);
+            };
+        case 9:
+            return function (a0, a1, a2, a3, a4, a5, a6, a7, a8) {
+                return fn.call(this, a0, a1, a2, a3, a4, a5, a6, a7, a8);
+            };
+        case 10:
+            return function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+                return fn.call(this, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9);
+            };
+        default:
+            throw new Error('First argument to nAry must be a non-negative integer no greater than ten');
+        }
+    });
+
+    /**
+     * Negates its argument.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Math
+     * @sig Number -> Number
+     * @param {Number} n
+     * @return {Number}
+     * @example
+     *
+     *      R.negate(42); //=> -42
+     */
+    var negate = _curry1(function negate(n) {
+        return -n;
+    });
+
+    /**
+     * Returns `true` if no elements of the list match the predicate, `false`
+     * otherwise.
+     *
+     * Dispatches to the `any` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> Boolean
+     * @param {Function} fn The predicate function.
+     * @param {Array} list The array to consider.
+     * @return {Boolean} `true` if the predicate is not satisfied by every element, `false` otherwise.
+     * @see R.all, R.any
+     * @example
+     *
+     *      var isEven = n => n % 2 === 0;
+     *
+     *      R.none(isEven, [1, 3, 5, 7, 9, 11]); //=> true
+     *      R.none(isEven, [1, 3, 5, 7, 8, 11]); //=> false
+     */
+    var none = _curry2(_complement(_dispatchable('any', _xany, any)));
+
+    /**
+     * A function that returns the `!` of its argument. It will return `true` when
+     * passed false-y value, and `false` when passed a truth-y one.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Logic
+     * @sig * -> Boolean
+     * @param {*} a any value
+     * @return {Boolean} the logical inverse of passed argument.
+     * @see R.complement
+     * @example
+     *
+     *      R.not(true); //=> false
+     *      R.not(false); //=> true
+     *      R.not(0); => true
+     *      R.not(1); => false
+     */
+    var not = _curry1(function not(a) {
+        return !a;
+    });
+
+    /**
+     * Returns the nth element of the given list or string. If n is negative the
+     * element at index length + n is returned.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Number -> [a] -> a | Undefined
+     * @sig Number -> String -> String
+     * @param {Number} offset
+     * @param {*} list
+     * @return {*}
+     * @example
+     *
+     *      var list = ['foo', 'bar', 'baz', 'quux'];
+     *      R.nth(1, list); //=> 'bar'
+     *      R.nth(-1, list); //=> 'quux'
+     *      R.nth(-99, list); //=> undefined
+     *
+     *      R.nth('abc', 2); //=> 'c'
+     *      R.nth('abc', 3); //=> ''
+     */
+    var nth = _curry2(function nth(offset, list) {
+        var idx = offset < 0 ? list.length + offset : offset;
+        return _isString(list) ? list.charAt(idx) : list[idx];
+    });
+
+    /**
+     * Returns a function which returns its nth argument.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Function
+     * @sig Number -> *... -> *
+     * @param {Number} n
+     * @return {Function}
+     * @example
+     *
+     *      R.nthArg(1)('a', 'b', 'c'); //=> 'b'
+     *      R.nthArg(-1)('a', 'b', 'c'); //=> 'c'
+     */
+    var nthArg = _curry1(function nthArg(n) {
+        return function () {
+            return nth(n, arguments);
+        };
+    });
+
+    /**
+     * Creates an object containing a single key:value pair.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category Object
+     * @sig String -> a -> {String:a}
+     * @param {String} key
+     * @param {*} val
+     * @return {Object}
+     * @see R.pair
+     * @example
+     *
+     *      var matchPhrases = R.compose(
+     *        R.objOf('must'),
+     *        R.map(R.objOf('match_phrase'))
+     *      );
+     *      matchPhrases(['foo', 'bar', 'baz']); //=> {must: [{match_phrase: 'foo'}, {match_phrase: 'bar'}, {match_phrase: 'baz'}]}
+     */
+    var objOf = _curry2(function objOf(key, val) {
+        var obj = {};
+        obj[key] = val;
+        return obj;
+    });
+
+    /**
+     * Returns a singleton array containing the value provided.
+     *
+     * Note this `of` is different from the ES6 `of`; See
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/of
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category Function
+     * @sig a -> [a]
+     * @param {*} x any value
+     * @return {Array} An array wrapping `x`.
+     * @example
+     *
+     *      R.of(null); //=> [null]
+     *      R.of([42]); //=> [[42]]
+     */
+    var of = _curry1(_of);
+
+    /**
+     * Accepts a function `fn` and returns a function that guards invocation of
+     * `fn` such that `fn` can only ever be called once, no matter how many times
+     * the returned function is invoked. The first value calculated is returned in
+     * subsequent invocations.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (a... -> b) -> (a... -> b)
+     * @param {Function} fn The function to wrap in a call-only-once wrapper.
+     * @return {Function} The wrapped function.
+     * @example
+     *
+     *      var addOneOnce = R.once(x => x + 1);
+     *      addOneOnce(10); //=> 11
+     *      addOneOnce(addOneOnce(50)); //=> 11
+     */
+    var once = _curry1(function once(fn) {
+        var called = false;
+        var result;
+        return _arity(fn.length, function () {
+            if (called) {
+                return result;
+            }
+            called = true;
+            result = fn.apply(this, arguments);
+            return result;
+        });
+    });
+
+    /**
+     * Returns `true` if one or both of its arguments are `true`. Returns `false`
+     * if both arguments are `false`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Logic
+     * @sig * -> * -> *
+     * @param {Boolean} a A boolean value
+     * @param {Boolean} b A boolean value
+     * @return {Boolean} `true` if one or both arguments are `true`, `false` otherwise
+     * @see R.either
+     * @example
+     *
+     *      R.or(true, true); //=> true
+     *      R.or(true, false); //=> true
+     *      R.or(false, true); //=> true
+     *      R.or(false, false); //=> false
+     */
+    var or = _curry2(function or(a, b) {
+        return a || b;
+    });
+
+    /**
+     * Returns the result of "setting" the portion of the given data structure
+     * focused by the given lens to the result of applying the given function to
+     * the focused value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig Lens s a -> (a -> a) -> s -> s
+     * @param {Lens} lens
+     * @param {*} v
+     * @param {*} x
+     * @return {*}
+     * @see R.prop, R.lensIndex, R.lensProp
+     * @example
+     *
+     *      var headLens = R.lensIndex(0);
+     *
+     *      R.over(headLens, R.toUpper, ['foo', 'bar', 'baz']); //=> ['FOO', 'bar', 'baz']
+     */
+    var over = function () {
+        var Identity = function (x) {
+            return {
+                value: x,
+                map: function (f) {
+                    return Identity(f(x));
+                }
+            };
+        };
+        return _curry3(function over(lens, f, x) {
+            return lens(function (y) {
+                return Identity(f(y));
+            })(x).value;
+        });
+    }();
+
+    /**
+     * Takes two arguments, `fst` and `snd`, and returns `[fst, snd]`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category List
+     * @sig a -> b -> (a,b)
+     * @param {*} fst
+     * @param {*} snd
+     * @return {Array}
+     * @see R.createMapEntry, R.of
+     * @example
+     *
+     *      R.pair('foo', 'bar'); //=> ['foo', 'bar']
+     */
+    var pair = _curry2(function pair(fst, snd) {
+        return [
+            fst,
+            snd
+        ];
+    });
+
+    /**
+     * Retrieve the value at a given path.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.0
+     * @category Object
+     * @sig [String] -> {k: v} -> v | Undefined
+     * @param {Array} path The path to use.
+     * @param {Object} obj The object to retrieve the nested property from.
+     * @return {*} The data at `path`.
+     * @example
+     *
+     *      R.path(['a', 'b'], {a: {b: 2}}); //=> 2
+     *      R.path(['a', 'b'], {c: {b: 2}}); //=> undefined
+     */
+    var path = _curry2(function path(paths, obj) {
+        var val = obj;
+        var idx = 0;
+        while (idx < paths.length) {
+            if (val == null) {
+                return;
+            }
+            val = val[paths[idx]];
+            idx += 1;
+        }
+        return val;
+    });
+
+    /**
+     * If the given, non-null object has a value at the given path, returns the
+     * value at that path. Otherwise returns the provided default value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category Object
+     * @sig a -> [String] -> Object -> a
+     * @param {*} d The default value.
+     * @param {Array} p The path to use.
+     * @param {Object} obj The object to retrieve the nested property from.
+     * @return {*} The data at `path` of the supplied object or the default value.
+     * @example
+     *
+     *      R.pathOr('N/A', ['a', 'b'], {a: {b: 2}}); //=> 2
+     *      R.pathOr('N/A', ['a', 'b'], {c: {b: 2}}); //=> "N/A"
+     */
+    var pathOr = _curry3(function pathOr(d, p, obj) {
+        return defaultTo(d, path(p, obj));
+    });
+
+    /**
+     * Returns `true` if the specified object property at given path satisfies the
+     * given predicate; `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Logic
+     * @sig (a -> Boolean) -> [String] -> Object -> Boolean
+     * @param {Function} pred
+     * @param {Array} propPath
+     * @param {*} obj
+     * @return {Boolean}
+     * @see R.propSatisfies, R.path
+     * @example
+     *
+     *      R.pathSatisfies(y => y > 0, ['x', 'y'], {x: {y: 2}}); //=> true
+     */
+    var pathSatisfies = _curry3(function pathSatisfies(pred, propPath, obj) {
+        return propPath.length > 0 && pred(path(propPath, obj));
+    });
+
+    /**
+     * Returns a partial copy of an object containing only the keys specified. If
+     * the key does not exist, the property is ignored.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig [k] -> {k: v} -> {k: v}
+     * @param {Array} names an array of String property names to copy onto a new object
+     * @param {Object} obj The object to copy from
+     * @return {Object} A new object with only properties from `names` on it.
+     * @see R.omit, R.props
+     * @example
+     *
+     *      R.pick(['a', 'd'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
+     *      R.pick(['a', 'e', 'f'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1}
+     */
+    var pick = _curry2(function pick(names, obj) {
+        var result = {};
+        var idx = 0;
+        while (idx < names.length) {
+            if (names[idx] in obj) {
+                result[names[idx]] = obj[names[idx]];
+            }
+            idx += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Similar to `pick` except that this one includes a `key: undefined` pair for
+     * properties that don't exist.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig [k] -> {k: v} -> {k: v}
+     * @param {Array} names an array of String property names to copy onto a new object
+     * @param {Object} obj The object to copy from
+     * @return {Object} A new object with only properties from `names` on it.
+     * @see R.pick
+     * @example
+     *
+     *      R.pickAll(['a', 'd'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
+     *      R.pickAll(['a', 'e', 'f'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, e: undefined, f: undefined}
+     */
+    var pickAll = _curry2(function pickAll(names, obj) {
+        var result = {};
+        var idx = 0;
+        var len = names.length;
+        while (idx < len) {
+            var name = names[idx];
+            result[name] = obj[name];
+            idx += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Returns a partial copy of an object containing only the keys that satisfy
+     * the supplied predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Object
+     * @sig (v, k -> Boolean) -> {k: v} -> {k: v}
+     * @param {Function} pred A predicate to determine whether or not a key
+     *        should be included on the output object.
+     * @param {Object} obj The object to copy from
+     * @return {Object} A new object with only properties that satisfy `pred`
+     *         on it.
+     * @see R.pick, R.filter
+     * @example
+     *
+     *      var isUpperCase = (val, key) => key.toUpperCase() === key;
+     *      R.pickBy(isUpperCase, {a: 1, b: 2, A: 3, B: 4}); //=> {A: 3, B: 4}
+     */
+    var pickBy = _curry2(function pickBy(test, obj) {
+        var result = {};
+        for (var prop in obj) {
+            if (test(obj[prop], prop, obj)) {
+                result[prop] = obj[prop];
+            }
+        }
+        return result;
+    });
+
+    /**
+     * Returns a new list with the given element at the front, followed by the
+     * contents of the list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig a -> [a] -> [a]
+     * @param {*} el The item to add to the head of the output list.
+     * @param {Array} list The array to add to the tail of the output list.
+     * @return {Array} A new array.
+     * @see R.append
+     * @example
+     *
+     *      R.prepend('fee', ['fi', 'fo', 'fum']); //=> ['fee', 'fi', 'fo', 'fum']
+     */
+    var prepend = _curry2(function prepend(el, list) {
+        return _concat([el], list);
+    });
+
+    /**
+     * Returns a function that when supplied an object returns the indicated
+     * property of that object, if it exists.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig s -> {s: a} -> a | Undefined
+     * @param {String} p The property name
+     * @param {Object} obj The object to query
+     * @return {*} The value at `obj.p`.
+     * @example
+     *
+     *      R.prop('x', {x: 100}); //=> 100
+     *      R.prop('x', {}); //=> undefined
+     */
+    var prop = _curry2(function prop(p, obj) {
+        return obj[p];
+    });
+
+    /**
+     * If the given, non-null object has an own property with the specified name,
+     * returns the value of that property. Otherwise returns the provided default
+     * value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.6.0
+     * @category Object
+     * @sig a -> String -> Object -> a
+     * @param {*} val The default value.
+     * @param {String} p The name of the property to return.
+     * @param {Object} obj The object to query.
+     * @return {*} The value of given property of the supplied object or the default value.
+     * @example
+     *
+     *      var alice = {
+     *        name: 'ALICE',
+     *        age: 101
+     *      };
+     *      var favorite = R.prop('favoriteLibrary');
+     *      var favoriteWithDefault = R.propOr('Ramda', 'favoriteLibrary');
+     *
+     *      favorite(alice);  //=> undefined
+     *      favoriteWithDefault(alice);  //=> 'Ramda'
+     */
+    var propOr = _curry3(function propOr(val, p, obj) {
+        return obj != null && _has(p, obj) ? obj[p] : val;
+    });
+
+    /**
+     * Returns `true` if the specified object property satisfies the given
+     * predicate; `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Logic
+     * @sig (a -> Boolean) -> String -> {String: a} -> Boolean
+     * @param {Function} pred
+     * @param {String} name
+     * @param {*} obj
+     * @return {Boolean}
+     * @see R.propEq, R.propIs
+     * @example
+     *
+     *      R.propSatisfies(x => x > 0, 'x', {x: 1, y: 2}); //=> true
+     */
+    var propSatisfies = _curry3(function propSatisfies(pred, name, obj) {
+        return pred(obj[name]);
+    });
+
+    /**
+     * Acts as multiple `prop`: array of keys in, array of values out. Preserves
+     * order.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig [k] -> {k: v} -> [v]
+     * @param {Array} ps The property names to fetch
+     * @param {Object} obj The object to query
+     * @return {Array} The corresponding values or partially applied function.
+     * @example
+     *
+     *      R.props(['x', 'y'], {x: 1, y: 2}); //=> [1, 2]
+     *      R.props(['c', 'a', 'b'], {b: 2, a: 1}); //=> [undefined, 1, 2]
+     *
+     *      var fullName = R.compose(R.join(' '), R.props(['first', 'last']));
+     *      fullName({last: 'Bullet-Tooth', age: 33, first: 'Tony'}); //=> 'Tony Bullet-Tooth'
+     */
+    var props = _curry2(function props(ps, obj) {
+        var len = ps.length;
+        var out = [];
+        var idx = 0;
+        while (idx < len) {
+            out[idx] = obj[ps[idx]];
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Returns a list of numbers from `from` (inclusive) to `to` (exclusive).
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Number -> Number -> [Number]
+     * @param {Number} from The first number in the list.
+     * @param {Number} to One more than the last number in the list.
+     * @return {Array} The list of numbers in tthe set `[a, b)`.
+     * @example
+     *
+     *      R.range(1, 5);    //=> [1, 2, 3, 4]
+     *      R.range(50, 53);  //=> [50, 51, 52]
+     */
+    var range = _curry2(function range(from, to) {
+        if (!(_isNumber(from) && _isNumber(to))) {
+            throw new TypeError('Both arguments to range must be numbers');
+        }
+        var result = [];
+        var n = from;
+        while (n < to) {
+            result.push(n);
+            n += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Returns a single item by iterating through the list, successively calling
+     * the iterator function and passing it an accumulator value and the current
+     * value from the array, and then passing the result to the next call.
+     *
+     * Similar to `reduce`, except moves through the input list from the right to
+     * the left.
+     *
+     * The iterator function receives two values: *(acc, value)*
+     *
+     * Note: `R.reduceRight` does not skip deleted or unassigned indices (sparse
+     * arrays), unlike the native `Array.prototype.reduce` method. For more details
+     * on this behavior, see:
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight#Description
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a,b -> a) -> a -> [b] -> a
+     * @param {Function} fn The iterator function. Receives two values, the accumulator and the
+     *        current element from the array.
+     * @param {*} acc The accumulator value.
+     * @param {Array} list The list to iterate over.
+     * @return {*} The final, accumulated value.
+     * @see R.addIndex
+     * @example
+     *
+     *      var pairs = [ ['a', 1], ['b', 2], ['c', 3] ];
+     *      var flattenPairs = (acc, pair) => acc.concat(pair);
+     *
+     *      R.reduceRight(flattenPairs, [], pairs); //=> [ 'c', 3, 'b', 2, 'a', 1 ]
+     */
+    var reduceRight = _curry3(function reduceRight(fn, acc, list) {
+        var idx = list.length - 1;
+        while (idx >= 0) {
+            acc = fn(acc, list[idx]);
+            idx -= 1;
+        }
+        return acc;
+    });
+
+    /**
+     * Returns a value wrapped to indicate that it is the final value of the reduce
+     * and transduce functions. The returned value should be considered a black
+     * box: the internal structure is not guaranteed to be stable.
+     *
+     * Note: this optimization is unavailable to functions not explicitly listed
+     * above. For instance, it is not currently supported by reduceRight.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.15.0
+     * @category List
+     * @sig a -> *
+     * @param {*} x The final value of the reduce.
+     * @return {*} The wrapped value.
+     * @see R.reduce, R.transduce
+     * @example
+     *
+     *      R.reduce(
+     *        R.pipe(R.add, R.when(R.gte(R.__, 10), R.reduced)),
+     *        0,
+     *        [1, 2, 3, 4, 5]) // 10
+     */
+    var reduced = _curry1(_reduced);
+
+    /**
+     * Removes the sub-list of `list` starting at index `start` and containing
+     * `count` elements. _Note that this is not destructive_: it returns a copy of
+     * the list with the changes.
+     * <small>No lists have been harmed in the application of this function.</small>
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.2
+     * @category List
+     * @sig Number -> Number -> [a] -> [a]
+     * @param {Number} start The position to start removing elements
+     * @param {Number} count The number of elements to remove
+     * @param {Array} list The list to remove from
+     * @return {Array} A new Array with `count` elements from `start` removed.
+     * @example
+     *
+     *      R.remove(2, 3, [1,2,3,4,5,6,7,8]); //=> [1,2,6,7,8]
+     */
+    var remove = _curry3(function remove(start, count, list) {
+        return _concat(_slice(list, 0, Math.min(start, list.length)), _slice(list, Math.min(list.length, start + count)));
+    });
+
+    /**
+     * Replace a substring or regex match in a string with a replacement.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category String
+     * @sig RegExp|String -> String -> String -> String
+     * @param {RegExp|String} pattern A regular expression or a substring to match.
+     * @param {String} replacement The string to replace the matches with.
+     * @param {String} str The String to do the search and replacement in.
+     * @return {String} The result.
+     * @example
+     *
+     *      R.replace('foo', 'bar', 'foo foo foo'); //=> 'bar foo foo'
+     *      R.replace(/foo/, 'bar', 'foo foo foo'); //=> 'bar foo foo'
+     *
+     *      // Use the "g" (global) flag to replace all occurrences:
+     *      R.replace(/foo/g, 'bar', 'foo foo foo'); //=> 'bar bar bar'
+     */
+    var replace = _curry3(function replace(regex, replacement, str) {
+        return str.replace(regex, replacement);
+    });
+
+    /**
+     * Returns a new list or string with the elements or characters in reverse
+     * order.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [a]
+     * @sig String -> String
+     * @param {Array|String} list
+     * @return {Array|String}
+     * @example
+     *
+     *      R.reverse([1, 2, 3]);  //=> [3, 2, 1]
+     *      R.reverse([1, 2]);     //=> [2, 1]
+     *      R.reverse([1]);        //=> [1]
+     *      R.reverse([]);         //=> []
+     *
+     *      R.reverse('abc');      //=> 'cba'
+     *      R.reverse('ab');       //=> 'ba'
+     *      R.reverse('a');        //=> 'a'
+     *      R.reverse('');         //=> ''
+     */
+    var reverse = _curry1(function reverse(list) {
+        return _isString(list) ? list.split('').reverse().join('') : _slice(list).reverse();
+    });
+
+    /**
+     * Scan is similar to reduce, but returns a list of successively reduced values
+     * from the left
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category List
+     * @sig (a,b -> a) -> a -> [b] -> [a]
+     * @param {Function} fn The iterator function. Receives two values, the accumulator and the
+     *        current element from the array
+     * @param {*} acc The accumulator value.
+     * @param {Array} list The list to iterate over.
+     * @return {Array} A list of all intermediately reduced values.
+     * @example
+     *
+     *      var numbers = [1, 2, 3, 4];
+     *      var factorials = R.scan(R.multiply, 1, numbers); //=> [1, 1, 2, 6, 24]
+     */
+    var scan = _curry3(function scan(fn, acc, list) {
+        var idx = 0;
+        var len = list.length;
+        var result = [acc];
+        while (idx < len) {
+            acc = fn(acc, list[idx]);
+            result[idx + 1] = acc;
+            idx += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Returns the result of "setting" the portion of the given data structure
+     * focused by the given lens to the given value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig Lens s a -> a -> s -> s
+     * @param {Lens} lens
+     * @param {*} v
+     * @param {*} x
+     * @return {*}
+     * @see R.prop, R.lensIndex, R.lensProp
+     * @example
+     *
+     *      var xLens = R.lensProp('x');
+     *
+     *      R.set(xLens, 4, {x: 1, y: 2});  //=> {x: 4, y: 2}
+     *      R.set(xLens, 8, {x: 1, y: 2});  //=> {x: 8, y: 2}
+     */
+    var set = _curry3(function set(lens, v, x) {
+        return over(lens, always(v), x);
+    });
+
+    /**
+     * Returns the elements of the given list or string (or object with a `slice`
+     * method) from `fromIndex` (inclusive) to `toIndex` (exclusive).
+     *
+     * Dispatches to the `slice` method of the third argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.4
+     * @category List
+     * @sig Number -> Number -> [a] -> [a]
+     * @sig Number -> Number -> String -> String
+     * @param {Number} fromIndex The start index (inclusive).
+     * @param {Number} toIndex The end index (exclusive).
+     * @param {*} list
+     * @return {*}
+     * @example
+     *
+     *      R.slice(1, 3, ['a', 'b', 'c', 'd']);        //=> ['b', 'c']
+     *      R.slice(1, Infinity, ['a', 'b', 'c', 'd']); //=> ['b', 'c', 'd']
+     *      R.slice(0, -1, ['a', 'b', 'c', 'd']);       //=> ['a', 'b', 'c']
+     *      R.slice(-3, -1, ['a', 'b', 'c', 'd']);      //=> ['b', 'c']
+     *      R.slice(0, 3, 'ramda');                     //=> 'ram'
+     */
+    var slice = _curry3(_checkForMethod('slice', function slice(fromIndex, toIndex, list) {
+        return Array.prototype.slice.call(list, fromIndex, toIndex);
+    }));
+
+    /**
+     * Returns a copy of the list, sorted according to the comparator function,
+     * which should accept two values at a time and return a negative number if the
+     * first value is smaller, a positive number if it's larger, and zero if they
+     * are equal. Please note that this is a **copy** of the list. It does not
+     * modify the original.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a,a -> Number) -> [a] -> [a]
+     * @param {Function} comparator A sorting function :: a -> b -> Int
+     * @param {Array} list The list to sort
+     * @return {Array} a new array with its elements sorted by the comparator function.
+     * @example
+     *
+     *      var diff = function(a, b) { return a - b; };
+     *      R.sort(diff, [4,2,7,5]); //=> [2, 4, 5, 7]
+     */
+    var sort = _curry2(function sort(comparator, list) {
+        return _slice(list).sort(comparator);
+    });
+
+    /**
+     * Sorts the list according to the supplied function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig Ord b => (a -> b) -> [a] -> [a]
+     * @param {Function} fn
+     * @param {Array} list The list to sort.
+     * @return {Array} A new list sorted by the keys generated by `fn`.
+     * @example
+     *
+     *      var sortByFirstItem = R.sortBy(R.prop(0));
+     *      var sortByNameCaseInsensitive = R.sortBy(R.compose(R.toLower, R.prop('name')));
+     *      var pairs = [[-1, 1], [-2, 2], [-3, 3]];
+     *      sortByFirstItem(pairs); //=> [[-3, 3], [-2, 2], [-1, 1]]
+     *      var alice = {
+     *        name: 'ALICE',
+     *        age: 101
+     *      };
+     *      var bob = {
+     *        name: 'Bob',
+     *        age: -10
+     *      };
+     *      var clara = {
+     *        name: 'clara',
+     *        age: 314.159
+     *      };
+     *      var people = [clara, bob, alice];
+     *      sortByNameCaseInsensitive(people); //=> [alice, bob, clara]
+     */
+    var sortBy = _curry2(function sortBy(fn, list) {
+        return _slice(list).sort(function (a, b) {
+            var aa = fn(a);
+            var bb = fn(b);
+            return aa < bb ? -1 : aa > bb ? 1 : 0;
+        });
+    });
+
+    /**
+     * Splits a given list or string at a given index.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig Number -> [a] -> [[a], [a]]
+     * @sig Number -> String -> [String, String]
+     * @param {Number} index The index where the array/string is split.
+     * @param {Array|String} array The array/string to be split.
+     * @return {Array}
+     * @example
+     *
+     *      R.splitAt(1, [1, 2, 3]);          //=> [[1], [2, 3]]
+     *      R.splitAt(5, 'hello world');      //=> ['hello', ' world']
+     *      R.splitAt(-1, 'foobar');          //=> ['fooba', 'r']
+     */
+    var splitAt = _curry2(function splitAt(index, array) {
+        return [
+            slice(0, index, array),
+            slice(index, length(array), array)
+        ];
+    });
+
+    /**
+     * Splits a collection into slices of the specified length.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category List
+     * @sig Number -> [a] -> [[a]]
+     * @sig Number -> String -> [String]
+     * @param {Number} n
+     * @param {Array} list
+     * @return {Array}
+     * @example
+     *
+     *      R.splitEvery(3, [1, 2, 3, 4, 5, 6, 7]); //=> [[1, 2, 3], [4, 5, 6], [7]]
+     *      R.splitEvery(3, 'foobarbaz'); //=> ['foo', 'bar', 'baz']
+     */
+    var splitEvery = _curry2(function splitEvery(n, list) {
+        if (n <= 0) {
+            throw new Error('First argument to splitEvery must be a positive integer');
+        }
+        var result = [];
+        var idx = 0;
+        while (idx < list.length) {
+            result.push(slice(idx, idx += n, list));
+        }
+        return result;
+    });
+
+    /**
+     * Takes a list and a predicate and returns a pair of lists with the following properties:
+     *
+     *  - the result of concatenating the two output lists is equivalent to the input list;
+     *  - none of the elements of the first output list satisfies the predicate; and
+     *  - if the second output list is non-empty, its first element satisfies the predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> [[a], [a]]
+     * @param {Function} pred The predicate that determines where the array is split.
+     * @param {Array} list The array to be split.
+     * @return {Array}
+     * @example
+     *
+     *      R.splitWhen(R.equals(2), [1, 2, 3, 1, 2, 3]);   //=> [[1], [2, 3, 1, 2, 3]]
+     */
+    var splitWhen = _curry2(function splitWhen(pred, list) {
+        var idx = 0;
+        var len = list.length;
+        var prefix = [];
+        while (idx < len && !pred(list[idx])) {
+            prefix.push(list[idx]);
+            idx += 1;
+        }
+        return [
+            prefix,
+            _slice(list, idx)
+        ];
+    });
+
+    /**
+     * Subtracts two numbers. Equivalent to `a - b` but curried.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Math
+     * @sig Number -> Number -> Number
+     * @param {Number} a The first value.
+     * @param {Number} b The second value.
+     * @return {Number} The result of `a - b`.
+     * @see R.add
+     * @example
+     *
+     *      R.subtract(10, 8); //=> 2
+     *
+     *      var minus5 = R.subtract(R.__, 5);
+     *      minus5(17); //=> 12
+     *
+     *      var complementaryAngle = R.subtract(90);
+     *      complementaryAngle(30); //=> 60
+     *      complementaryAngle(72); //=> 18
+     */
+    var subtract = _curry2(function subtract(a, b) {
+        return a - b;
+    });
+
+    /**
+     * Returns all but the first element of the given list or string (or object
+     * with a `tail` method).
+     *
+     * Dispatches to the `slice` method of the first argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [a]
+     * @sig String -> String
+     * @param {*} list
+     * @return {*}
+     * @see R.head, R.init, R.last
+     * @example
+     *
+     *      R.tail([1, 2, 3]);  //=> [2, 3]
+     *      R.tail([1, 2]);     //=> [2]
+     *      R.tail([1]);        //=> []
+     *      R.tail([]);         //=> []
+     *
+     *      R.tail('abc');  //=> 'bc'
+     *      R.tail('ab');   //=> 'b'
+     *      R.tail('a');    //=> ''
+     *      R.tail('');     //=> ''
+     */
+    var tail = _checkForMethod('tail', slice(1, Infinity));
+
+    /**
+     * Returns the first `n` elements of the given list, string, or
+     * transducer/transformer (or object with a `take` method).
+     *
+     * Dispatches to the `take` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Number -> [a] -> [a]
+     * @sig Number -> String -> String
+     * @param {Number} n
+     * @param {*} list
+     * @return {*}
+     * @see R.drop
+     * @example
+     *
+     *      R.take(1, ['foo', 'bar', 'baz']); //=> ['foo']
+     *      R.take(2, ['foo', 'bar', 'baz']); //=> ['foo', 'bar']
+     *      R.take(3, ['foo', 'bar', 'baz']); //=> ['foo', 'bar', 'baz']
+     *      R.take(4, ['foo', 'bar', 'baz']); //=> ['foo', 'bar', 'baz']
+     *      R.take(3, 'ramda');               //=> 'ram'
+     *
+     *      var personnel = [
+     *        'Dave Brubeck',
+     *        'Paul Desmond',
+     *        'Eugene Wright',
+     *        'Joe Morello',
+     *        'Gerry Mulligan',
+     *        'Bob Bates',
+     *        'Joe Dodge',
+     *        'Ron Crotty'
+     *      ];
+     *
+     *      var takeFive = R.take(5);
+     *      takeFive(personnel);
+     *      //=> ['Dave Brubeck', 'Paul Desmond', 'Eugene Wright', 'Joe Morello', 'Gerry Mulligan']
+     */
+    var take = _curry2(_dispatchable('take', _xtake, function take(n, xs) {
+        return slice(0, n < 0 ? Infinity : n, xs);
+    }));
+
+    /**
+     * Returns a new list containing the last `n` elements of a given list, passing
+     * each value to the supplied predicate function, and terminating when the
+     * predicate function returns `false`. Excludes the element that caused the
+     * predicate function to fail. The predicate function is passed one argument:
+     * *(value)*.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> [a]
+     * @param {Function} fn The function called per iteration.
+     * @param {Array} list The collection to iterate over.
+     * @return {Array} A new array.
+     * @see R.dropLastWhile, R.addIndex
+     * @example
+     *
+     *      var isNotOne = x => x !== 1;
+     *
+     *      R.takeLastWhile(isNotOne, [1, 2, 3, 4]); //=> [2, 3, 4]
+     */
+    var takeLastWhile = _curry2(function takeLastWhile(fn, list) {
+        var idx = list.length - 1;
+        while (idx >= 0 && fn(list[idx])) {
+            idx -= 1;
+        }
+        return _slice(list, idx + 1, Infinity);
+    });
+
+    /**
+     * Returns a new list containing the first `n` elements of a given list,
+     * passing each value to the supplied predicate function, and terminating when
+     * the predicate function returns `false`. Excludes the element that caused the
+     * predicate function to fail. The predicate function is passed one argument:
+     * *(value)*.
+     *
+     * Dispatches to the `takeWhile` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> [a]
+     * @param {Function} fn The function called per iteration.
+     * @param {Array} list The collection to iterate over.
+     * @return {Array} A new array.
+     * @see R.dropWhile, R.transduce, R.addIndex
+     * @example
+     *
+     *      var isNotFour = x => x !== 4;
+     *
+     *      R.takeWhile(isNotFour, [1, 2, 3, 4, 3, 2, 1]); //=> [1, 2, 3]
+     */
+    var takeWhile = _curry2(_dispatchable('takeWhile', _xtakeWhile, function takeWhile(fn, list) {
+        var idx = 0;
+        var len = list.length;
+        while (idx < len && fn(list[idx])) {
+            idx += 1;
+        }
+        return _slice(list, 0, idx);
+    }));
+
+    /**
+     * Runs the given function with the supplied object, then returns the object.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (a -> *) -> a -> a
+     * @param {Function} fn The function to call with `x`. The return value of `fn` will be thrown away.
+     * @param {*} x
+     * @return {*} `x`.
+     * @example
+     *
+     *      var sayX = x => console.log('x is ' + x);
+     *      R.tap(sayX, 100); //=> 100
+     *      //-> 'x is 100'
+     */
+    var tap = _curry2(function tap(fn, x) {
+        fn(x);
+        return x;
+    });
+
+    /**
+     * Calls an input function `n` times, returning an array containing the results
+     * of those function calls.
+     *
+     * `fn` is passed one argument: The current value of `n`, which begins at `0`
+     * and is gradually incremented to `n - 1`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.3
+     * @category List
+     * @sig (Number -> a) -> Number -> [a]
+     * @param {Function} fn The function to invoke. Passed one argument, the current value of `n`.
+     * @param {Number} n A value between `0` and `n - 1`. Increments after each function call.
+     * @return {Array} An array containing the return values of all calls to `fn`.
+     * @example
+     *
+     *      R.times(R.identity, 5); //=> [0, 1, 2, 3, 4]
+     */
+    var times = _curry2(function times(fn, n) {
+        var len = Number(n);
+        var idx = 0;
+        var list;
+        if (len < 0 || isNaN(len)) {
+            throw new RangeError('n must be a non-negative number');
+        }
+        list = new Array(len);
+        while (idx < len) {
+            list[idx] = fn(idx);
+            idx += 1;
+        }
+        return list;
+    });
+
+    /**
+     * Converts an object into an array of key, value arrays. Only the object's
+     * own properties are used.
+     * Note that the order of the output array is not guaranteed to be consistent
+     * across different JS platforms.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.4.0
+     * @category Object
+     * @sig {String: *} -> [[String,*]]
+     * @param {Object} obj The object to extract from
+     * @return {Array} An array of key, value arrays from the object's own properties.
+     * @see R.fromPairs
+     * @example
+     *
+     *      R.toPairs({a: 1, b: 2, c: 3}); //=> [['a', 1], ['b', 2], ['c', 3]]
+     */
+    var toPairs = _curry1(function toPairs(obj) {
+        var pairs = [];
+        for (var prop in obj) {
+            if (_has(prop, obj)) {
+                pairs[pairs.length] = [
+                    prop,
+                    obj[prop]
+                ];
+            }
+        }
+        return pairs;
+    });
+
+    /**
+     * Converts an object into an array of key, value arrays. The object's own
+     * properties and prototype properties are used. Note that the order of the
+     * output array is not guaranteed to be consistent across different JS
+     * platforms.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.4.0
+     * @category Object
+     * @sig {String: *} -> [[String,*]]
+     * @param {Object} obj The object to extract from
+     * @return {Array} An array of key, value arrays from the object's own
+     *         and prototype properties.
+     * @example
+     *
+     *      var F = function() { this.x = 'X'; };
+     *      F.prototype.y = 'Y';
+     *      var f = new F();
+     *      R.toPairsIn(f); //=> [['x','X'], ['y','Y']]
+     */
+    var toPairsIn = _curry1(function toPairsIn(obj) {
+        var pairs = [];
+        for (var prop in obj) {
+            pairs[pairs.length] = [
+                prop,
+                obj[prop]
+            ];
+        }
+        return pairs;
+    });
+
+    /**
+     * Transposes the rows and columns of a 2D list.
+     * When passed a list of `n` lists of length `x`,
+     * returns a list of `x` lists of length `n`.
+     *
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig [[a]] -> [[a]]
+     * @param {Array} list A 2D list
+     * @return {Array} A 2D list
+     * @example
+     *
+     *      R.transpose([[1, 'a'], [2, 'b'], [3, 'c']]) //=> [[1, 2, 3], ['a', 'b', 'c']]
+     *      R.transpose([[1, 2, 3], ['a', 'b', 'c']]) //=> [[1, 'a'], [2, 'b'], [3, 'c']]
+     *
+     * If some of the rows are shorter than the following rows, their elements are skipped:
+     *
+     *      R.transpose([[10, 11], [20], [], [30, 31, 32]]) //=> [[10, 20, 30], [11, 31], [32]]
+     */
+    var transpose = _curry1(function transpose(outerlist) {
+        var i = 0;
+        var result = [];
+        while (i < outerlist.length) {
+            var innerlist = outerlist[i];
+            var j = 0;
+            while (j < innerlist.length) {
+                if (typeof result[j] === 'undefined') {
+                    result[j] = [];
+                }
+                result[j].push(innerlist[j]);
+                j += 1;
+            }
+            i += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Removes (strips) whitespace from both ends of the string.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.6.0
+     * @category String
+     * @sig String -> String
+     * @param {String} str The string to trim.
+     * @return {String} Trimmed version of `str`.
+     * @example
+     *
+     *      R.trim('   xyz  '); //=> 'xyz'
+     *      R.map(R.trim, R.split(',', 'x, y, z')); //=> ['x', 'y', 'z']
+     */
+    var trim = function () {
+        var ws = '\t\n\x0B\f\r \xA0\u1680\u180E\u2000\u2001\u2002\u2003' + '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028' + '\u2029\uFEFF';
+        var zeroWidth = '\u200B';
+        var hasProtoTrim = typeof String.prototype.trim === 'function';
+        if (!hasProtoTrim || (ws.trim() || !zeroWidth.trim())) {
+            return _curry1(function trim(str) {
+                var beginRx = new RegExp('^[' + ws + '][' + ws + ']*');
+                var endRx = new RegExp('[' + ws + '][' + ws + ']*$');
+                return str.replace(beginRx, '').replace(endRx, '');
+            });
+        } else {
+            return _curry1(function trim(str) {
+                return str.trim();
+            });
+        }
+    }();
+
+    /**
+     * Gives a single-word string description of the (native) type of a value,
+     * returning such answers as 'Object', 'Number', 'Array', or 'Null'. Does not
+     * attempt to distinguish user Object types any further, reporting them all as
+     * 'Object'.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Type
+     * @sig (* -> {*}) -> String
+     * @param {*} val The value to test
+     * @return {String}
+     * @example
+     *
+     *      R.type({}); //=> "Object"
+     *      R.type(1); //=> "Number"
+     *      R.type(false); //=> "Boolean"
+     *      R.type('s'); //=> "String"
+     *      R.type(null); //=> "Null"
+     *      R.type([]); //=> "Array"
+     *      R.type(/[A-z]/); //=> "RegExp"
+     */
+    var type = _curry1(function type(val) {
+        return val === null ? 'Null' : val === undefined ? 'Undefined' : Object.prototype.toString.call(val).slice(8, -1);
+    });
+
+    /**
+     * Takes a function `fn`, which takes a single array argument, and returns a
+     * function which:
+     *
+     *   - takes any number of positional arguments;
+     *   - passes these arguments to `fn` as an array; and
+     *   - returns the result.
+     *
+     * In other words, R.unapply derives a variadic function from a function which
+     * takes an array. R.unapply is the inverse of R.apply.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Function
+     * @sig ([*...] -> a) -> (*... -> a)
+     * @param {Function} fn
+     * @return {Function}
+     * @see R.apply
+     * @example
+     *
+     *      R.unapply(JSON.stringify)(1, 2, 3); //=> '[1,2,3]'
+     */
+    var unapply = _curry1(function unapply(fn) {
+        return function () {
+            return fn(_slice(arguments));
+        };
+    });
+
+    /**
+     * Wraps a function of any arity (including nullary) in a function that accepts
+     * exactly 1 parameter. Any extraneous parameters will not be passed to the
+     * supplied function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.0
+     * @category Function
+     * @sig (* -> b) -> (a -> b)
+     * @param {Function} fn The function to wrap.
+     * @return {Function} A new function wrapping `fn`. The new function is guaranteed to be of
+     *         arity 1.
+     * @example
+     *
+     *      var takesTwoArgs = function(a, b) {
+     *        return [a, b];
+     *      };
+     *      takesTwoArgs.length; //=> 2
+     *      takesTwoArgs(1, 2); //=> [1, 2]
+     *
+     *      var takesOneArg = R.unary(takesTwoArgs);
+     *      takesOneArg.length; //=> 1
+     *      // Only 1 argument is passed to the wrapped function
+     *      takesOneArg(1, 2); //=> [1, undefined]
+     */
+    var unary = _curry1(function unary(fn) {
+        return nAry(1, fn);
+    });
+
+    /**
+     * Returns a function of arity `n` from a (manually) curried function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category Function
+     * @sig Number -> (a -> b) -> (a -> c)
+     * @param {Number} length The arity for the returned function.
+     * @param {Function} fn The function to uncurry.
+     * @return {Function} A new function.
+     * @see R.curry
+     * @example
+     *
+     *      var addFour = a => b => c => d => a + b + c + d;
+     *
+     *      var uncurriedAddFour = R.uncurryN(4, addFour);
+     *      uncurriedAddFour(1, 2, 3, 4); //=> 10
+     */
+    var uncurryN = _curry2(function uncurryN(depth, fn) {
+        return curryN(depth, function () {
+            var currentDepth = 1;
+            var value = fn;
+            var idx = 0;
+            var endIdx;
+            while (currentDepth <= depth && typeof value === 'function') {
+                endIdx = currentDepth === depth ? arguments.length : idx + value.length;
+                value = value.apply(this, _slice(arguments, idx, endIdx));
+                currentDepth += 1;
+                idx = endIdx;
+            }
+            return value;
+        });
+    });
+
+    /**
+     * Builds a list from a seed value. Accepts an iterator function, which returns
+     * either false to stop iteration or an array of length 2 containing the value
+     * to add to the resulting list and the seed to be used in the next call to the
+     * iterator function.
+     *
+     * The iterator function receives one argument: *(seed)*.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category List
+     * @sig (a -> [b]) -> * -> [b]
+     * @param {Function} fn The iterator function. receives one argument, `seed`, and returns
+     *        either false to quit iteration or an array of length two to proceed. The element
+     *        at index 0 of this array will be added to the resulting array, and the element
+     *        at index 1 will be passed to the next call to `fn`.
+     * @param {*} seed The seed value.
+     * @return {Array} The final list.
+     * @example
+     *
+     *      var f = n => n > 50 ? false : [-n, n + 10];
+     *      R.unfold(f, 10); //=> [-10, -20, -30, -40, -50]
+     */
+    var unfold = _curry2(function unfold(fn, seed) {
+        var pair = fn(seed);
+        var result = [];
+        while (pair && pair.length) {
+            result[result.length] = pair[0];
+            pair = fn(pair[1]);
+        }
+        return result;
+    });
+
+    /**
+     * Returns a new list containing only one copy of each element in the original
+     * list, based upon the value returned by applying the supplied predicate to
+     * two list elements. Prefers the first item if two items compare equal based
+     * on the predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.0
+     * @category List
+     * @sig (a, a -> Boolean) -> [a] -> [a]
+     * @param {Function} pred A predicate used to test whether two items are equal.
+     * @param {Array} list The array to consider.
+     * @return {Array} The list of unique items.
+     * @example
+     *
+     *      var strEq = R.eqBy(String);
+     *      R.uniqWith(strEq)([1, '1', 2, 1]); //=> [1, 2]
+     *      R.uniqWith(strEq)([{}, {}]);       //=> [{}]
+     *      R.uniqWith(strEq)([1, '1', 1]);    //=> [1]
+     *      R.uniqWith(strEq)(['1', 1, 1]);    //=> ['1']
+     */
+    var uniqWith = _curry2(function uniqWith(pred, list) {
+        var idx = 0;
+        var len = list.length;
+        var result = [];
+        var item;
+        while (idx < len) {
+            item = list[idx];
+            if (!_containsWith(pred, item, result)) {
+                result[result.length] = item;
+            }
+            idx += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Tests the final argument by passing it to the given predicate function. If
+     * the predicate is not satisfied, the function will return the result of
+     * calling the `whenFalseFn` function with the same argument. If the predicate
+     * is satisfied, the argument is returned as is.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category Logic
+     * @sig (a -> Boolean) -> (a -> a) -> a -> a
+     * @param {Function} pred        A predicate function
+     * @param {Function} whenFalseFn A function to invoke when the `pred` evaluates
+     *                               to a falsy value.
+     * @param {*}        x           An object to test with the `pred` function and
+     *                               pass to `whenFalseFn` if necessary.
+     * @return {*} Either `x` or the result of applying `x` to `whenFalseFn`.
+     * @see R.ifElse, R.when
+     * @example
+     *
+     *      // coerceArray :: (a|[a]) -> [a]
+     *      var coerceArray = R.unless(R.isArrayLike, R.of);
+     *      coerceArray([1, 2, 3]); //=> [1, 2, 3]
+     *      coerceArray(1);         //=> [1]
+     */
+    var unless = _curry3(function unless(pred, whenFalseFn, x) {
+        return pred(x) ? x : whenFalseFn(x);
+    });
+
+    /**
+     * Returns a new copy of the array with the element at the provided index
+     * replaced with the given value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category List
+     * @sig Number -> a -> [a] -> [a]
+     * @param {Number} idx The index to update.
+     * @param {*} x The value to exist at the given index of the returned array.
+     * @param {Array|Arguments} list The source array-like object to be updated.
+     * @return {Array} A copy of `list` with the value at index `idx` replaced with `x`.
+     * @see R.adjust
+     * @example
+     *
+     *      R.update(1, 11, [0, 1, 2]);     //=> [0, 11, 2]
+     *      R.update(1)(11)([0, 1, 2]);     //=> [0, 11, 2]
+     */
+    var update = _curry3(function update(idx, x, list) {
+        return adjust(always(x), idx, list);
+    });
+
+    /**
+     * Accepts a function `fn` and a list of transformer functions and returns a
+     * new curried function. When the new function is invoked, it calls the
+     * function `fn` with parameters consisting of the result of calling each
+     * supplied handler on successive arguments to the new function.
+     *
+     * If more arguments are passed to the returned function than transformer
+     * functions, those arguments are passed directly to `fn` as additional
+     * parameters. If you expect additional arguments that don't need to be
+     * transformed, although you can ignore them, it's best to pass an identity
+     * function so that the new function reports the correct arity.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (x1 -> x2 -> ... -> z) -> [(a -> x1), (b -> x2), ...] -> (a -> b -> ... -> z)
+     * @param {Function} fn The function to wrap.
+     * @param {Array} transformers A list of transformer functions
+     * @return {Function} The wrapped function.
+     * @example
+     *
+     *      R.useWith(Math.pow, [R.identity, R.identity])(3, 4); //=> 81
+     *      R.useWith(Math.pow, [R.identity, R.identity])(3)(4); //=> 81
+     *      R.useWith(Math.pow, [R.dec, R.inc])(3, 4); //=> 32
+     *      R.useWith(Math.pow, [R.dec, R.inc])(3)(4); //=> 32
+     */
+    var useWith = _curry2(function useWith(fn, transformers) {
+        return curryN(transformers.length, function () {
+            var args = [];
+            var idx = 0;
+            while (idx < transformers.length) {
+                args.push(transformers[idx].call(this, arguments[idx]));
+                idx += 1;
+            }
+            return fn.apply(this, args.concat(_slice(arguments, transformers.length)));
+        });
+    });
+
+    /**
+     * Returns a list of all the enumerable own properties of the supplied object.
+     * Note that the order of the output array is not guaranteed across different
+     * JS platforms.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig {k: v} -> [v]
+     * @param {Object} obj The object to extract values from
+     * @return {Array} An array of the values of the object's own properties.
+     * @example
+     *
+     *      R.values({a: 1, b: 2, c: 3}); //=> [1, 2, 3]
+     */
+    var values = _curry1(function values(obj) {
+        var props = keys(obj);
+        var len = props.length;
+        var vals = [];
+        var idx = 0;
+        while (idx < len) {
+            vals[idx] = obj[props[idx]];
+            idx += 1;
+        }
+        return vals;
+    });
+
+    /**
+     * Returns a list of all the properties, including prototype properties, of the
+     * supplied object.
+     * Note that the order of the output array is not guaranteed to be consistent
+     * across different JS platforms.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.0
+     * @category Object
+     * @sig {k: v} -> [v]
+     * @param {Object} obj The object to extract values from
+     * @return {Array} An array of the values of the object's own and prototype properties.
+     * @example
+     *
+     *      var F = function() { this.x = 'X'; };
+     *      F.prototype.y = 'Y';
+     *      var f = new F();
+     *      R.valuesIn(f); //=> ['X', 'Y']
+     */
+    var valuesIn = _curry1(function valuesIn(obj) {
+        var prop;
+        var vs = [];
+        for (prop in obj) {
+            vs[vs.length] = obj[prop];
+        }
+        return vs;
+    });
+
+    /**
+     * Returns a "view" of the given data structure, determined by the given lens.
+     * The lens's focus determines which portion of the data structure is visible.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig Lens s a -> s -> a
+     * @param {Lens} lens
+     * @param {*} x
+     * @return {*}
+     * @see R.prop, R.lensIndex, R.lensProp
+     * @example
+     *
+     *      var xLens = R.lensProp('x');
+     *
+     *      R.view(xLens, {x: 1, y: 2});  //=> 1
+     *      R.view(xLens, {x: 4, y: 2});  //=> 4
+     */
+    var view = function () {
+        var Const = function (x) {
+            return {
+                value: x,
+                map: function () {
+                    return this;
+                }
+            };
+        };
+        return _curry2(function view(lens, x) {
+            return lens(Const)(x).value;
+        });
+    }();
+
+    /**
+     * Tests the final argument by passing it to the given predicate function. If
+     * the predicate is satisfied, the function will return the result of calling
+     * the `whenTrueFn` function with the same argument. If the predicate is not
+     * satisfied, the argument is returned as is.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category Logic
+     * @sig (a -> Boolean) -> (a -> a) -> a -> a
+     * @param {Function} pred       A predicate function
+     * @param {Function} whenTrueFn A function to invoke when the `condition`
+     *                              evaluates to a truthy value.
+     * @param {*}        x          An object to test with the `pred` function and
+     *                              pass to `whenTrueFn` if necessary.
+     * @return {*} Either `x` or the result of applying `x` to `whenTrueFn`.
+     * @see R.ifElse, R.unless
+     * @example
+     *
+     *      // truncate :: String -> String
+     *      var truncate = R.when(
+     *        R.propSatisfies(R.gt(R.__, 10), 'length'),
+     *        R.pipe(R.take(10), R.append('…'), R.join(''))
+     *      );
+     *      truncate('12345');         //=> '12345'
+     *      truncate('0123456789ABC'); //=> '0123456789…'
+     */
+    var when = _curry3(function when(pred, whenTrueFn, x) {
+        return pred(x) ? whenTrueFn(x) : x;
+    });
+
+    /**
+     * Takes a spec object and a test object; returns true if the test satisfies
+     * the spec. Each of the spec's own properties must be a predicate function.
+     * Each predicate is applied to the value of the corresponding property of the
+     * test object. `where` returns true if all the predicates return true, false
+     * otherwise.
+     *
+     * `where` is well suited to declaratively expressing constraints for other
+     * functions such as `filter` and `find`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category Object
+     * @sig {String: (* -> Boolean)} -> {String: *} -> Boolean
+     * @param {Object} spec
+     * @param {Object} testObj
+     * @return {Boolean}
+     * @example
+     *
+     *      // pred :: Object -> Boolean
+     *      var pred = R.where({
+     *        a: R.equals('foo'),
+     *        b: R.complement(R.equals('bar')),
+     *        x: R.gt(_, 10),
+     *        y: R.lt(_, 20)
+     *      });
+     *
+     *      pred({a: 'foo', b: 'xxx', x: 11, y: 19}); //=> true
+     *      pred({a: 'xxx', b: 'xxx', x: 11, y: 19}); //=> false
+     *      pred({a: 'foo', b: 'bar', x: 11, y: 19}); //=> false
+     *      pred({a: 'foo', b: 'xxx', x: 10, y: 19}); //=> false
+     *      pred({a: 'foo', b: 'xxx', x: 11, y: 20}); //=> false
+     */
+    var where = _curry2(function where(spec, testObj) {
+        for (var prop in spec) {
+            if (_has(prop, spec) && !spec[prop](testObj[prop])) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    /**
+     * Wrap a function inside another to allow you to make adjustments to the
+     * parameters, or do other processing either before the internal function is
+     * called or with its results.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (a... -> b) -> ((a... -> b) -> a... -> c) -> (a... -> c)
+     * @param {Function} fn The function to wrap.
+     * @param {Function} wrapper The wrapper function.
+     * @return {Function} The wrapped function.
+     * @example
+     *
+     *      var greet = name => 'Hello ' + name;
+     *
+     *      var shoutedGreet = R.wrap(greet, (gr, name) => gr(name).toUpperCase());
+     *
+     *      shoutedGreet("Kathy"); //=> "HELLO KATHY"
+     *
+     *      var shortenedGreet = R.wrap(greet, function(gr, name) {
+     *        return gr(name.substring(0, 3));
+     *      });
+     *      shortenedGreet("Robert"); //=> "Hello Rob"
+     */
+    var wrap = _curry2(function wrap(fn, wrapper) {
+        return curryN(fn.length, function () {
+            return wrapper.apply(this, _concat([fn], arguments));
+        });
+    });
+
+    /**
+     * Creates a new list out of the two supplied by creating each possible pair
+     * from the lists.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [b] -> [[a,b]]
+     * @param {Array} as The first list.
+     * @param {Array} bs The second list.
+     * @return {Array} The list made by combining each possible pair from
+     *         `as` and `bs` into pairs (`[a, b]`).
+     * @example
+     *
+     *      R.xprod([1, 2], ['a', 'b']); //=> [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
+     */
+    // = xprodWith(prepend); (takes about 3 times as long...)
+    var xprod = _curry2(function xprod(a, b) {
+        // = xprodWith(prepend); (takes about 3 times as long...)
+        var idx = 0;
+        var ilen = a.length;
+        var j;
+        var jlen = b.length;
+        var result = [];
+        while (idx < ilen) {
+            j = 0;
+            while (j < jlen) {
+                result[result.length] = [
+                    a[idx],
+                    b[j]
+                ];
+                j += 1;
+            }
+            idx += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Creates a new list out of the two supplied by pairing up equally-positioned
+     * items from both lists. The returned list is truncated to the length of the
+     * shorter of the two input lists.
+     * Note: `zip` is equivalent to `zipWith(function(a, b) { return [a, b] })`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [b] -> [[a,b]]
+     * @param {Array} list1 The first array to consider.
+     * @param {Array} list2 The second array to consider.
+     * @return {Array} The list made by pairing up same-indexed elements of `list1` and `list2`.
+     * @example
+     *
+     *      R.zip([1, 2, 3], ['a', 'b', 'c']); //=> [[1, 'a'], [2, 'b'], [3, 'c']]
+     */
+    var zip = _curry2(function zip(a, b) {
+        var rv = [];
+        var idx = 0;
+        var len = Math.min(a.length, b.length);
+        while (idx < len) {
+            rv[idx] = [
+                a[idx],
+                b[idx]
+            ];
+            idx += 1;
+        }
+        return rv;
+    });
+
+    /**
+     * Creates a new object out of a list of keys and a list of values.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category List
+     * @sig [String] -> [*] -> {String: *}
+     * @param {Array} keys The array that will be properties on the output object.
+     * @param {Array} values The list of values on the output object.
+     * @return {Object} The object made by pairing up same-indexed elements of `keys` and `values`.
+     * @example
+     *
+     *      R.zipObj(['a', 'b', 'c'], [1, 2, 3]); //=> {a: 1, b: 2, c: 3}
+     */
+    var zipObj = _curry2(function zipObj(keys, values) {
+        var idx = 0;
+        var len = keys.length;
+        var out = {};
+        while (idx < len) {
+            out[keys[idx]] = values[idx];
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Creates a new list out of the two supplied by applying the function to each
+     * equally-positioned pair in the lists. The returned list is truncated to the
+     * length of the shorter of the two input lists.
+     *
+     * @function
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a,b -> c) -> [a] -> [b] -> [c]
+     * @param {Function} fn The function used to combine the two elements into one value.
+     * @param {Array} list1 The first array to consider.
+     * @param {Array} list2 The second array to consider.
+     * @return {Array} The list made by combining same-indexed elements of `list1` and `list2`
+     *         using `fn`.
+     * @example
+     *
+     *      var f = (x, y) => {
+     *        // ...
+     *      };
+     *      R.zipWith(f, [1, 2, 3], ['a', 'b', 'c']);
+     *      //=> [f(1, 'a'), f(2, 'b'), f(3, 'c')]
+     */
+    var zipWith = _curry3(function zipWith(fn, a, b) {
+        var rv = [];
+        var idx = 0;
+        var len = Math.min(a.length, b.length);
+        while (idx < len) {
+            rv[idx] = fn(a[idx], b[idx]);
+            idx += 1;
+        }
+        return rv;
+    });
+
+    /**
+     * A function that always returns `false`. Any passed in parameters are ignored.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Function
+     * @sig * -> Boolean
+     * @param {*}
+     * @return {Boolean}
+     * @see R.always, R.T
+     * @example
+     *
+     *      R.F(); //=> false
+     */
+    var F = always(false);
+
+    /**
+     * A function that always returns `true`. Any passed in parameters are ignored.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Function
+     * @sig * -> Boolean
+     * @param {*}
+     * @return {Boolean}
+     * @see R.always, R.F
+     * @example
+     *
+     *      R.T(); //=> true
+     */
+    var T = always(true);
+
+    /**
+     * Copies an object.
+     *
+     * @private
+     * @param {*} value The value to be copied
+     * @param {Array} refFrom Array containing the source references
+     * @param {Array} refTo Array containing the copied source references
+     * @return {*} The copied value.
+     */
+    var _clone = function _clone(value, refFrom, refTo) {
+        var copy = function copy(copiedValue) {
+            var len = refFrom.length;
+            var idx = 0;
+            while (idx < len) {
+                if (value === refFrom[idx]) {
+                    return refTo[idx];
+                }
+                idx += 1;
+            }
+            refFrom[idx + 1] = value;
+            refTo[idx + 1] = copiedValue;
+            for (var key in value) {
+                copiedValue[key] = _clone(value[key], refFrom, refTo);
+            }
+            return copiedValue;
+        };
+        switch (type(value)) {
+        case 'Object':
+            return copy({});
+        case 'Array':
+            return copy([]);
+        case 'Date':
+            return new Date(value.valueOf());
+        case 'RegExp':
+            return _cloneRegExp(value);
+        default:
+            return value;
+        }
+    };
+
+    var _createPartialApplicator = function _createPartialApplicator(concat) {
+        return _curry2(function (fn, args) {
+            return _arity(Math.max(0, fn.length - args.length), function () {
+                return fn.apply(this, concat(args, arguments));
+            });
+        });
+    };
+
+    var _dropLast = function dropLast(n, xs) {
+        return take(n < xs.length ? xs.length - n : 0, xs);
+    };
+
+    // Values of other types are only equal if identical.
+    var _equals = function _equals(a, b, stackA, stackB) {
+        if (identical(a, b)) {
+            return true;
+        }
+        if (type(a) !== type(b)) {
+            return false;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        if (typeof a.equals === 'function' || typeof b.equals === 'function') {
+            return typeof a.equals === 'function' && a.equals(b) && typeof b.equals === 'function' && b.equals(a);
+        }
+        switch (type(a)) {
+        case 'Arguments':
+        case 'Array':
+        case 'Object':
+            break;
+        case 'Boolean':
+        case 'Number':
+        case 'String':
+            if (!(typeof a === typeof b && identical(a.valueOf(), b.valueOf()))) {
+                return false;
+            }
+            break;
+        case 'Date':
+            if (!identical(a.valueOf(), b.valueOf())) {
+                return false;
+            }
+            break;
+        case 'Error':
+            return a.name === b.name && a.message === b.message;
+        case 'RegExp':
+            if (!(a.source === b.source && a.global === b.global && a.ignoreCase === b.ignoreCase && a.multiline === b.multiline && a.sticky === b.sticky && a.unicode === b.unicode)) {
+                return false;
+            }
+            break;
+        case 'Map':
+        case 'Set':
+            if (!_equals(_arrayFromIterator(a.entries()), _arrayFromIterator(b.entries()), stackA, stackB)) {
+                return false;
+            }
+            break;
+        case 'Int8Array':
+        case 'Uint8Array':
+        case 'Uint8ClampedArray':
+        case 'Int16Array':
+        case 'Uint16Array':
+        case 'Int32Array':
+        case 'Uint32Array':
+        case 'Float32Array':
+        case 'Float64Array':
+            break;
+        case 'ArrayBuffer':
+            break;
+        default:
+            // Values of other types are only equal if identical.
+            return false;
+        }
+        var keysA = keys(a);
+        if (keysA.length !== keys(b).length) {
+            return false;
+        }
+        var idx = stackA.length - 1;
+        while (idx >= 0) {
+            if (stackA[idx] === a) {
+                return stackB[idx] === b;
+            }
+            idx -= 1;
+        }
+        stackA.push(a);
+        stackB.push(b);
+        idx = keysA.length - 1;
+        while (idx >= 0) {
+            var key = keysA[idx];
+            if (!(_has(key, b) && _equals(b[key], a[key], stackA, stackB))) {
+                return false;
+            }
+            idx -= 1;
+        }
+        stackA.pop();
+        stackB.pop();
+        return true;
+    };
+
+    /**
+     * `_makeFlat` is a helper function that returns a one-level or fully recursive
+     * function based on the flag passed in.
+     *
+     * @private
+     */
+    var _makeFlat = function _makeFlat(recursive) {
+        return function flatt(list) {
+            var value, jlen, j;
+            var result = [];
+            var idx = 0;
+            var ilen = list.length;
+            while (idx < ilen) {
+                if (isArrayLike(list[idx])) {
+                    value = recursive ? flatt(list[idx]) : list[idx];
+                    j = 0;
+                    jlen = value.length;
+                    while (j < jlen) {
+                        result[result.length] = value[j];
+                        j += 1;
+                    }
+                } else {
+                    result[result.length] = list[idx];
+                }
+                idx += 1;
+            }
+            return result;
+        };
+    };
+
+    var _reduce = function () {
+        function _arrayReduce(xf, acc, list) {
+            var idx = 0;
+            var len = list.length;
+            while (idx < len) {
+                acc = xf['@@transducer/step'](acc, list[idx]);
+                if (acc && acc['@@transducer/reduced']) {
+                    acc = acc['@@transducer/value'];
+                    break;
+                }
+                idx += 1;
+            }
+            return xf['@@transducer/result'](acc);
+        }
+        function _iterableReduce(xf, acc, iter) {
+            var step = iter.next();
+            while (!step.done) {
+                acc = xf['@@transducer/step'](acc, step.value);
+                if (acc && acc['@@transducer/reduced']) {
+                    acc = acc['@@transducer/value'];
+                    break;
+                }
+                step = iter.next();
+            }
+            return xf['@@transducer/result'](acc);
+        }
+        function _methodReduce(xf, acc, obj) {
+            return xf['@@transducer/result'](obj.reduce(bind(xf['@@transducer/step'], xf), acc));
+        }
+        var symIterator = typeof Symbol !== 'undefined' ? Symbol.iterator : '@@iterator';
+        return function _reduce(fn, acc, list) {
+            if (typeof fn === 'function') {
+                fn = _xwrap(fn);
+            }
+            if (isArrayLike(list)) {
+                return _arrayReduce(fn, acc, list);
+            }
+            if (typeof list.reduce === 'function') {
+                return _methodReduce(fn, acc, list);
+            }
+            if (list[symIterator] != null) {
+                return _iterableReduce(fn, acc, list[symIterator]());
+            }
+            if (typeof list.next === 'function') {
+                return _iterableReduce(fn, acc, list);
+            }
+            throw new TypeError('reduce: list must be array or iterable');
+        };
+    }();
+
+    var _xdropLastWhile = function () {
+        function XDropLastWhile(fn, xf) {
+            this.f = fn;
+            this.retained = [];
+            this.xf = xf;
+        }
+        XDropLastWhile.prototype['@@transducer/init'] = _xfBase.init;
+        XDropLastWhile.prototype['@@transducer/result'] = function (result) {
+            this.retained = null;
+            return this.xf['@@transducer/result'](result);
+        };
+        XDropLastWhile.prototype['@@transducer/step'] = function (result, input) {
+            return this.f(input) ? this.retain(result, input) : this.flush(result, input);
+        };
+        XDropLastWhile.prototype.flush = function (result, input) {
+            result = _reduce(this.xf['@@transducer/step'], result, this.retained);
+            this.retained = [];
+            return this.xf['@@transducer/step'](result, input);
+        };
+        XDropLastWhile.prototype.retain = function (result, input) {
+            this.retained.push(input);
+            return result;
+        };
+        return _curry2(function _xdropLastWhile(fn, xf) {
+            return new XDropLastWhile(fn, xf);
+        });
+    }();
+
+    var _xgroupBy = function () {
+        function XGroupBy(f, xf) {
+            this.xf = xf;
+            this.f = f;
+            this.inputs = {};
+        }
+        XGroupBy.prototype['@@transducer/init'] = _xfBase.init;
+        XGroupBy.prototype['@@transducer/result'] = function (result) {
+            var key;
+            for (key in this.inputs) {
+                if (_has(key, this.inputs)) {
+                    result = this.xf['@@transducer/step'](result, this.inputs[key]);
+                    if (result['@@transducer/reduced']) {
+                        result = result['@@transducer/value'];
+                        break;
+                    }
+                }
+            }
+            this.inputs = null;
+            return this.xf['@@transducer/result'](result);
+        };
+        XGroupBy.prototype['@@transducer/step'] = function (result, input) {
+            var key = this.f(input);
+            this.inputs[key] = this.inputs[key] || [
+                key,
+                []
+            ];
+            this.inputs[key][1] = append(input, this.inputs[key][1]);
+            return result;
+        };
+        return _curry2(function _xgroupBy(f, xf) {
+            return new XGroupBy(f, xf);
+        });
+    }();
+
+    /**
+     * Creates a new list iteration function from an existing one by adding two new
+     * parameters to its callback function: the current index, and the entire list.
+     *
+     * This would turn, for instance, Ramda's simple `map` function into one that
+     * more closely resembles `Array.prototype.map`. Note that this will only work
+     * for functions in which the iteration callback function is the first
+     * parameter, and where the list is the last parameter. (This latter might be
+     * unimportant if the list parameter is not used.)
+     *
+     * @func
+     * @memberOf R
+     * @since v0.15.0
+     * @category Function
+     * @category List
+     * @sig ((a ... -> b) ... -> [a] -> *) -> (a ..., Int, [a] -> b) ... -> [a] -> *)
+     * @param {Function} fn A list iteration function that does not pass index or list to its callback
+     * @return {Function} An altered list iteration function that passes (item, index, list) to its callback
+     * @example
+     *
+     *      var mapIndexed = R.addIndex(R.map);
+     *      mapIndexed((val, idx) => idx + '-' + val, ['f', 'o', 'o', 'b', 'a', 'r']);
+     *      //=> ['0-f', '1-o', '2-o', '3-b', '4-a', '5-r']
+     */
+    var addIndex = _curry1(function addIndex(fn) {
+        return curryN(fn.length, function () {
+            var idx = 0;
+            var origFn = arguments[0];
+            var list = arguments[arguments.length - 1];
+            var args = _slice(arguments);
+            args[0] = function () {
+                var result = origFn.apply(this, _concat(arguments, [
+                    idx,
+                    list
+                ]));
+                idx += 1;
+                return result;
+            };
+            return fn.apply(this, args);
+        });
+    });
+
+    /**
+     * Wraps a function of any arity (including nullary) in a function that accepts
+     * exactly 2 parameters. Any extraneous parameters will not be passed to the
+     * supplied function.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.2.0
+     * @category Function
+     * @sig (* -> c) -> (a, b -> c)
+     * @param {Function} fn The function to wrap.
+     * @return {Function} A new function wrapping `fn`. The new function is guaranteed to be of
+     *         arity 2.
+     * @example
+     *
+     *      var takesThreeArgs = function(a, b, c) {
+     *        return [a, b, c];
+     *      };
+     *      takesThreeArgs.length; //=> 3
+     *      takesThreeArgs(1, 2, 3); //=> [1, 2, 3]
+     *
+     *      var takesTwoArgs = R.binary(takesThreeArgs);
+     *      takesTwoArgs.length; //=> 2
+     *      // Only 2 arguments are passed to the wrapped function
+     *      takesTwoArgs(1, 2, 3); //=> [1, 2, undefined]
+     */
+    var binary = _curry1(function binary(fn) {
+        return nAry(2, fn);
+    });
+
+    /**
+     * Creates a deep copy of the value which may contain (nested) `Array`s and
+     * `Object`s, `Number`s, `String`s, `Boolean`s and `Date`s. `Function`s are not
+     * copied, but assigned by their reference.
+     *
+     * Dispatches to a `clone` method if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig {*} -> {*}
+     * @param {*} value The object or array to clone
+     * @return {*} A new object or array.
+     * @example
+     *
+     *      var objects = [{}, {}, {}];
+     *      var objectsClone = R.clone(objects);
+     *      objects[0] === objectsClone[0]; //=> false
+     */
+    var clone = _curry1(function clone(value) {
+        return value != null && typeof value.clone === 'function' ? value.clone() : _clone(value, [], []);
+    });
+
+    /**
+     * Returns a curried equivalent of the provided function. The curried function
+     * has two unusual capabilities. First, its arguments needn't be provided one
+     * at a time. If `f` is a ternary function and `g` is `R.curry(f)`, the
+     * following are equivalent:
+     *
+     *   - `g(1)(2)(3)`
+     *   - `g(1)(2, 3)`
+     *   - `g(1, 2)(3)`
+     *   - `g(1, 2, 3)`
+     *
+     * Secondly, the special placeholder value `R.__` may be used to specify
+     * "gaps", allowing partial application of any combination of arguments,
+     * regardless of their positions. If `g` is as above and `_` is `R.__`, the
+     * following are equivalent:
+     *
+     *   - `g(1, 2, 3)`
+     *   - `g(_, 2, 3)(1)`
+     *   - `g(_, _, 3)(1)(2)`
+     *   - `g(_, _, 3)(1, 2)`
+     *   - `g(_, 2)(1)(3)`
+     *   - `g(_, 2)(1, 3)`
+     *   - `g(_, 2)(_, 3)(1)`
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (* -> a) -> (* -> a)
+     * @param {Function} fn The function to curry.
+     * @return {Function} A new, curried function.
+     * @see R.curryN
+     * @example
+     *
+     *      var addFourNumbers = (a, b, c, d) => a + b + c + d;
+     *
+     *      var curriedAddFourNumbers = R.curry(addFourNumbers);
+     *      var f = curriedAddFourNumbers(1, 2);
+     *      var g = f(3);
+     *      g(4); //=> 10
+     */
+    var curry = _curry1(function curry(fn) {
+        return curryN(fn.length, fn);
+    });
+
+    /**
+     * Returns all but the first `n` elements of the given list, string, or
+     * transducer/transformer (or object with a `drop` method).
+     *
+     * Dispatches to the `drop` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Number -> [a] -> [a]
+     * @sig Number -> String -> String
+     * @param {Number} n
+     * @param {*} list
+     * @return {*}
+     * @see R.take, R.transduce
+     * @example
+     *
+     *      R.drop(1, ['foo', 'bar', 'baz']); //=> ['bar', 'baz']
+     *      R.drop(2, ['foo', 'bar', 'baz']); //=> ['baz']
+     *      R.drop(3, ['foo', 'bar', 'baz']); //=> []
+     *      R.drop(4, ['foo', 'bar', 'baz']); //=> []
+     *      R.drop(3, 'ramda');               //=> 'da'
+     */
+    var drop = _curry2(_dispatchable('drop', _xdrop, function drop(n, xs) {
+        return slice(Math.max(0, n), Infinity, xs);
+    }));
+
+    /**
+     * Returns a list containing all but the last `n` elements of the given `list`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category List
+     * @sig Number -> [a] -> [a]
+     * @sig Number -> String -> String
+     * @param {Number} n The number of elements of `xs` to skip.
+     * @param {Array} xs The collection to consider.
+     * @return {Array}
+     * @see R.takeLast
+     * @example
+     *
+     *      R.dropLast(1, ['foo', 'bar', 'baz']); //=> ['foo', 'bar']
+     *      R.dropLast(2, ['foo', 'bar', 'baz']); //=> ['foo']
+     *      R.dropLast(3, ['foo', 'bar', 'baz']); //=> []
+     *      R.dropLast(4, ['foo', 'bar', 'baz']); //=> []
+     *      R.dropLast(3, 'ramda');               //=> 'ra'
+     */
+    var dropLast = _curry2(_dispatchable('dropLast', _xdropLast, _dropLast));
+
+    /**
+     * Returns a new list containing all but last the`n` elements of a given list,
+     * passing each value from the right to the supplied predicate function,
+     * skipping elements while the predicate function returns `true`. The predicate
+     * function is passed one argument: (value)*.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> [a]
+     * @param {Function} fn The function called per iteration.
+     * @param {Array} list The collection to iterate over.
+     * @return {Array} A new array.
+     * @see R.takeLastWhile, R.addIndex
+     * @example
+     *
+     *      var lteThree = x => x <= 3;
+     *
+     *      R.dropLastWhile(lteThree, [1, 2, 3, 4, 3, 2, 1]); //=> [1, 2, 3, 4]
+     */
+    var dropLastWhile = _curry2(_dispatchable('dropLastWhile', _xdropLastWhile, _dropLastWhile));
+
+    /**
+     * Returns `true` if its arguments are equivalent, `false` otherwise. Handles
+     * cyclical data structures.
+     *
+     * Dispatches symmetrically to the `equals` methods of both arguments, if
+     * present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.15.0
+     * @category Relation
+     * @sig a -> b -> Boolean
+     * @param {*} a
+     * @param {*} b
+     * @return {Boolean}
+     * @example
+     *
+     *      R.equals(1, 1); //=> true
+     *      R.equals(1, '1'); //=> false
+     *      R.equals([1, 2, 3], [1, 2, 3]); //=> true
+     *
+     *      var a = {}; a.v = a;
+     *      var b = {}; b.v = b;
+     *      R.equals(a, b); //=> true
+     */
+    var equals = _curry2(function equals(a, b) {
+        return _equals(a, b, [], []);
+    });
+
+    /**
+     * Takes a predicate and a "filterable", and returns a new filterable of the
+     * same type containing the members of the given filterable which satisfy the
+     * given predicate.
+     *
+     * Dispatches to the `filter` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Filterable f => (a -> Boolean) -> f a -> f a
+     * @param {Function} pred
+     * @param {Array} filterable
+     * @return {Array}
+     * @see R.reject, R.transduce, R.addIndex
+     * @example
+     *
+     *      var isEven = n => n % 2 === 0;
+     *
+     *      R.filter(isEven, [1, 2, 3, 4]); //=> [2, 4]
+     *
+     *      R.filter(isEven, {a: 1, b: 2, c: 3, d: 4}); //=> {b: 2, d: 4}
+     */
+    // else
+    var filter = _curry2(_dispatchable('filter', _xfilter, function (pred, filterable) {
+        return _isObject(filterable) ? _reduce(function (acc, key) {
+            if (pred(filterable[key])) {
+                acc[key] = filterable[key];
+            }
+            return acc;
+        }, {}, keys(filterable)) : // else
+        _filter(pred, filterable);
+    }));
+
+    /**
+     * Returns a new list by pulling every item out of it (and all its sub-arrays)
+     * and putting them in a new array, depth-first.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [b]
+     * @param {Array} list The array to consider.
+     * @return {Array} The flattened list.
+     * @see R.unnest
+     * @example
+     *
+     *      R.flatten([1, 2, [3, 4], 5, [6, [7, 8, [9, [10, 11], 12]]]]);
+     *      //=> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+     */
+    var flatten = _curry1(_makeFlat(true));
+
+    /**
+     * Returns a new function much like the supplied one, except that the first two
+     * arguments' order is reversed.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (a -> b -> c -> ... -> z) -> (b -> a -> c -> ... -> z)
+     * @param {Function} fn The function to invoke with its first two parameters reversed.
+     * @return {*} The result of invoking `fn` with its first two parameters' order reversed.
+     * @example
+     *
+     *      var mergeThree = (a, b, c) => [].concat(a, b, c);
+     *
+     *      mergeThree(1, 2, 3); //=> [1, 2, 3]
+     *
+     *      R.flip(mergeThree)(1, 2, 3); //=> [2, 1, 3]
+     */
+    var flip = _curry1(function flip(fn) {
+        return curry(function (a, b) {
+            var args = _slice(arguments);
+            args[0] = b;
+            args[1] = a;
+            return fn.apply(this, args);
+        });
+    });
+
+    /**
+     * Splits a list into sub-lists stored in an object, based on the result of
+     * calling a String-returning function on each element, and grouping the
+     * results according to values returned.
+     *
+     * Dispatches to the `groupBy` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig (a -> String) -> [a] -> {String: [a]}
+     * @param {Function} fn Function :: a -> String
+     * @param {Array} list The array to group
+     * @return {Object} An object with the output of `fn` for keys, mapped to arrays of elements
+     *         that produced that key when passed to `fn`.
+     * @see R.transduce
+     * @example
+     *
+     *      var byGrade = R.groupBy(function(student) {
+     *        var score = student.score;
+     *        return score < 65 ? 'F' :
+     *               score < 70 ? 'D' :
+     *               score < 80 ? 'C' :
+     *               score < 90 ? 'B' : 'A';
+     *      });
+     *      var students = [{name: 'Abby', score: 84},
+     *                      {name: 'Eddy', score: 58},
+     *                      // ...
+     *                      {name: 'Jack', score: 69}];
+     *      byGrade(students);
+     *      // {
+     *      //   'A': [{name: 'Dianne', score: 99}],
+     *      //   'B': [{name: 'Abby', score: 84}]
+     *      //   // ...,
+     *      //   'F': [{name: 'Eddy', score: 58}]
+     *      // }
+     */
+    var groupBy = _curry2(_dispatchable('groupBy', _xgroupBy, function groupBy(fn, list) {
+        return _reduce(function (acc, elt) {
+            var key = fn(elt);
+            acc[key] = append(elt, acc[key] || (acc[key] = []));
+            return acc;
+        }, {}, list);
+    }));
+
+    /**
+     * Returns the first element of the given list or string. In some libraries
+     * this function is named `first`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> a | Undefined
+     * @sig String -> String
+     * @param {Array|String} list
+     * @return {*}
+     * @see R.tail, R.init, R.last
+     * @example
+     *
+     *      R.head(['fi', 'fo', 'fum']); //=> 'fi'
+     *      R.head([]); //=> undefined
+     *
+     *      R.head('abc'); //=> 'a'
+     *      R.head(''); //=> ''
+     */
+    var head = nth(0);
+
+    /**
+     * Given a function that generates a key, turns a list of objects into an
+     * object indexing the objects by the given key. Note that if multiple
+     * objects generate the same value for the indexing key only the last value
+     * will be included in the generated object.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig (a -> String) -> [{k: v}] -> {k: {k: v}}
+     * @param {Function} fn Function :: a -> String
+     * @param {Array} array The array of objects to index
+     * @return {Object} An object indexing each array element by the given property.
+     * @example
+     *
+     *      var list = [{id: 'xyz', title: 'A'}, {id: 'abc', title: 'B'}];
+     *      R.indexBy(R.prop('id'), list);
+     *      //=> {abc: {id: 'abc', title: 'B'}, xyz: {id: 'xyz', title: 'A'}}
+     */
+    var indexBy = _curry2(function indexBy(fn, list) {
+        return _reduce(function (acc, elem) {
+            var key = fn(elem);
+            acc[key] = elem;
+            return acc;
+        }, {}, list);
+    });
+
+    /**
+     * Returns all but the last element of the given list or string.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category List
+     * @sig [a] -> [a]
+     * @sig String -> String
+     * @param {*} list
+     * @return {*}
+     * @see R.last, R.head, R.tail
+     * @example
+     *
+     *      R.init([1, 2, 3]);  //=> [1, 2]
+     *      R.init([1, 2]);     //=> [1]
+     *      R.init([1]);        //=> []
+     *      R.init([]);         //=> []
+     *
+     *      R.init('abc');  //=> 'ab'
+     *      R.init('ab');   //=> 'a'
+     *      R.init('a');    //=> ''
+     *      R.init('');     //=> ''
+     */
+    var init = slice(0, -1);
+
+    /**
+     * Combines two lists into a set (i.e. no duplicates) composed of those
+     * elements common to both lists. Duplication is determined according to the
+     * value returned by applying the supplied predicate to two list elements.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig (a -> a -> Boolean) -> [*] -> [*] -> [*]
+     * @param {Function} pred A predicate function that determines whether
+     *        the two supplied elements are equal.
+     * @param {Array} list1 One list of items to compare
+     * @param {Array} list2 A second list of items to compare
+     * @return {Array} A new list containing those elements common to both lists.
+     * @see R.intersection
+     * @example
+     *
+     *      var buffaloSpringfield = [
+     *        {id: 824, name: 'Richie Furay'},
+     *        {id: 956, name: 'Dewey Martin'},
+     *        {id: 313, name: 'Bruce Palmer'},
+     *        {id: 456, name: 'Stephen Stills'},
+     *        {id: 177, name: 'Neil Young'}
+     *      ];
+     *      var csny = [
+     *        {id: 204, name: 'David Crosby'},
+     *        {id: 456, name: 'Stephen Stills'},
+     *        {id: 539, name: 'Graham Nash'},
+     *        {id: 177, name: 'Neil Young'}
+     *      ];
+     *
+     *      R.intersectionWith(R.eqBy(R.prop('id')), buffaloSpringfield, csny);
+     *      //=> [{id: 456, name: 'Stephen Stills'}, {id: 177, name: 'Neil Young'}]
+     */
+    var intersectionWith = _curry3(function intersectionWith(pred, list1, list2) {
+        var results = [];
+        var idx = 0;
+        while (idx < list1.length) {
+            if (_containsWith(pred, list1[idx], list2)) {
+                results[results.length] = list1[idx];
+            }
+            idx += 1;
+        }
+        return uniqWith(pred, results);
+    });
+
+    /**
+     * Same as R.invertObj, however this accounts for objects with duplicate values
+     * by putting the values into an array.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Object
+     * @sig {s: x} -> {x: [ s, ... ]}
+     * @param {Object} obj The object or array to invert
+     * @return {Object} out A new object with keys
+     * in an array.
+     * @example
+     *
+     *      var raceResultsByFirstName = {
+     *        first: 'alice',
+     *        second: 'jake',
+     *        third: 'alice',
+     *      };
+     *      R.invert(raceResultsByFirstName);
+     *      //=> { 'alice': ['first', 'third'], 'jake':['second'] }
+     */
+    var invert = _curry1(function invert(obj) {
+        var props = keys(obj);
+        var len = props.length;
+        var idx = 0;
+        var out = {};
+        while (idx < len) {
+            var key = props[idx];
+            var val = obj[key];
+            var list = _has(val, out) ? out[val] : out[val] = [];
+            list[list.length] = key;
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Returns a new object with the keys of the given object as values, and the
+     * values of the given object, which are coerced to strings, as keys. Note
+     * that the last key found is preferred when handling the same value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Object
+     * @sig {s: x} -> {x: s}
+     * @param {Object} obj The object or array to invert
+     * @return {Object} out A new object
+     * @example
+     *
+     *      var raceResults = {
+     *        first: 'alice',
+     *        second: 'jake'
+     *      };
+     *      R.invertObj(raceResults);
+     *      //=> { 'alice': 'first', 'jake':'second' }
+     *
+     *      // Alternatively:
+     *      var raceResults = ['alice', 'jake'];
+     *      R.invertObj(raceResults);
+     *      //=> { 'alice': '0', 'jake':'1' }
+     */
+    var invertObj = _curry1(function invertObj(obj) {
+        var props = keys(obj);
+        var len = props.length;
+        var idx = 0;
+        var out = {};
+        while (idx < len) {
+            var key = props[idx];
+            out[obj[key]] = key;
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Returns `true` if the given value is its type's empty value; `false`
+     * otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Logic
+     * @sig a -> Boolean
+     * @param {*} x
+     * @return {Boolean}
+     * @see R.empty
+     * @example
+     *
+     *      R.isEmpty([1, 2, 3]);   //=> false
+     *      R.isEmpty([]);          //=> true
+     *      R.isEmpty('');          //=> true
+     *      R.isEmpty(null);        //=> false
+     *      R.isEmpty({});          //=> true
+     *      R.isEmpty({length: 0}); //=> false
+     */
+    var isEmpty = _curry1(function isEmpty(x) {
+        return x != null && equals(x, empty(x));
+    });
+
+    /**
+     * Returns the last element of the given list or string.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.4
+     * @category List
+     * @sig [a] -> a | Undefined
+     * @sig String -> String
+     * @param {*} list
+     * @return {*}
+     * @see R.init, R.head, R.tail
+     * @example
+     *
+     *      R.last(['fi', 'fo', 'fum']); //=> 'fum'
+     *      R.last([]); //=> undefined
+     *
+     *      R.last('abc'); //=> 'c'
+     *      R.last(''); //=> ''
+     */
+    var last = nth(-1);
+
+    /**
+     * Returns the position of the last occurrence of an item in an array, or -1 if
+     * the item is not included in the array. `R.equals` is used to determine
+     * equality.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig a -> [a] -> Number
+     * @param {*} target The item to find.
+     * @param {Array} xs The array to search in.
+     * @return {Number} the index of the target, or -1 if the target is not found.
+     * @see R.indexOf
+     * @example
+     *
+     *      R.lastIndexOf(3, [-1,3,3,0,1,2,3,4]); //=> 6
+     *      R.lastIndexOf(10, [1,2,3,4]); //=> -1
+     */
+    var lastIndexOf = _curry2(function lastIndexOf(target, xs) {
+        if (typeof xs.lastIndexOf === 'function' && !_isArray(xs)) {
+            return xs.lastIndexOf(target);
+        } else {
+            var idx = xs.length - 1;
+            while (idx >= 0) {
+                if (equals(xs[idx], target)) {
+                    return idx;
+                }
+                idx -= 1;
+            }
+            return -1;
+        }
+    });
+
+    /**
+     * Takes a function and
+     * a [functor](https://github.com/fantasyland/fantasy-land#functor),
+     * applies the function to each of the functor's values, and returns
+     * a functor of the same shape.
+     *
+     * Ramda provides suitable `map` implementations for `Array` and `Object`,
+     * so this function may be applied to `[1, 2, 3]` or `{x: 1, y: 2, z: 3}`.
+     *
+     * Dispatches to the `map` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * Also treats functions as functors and will compose them together.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Functor f => (a -> b) -> f a -> f b
+     * @param {Function} fn The function to be called on every element of the input `list`.
+     * @param {Array} list The list to be iterated over.
+     * @return {Array} The new list.
+     * @see R.transduce, R.addIndex
+     * @example
+     *
+     *      var double = x => x * 2;
+     *
+     *      R.map(double, [1, 2, 3]); //=> [2, 4, 6]
+     *
+     *      R.map(double, {x: 1, y: 2, z: 3}); //=> {x: 2, y: 4, z: 6}
+     */
+    var map = _curry2(_dispatchable('map', _xmap, function map(fn, functor) {
+        switch (Object.prototype.toString.call(functor)) {
+        case '[object Function]':
+            return curryN(functor.length, function () {
+                return fn.call(this, functor.apply(this, arguments));
+            });
+        case '[object Object]':
+            return _reduce(function (acc, key) {
+                acc[key] = fn(functor[key]);
+                return acc;
+            }, {}, keys(functor));
+        default:
+            return _map(fn, functor);
+        }
+    }));
+
+    /**
+     * An Object-specific version of `map`. The function is applied to three
+     * arguments: *(value, key, obj)*. If only the value is significant, use
+     * `map` instead.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Object
+     * @sig ((*, String, Object) -> *) -> Object -> Object
+     * @param {Function} fn
+     * @param {Object} obj
+     * @return {Object}
+     * @see R.map
+     * @example
+     *
+     *      var values = { x: 1, y: 2, z: 3 };
+     *      var prependKeyAndDouble = (num, key, obj) => key + (num * 2);
+     *
+     *      R.mapObjIndexed(prependKeyAndDouble, values); //=> { x: 'x2', y: 'y4', z: 'z6' }
+     */
+    var mapObjIndexed = _curry2(function mapObjIndexed(fn, obj) {
+        return _reduce(function (acc, key) {
+            acc[key] = fn(obj[key], key, obj);
+            return acc;
+        }, {}, keys(obj));
+    });
+
+    /**
+     * Creates a new object with the own properties of the two provided objects. If
+     * a key exists in both objects, the provided function is applied to the values
+     * associated with the key in each object, with the result being used as the
+     * value associated with the key in the returned object. The key will be
+     * excluded from the returned object if the resulting value is `undefined`.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Object
+     * @sig (a -> a -> a) -> {a} -> {a} -> {a}
+     * @param {Function} fn
+     * @param {Object} l
+     * @param {Object} r
+     * @return {Object}
+     * @see R.merge, R.mergeWithKey
+     * @example
+     *
+     *      R.mergeWith(R.concat,
+     *                  { a: true, values: [10, 20] },
+     *                  { b: true, values: [15, 35] });
+     *      //=> { a: true, b: true, values: [10, 20, 15, 35] }
+     */
+    var mergeWith = _curry3(function mergeWith(fn, l, r) {
+        return mergeWithKey(function (_, _l, _r) {
+            return fn(_l, _r);
+        }, l, r);
+    });
+
+    /**
+     * Takes a function `f` and a list of arguments, and returns a function `g`.
+     * When applied, `g` returns the result of applying `f` to the arguments
+     * provided initially followed by the arguments provided to `g`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category Function
+     * @sig ((a, b, c, ..., n) -> x) -> [a, b, c, ...] -> ((d, e, f, ..., n) -> x)
+     * @param {Function} f
+     * @param {Array} args
+     * @return {Function}
+     * @see R.partialRight
+     * @example
+     *
+     *      var multiply = (a, b) => a * b;
+     *      var double = R.partial(multiply, [2]);
+     *      double(2); //=> 4
+     *
+     *      var greet = (salutation, title, firstName, lastName) =>
+     *        salutation + ', ' + title + ' ' + firstName + ' ' + lastName + '!';
+     *
+     *      var sayHello = R.partial(greet, ['Hello']);
+     *      var sayHelloToMs = R.partial(sayHello, ['Ms.']);
+     *      sayHelloToMs('Jane', 'Jones'); //=> 'Hello, Ms. Jane Jones!'
+     */
+    var partial = _createPartialApplicator(_concat);
+
+    /**
+     * Takes a function `f` and a list of arguments, and returns a function `g`.
+     * When applied, `g` returns the result of applying `f` to the arguments
+     * provided to `g` followed by the arguments provided initially.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category Function
+     * @sig ((a, b, c, ..., n) -> x) -> [d, e, f, ..., n] -> ((a, b, c, ...) -> x)
+     * @param {Function} f
+     * @param {Array} args
+     * @return {Function}
+     * @see R.partial
+     * @example
+     *
+     *      var greet = (salutation, title, firstName, lastName) =>
+     *        salutation + ', ' + title + ' ' + firstName + ' ' + lastName + '!';
+     *
+     *      var greetMsJaneJones = R.partialRight(greet, ['Ms.', 'Jane', 'Jones']);
+     *
+     *      greetMsJaneJones('Hello'); //=> 'Hello, Ms. Jane Jones!'
+     */
+    var partialRight = _createPartialApplicator(flip(_concat));
+
+    /**
+     * Takes a predicate and a list and returns the pair of lists of elements which
+     * do and do not satisfy the predicate, respectively.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.4
+     * @category List
+     * @sig (a -> Boolean) -> [a] -> [[a],[a]]
+     * @param {Function} pred A predicate to determine which array the element belongs to.
+     * @param {Array} list The array to partition.
+     * @return {Array} A nested array, containing first an array of elements that satisfied the predicate,
+     *         and second an array of elements that did not satisfy.
+     * @see R.filter, R.reject
+     * @example
+     *
+     *      R.partition(R.contains('s'), ['sss', 'ttt', 'foo', 'bars']);
+     *      //=> [ [ 'sss', 'bars' ],  [ 'ttt', 'foo' ] ]
+     */
+    var partition = _curry2(function partition(pred, list) {
+        return _reduce(function (acc, elt) {
+            var xs = acc[pred(elt) ? 0 : 1];
+            xs[xs.length] = elt;
+            return acc;
+        }, [
+            [],
+            []
+        ], list);
+    });
+
+    /**
+     * Determines whether a nested path on an object has a specific value, in
+     * `R.equals` terms. Most likely used to filter a list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category Relation
+     * @sig [String] -> * -> {String: *} -> Boolean
+     * @param {Array} path The path of the nested property to use
+     * @param {*} val The value to compare the nested property with
+     * @param {Object} obj The object to check the nested property in
+     * @return {Boolean} `true` if the value equals the nested object property,
+     *         `false` otherwise.
+     * @example
+     *
+     *      var user1 = { address: { zipCode: 90210 } };
+     *      var user2 = { address: { zipCode: 55555 } };
+     *      var user3 = { name: 'Bob' };
+     *      var users = [ user1, user2, user3 ];
+     *      var isFamous = R.pathEq(['address', 'zipCode'], 90210);
+     *      R.filter(isFamous, users); //=> [ user1 ]
+     */
+    var pathEq = _curry3(function pathEq(_path, val, obj) {
+        return equals(path(_path, obj), val);
+    });
+
+    /**
+     * Returns a new list by plucking the same named property off all objects in
+     * the list supplied.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig k -> [{k: v}] -> [v]
+     * @param {Number|String} key The key name to pluck off of each object.
+     * @param {Array} list The array to consider.
+     * @return {Array} The list of values for the given key.
+     * @see R.props
+     * @example
+     *
+     *      R.pluck('a')([{a: 1}, {a: 2}]); //=> [1, 2]
+     *      R.pluck(0)([[1, 2], [3, 4]]);   //=> [1, 3]
+     */
+    var pluck = _curry2(function pluck(p, list) {
+        return map(prop(p), list);
+    });
+
+    /**
+     * Reasonable analog to SQL `select` statement.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @category Relation
+     * @sig [k] -> [{k: v}] -> [{k: v}]
+     * @param {Array} props The property names to project
+     * @param {Array} objs The objects to query
+     * @return {Array} An array of objects with just the `props` properties.
+     * @example
+     *
+     *      var abby = {name: 'Abby', age: 7, hair: 'blond', grade: 2};
+     *      var fred = {name: 'Fred', age: 12, hair: 'brown', grade: 7};
+     *      var kids = [abby, fred];
+     *      R.project(['name', 'grade'], kids); //=> [{name: 'Abby', grade: 2}, {name: 'Fred', grade: 7}]
+     */
+    // passing `identity` gives correct arity
+    var project = useWith(_map, [
+        pickAll,
+        identity
+    ]);
+
+    /**
+     * Returns `true` if the specified object property is equal, in `R.equals`
+     * terms, to the given value; `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig String -> a -> Object -> Boolean
+     * @param {String} name
+     * @param {*} val
+     * @param {*} obj
+     * @return {Boolean}
+     * @see R.equals, R.propSatisfies
+     * @example
+     *
+     *      var abby = {name: 'Abby', age: 7, hair: 'blond'};
+     *      var fred = {name: 'Fred', age: 12, hair: 'brown'};
+     *      var rusty = {name: 'Rusty', age: 10, hair: 'brown'};
+     *      var alois = {name: 'Alois', age: 15, disposition: 'surly'};
+     *      var kids = [abby, fred, rusty, alois];
+     *      var hasBrownHair = R.propEq('hair', 'brown');
+     *      R.filter(hasBrownHair, kids); //=> [fred, rusty]
+     */
+    var propEq = _curry3(function propEq(name, val, obj) {
+        return propSatisfies(equals(val), name, obj);
+    });
+
+    /**
+     * Returns `true` if the specified object property is of the given type;
+     * `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Type
+     * @sig Type -> String -> Object -> Boolean
+     * @param {Function} type
+     * @param {String} name
+     * @param {*} obj
+     * @return {Boolean}
+     * @see R.is, R.propSatisfies
+     * @example
+     *
+     *      R.propIs(Number, 'x', {x: 1, y: 2});  //=> true
+     *      R.propIs(Number, 'x', {x: 'foo'});    //=> false
+     *      R.propIs(Number, 'x', {});            //=> false
+     */
+    var propIs = _curry3(function propIs(type, name, obj) {
+        return propSatisfies(is(type), name, obj);
+    });
+
+    /**
+     * Returns a single item by iterating through the list, successively calling
+     * the iterator function and passing it an accumulator value and the current
+     * value from the array, and then passing the result to the next call.
+     *
+     * The iterator function receives two values: *(acc, value)*. It may use
+     * `R.reduced` to shortcut the iteration.
+     *
+     * Note: `R.reduce` does not skip deleted or unassigned indices (sparse
+     * arrays), unlike the native `Array.prototype.reduce` method. For more details
+     * on this behavior, see:
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce#Description
+     *
+     * Dispatches to the `reduce` method of the third argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig ((a, b) -> a) -> a -> [b] -> a
+     * @param {Function} fn The iterator function. Receives two values, the accumulator and the
+     *        current element from the array.
+     * @param {*} acc The accumulator value.
+     * @param {Array} list The list to iterate over.
+     * @return {*} The final, accumulated value.
+     * @see R.reduced, R.addIndex
+     * @example
+     *
+     *      var numbers = [1, 2, 3];
+     *      var add = (a, b) => a + b;
+     *
+     *      R.reduce(add, 10, numbers); //=> 16
+     */
+    var reduce = _curry3(_reduce);
+
+    /**
+     * The complement of `filter`.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig Filterable f => (a -> Boolean) -> f a -> f a
+     * @param {Function} pred
+     * @param {Array} filterable
+     * @return {Array}
+     * @see R.filter, R.transduce, R.addIndex
+     * @example
+     *
+     *      var isOdd = (n) => n % 2 === 1;
+     *
+     *      R.reject(isOdd, [1, 2, 3, 4]); //=> [2, 4]
+     *
+     *      R.reject(isOdd, {a: 1, b: 2, c: 3, d: 4}); //=> {b: 2, d: 4}
+     */
+    var reject = _curry2(function reject(pred, filterable) {
+        return filter(_complement(pred), filterable);
+    });
+
+    /**
+     * Returns a fixed list of size `n` containing a specified identical value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.1
+     * @category List
+     * @sig a -> n -> [a]
+     * @param {*} value The value to repeat.
+     * @param {Number} n The desired size of the output list.
+     * @return {Array} A new array containing `n` `value`s.
+     * @example
+     *
+     *      R.repeat('hi', 5); //=> ['hi', 'hi', 'hi', 'hi', 'hi']
+     *
+     *      var obj = {};
+     *      var repeatedObjs = R.repeat(obj, 5); //=> [{}, {}, {}, {}, {}]
+     *      repeatedObjs[0] === repeatedObjs[1]; //=> true
+     */
+    var repeat = _curry2(function repeat(value, n) {
+        return times(always(value), n);
+    });
+
+    /**
+     * Adds together all the elements of a list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Math
+     * @sig [Number] -> Number
+     * @param {Array} list An array of numbers
+     * @return {Number} The sum of all the numbers in the list.
+     * @see R.reduce
+     * @example
+     *
+     *      R.sum([2,4,6,8,100,1]); //=> 121
+     */
+    var sum = reduce(add, 0);
+
+    /**
+     * Returns a new list containing the last `n` elements of the given list.
+     * If `n > list.length`, returns a list of `list.length` elements.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category List
+     * @sig Number -> [a] -> [a]
+     * @sig Number -> String -> String
+     * @param {Number} n The number of elements to return.
+     * @param {Array} xs The collection to consider.
+     * @return {Array}
+     * @see R.dropLast
+     * @example
+     *
+     *      R.takeLast(1, ['foo', 'bar', 'baz']); //=> ['baz']
+     *      R.takeLast(2, ['foo', 'bar', 'baz']); //=> ['bar', 'baz']
+     *      R.takeLast(3, ['foo', 'bar', 'baz']); //=> ['foo', 'bar', 'baz']
+     *      R.takeLast(4, ['foo', 'bar', 'baz']); //=> ['foo', 'bar', 'baz']
+     *      R.takeLast(3, 'ramda');               //=> 'mda'
+     */
+    var takeLast = _curry2(function takeLast(n, xs) {
+        return drop(n >= 0 ? xs.length - n : 0, xs);
+    });
+
+    /**
+     * Initializes a transducer using supplied iterator function. Returns a single
+     * item by iterating through the list, successively calling the transformed
+     * iterator function and passing it an accumulator value and the current value
+     * from the array, and then passing the result to the next call.
+     *
+     * The iterator function receives two values: *(acc, value)*. It will be
+     * wrapped as a transformer to initialize the transducer. A transformer can be
+     * passed directly in place of an iterator function. In both cases, iteration
+     * may be stopped early with the `R.reduced` function.
+     *
+     * A transducer is a function that accepts a transformer and returns a
+     * transformer and can be composed directly.
+     *
+     * A transformer is an an object that provides a 2-arity reducing iterator
+     * function, step, 0-arity initial value function, init, and 1-arity result
+     * extraction function, result. The step function is used as the iterator
+     * function in reduce. The result function is used to convert the final
+     * accumulator into the return type and in most cases is R.identity. The init
+     * function can be used to provide an initial accumulator, but is ignored by
+     * transduce.
+     *
+     * The iteration is performed with R.reduce after initializing the transducer.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category List
+     * @sig (c -> c) -> (a,b -> a) -> a -> [b] -> a
+     * @param {Function} xf The transducer function. Receives a transformer and returns a transformer.
+     * @param {Function} fn The iterator function. Receives two values, the accumulator and the
+     *        current element from the array. Wrapped as transformer, if necessary, and used to
+     *        initialize the transducer
+     * @param {*} acc The initial accumulator value.
+     * @param {Array} list The list to iterate over.
+     * @return {*} The final, accumulated value.
+     * @see R.reduce, R.reduced, R.into
+     * @example
+     *
+     *      var numbers = [1, 2, 3, 4];
+     *      var transducer = R.compose(R.map(R.add(1)), R.take(2));
+     *
+     *      R.transduce(transducer, R.flip(R.append), [], numbers); //=> [2, 3]
+     */
+    var transduce = curryN(4, function transduce(xf, fn, acc, list) {
+        return _reduce(xf(typeof fn === 'function' ? _xwrap(fn) : fn), acc, list);
+    });
+
+    /**
+     * Combines two lists into a set (i.e. no duplicates) composed of the elements
+     * of each list. Duplication is determined according to the value returned by
+     * applying the supplied predicate to two list elements.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig (a -> a -> Boolean) -> [*] -> [*] -> [*]
+     * @param {Function} pred A predicate used to test whether two items are equal.
+     * @param {Array} list1 The first list.
+     * @param {Array} list2 The second list.
+     * @return {Array} The first and second lists concatenated, with
+     *         duplicates removed.
+     * @see R.union
+     * @example
+     *
+     *      var l1 = [{a: 1}, {a: 2}];
+     *      var l2 = [{a: 1}, {a: 4}];
+     *      R.unionWith(R.eqBy(R.prop('a')), l1, l2); //=> [{a: 1}, {a: 2}, {a: 4}]
+     */
+    var unionWith = _curry3(function unionWith(pred, list1, list2) {
+        return uniqWith(pred, _concat(list1, list2));
+    });
+
+    /**
+     * Takes a spec object and a test object; returns true if the test satisfies
+     * the spec, false otherwise. An object satisfies the spec if, for each of the
+     * spec's own properties, accessing that property of the object gives the same
+     * value (in `R.equals` terms) as accessing that property of the spec.
+     *
+     * `whereEq` is a specialization of [`where`](#where).
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category Object
+     * @sig {String: *} -> {String: *} -> Boolean
+     * @param {Object} spec
+     * @param {Object} testObj
+     * @return {Boolean}
+     * @see R.where
+     * @example
+     *
+     *      // pred :: Object -> Boolean
+     *      var pred = R.whereEq({a: 1, b: 2});
+     *
+     *      pred({a: 1});              //=> false
+     *      pred({a: 1, b: 2});        //=> true
+     *      pred({a: 1, b: 2, c: 3});  //=> true
+     *      pred({a: 1, b: 1});        //=> false
+     */
+    var whereEq = _curry2(function whereEq(spec, testObj) {
+        return where(map(equals, spec), testObj);
+    });
+
+    var _flatCat = function () {
+        var preservingReduced = function (xf) {
+            return {
+                '@@transducer/init': _xfBase.init,
+                '@@transducer/result': function (result) {
+                    return xf['@@transducer/result'](result);
+                },
+                '@@transducer/step': function (result, input) {
+                    var ret = xf['@@transducer/step'](result, input);
+                    return ret['@@transducer/reduced'] ? _forceReduced(ret) : ret;
+                }
+            };
+        };
+        return function _xcat(xf) {
+            var rxf = preservingReduced(xf);
+            return {
+                '@@transducer/init': _xfBase.init,
+                '@@transducer/result': function (result) {
+                    return rxf['@@transducer/result'](result);
+                },
+                '@@transducer/step': function (result, input) {
+                    return !isArrayLike(input) ? _reduce(rxf, result, [input]) : _reduce(rxf, result, input);
+                }
+            };
+        };
+    }();
+
+    // Array.prototype.indexOf doesn't exist below IE9
+    // manually crawl the list to distinguish between +0 and -0
+    // NaN
+    // non-zero numbers can utilise Set
+    // all these types can utilise Set
+    // null can utilise Set
+    // anything else not covered above, defer to R.equals
+    var _indexOf = function _indexOf(list, a, idx) {
+        var inf, item;
+        // Array.prototype.indexOf doesn't exist below IE9
+        if (typeof list.indexOf === 'function') {
+            switch (typeof a) {
+            case 'number':
+                if (a === 0) {
+                    // manually crawl the list to distinguish between +0 and -0
+                    inf = 1 / a;
+                    while (idx < list.length) {
+                        item = list[idx];
+                        if (item === 0 && 1 / item === inf) {
+                            return idx;
+                        }
+                        idx += 1;
+                    }
+                    return -1;
+                } else if (a !== a) {
+                    // NaN
+                    while (idx < list.length) {
+                        item = list[idx];
+                        if (typeof item === 'number' && item !== item) {
+                            return idx;
+                        }
+                        idx += 1;
+                    }
+                    return -1;
+                }
+                // non-zero numbers can utilise Set
+                return list.indexOf(a, idx);
+            // all these types can utilise Set
+            case 'string':
+            case 'boolean':
+            case 'function':
+            case 'undefined':
+                return list.indexOf(a, idx);
+            case 'object':
+                if (a === null) {
+                    // null can utilise Set
+                    return list.indexOf(a, idx);
+                }
+            }
+        }
+        // anything else not covered above, defer to R.equals
+        while (idx < list.length) {
+            if (equals(list[idx], a)) {
+                return idx;
+            }
+            idx += 1;
+        }
+        return -1;
+    };
+
+    var _xchain = _curry2(function _xchain(f, xf) {
+        return map(f, _flatCat(xf));
+    });
+
+    /**
+     * Takes a list of predicates and returns a predicate that returns true for a
+     * given list of arguments if every one of the provided predicates is satisfied
+     * by those arguments.
+     *
+     * The function returned is a curried function whose arity matches that of the
+     * highest-arity predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Logic
+     * @sig [(*... -> Boolean)] -> (*... -> Boolean)
+     * @param {Array} preds
+     * @return {Function}
+     * @see R.anyPass
+     * @example
+     *
+     *      var isQueen = R.propEq('rank', 'Q');
+     *      var isSpade = R.propEq('suit', '♠︎');
+     *      var isQueenOfSpades = R.allPass([isQueen, isSpade]);
+     *
+     *      isQueenOfSpades({rank: 'Q', suit: '♣︎'}); //=> false
+     *      isQueenOfSpades({rank: 'Q', suit: '♠︎'}); //=> true
+     */
+    var allPass = _curry1(function allPass(preds) {
+        return curryN(reduce(max, 0, pluck('length', preds)), function () {
+            var idx = 0;
+            var len = preds.length;
+            while (idx < len) {
+                if (!preds[idx].apply(this, arguments)) {
+                    return false;
+                }
+                idx += 1;
+            }
+            return true;
+        });
+    });
+
+    /**
+     * Returns `true` if all elements are unique, in `R.equals` terms, otherwise
+     * `false`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category List
+     * @sig [a] -> Boolean
+     * @param {Array} list The array to consider.
+     * @return {Boolean} `true` if all elements are unique, else `false`.
+     * @example
+     *
+     *      R.allUniq(['1', 1]); //=> true
+     *      R.allUniq([1, 1]);   //=> false
+     *      R.allUniq([[42], [42]]); //=> false
+     */
+    var allUniq = _curry1(function allUniq(list) {
+        var len = list.length;
+        var idx = 0;
+        while (idx < len) {
+            if (_indexOf(list, list[idx], idx + 1) >= 0) {
+                return false;
+            }
+            idx += 1;
+        }
+        return true;
+    });
+
+    /**
+     * Takes a list of predicates and returns a predicate that returns true for a
+     * given list of arguments if at least one of the provided predicates is
+     * satisfied by those arguments.
+     *
+     * The function returned is a curried function whose arity matches that of the
+     * highest-arity predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Logic
+     * @sig [(*... -> Boolean)] -> (*... -> Boolean)
+     * @param {Array} preds
+     * @return {Function}
+     * @see R.allPass
+     * @example
+     *
+     *      var gte = R.anyPass([R.gt, R.equals]);
+     *
+     *      gte(3, 2); //=> true
+     *      gte(2, 2); //=> true
+     *      gte(2, 3); //=> false
+     */
+    var anyPass = _curry1(function anyPass(preds) {
+        return curryN(reduce(max, 0, pluck('length', preds)), function () {
+            var idx = 0;
+            var len = preds.length;
+            while (idx < len) {
+                if (preds[idx].apply(this, arguments)) {
+                    return true;
+                }
+                idx += 1;
+            }
+            return false;
+        });
+    });
+
+    /**
+     * ap applies a list of functions to a list of values.
+     *
+     * Dispatches to the `ap` method of the second argument, if present. Also
+     * treats functions as applicatives.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category Function
+     * @sig [f] -> [a] -> [f a]
+     * @param {Array} fns An array of functions
+     * @param {Array} vs An array of values
+     * @return {Array} An array of results of applying each of `fns` to all of `vs` in turn.
+     * @example
+     *
+     *      R.ap([R.multiply(2), R.add(3)], [1,2,3]); //=> [2, 4, 6, 4, 5, 6]
+     */
+    // else
+    var ap = _curry2(function ap(applicative, fn) {
+        return typeof applicative.ap === 'function' ? applicative.ap(fn) : typeof applicative === 'function' ? curryN(Math.max(applicative.length, fn.length), function () {
+            return applicative.apply(this, arguments)(fn.apply(this, arguments));
+        }) : // else
+        _reduce(function (acc, f) {
+            return _concat(acc, map(f, fn));
+        }, [], applicative);
+    });
+
+    /**
+     * Returns the result of calling its first argument with the remaining
+     * arguments. This is occasionally useful as a converging function for
+     * `R.converge`: the left branch can produce a function while the right branch
+     * produces a value to be passed to that function as an argument.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category Function
+     * @sig (*... -> a),*... -> a
+     * @param {Function} fn The function to apply to the remaining arguments.
+     * @param {...*} args Any number of positional arguments.
+     * @return {*}
+     * @see R.apply
+     * @example
+     *
+     *      var indentN = R.pipe(R.times(R.always(' ')),
+     *                           R.join(''),
+     *                           R.replace(/^(?!$)/gm));
+     *
+     *      var format = R.converge(R.call, [
+     *                                  R.pipe(R.prop('indent'), indentN),
+     *                                  R.prop('value')
+     *                              ]);
+     *
+     *      format({indent: 2, value: 'foo\nbar\nbaz\n'}); //=> '  foo\n  bar\n  baz\n'
+     */
+    var call = curry(function call(fn) {
+        return fn.apply(this, _slice(arguments, 1));
+    });
+
+    /**
+     * `chain` maps a function over a list and concatenates the results. `chain`
+     * is also known as `flatMap` in some libraries
+     *
+     * Dispatches to the `chain` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category List
+     * @sig (a -> [b]) -> [a] -> [b]
+     * @param {Function} fn
+     * @param {Array} list
+     * @return {Array}
+     * @example
+     *
+     *      var duplicate = n => [n, n];
+     *      R.chain(duplicate, [1, 2, 3]); //=> [1, 1, 2, 2, 3, 3]
+     */
+    var chain = _curry2(_dispatchable('chain', _xchain, function chain(fn, monad) {
+        if (typeof monad === 'function') {
+            return function () {
+                return monad.call(this, fn.apply(this, arguments)).apply(this, arguments);
+            };
+        }
+        return _makeFlat(false)(map(fn, monad));
+    }));
+
+    /**
+     * Turns a list of Functors into a Functor of a list, applying a mapping
+     * function to the elements of the list along the way.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category List
+     * @sig Functor f => (a -> f b) -> (x -> f x) -> [a] -> f [b]
+     * @param {Function} fn The transformation function
+     * @param {Function} of A function that returns the data type to return
+     * @param {Array} list An array of functors of the same type
+     * @return {*}
+     * @see R.traverse
+     * @deprecated since v0.19.0
+     * @example
+     *
+     *      var add10 = R.map(R.add(10));
+     *      R.commuteMap(add10, R.of, [[1], [2, 3]]);   //=> [[11, 12], [11, 13]]
+     *      R.commuteMap(add10, R.of, [[1, 2], [3]]);   //=> [[11, 13], [12, 13]]
+     *      R.commuteMap(add10, R.of, [[1], [2], [3]]); //=> [[11, 12, 13]]
+     *      R.commuteMap(add10, Maybe.of, [Just(1), Just(2), Just(3)]);   //=> Just([11, 12, 13])
+     *      R.commuteMap(add10, Maybe.of, [Just(1), Just(2), Nothing()]); //=> Nothing()
+     *
+     *      var fetch = url => Future((rej, res) => http.get(url, res).on('error', rej));
+     *      R.commuteMap(fetch, Future.of, [
+     *        'http://ramdajs.com',
+     *        'http://github.com/ramda'
+     *      ]); //=> Future([IncomingMessage, IncomingMessage])
+     */
+    var commuteMap = _curry3(function commuteMap(fn, of, list) {
+        function consF(acc, x) {
+            return ap(map(prepend, fn(x)), acc);
+        }
+        return reduceRight(consF, of([]), list);
+    });
+
+    /**
+     * Wraps a constructor function inside a curried function that can be called
+     * with the same arguments and returns the same type. The arity of the function
+     * returned is specified to allow using variadic constructor functions.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.4.0
+     * @category Function
+     * @sig Number -> (* -> {*}) -> (* -> {*})
+     * @param {Number} n The arity of the constructor function.
+     * @param {Function} Fn The constructor function to wrap.
+     * @return {Function} A wrapped, curried constructor function.
+     * @example
+     *
+     *      // Variadic constructor function
+     *      var Widget = () => {
+     *        this.children = Array.prototype.slice.call(arguments);
+     *        // ...
+     *      };
+     *      Widget.prototype = {
+     *        // ...
+     *      };
+     *      var allConfigs = [
+     *        // ...
+     *      ];
+     *      R.map(R.constructN(1, Widget), allConfigs); // a list of Widgets
+     */
+    var constructN = _curry2(function constructN(n, Fn) {
+        if (n > 10) {
+            throw new Error('Constructor with greater than ten arguments');
+        }
+        if (n === 0) {
+            return function () {
+                return new Fn();
+            };
+        }
+        return curry(nAry(n, function ($0, $1, $2, $3, $4, $5, $6, $7, $8, $9) {
+            switch (arguments.length) {
+            case 1:
+                return new Fn($0);
+            case 2:
+                return new Fn($0, $1);
+            case 3:
+                return new Fn($0, $1, $2);
+            case 4:
+                return new Fn($0, $1, $2, $3);
+            case 5:
+                return new Fn($0, $1, $2, $3, $4);
+            case 6:
+                return new Fn($0, $1, $2, $3, $4, $5);
+            case 7:
+                return new Fn($0, $1, $2, $3, $4, $5, $6);
+            case 8:
+                return new Fn($0, $1, $2, $3, $4, $5, $6, $7);
+            case 9:
+                return new Fn($0, $1, $2, $3, $4, $5, $6, $7, $8);
+            case 10:
+                return new Fn($0, $1, $2, $3, $4, $5, $6, $7, $8, $9);
+            }
+        }));
+    });
+
+    /**
+     * Accepts a converging function and a list of branching functions and returns
+     * a new function. When invoked, this new function is applied to some
+     * arguments, each branching function is applied to those same arguments. The
+     * results of each branching function are passed as arguments to the converging
+     * function to produce the return value.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.4.2
+     * @category Function
+     * @sig (x1 -> x2 -> ... -> z) -> [(a -> b -> ... -> x1), (a -> b -> ... -> x2), ...] -> (a -> b -> ... -> z)
+     * @param {Function} after A function. `after` will be invoked with the return values of
+     *        `fn1` and `fn2` as its arguments.
+     * @param {Array} functions A list of functions.
+     * @return {Function} A new function.
+     * @example
+     *
+     *      var add = (a, b) => a + b;
+     *      var multiply = (a, b) => a * b;
+     *      var subtract = (a, b) => a - b;
+     *
+     *      //≅ multiply( add(1, 2), subtract(1, 2) );
+     *      R.converge(multiply, [add, subtract])(1, 2); //=> -3
+     *
+     *      var add3 = (a, b, c) => a + b + c;
+     *      R.converge(add3, [multiply, add, subtract])(1, 2); //=> 4
+     */
+    var converge = _curry2(function converge(after, fns) {
+        return curryN(Math.max.apply(Math, pluck('length', fns)), function () {
+            var args = arguments;
+            var context = this;
+            return after.apply(context, _map(function (fn) {
+                return fn.apply(context, args);
+            }, fns));
+        });
+    });
+
+    /**
+     * Returns a new list without any consecutively repeating elements. Equality is
+     * determined by applying the supplied predicate two consecutive elements. The
+     * first element in a series of equal element is the one being preserved.
+     *
+     * Dispatches to the `dropRepeatsWith` method of the second argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category List
+     * @sig (a, a -> Boolean) -> [a] -> [a]
+     * @param {Function} pred A predicate used to test whether two items are equal.
+     * @param {Array} list The array to consider.
+     * @return {Array} `list` without repeating elements.
+     * @see R.transduce
+     * @example
+     *
+     *      var lengthEq = (x, y) => Math.abs(x) === Math.abs(y);
+     *      var l = [1, -1, 1, 3, 4, -4, -4, -5, 5, 3, 3];
+     *      R.dropRepeatsWith(R.eqBy(Math.abs), l); //=> [1, 3, 4, -5, 3]
+     */
+    var dropRepeatsWith = _curry2(_dispatchable('dropRepeatsWith', _xdropRepeatsWith, function dropRepeatsWith(pred, list) {
+        var result = [];
+        var idx = 1;
+        var len = list.length;
+        if (len !== 0) {
+            result[0] = list[0];
+            while (idx < len) {
+                if (!pred(last(result), list[idx])) {
+                    result[result.length] = list[idx];
+                }
+                idx += 1;
+            }
+        }
+        return result;
+    }));
+
+    /**
+     * Takes a function and two values in its domain and returns `true` if the
+     * values map to the same value in the codomain; `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.18.0
+     * @category Relation
+     * @sig (a -> b) -> a -> a -> Boolean
+     * @param {Function} f
+     * @param {*} x
+     * @param {*} y
+     * @return {Boolean}
+     * @example
+     *
+     *      R.eqBy(Math.abs, 5, -5); //=> true
+     */
+    var eqBy = _curry3(function eqBy(f, x, y) {
+        return equals(f(x), f(y));
+    });
+
+    /**
+     * Reports whether two objects have the same value, in `R.equals` terms, for
+     * the specified property. Useful as a curried predicate.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig k -> {k: v} -> {k: v} -> Boolean
+     * @param {String} prop The name of the property to compare
+     * @param {Object} obj1
+     * @param {Object} obj2
+     * @return {Boolean}
+     *
+     * @example
+     *
+     *      var o1 = { a: 1, b: 2, c: 3, d: 4 };
+     *      var o2 = { a: 10, b: 20, c: 3, d: 40 };
+     *      R.eqProps('a', o1, o2); //=> false
+     *      R.eqProps('c', o1, o2); //=> true
+     */
+    var eqProps = _curry3(function eqProps(prop, obj1, obj2) {
+        return equals(obj1[prop], obj2[prop]);
+    });
+
+    /**
+     * Returns the position of the first occurrence of an item in an array, or -1
+     * if the item is not included in the array. `R.equals` is used to determine
+     * equality.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig a -> [a] -> Number
+     * @param {*} target The item to find.
+     * @param {Array} xs The array to search in.
+     * @return {Number} the index of the target, or -1 if the target is not found.
+     * @see R.lastIndexOf
+     * @example
+     *
+     *      R.indexOf(3, [1,2,3,4]); //=> 2
+     *      R.indexOf(10, [1,2,3,4]); //=> -1
+     */
+    var indexOf = _curry2(function indexOf(target, xs) {
+        return typeof xs.indexOf === 'function' && !_isArray(xs) ? xs.indexOf(target) : _indexOf(xs, target, 0);
+    });
+
+    /**
+     * juxt applies a list of functions to a list of values.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Function
+     * @sig [(a, b, ..., m) -> n] -> ((a, b, ..., m) -> [n])
+     * @param {Array} fns An array of functions
+     * @return {Function} A function that returns a list of values after applying each of the original `fns` to its parameters.
+     * @example
+     *
+     *      var range = R.juxt([Math.min, Math.max]);
+     *      range(3, 4, 9, -3); //=> [-3, 9]
+     */
+    var juxt = _curry1(function juxt(fns) {
+        return function () {
+            return map(apply(__, arguments), fns);
+        };
+    });
+
+    /**
+     * Returns a lens for the given getter and setter functions. The getter "gets"
+     * the value of the focus; the setter "sets" the value of the focus. The setter
+     * should not mutate the data structure.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig (s -> a) -> ((a, s) -> s) -> Lens s a
+     * @param {Function} getter
+     * @param {Function} setter
+     * @return {Lens}
+     * @see R.view, R.set, R.over, R.lensIndex, R.lensProp
+     * @example
+     *
+     *      var xLens = R.lens(R.prop('x'), R.assoc('x'));
+     *
+     *      R.view(xLens, {x: 1, y: 2});            //=> 1
+     *      R.set(xLens, 4, {x: 1, y: 2});          //=> {x: 4, y: 2}
+     *      R.over(xLens, R.negate, {x: 1, y: 2});  //=> {x: -1, y: 2}
+     */
+    var lens = _curry2(function lens(getter, setter) {
+        return function (f) {
+            return function (s) {
+                return map(function (v) {
+                    return setter(v, s);
+                }, f(getter(s)));
+            };
+        };
+    });
+
+    /**
+     * Returns a lens whose focus is the specified index.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig Number -> Lens s a
+     * @param {Number} n
+     * @return {Lens}
+     * @see R.view, R.set, R.over
+     * @example
+     *
+     *      var headLens = R.lensIndex(0);
+     *
+     *      R.view(headLens, ['a', 'b', 'c']);            //=> 'a'
+     *      R.set(headLens, 'x', ['a', 'b', 'c']);        //=> ['x', 'b', 'c']
+     *      R.over(headLens, R.toUpper, ['a', 'b', 'c']); //=> ['A', 'b', 'c']
+     */
+    var lensIndex = _curry1(function lensIndex(n) {
+        return lens(nth(n), update(n));
+    });
+
+    /**
+     * Returns a lens whose focus is the specified path.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig [String] -> Lens s a
+     * @param {Array} path The path to use.
+     * @return {Lens}
+     * @see R.view, R.set, R.over
+     * @example
+     *
+     *      var xyLens = R.lensPath(['x', 'y']);
+     *
+     *      R.view(xyLens, {x: {y: 2, z: 3}});            //=> 2
+     *      R.set(xyLens, 4, {x: {y: 2, z: 3}});          //=> {x: {y: 4, z: 3}}
+     *      R.over(xyLens, R.negate, {x: {y: 2, z: 3}});  //=> {x: {y: -2, z: 3}}
+     */
+    var lensPath = _curry1(function lensPath(p) {
+        return lens(path(p), assocPath(p));
+    });
+
+    /**
+     * Returns a lens whose focus is the specified property.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category Object
+     * @typedefn Lens s a = Functor f => (a -> f a) -> s -> f s
+     * @sig String -> Lens s a
+     * @param {String} k
+     * @return {Lens}
+     * @see R.view, R.set, R.over
+     * @example
+     *
+     *      var xLens = R.lensProp('x');
+     *
+     *      R.view(xLens, {x: 1, y: 2});            //=> 1
+     *      R.set(xLens, 4, {x: 1, y: 2});          //=> {x: 4, y: 2}
+     *      R.over(xLens, R.negate, {x: 1, y: 2});  //=> {x: -1, y: 2}
+     */
+    var lensProp = _curry1(function lensProp(k) {
+        return lens(prop(k), assoc(k));
+    });
+
+    /**
+     * "lifts" a function to be the specified arity, so that it may "map over" that
+     * many lists (or other objects that satisfies the [FantasyLand Apply spec](https://github.com/fantasyland/fantasy-land#apply)).
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category Function
+     * @sig Number -> (*... -> *) -> ([*]... -> [*])
+     * @param {Function} fn The function to lift into higher context
+     * @return {Function} The lifted function.
+     * @see R.lift
+     * @example
+     *
+     *      var madd3 = R.liftN(3, R.curryN(3, (...args) => R.sum(args)));
+     *      madd3([1,2,3], [1,2,3], [1]); //=> [3, 4, 5, 4, 5, 6, 5, 6, 7]
+     */
+    var liftN = _curry2(function liftN(arity, fn) {
+        var lifted = curryN(arity, fn);
+        return curryN(arity, function () {
+            return _reduce(ap, map(lifted, arguments[0]), _slice(arguments, 1));
+        });
+    });
+
+    /**
+     * Returns the mean of the given list of numbers.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category Math
+     * @sig [Number] -> Number
+     * @param {Array} list
+     * @return {Number}
+     * @example
+     *
+     *      R.mean([2, 7, 9]); //=> 6
+     *      R.mean([]); //=> NaN
+     */
+    var mean = _curry1(function mean(list) {
+        return sum(list) / list.length;
+    });
+
+    /**
+     * Returns the median of the given list of numbers.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category Math
+     * @sig [Number] -> Number
+     * @param {Array} list
+     * @return {Number}
+     * @example
+     *
+     *      R.median([2, 9, 7]); //=> 7
+     *      R.median([7, 2, 10, 9]); //=> 8
+     *      R.median([]); //=> NaN
+     */
+    var median = _curry1(function median(list) {
+        var len = list.length;
+        if (len === 0) {
+            return NaN;
+        }
+        var width = 2 - len % 2;
+        var idx = (len - width) / 2;
+        return mean(_slice(list).sort(function (a, b) {
+            return a < b ? -1 : a > b ? 1 : 0;
+        }).slice(idx, idx + width));
+    });
+
+    /**
+     * Create a new object with the own properties of the first object merged with
+     * the own properties of the second object. If a key exists in both objects,
+     * the value from the second object will be used.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig {k: v} -> {k: v} -> {k: v}
+     * @param {Object} l
+     * @param {Object} r
+     * @return {Object}
+     * @see R.mergeWith, R.mergeWithKey
+     * @example
+     *
+     *      R.merge({ 'name': 'fred', 'age': 10 }, { 'age': 40 });
+     *      //=> { 'name': 'fred', 'age': 40 }
+     *
+     *      var resetToDefault = R.merge(R.__, {x: 0});
+     *      resetToDefault({x: 5, y: 2}); //=> {x: 0, y: 2}
+     */
+    var merge = mergeWith(function (l, r) {
+        return r;
+    });
+
+    /**
+     * Merges a list of objects together into one object.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category List
+     * @sig [{k: v}] -> {k: v}
+     * @param {Array} list An array of objects
+     * @return {Object} A merged object.
+     * @see R.reduce
+     * @example
+     *
+     *      R.mergeAll([{foo:1},{bar:2},{baz:3}]); //=> {foo:1,bar:2,baz:3}
+     *      R.mergeAll([{foo:1},{foo:2},{bar:2}]); //=> {foo:2,bar:2}
+     */
+    var mergeAll = _curry1(function mergeAll(list) {
+        return reduce(merge, {}, list);
+    });
+
+    /**
+     * Performs left-to-right function composition. The leftmost function may have
+     * any arity; the remaining functions must be unary.
+     *
+     * In some libraries this function is named `sequence`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (((a, b, ..., n) -> o), (o -> p), ..., (x -> y), (y -> z)) -> ((a, b, ..., n) -> z)
+     * @param {...Function} functions
+     * @return {Function}
+     * @see R.compose
+     * @example
+     *
+     *      var f = R.pipe(Math.pow, R.negate, R.inc);
+     *
+     *      f(3, 4); // -(3^4) + 1
+     */
+    var pipe = function pipe() {
+        if (arguments.length === 0) {
+            throw new Error('pipe requires at least one argument');
+        }
+        return _arity(arguments[0].length, reduce(_pipe, arguments[0], tail(arguments)));
+    };
+
+    /**
+     * Performs left-to-right composition of one or more Promise-returning
+     * functions. The leftmost function may have any arity; the remaining functions
+     * must be unary.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category Function
+     * @sig ((a -> Promise b), (b -> Promise c), ..., (y -> Promise z)) -> (a -> Promise z)
+     * @param {...Function} functions
+     * @return {Function}
+     * @see R.composeP
+     * @example
+     *
+     *      //  followersForUser :: String -> Promise [User]
+     *      var followersForUser = R.pipeP(db.getUserById, db.getFollowers);
+     */
+    var pipeP = function pipeP() {
+        if (arguments.length === 0) {
+            throw new Error('pipeP requires at least one argument');
+        }
+        return _arity(arguments[0].length, reduce(_pipeP, arguments[0], tail(arguments)));
+    };
+
+    /**
+     * Multiplies together all the elements of a list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Math
+     * @sig [Number] -> Number
+     * @param {Array} list An array of numbers
+     * @return {Number} The product of all the numbers in the list.
+     * @see R.reduce
+     * @example
+     *
+     *      R.product([2,4,6,8,100,1]); //=> 38400
+     */
+    var product = reduce(multiply, 1);
+
+    /**
+     * Transforms a [Traversable](https://github.com/fantasyland/fantasy-land#traversable)
+     * of [Applicative](https://github.com/fantasyland/fantasy-land#applicative) into an
+     * Applicative of Traversable.
+     *
+     * Dispatches to the `sequence` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig (Applicative f, Traversable t) => (a -> f a) -> t (f a) -> f (t a)
+     * @param {Function} of
+     * @param {*} traversable
+     * @return {*}
+     * @see R.traverse
+     * @example
+     *
+     *      R.sequence(Maybe.of, [Just(1), Just(2), Just(3)]);   //=> Just([1, 2, 3])
+     *      R.sequence(Maybe.of, [Just(1), Just(2), Nothing()]); //=> Nothing()
+     *
+     *      R.sequence(R.of, Just([1, 2, 3])); //=> [Just(1), Just(2), Just(3)]
+     *      R.sequence(R.of, Nothing());       //=> [Nothing()]
+     */
+    var sequence = _curry2(function sequence(of, traversable) {
+        return typeof traversable.sequence === 'function' ? traversable.sequence(of) : reduceRight(function (acc, x) {
+            return ap(map(prepend, x), acc);
+        }, of([]), traversable);
+    });
+
+    /**
+     * Maps an [Applicative](https://github.com/fantasyland/fantasy-land#applicative)-returning
+     * function over a [Traversable](https://github.com/fantasyland/fantasy-land#traversable),
+     * then uses [`sequence`](#sequence) to transform the resulting Traversable of Applicative
+     * into an Applicative of Traversable.
+     *
+     * Dispatches to the `sequence` method of the third argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig (Applicative f, Traversable t) => (a -> f a) -> (a -> f b) -> t a -> f (t b)
+     * @param {Function} of
+     * @param {Function} f
+     * @param {*} traversable
+     * @return {*}
+     * @see R.sequence
+     * @example
+     *
+     *      R.traverse(Maybe.of, R.negate, [Just(1), Just(2), Just(3)]);   //=> Just([-1, -2, -3])
+     *      R.traverse(Maybe.of, R.negate, [Just(1), Just(2), Nothing()]); //=> Nothing()
+     *
+     *      R.traverse(R.of, R.negate, Just([1, 2, 3])); //=> [Just(-1), Just(-2), Just(-3)]
+     *      R.traverse(R.of, R.negate, Nothing());       //=> [Nothing()]
+     */
+    var traverse = _curry3(function traverse(of, f, traversable) {
+        return sequence(of, map(f, traversable));
+    });
+
+    /**
+     * Shorthand for `R.chain(R.identity)`, which removes one level of nesting from
+     * any [Chain](https://github.com/fantasyland/fantasy-land#chain).
+     *
+     * @func
+     * @memberOf R
+     * @since v0.3.0
+     * @category List
+     * @sig Chain c => c (c a) -> c a
+     * @param {*} list
+     * @return {*}
+     * @see R.flatten, R.chain
+     * @example
+     *
+     *      R.unnest([1, [2], [[3]]]); //=> [1, 2, [3]]
+     *      R.unnest([[1, 2], [3, 4], [5, 6]]); //=> [1, 2, 3, 4, 5, 6]
+     */
+    var unnest = chain(_identity);
+
+    var _contains = function _contains(a, list) {
+        return _indexOf(list, a, 0) >= 0;
+    };
+
+    var _stepCat = function () {
+        var _stepCatArray = {
+            '@@transducer/init': Array,
+            '@@transducer/step': function (xs, x) {
+                return _concat(xs, [x]);
+            },
+            '@@transducer/result': _identity
+        };
+        var _stepCatString = {
+            '@@transducer/init': String,
+            '@@transducer/step': function (a, b) {
+                return a + b;
+            },
+            '@@transducer/result': _identity
+        };
+        var _stepCatObject = {
+            '@@transducer/init': Object,
+            '@@transducer/step': function (result, input) {
+                return merge(result, isArrayLike(input) ? objOf(input[0], input[1]) : input);
+            },
+            '@@transducer/result': _identity
+        };
+        return function _stepCat(obj) {
+            if (_isTransformer(obj)) {
+                return obj;
+            }
+            if (isArrayLike(obj)) {
+                return _stepCatArray;
+            }
+            if (typeof obj === 'string') {
+                return _stepCatString;
+            }
+            if (typeof obj === 'object') {
+                return _stepCatObject;
+            }
+            throw new Error('Cannot create transformer for ' + obj);
+        };
+    }();
+
+    //  mapPairs :: (Object, [String]) -> [String]
+    var _toString = function _toString(x, seen) {
+        var recur = function recur(y) {
+            var xs = seen.concat([x]);
+            return _contains(y, xs) ? '<Circular>' : _toString(y, xs);
+        };
+        //  mapPairs :: (Object, [String]) -> [String]
+        var mapPairs = function (obj, keys) {
+            return _map(function (k) {
+                return _quote(k) + ': ' + recur(obj[k]);
+            }, keys.slice().sort());
+        };
+        switch (Object.prototype.toString.call(x)) {
+        case '[object Arguments]':
+            return '(function() { return arguments; }(' + _map(recur, x).join(', ') + '))';
+        case '[object Array]':
+            return '[' + _map(recur, x).concat(mapPairs(x, reject(function (k) {
+                return /^\d+$/.test(k);
+            }, keys(x)))).join(', ') + ']';
+        case '[object Boolean]':
+            return typeof x === 'object' ? 'new Boolean(' + recur(x.valueOf()) + ')' : x.toString();
+        case '[object Date]':
+            return 'new Date(' + (isNaN(x.valueOf()) ? recur(NaN) : _quote(_toISOString(x))) + ')';
+        case '[object Null]':
+            return 'null';
+        case '[object Number]':
+            return typeof x === 'object' ? 'new Number(' + recur(x.valueOf()) + ')' : 1 / x === -Infinity ? '-0' : x.toString(10);
+        case '[object String]':
+            return typeof x === 'object' ? 'new String(' + recur(x.valueOf()) + ')' : _quote(x);
+        case '[object Undefined]':
+            return 'undefined';
+        default:
+            if (typeof x.toString === 'function') {
+                var repr = x.toString();
+                if (repr !== '[object Object]') {
+                    return repr;
+                }
+            }
+            return '{' + mapPairs(x, keys(x)).join(', ') + '}';
+        }
+    };
+
+    /**
+     * Turns a list of Functors into a Functor of a list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.8.0
+     * @category List
+     * @sig Functor f => (x -> f x) -> [f a] -> f [a]
+     * @param {Function} of A function that returns the data type to return
+     * @param {Array} list An array of functors of the same type
+     * @return {*}
+     * @see R.sequence
+     * @deprecated since v0.19.0
+     * @example
+     *
+     *      R.commute(R.of, [[1], [2, 3]]);   //=> [[1, 2], [1, 3]]
+     *      R.commute(R.of, [[1, 2], [3]]);   //=> [[1, 3], [2, 3]]
+     *      R.commute(R.of, [[1], [2], [3]]); //=> [[1, 2, 3]]
+     *      R.commute(Maybe.of, [Just(1), Just(2), Just(3)]);   //=> Just([1, 2, 3])
+     *      R.commute(Maybe.of, [Just(1), Just(2), Nothing()]); //=> Nothing()
+     */
+    var commute = commuteMap(identity);
+
+    /**
+     * Performs right-to-left function composition. The rightmost function may have
+     * any arity; the remaining functions must be unary.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig ((y -> z), (x -> y), ..., (o -> p), ((a, b, ..., n) -> o)) -> ((a, b, ..., n) -> z)
+     * @param {...Function} functions
+     * @return {Function}
+     * @see R.pipe
+     * @example
+     *
+     *      var f = R.compose(R.inc, R.negate, Math.pow);
+     *
+     *      f(3, 4); // -(3^4) + 1
+     */
+    var compose = function compose() {
+        if (arguments.length === 0) {
+            throw new Error('compose requires at least one argument');
+        }
+        return pipe.apply(this, reverse(arguments));
+    };
+
+    /**
+     * Returns the right-to-left Kleisli composition of the provided functions,
+     * each of which must return a value of a type supported by [`chain`](#chain).
+     *
+     * `R.composeK(h, g, f)` is equivalent to `R.compose(R.chain(h), R.chain(g), R.chain(f))`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Function
+     * @sig Chain m => ((y -> m z), (x -> m y), ..., (a -> m b)) -> (m a -> m z)
+     * @param {...Function}
+     * @return {Function}
+     * @see R.pipeK
+     * @example
+     *
+     *      //  parseJson :: String -> Maybe *
+     *      //  get :: String -> Object -> Maybe *
+     *
+     *      //  getStateCode :: Maybe String -> Maybe String
+     *      var getStateCode = R.composeK(
+     *        R.compose(Maybe.of, R.toUpper),
+     *        get('state'),
+     *        get('address'),
+     *        get('user'),
+     *        parseJson
+     *      );
+     *
+     *      getStateCode(Maybe.of('{"user":{"address":{"state":"ny"}}}'));
+     *      //=> Just('NY')
+     *      getStateCode(Maybe.of('[Invalid JSON]'));
+     *      //=> Nothing()
+     */
+    var composeK = function composeK() {
+        return compose.apply(this, prepend(identity, map(chain, arguments)));
+    };
+
+    /**
+     * Performs right-to-left composition of one or more Promise-returning
+     * functions. The rightmost function may have any arity; the remaining
+     * functions must be unary.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.10.0
+     * @category Function
+     * @sig ((y -> Promise z), (x -> Promise y), ..., (a -> Promise b)) -> (a -> Promise z)
+     * @param {...Function} functions
+     * @return {Function}
+     * @see R.pipeP
+     * @example
+     *
+     *      //  followersForUser :: String -> Promise [User]
+     *      var followersForUser = R.composeP(db.getFollowers, db.getUserById);
+     */
+    var composeP = function composeP() {
+        if (arguments.length === 0) {
+            throw new Error('composeP requires at least one argument');
+        }
+        return pipeP.apply(this, reverse(arguments));
+    };
+
+    /**
+     * Wraps a constructor function inside a curried function that can be called
+     * with the same arguments and returns the same type.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (* -> {*}) -> (* -> {*})
+     * @param {Function} Fn The constructor function to wrap.
+     * @return {Function} A wrapped, curried constructor function.
+     * @example
+     *
+     *      // Constructor function
+     *      var Widget = config => {
+     *        // ...
+     *      };
+     *      Widget.prototype = {
+     *        // ...
+     *      };
+     *      var allConfigs = [
+     *        // ...
+     *      ];
+     *      R.map(R.construct(Widget), allConfigs); // a list of Widgets
+     */
+    var construct = _curry1(function construct(Fn) {
+        return constructN(Fn.length, Fn);
+    });
+
+    /**
+     * Returns `true` if the specified value is equal, in `R.equals` terms, to at
+     * least one element of the given list; `false` otherwise.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig a -> [a] -> Boolean
+     * @param {Object} a The item to compare against.
+     * @param {Array} list The array to consider.
+     * @return {Boolean} `true` if the item is in the list, `false` otherwise.
+     * @see R.any
+     * @example
+     *
+     *      R.contains(3, [1, 2, 3]); //=> true
+     *      R.contains(4, [1, 2, 3]); //=> false
+     *      R.contains([42], [[42]]); //=> true
+     */
+    var contains = _curry2(_contains);
+
+    /**
+     * Finds the set (i.e. no duplicates) of all elements in the first list not
+     * contained in the second list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig [*] -> [*] -> [*]
+     * @param {Array} list1 The first list.
+     * @param {Array} list2 The second list.
+     * @return {Array} The elements in `list1` that are not in `list2`.
+     * @see R.differenceWith
+     * @example
+     *
+     *      R.difference([1,2,3,4], [7,6,5,4,3]); //=> [1,2]
+     *      R.difference([7,6,5,4,3], [1,2,3,4]); //=> [7,6,5]
+     */
+    var difference = _curry2(function difference(first, second) {
+        var out = [];
+        var idx = 0;
+        var firstLen = first.length;
+        while (idx < firstLen) {
+            if (!_contains(first[idx], second) && !_contains(first[idx], out)) {
+                out[out.length] = first[idx];
+            }
+            idx += 1;
+        }
+        return out;
+    });
+
+    /**
+     * Returns a new list without any consecutively repeating elements. `R.equals`
+     * is used to determine equality.
+     *
+     * Dispatches to the `dropRepeats` method of the first argument, if present.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category List
+     * @sig [a] -> [a]
+     * @param {Array} list The array to consider.
+     * @return {Array} `list` without repeating elements.
+     * @see R.transduce
+     * @example
+     *
+     *     R.dropRepeats([1, 1, 1, 2, 3, 4, 4, 2, 2]); //=> [1, 2, 3, 4, 2]
+     */
+    var dropRepeats = _curry1(_dispatchable('dropRepeats', _xdropRepeatsWith(equals), dropRepeatsWith(equals)));
+
+    /**
+     * Transforms the items of the list with the transducer and appends the
+     * transformed items to the accumulator using an appropriate iterator function
+     * based on the accumulator type.
+     *
+     * The accumulator can be an array, string, object or a transformer. Iterated
+     * items will be appended to arrays and concatenated to strings. Objects will
+     * be merged directly or 2-item arrays will be merged as key, value pairs.
+     *
+     * The accumulator can also be a transformer object that provides a 2-arity
+     * reducing iterator function, step, 0-arity initial value function, init, and
+     * 1-arity result extraction function result. The step function is used as the
+     * iterator function in reduce. The result function is used to convert the
+     * final accumulator into the return type and in most cases is R.identity. The
+     * init function is used to provide the initial accumulator.
+     *
+     * The iteration is performed with R.reduce after initializing the transducer.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category List
+     * @sig a -> (b -> b) -> [c] -> a
+     * @param {*} acc The initial accumulator value.
+     * @param {Function} xf The transducer function. Receives a transformer and returns a transformer.
+     * @param {Array} list The list to iterate over.
+     * @return {*} The final, accumulated value.
+     * @example
+     *
+     *      var numbers = [1, 2, 3, 4];
+     *      var transducer = R.compose(R.map(R.add(1)), R.take(2));
+     *
+     *      R.into([], transducer, numbers); //=> [2, 3]
+     *
+     *      var intoArray = R.into([]);
+     *      intoArray(transducer, numbers); //=> [2, 3]
+     */
+    var into = _curry3(function into(acc, xf, list) {
+        return _isTransformer(acc) ? _reduce(xf(acc), acc['@@transducer/init'](), list) : _reduce(xf(_stepCat(acc)), acc, list);
+    });
+
+    /**
+     * "lifts" a function of arity > 1 so that it may "map over" an Array or other
+     * object that satisfies the [FantasyLand Apply spec](https://github.com/fantasyland/fantasy-land#apply).
+     *
+     * @func
+     * @memberOf R
+     * @since v0.7.0
+     * @category Function
+     * @sig (*... -> *) -> ([*]... -> [*])
+     * @param {Function} fn The function to lift into higher context
+     * @return {Function} The lifted function.
+     * @see R.liftN
+     * @example
+     *
+     *      var madd3 = R.lift(R.curry((a, b, c) => a + b + c));
+     *
+     *      madd3([1,2,3], [1,2,3], [1]); //=> [3, 4, 5, 4, 5, 6, 5, 6, 7]
+     *
+     *      var madd5 = R.lift(R.curry((a, b, c, d, e) => a + b + c + d + e));
+     *
+     *      madd5([1,2], [3], [4, 5], [6], [7, 8]); //=> [21, 22, 22, 23, 22, 23, 23, 24]
+     */
+    var lift = _curry1(function lift(fn) {
+        return liftN(fn.length, fn);
+    });
+
+    /**
+     * Returns a partial copy of an object omitting the keys specified.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Object
+     * @sig [String] -> {String: *} -> {String: *}
+     * @param {Array} names an array of String property names to omit from the new object
+     * @param {Object} obj The object to copy from
+     * @return {Object} A new object with properties from `names` not on it.
+     * @see R.pick
+     * @example
+     *
+     *      R.omit(['a', 'd'], {a: 1, b: 2, c: 3, d: 4}); //=> {b: 2, c: 3}
+     */
+    var omit = _curry2(function omit(names, obj) {
+        var result = {};
+        for (var prop in obj) {
+            if (!_contains(prop, names)) {
+                result[prop] = obj[prop];
+            }
+        }
+        return result;
+    });
+
+    /**
+     * Returns the left-to-right Kleisli composition of the provided functions,
+     * each of which must return a value of a type supported by [`chain`](#chain).
+     *
+     * `R.pipeK(f, g, h)` is equivalent to `R.pipe(R.chain(f), R.chain(g), R.chain(h))`.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category Function
+     * @sig Chain m => ((a -> m b), (b -> m c), ..., (y -> m z)) -> (m a -> m z)
+     * @param {...Function}
+     * @return {Function}
+     * @see R.composeK
+     * @example
+     *
+     *      //  parseJson :: String -> Maybe *
+     *      //  get :: String -> Object -> Maybe *
+     *
+     *      //  getStateCode :: Maybe String -> Maybe String
+     *      var getStateCode = R.pipeK(
+     *        parseJson,
+     *        get('user'),
+     *        get('address'),
+     *        get('state'),
+     *        R.compose(Maybe.of, R.toUpper)
+     *      );
+     *
+     *      getStateCode(Maybe.of('{"user":{"address":{"state":"ny"}}}'));
+     *      //=> Just('NY')
+     *      getStateCode(Maybe.of('[Invalid JSON]'));
+     *      //=> Nothing()
+     */
+    var pipeK = function pipeK() {
+        return composeK.apply(this, reverse(arguments));
+    };
+
+    /**
+     * Returns the string representation of the given value. `eval`'ing the output
+     * should result in a value equivalent to the input value. Many of the built-in
+     * `toString` methods do not satisfy this requirement.
+     *
+     * If the given value is an `[object Object]` with a `toString` method other
+     * than `Object.prototype.toString`, this method is invoked with no arguments
+     * to produce the return value. This means user-defined constructor functions
+     * can provide a suitable `toString` method. For example:
+     *
+     *     function Point(x, y) {
+     *       this.x = x;
+     *       this.y = y;
+     *     }
+     *
+     *     Point.prototype.toString = function() {
+     *       return 'new Point(' + this.x + ', ' + this.y + ')';
+     *     };
+     *
+     *     R.toString(new Point(1, 2)); //=> 'new Point(1, 2)'
+     *
+     * @func
+     * @memberOf R
+     * @since v0.14.0
+     * @category String
+     * @sig * -> String
+     * @param {*} val
+     * @return {String}
+     * @example
+     *
+     *      R.toString(42); //=> '42'
+     *      R.toString('abc'); //=> '"abc"'
+     *      R.toString([1, 2, 3]); //=> '[1, 2, 3]'
+     *      R.toString({foo: 1, bar: 2, baz: 3}); //=> '{"bar": 2, "baz": 3, "foo": 1}'
+     *      R.toString(new Date('2001-02-03T04:05:06Z')); //=> 'new Date("2001-02-03T04:05:06.000Z")'
+     */
+    var toString = _curry1(function toString(val) {
+        return _toString(val, []);
+    });
+
+    /**
+     * Returns a new list containing only one copy of each element in the original
+     * list, based upon the value returned by applying the supplied function to
+     * each list element. Prefers the first item if the supplied function produces
+     * the same value on two items. `R.equals` is used for comparison.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.16.0
+     * @category List
+     * @sig (a -> b) -> [a] -> [a]
+     * @param {Function} fn A function used to produce a value to use during comparisons.
+     * @param {Array} list The array to consider.
+     * @return {Array} The list of unique items.
+     * @example
+     *
+     *      R.uniqBy(Math.abs, [-1, -5, 2, 10, 1, 2]); //=> [-1, -5, 2, 10]
+     */
+    /* globals Set */
+    // distinguishing between +0 and -0 is not supported by Set
+    /* falls through */
+    // these types can all utilise Set
+    // prevent scan for null by tracking as a boolean
+    /* falls through */
+    // scan through all previously applied items
+    var uniqBy = _curry2(/* globals Set */
+    typeof Set === 'undefined' ? function uniqBy(fn, list) {
+        var idx = 0;
+        var applied = [];
+        var result = [];
+        var appliedItem, item;
+        while (idx < list.length) {
+            item = list[idx];
+            appliedItem = fn(item);
+            if (!_contains(appliedItem, applied)) {
+                result.push(item);
+                applied.push(appliedItem);
+            }
+            idx += 1;
+        }
+        return result;
+    } : function uniqBySet(fn, list) {
+        var set = new Set();
+        var applied = [];
+        var prevSetSize = 0;
+        var result = [];
+        var nullExists = false;
+        var negZeroExists = false;
+        var idx = 0;
+        var appliedItem, item, newSetSize;
+        while (idx < list.length) {
+            item = list[idx];
+            appliedItem = fn(item);
+            switch (typeof appliedItem) {
+            case 'number':
+                // distinguishing between +0 and -0 is not supported by Set
+                if (appliedItem === 0 && !negZeroExists && 1 / appliedItem === -Infinity) {
+                    negZeroExists = true;
+                    result.push(item);
+                    break;
+                }
+            /* falls through */
+            case 'string':
+            case 'boolean':
+            case 'function':
+            case 'undefined':
+                // these types can all utilise Set
+                set.add(appliedItem);
+                newSetSize = set.size;
+                if (newSetSize > prevSetSize) {
+                    result.push(item);
+                    prevSetSize = newSetSize;
+                }
+                break;
+            case 'object':
+                if (appliedItem === null) {
+                    if (!nullExists) {
+                        // prevent scan for null by tracking as a boolean
+                        nullExists = true;
+                        result.push(null);
+                    }
+                    break;
+                }
+            /* falls through */
+            default:
+                // scan through all previously applied items
+                if (!_contains(appliedItem, applied)) {
+                    applied.push(appliedItem);
+                    result.push(item);
+                }
+            }
+            idx += 1;
+        }
+        return result;
+    });
+
+    /**
+     * Returns a new list without values in the first argument.
+     * `R.equals` is used to determine equality.
+     *
+     * Acts as a transducer if a transformer is given in list position.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category List
+     * @sig [a] -> [a] -> [a]
+     * @param {Array} list1 The values to be removed from `list2`.
+     * @param {Array} list2 The array to remove values from.
+     * @return {Array} The new array without values in `list1`.
+     * @see R.transduce
+     * @example
+     *
+     *      R.without([1, 2], [1, 2, 1, 3, 4]); //=> [3, 4]
+     */
+    var without = _curry2(function (xs, list) {
+        return reject(flip(_contains)(xs), list);
+    });
+
+    /**
+     * Takes a function `f` and returns a function `g` such that:
+     *
+     *   - applying `g` to zero or more arguments will give __true__ if applying
+     *     the same arguments to `f` gives a logical __false__ value; and
+     *
+     *   - applying `g` to zero or more arguments will give __false__ if applying
+     *     the same arguments to `f` gives a logical __true__ value.
+     *
+     * `R.complement` will work on all other functors as well.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category Logic
+     * @sig (*... -> *) -> (*... -> Boolean)
+     * @param {Function} f
+     * @return {Function}
+     * @see R.not
+     * @example
+     *
+     *      var isEven = n => n % 2 === 0;
+     *      var isOdd = R.complement(isEven);
+     *      isOdd(21); //=> true
+     *      isOdd(42); //=> false
+     */
+    var complement = lift(not);
+
+    /**
+     * Turns a named method with a specified arity into a function that can be
+     * called directly supplied with arguments and a target object.
+     *
+     * The returned function is curried and accepts `arity + 1` parameters where
+     * the final parameter is the target object.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig Number -> String -> (a -> b -> ... -> n -> Object -> *)
+     * @param {Number} arity Number of arguments the returned function should take
+     *        before the target object.
+     * @param {String} method Name of the method to call.
+     * @return {Function} A new curried function.
+     * @example
+     *
+     *      var sliceFrom = R.invoker(1, 'slice');
+     *      sliceFrom(6, 'abcdefghijklm'); //=> 'ghijklm'
+     *      var sliceFrom6 = R.invoker(2, 'slice')(6);
+     *      sliceFrom6(8, 'abcdefghijklm'); //=> 'gh'
+     */
+    var invoker = _curry2(function invoker(arity, method) {
+        return curryN(arity + 1, function () {
+            var target = arguments[arity];
+            if (target != null && is(Function, target[method])) {
+                return target[method].apply(target, _slice(arguments, 0, arity));
+            }
+            throw new TypeError(toString(target) + ' does not have a method named "' + method + '"');
+        });
+    });
+
+    /**
+     * Returns a string made by inserting the `separator` between each element and
+     * concatenating all the elements into a single string.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig String -> [a] -> String
+     * @param {Number|String} separator The string used to separate the elements.
+     * @param {Array} xs The elements to join into a string.
+     * @return {String} str The string made by concatenating `xs` with `separator`.
+     * @see R.split
+     * @example
+     *
+     *      var spacer = R.join(' ');
+     *      spacer(['a', 2, 3.4]);   //=> 'a 2 3.4'
+     *      R.join('|', [1, 2, 3]);    //=> '1|2|3'
+     */
+    var join = invoker(1, 'join');
+
+    /**
+     * Creates a new function that, when invoked, caches the result of calling `fn`
+     * for a given argument set and returns the result. Subsequent calls to the
+     * memoized `fn` with the same argument set will not result in an additional
+     * call to `fn`; instead, the cached result for that set of arguments will be
+     * returned.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Function
+     * @sig (*... -> a) -> (*... -> a)
+     * @param {Function} fn The function to memoize.
+     * @return {Function} Memoized version of `fn`.
+     * @example
+     *
+     *      var count = 0;
+     *      var factorial = R.memoize(n => {
+     *        count += 1;
+     *        return R.product(R.range(1, n + 1));
+     *      });
+     *      factorial(5); //=> 120
+     *      factorial(5); //=> 120
+     *      factorial(5); //=> 120
+     *      count; //=> 1
+     */
+    var memoize = _curry1(function memoize(fn) {
+        var cache = {};
+        return _arity(fn.length, function () {
+            var key = toString(arguments);
+            if (!_has(key, cache)) {
+                cache[key] = fn.apply(this, arguments);
+            }
+            return cache[key];
+        });
+    });
+
+    /**
+     * Splits a string into an array of strings based on the given
+     * separator.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category String
+     * @sig (String | RegExp) -> String -> [String]
+     * @param {String|RegExp} sep The pattern.
+     * @param {String} str The string to separate into an array.
+     * @return {Array} The array of strings from `str` separated by `str`.
+     * @see R.join
+     * @example
+     *
+     *      var pathComponents = R.split('/');
+     *      R.tail(pathComponents('/usr/local/bin/node')); //=> ['usr', 'local', 'bin', 'node']
+     *
+     *      R.split('.', 'a.b.c.xyz.d'); //=> ['a', 'b', 'c', 'xyz', 'd']
+     */
+    var split = invoker(1, 'split');
+
+    /**
+     * Determines whether a given string matches a given regular expression.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.12.0
+     * @category String
+     * @sig RegExp -> String -> Boolean
+     * @param {RegExp} pattern
+     * @param {String} str
+     * @return {Boolean}
+     * @see R.match
+     * @example
+     *
+     *      R.test(/^x/, 'xyz'); //=> true
+     *      R.test(/^y/, 'xyz'); //=> false
+     */
+    var test = _curry2(function test(pattern, str) {
+        if (!_isRegExp(pattern)) {
+            throw new TypeError('\u2018test\u2019 requires a value of type RegExp as its first argument; received ' + toString(pattern));
+        }
+        return _cloneRegExp(pattern).test(str);
+    });
+
+    /**
+     * The lower case version of a string.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category String
+     * @sig String -> String
+     * @param {String} str The string to lower case.
+     * @return {String} The lower case version of `str`.
+     * @see R.toUpper
+     * @example
+     *
+     *      R.toLower('XYZ'); //=> 'xyz'
+     */
+    var toLower = invoker(0, 'toLowerCase');
+
+    /**
+     * The upper case version of a string.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.9.0
+     * @category String
+     * @sig String -> String
+     * @param {String} str The string to upper case.
+     * @return {String} The upper case version of `str`.
+     * @see R.toLower
+     * @example
+     *
+     *      R.toUpper('abc'); //=> 'ABC'
+     */
+    var toUpper = invoker(0, 'toUpperCase');
+
+    /**
+     * Returns a new list containing only one copy of each element in the original
+     * list. `R.equals` is used to determine equality.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [a]
+     * @param {Array} list The array to consider.
+     * @return {Array} The list of unique items.
+     * @example
+     *
+     *      R.uniq([1, 1, 2, 1]); //=> [1, 2]
+     *      R.uniq([1, '1']);     //=> [1, '1']
+     *      R.uniq([[42], [42]]); //=> [[42]]
+     */
+    var uniq = uniqBy(identity);
+
+    /**
+     * Returns the result of concatenating the given lists or strings.
+     *
+     * Dispatches to the `concat` method of the second argument, if present.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category List
+     * @sig [a] -> [a] -> [a]
+     * @sig String -> String -> String
+     * @param {Array|String} a
+     * @param {Array|String} b
+     * @return {Array|String}
+     *
+     * @example
+     *
+     *      R.concat([], []); //=> []
+     *      R.concat([4, 5, 6], [1, 2, 3]); //=> [4, 5, 6, 1, 2, 3]
+     *      R.concat('ABC', 'DEF'); // 'ABCDEF'
+     */
+    var concat = flip(invoker(1, 'concat'));
+
+    /**
+     * Combines two lists into a set (i.e. no duplicates) composed of those
+     * elements common to both lists.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig [*] -> [*] -> [*]
+     * @param {Array} list1 The first list.
+     * @param {Array} list2 The second list.
+     * @return {Array} The list of elements found in both `list1` and `list2`.
+     * @see R.intersectionWith
+     * @example
+     *
+     *      R.intersection([1,2,3,4], [7,6,5,4,3]); //=> [4, 3]
+     */
+    var intersection = _curry2(function intersection(list1, list2) {
+        return uniq(_filter(flip(_contains)(list1), list2));
+    });
+
+    /**
+     * Finds the set (i.e. no duplicates) of all elements contained in the first or
+     * second list, but not both.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Relation
+     * @sig [*] -> [*] -> [*]
+     * @param {Array} list1 The first list.
+     * @param {Array} list2 The second list.
+     * @return {Array} The elements in `list1` or `list2`, but not both.
+     * @see R.symmetricDifferenceWith
+     * @example
+     *
+     *      R.symmetricDifference([1,2,3,4], [7,6,5,4,3]); //=> [1,2,7,6,5]
+     *      R.symmetricDifference([7,6,5,4,3], [1,2,3,4]); //=> [7,6,5,1,2]
+     */
+    var symmetricDifference = _curry2(function symmetricDifference(list1, list2) {
+        return concat(difference(list1, list2), difference(list2, list1));
+    });
+
+    /**
+     * Finds the set (i.e. no duplicates) of all elements contained in the first or
+     * second list, but not both. Duplication is determined according to the value
+     * returned by applying the supplied predicate to two list elements.
+     *
+     * @func
+     * @memberOf R
+     * @since 0.19.1
+     * @since 0.19.0
+     * @category Relation
+     * @sig (a -> a -> Boolean) -> [a] -> [a] -> [a]
+     * @param {Function} pred A predicate used to test whether two items are equal.
+     * @param {Array} list1 The first list.
+     * @param {Array} list2 The second list.
+     * @return {Array} The elements in `list1` or `list2`, but not both.
+     * @see R.symmetricDifference
+     * @example
+     *
+     *      var eqA = R.eqBy(R.prop('a'));
+     *      var l1 = [{a: 1}, {a: 2}, {a: 3}, {a: 4}];
+     *      var l2 = [{a: 3}, {a: 4}, {a: 5}, {a: 6}];
+     *      R.symmetricDifferenceWith(eqA, l1, l2); //=> [{a: 1}, {a: 2}, {a: 5}, {a: 6}]
+     */
+    var symmetricDifferenceWith = _curry3(function symmetricDifferenceWith(pred, list1, list2) {
+        return concat(differenceWith(pred, list1, list2), differenceWith(pred, list2, list1));
+    });
+
+    /**
+     * Combines two lists into a set (i.e. no duplicates) composed of the elements
+     * of each list.
+     *
+     * @func
+     * @memberOf R
+     * @since v0.1.0
+     * @category Relation
+     * @sig [*] -> [*] -> [*]
+     * @param {Array} as The first list.
+     * @param {Array} bs The second list.
+     * @return {Array} The first and second lists concatenated, with
+     *         duplicates removed.
+     * @example
+     *
+     *      R.union([1, 2, 3], [2, 3, 4]); //=> [1, 2, 3, 4]
+     */
+    var union = _curry2(compose(uniq, _concat));
+
+    var R = {
+        F: F,
+        T: T,
+        __: __,
+        add: add,
+        addIndex: addIndex,
+        adjust: adjust,
+        all: all,
+        allPass: allPass,
+        allUniq: allUniq,
+        always: always,
+        and: and,
+        any: any,
+        anyPass: anyPass,
+        ap: ap,
+        aperture: aperture,
+        append: append,
+        apply: apply,
+        assoc: assoc,
+        assocPath: assocPath,
+        binary: binary,
+        bind: bind,
+        both: both,
+        call: call,
+        chain: chain,
+        clone: clone,
+        commute: commute,
+        commuteMap: commuteMap,
+        comparator: comparator,
+        complement: complement,
+        compose: compose,
+        composeK: composeK,
+        composeP: composeP,
+        concat: concat,
+        cond: cond,
+        construct: construct,
+        constructN: constructN,
+        contains: contains,
+        converge: converge,
+        countBy: countBy,
+        curry: curry,
+        curryN: curryN,
+        dec: dec,
+        defaultTo: defaultTo,
+        difference: difference,
+        differenceWith: differenceWith,
+        dissoc: dissoc,
+        dissocPath: dissocPath,
+        divide: divide,
+        drop: drop,
+        dropLast: dropLast,
+        dropLastWhile: dropLastWhile,
+        dropRepeats: dropRepeats,
+        dropRepeatsWith: dropRepeatsWith,
+        dropWhile: dropWhile,
+        either: either,
+        empty: empty,
+        eqBy: eqBy,
+        eqProps: eqProps,
+        equals: equals,
+        evolve: evolve,
+        filter: filter,
+        find: find,
+        findIndex: findIndex,
+        findLast: findLast,
+        findLastIndex: findLastIndex,
+        flatten: flatten,
+        flip: flip,
+        forEach: forEach,
+        fromPairs: fromPairs,
+        groupBy: groupBy,
+        gt: gt,
+        gte: gte,
+        has: has,
+        hasIn: hasIn,
+        head: head,
+        identical: identical,
+        identity: identity,
+        ifElse: ifElse,
+        inc: inc,
+        indexBy: indexBy,
+        indexOf: indexOf,
+        init: init,
+        insert: insert,
+        insertAll: insertAll,
+        intersection: intersection,
+        intersectionWith: intersectionWith,
+        intersperse: intersperse,
+        into: into,
+        invert: invert,
+        invertObj: invertObj,
+        invoker: invoker,
+        is: is,
+        isArrayLike: isArrayLike,
+        isEmpty: isEmpty,
+        isNil: isNil,
+        join: join,
+        juxt: juxt,
+        keys: keys,
+        keysIn: keysIn,
+        last: last,
+        lastIndexOf: lastIndexOf,
+        length: length,
+        lens: lens,
+        lensIndex: lensIndex,
+        lensPath: lensPath,
+        lensProp: lensProp,
+        lift: lift,
+        liftN: liftN,
+        lt: lt,
+        lte: lte,
+        map: map,
+        mapAccum: mapAccum,
+        mapAccumRight: mapAccumRight,
+        mapObjIndexed: mapObjIndexed,
+        match: match,
+        mathMod: mathMod,
+        max: max,
+        maxBy: maxBy,
+        mean: mean,
+        median: median,
+        memoize: memoize,
+        merge: merge,
+        mergeAll: mergeAll,
+        mergeWith: mergeWith,
+        mergeWithKey: mergeWithKey,
+        min: min,
+        minBy: minBy,
+        modulo: modulo,
+        multiply: multiply,
+        nAry: nAry,
+        negate: negate,
+        none: none,
+        not: not,
+        nth: nth,
+        nthArg: nthArg,
+        objOf: objOf,
+        of: of,
+        omit: omit,
+        once: once,
+        or: or,
+        over: over,
+        pair: pair,
+        partial: partial,
+        partialRight: partialRight,
+        partition: partition,
+        path: path,
+        pathEq: pathEq,
+        pathOr: pathOr,
+        pathSatisfies: pathSatisfies,
+        pick: pick,
+        pickAll: pickAll,
+        pickBy: pickBy,
+        pipe: pipe,
+        pipeK: pipeK,
+        pipeP: pipeP,
+        pluck: pluck,
+        prepend: prepend,
+        product: product,
+        project: project,
+        prop: prop,
+        propEq: propEq,
+        propIs: propIs,
+        propOr: propOr,
+        propSatisfies: propSatisfies,
+        props: props,
+        range: range,
+        reduce: reduce,
+        reduceRight: reduceRight,
+        reduced: reduced,
+        reject: reject,
+        remove: remove,
+        repeat: repeat,
+        replace: replace,
+        reverse: reverse,
+        scan: scan,
+        sequence: sequence,
+        set: set,
+        slice: slice,
+        sort: sort,
+        sortBy: sortBy,
+        split: split,
+        splitAt: splitAt,
+        splitEvery: splitEvery,
+        splitWhen: splitWhen,
+        subtract: subtract,
+        sum: sum,
+        symmetricDifference: symmetricDifference,
+        symmetricDifferenceWith: symmetricDifferenceWith,
+        tail: tail,
+        take: take,
+        takeLast: takeLast,
+        takeLastWhile: takeLastWhile,
+        takeWhile: takeWhile,
+        tap: tap,
+        test: test,
+        times: times,
+        toLower: toLower,
+        toPairs: toPairs,
+        toPairsIn: toPairsIn,
+        toString: toString,
+        toUpper: toUpper,
+        transduce: transduce,
+        transpose: transpose,
+        traverse: traverse,
+        trim: trim,
+        type: type,
+        unapply: unapply,
+        unary: unary,
+        uncurryN: uncurryN,
+        unfold: unfold,
+        union: union,
+        unionWith: unionWith,
+        uniq: uniq,
+        uniqBy: uniqBy,
+        uniqWith: uniqWith,
+        unless: unless,
+        unnest: unnest,
+        update: update,
+        useWith: useWith,
+        values: values,
+        valuesIn: valuesIn,
+        view: view,
+        when: when,
+        where: where,
+        whereEq: whereEq,
+        without: without,
+        wrap: wrap,
+        xprod: xprod,
+        zip: zip,
+        zipObj: zipObj,
+        zipWith: zipWith
+    };
+  /* eslint-env amd */
+
+  /* TEST_ENTRY_POINT */
+
+  if (typeof exports === 'object') {
+    module.exports = R;
+  } else if (typeof define === 'function' && define.amd) {
+    define(function() { return R; });
+  } else {
+    this.R = R;
+  }
+
+}.call(this));
+
+},{}],34:[function(require,module,exports){
+module.exports = {
+  Bar: require('./lib/bar'),
+  Doughnut: require('./lib/doughnut'),
+  Line: require('./lib/line'),
+  Pie: require('./lib/pie'),
+  PolarArea: require('./lib/polar-area'),
+  Radar: require('./lib/radar'),
+  createClass: require('./lib/core').createClass
+};
+
+},{"./lib/bar":35,"./lib/core":36,"./lib/doughnut":37,"./lib/line":38,"./lib/pie":39,"./lib/polar-area":40,"./lib/radar":41}],35:[function(require,module,exports){
+var vars = require('./core');
+
+module.exports = vars.createClass('Bar', ['getBarsAtEvent']);
+
+},{"./core":36}],36:[function(require,module,exports){
+module.exports = {
+  createClass: function(chartType, methodNames, dataKey) {
+    var classData = {
+      displayName: chartType + 'Chart',
+      getInitialState: function() { return {}; },
+      render: function() {
+        var _props = {
+          ref: 'canvass'
+        };
+        for (var name in this.props) {
+          if (this.props.hasOwnProperty(name)) {
+            if (name !== 'data' && name !== 'options') {
+              _props[name] = this.props[name];
+            }
+          }
+        }
+        return React.createElement('canvas', _props);
+      }
+    };
+
+    var extras = ['clear', 'stop', 'resize', 'toBase64Image', 'generateLegend', 'update', 'addData', 'removeData'];
+    function extra(type) {
+      classData[type] = function() {
+        this.state.chart[name].apply(this.state.chart, arguments);
+      };
+    }
+
+    classData.componentDidMount = function() {
+      this.initializeChart(this.props);
+    };
+
+    classData.componentWillUnmount = function() {
+      var chart = this.state.chart;
+      chart.destroy();
+    };
+
+    classData.componentWillReceiveProps = function(nextProps) {
+      var chart = this.state.chart;
+      if (this.props.redraw) {
+        chart.destroy();
+        this.initializeChart(nextProps);
+      } else {
+        dataKey = dataKey || dataKeys[chart.name];
+        updatePoints(nextProps, chart, dataKey);
+        chart.update();
+      }
+    };
+
+    classData.initializeChart = function(nextProps) {
+      var Chart = require('chart.js');
+      var el = this.getDOMNode();
+      var ctx = el.getContext("2d");
+      var chart = new Chart(ctx)[chartType](nextProps.data, nextProps.options || {});
+      this.state.chart = chart;
+    };
+
+    // return the chartjs instance
+    classData.getChart = function() {
+      return this.state.chart;
+    };
+
+    // return the canvass element that contains the chart
+    classData.getCanvass = function() {
+      return this.refs.canvass.getDOMNode();
+    };
+
+    var i;
+    for (i=0; i<extras.length; i++) {
+      extra(extras[i]);
+    }
+    for (i=0; i<methodNames.length; i++) {
+      extra(methodNames[i]);
+    }
+
+    var React = require('react');
+    return React.createClass(classData);
+  }
+};
+
+var dataKeys = {
+  'Line': 'points',
+  'Radar': 'points',
+  'Bar': 'bars'
+};
+
+var updatePoints = function(nextProps, chart, dataKey) {
+  var name = chart.name;
+
+  if (name === 'PolarArea' || name === 'Pie' || name === 'Doughnut') {
+    nextProps.data.forEach(function(segment, segmentIndex) {
+      chart.segments[segmentIndex].value = segment.value;
+    });
+  } else {
+    nextProps.data.datasets.forEach(function(set, setIndex) {
+      set.data.forEach(function(val, pointIndex) {
+        chart.datasets[setIndex][dataKey][pointIndex].value = val;
+      });
+    });
+  }
+};
+
+
+
+
+
+},{"chart.js":2,"react":227}],37:[function(require,module,exports){
+var vars = require('./core');
+
+module.exports = vars.createClass('Doughnut', ['getSegmentsAtEvent']);
+
+},{"./core":36}],38:[function(require,module,exports){
+var vars = require('./core');
+
+module.exports = vars.createClass('Line', ['getPointsAtEvent']);
+
+},{"./core":36}],39:[function(require,module,exports){
+var vars = require('./core');
+
+module.exports = vars.createClass('Pie', ['getSegmentsAtEvent']);
+
+},{"./core":36}],40:[function(require,module,exports){
+var vars = require('./core');
+
+module.exports = vars.createClass('PolarArea', ['getSegmentsAtEvent']);
+
+},{"./core":36}],41:[function(require,module,exports){
+var vars = require('./core');
+
+module.exports = vars.createClass('Radar', ['getPointsAtEvent']);
+
+},{"./core":36}],42:[function(require,module,exports){
 'use strict';
 
 module.exports = require('react/lib/ReactDOM');
 
-},{"react/lib/ReactDOM":95}],32:[function(require,module,exports){
+},{"react/lib/ReactDOM":106}],43:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -12887,7 +34129,7 @@ function mapAsync(array, work, callback) {
     });
   });
 }
-},{}],33:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12911,7 +34153,7 @@ var History = {
 
 exports['default'] = History;
 module.exports = exports['default'];
-},{"./PropTypes":40}],34:[function(require,module,exports){
+},{"./PropTypes":51}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12954,7 +34196,7 @@ var IndexLink = (function (_Component) {
 
 exports['default'] = IndexLink;
 module.exports = exports['default'];
-},{"./Link":38,"react":216}],35:[function(require,module,exports){
+},{"./Link":49,"react":227}],46:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13030,7 +34272,7 @@ IndexRedirect.createRouteFromReactElement = function (element, parentRoute) {
 exports['default'] = IndexRedirect;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":40,"./Redirect":41,"_process":1,"invariant":56,"react":216,"warning":57}],36:[function(require,module,exports){
+},{"./PropTypes":51,"./Redirect":52,"_process":32,"invariant":67,"react":227,"warning":68}],47:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13103,7 +34345,7 @@ IndexRoute.createRouteFromReactElement = function (element, parentRoute) {
 exports['default'] = IndexRoute;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":40,"./RouteUtils":44,"_process":1,"invariant":56,"react":216,"warning":57}],37:[function(require,module,exports){
+},{"./PropTypes":51,"./RouteUtils":55,"_process":32,"invariant":67,"react":227,"warning":68}],48:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13170,7 +34412,7 @@ var Lifecycle = {
 exports['default'] = Lifecycle;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"_process":1,"invariant":56,"react":216}],38:[function(require,module,exports){
+},{"_process":32,"invariant":67,"react":227}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13334,7 +34576,7 @@ Link.defaultProps = {
 
 exports['default'] = Link;
 module.exports = exports['default'];
-},{"react":216}],39:[function(require,module,exports){
+},{"react":227}],50:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13564,7 +34806,7 @@ function formatPattern(pattern, params) {
   return pathname.replace(/\/+/g, '/');
 }
 }).call(this,require('_process'))
-},{"_process":1,"invariant":56}],40:[function(require,module,exports){
+},{"_process":32,"invariant":67}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13618,7 +34860,7 @@ exports['default'] = {
   components: components,
   route: route
 };
-},{"react":216}],41:[function(require,module,exports){
+},{"react":227}],52:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13728,7 +34970,7 @@ Redirect.propTypes = {
 exports['default'] = Redirect;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PatternUtils":39,"./PropTypes":40,"./RouteUtils":44,"_process":1,"invariant":56,"react":216}],42:[function(require,module,exports){
+},{"./PatternUtils":50,"./PropTypes":51,"./RouteUtils":55,"_process":32,"invariant":67,"react":227}],53:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13798,7 +35040,7 @@ Route.propTypes = {
 exports['default'] = Route;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":40,"./RouteUtils":44,"_process":1,"invariant":56,"react":216}],43:[function(require,module,exports){
+},{"./PropTypes":51,"./RouteUtils":55,"_process":32,"invariant":67,"react":227}],54:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13837,7 +35079,7 @@ var RouteContext = {
 
 exports['default'] = RouteContext;
 module.exports = exports['default'];
-},{"react":216}],44:[function(require,module,exports){
+},{"react":227}],55:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13954,7 +35196,7 @@ function createRoutes(routes) {
   return routes;
 }
 }).call(this,require('_process'))
-},{"_process":1,"react":216,"warning":57}],45:[function(require,module,exports){
+},{"_process":32,"react":227,"warning":68}],56:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14122,7 +35364,7 @@ Router.defaultProps = {
 exports['default'] = Router;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./PropTypes":40,"./RouteUtils":44,"./RoutingContext":46,"./useRoutes":55,"_process":1,"history/lib/createHashHistory":12,"react":216,"warning":57}],46:[function(require,module,exports){
+},{"./PropTypes":51,"./RouteUtils":55,"./RoutingContext":57,"./useRoutes":66,"_process":32,"history/lib/createHashHistory":12,"react":227,"warning":68}],57:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14265,7 +35507,7 @@ RoutingContext.childContextTypes = {
 exports['default'] = RoutingContext;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./RouteUtils":44,"./getRouteParams":50,"_process":1,"invariant":56,"react":216}],47:[function(require,module,exports){
+},{"./RouteUtils":55,"./getRouteParams":61,"_process":32,"invariant":67,"react":227}],58:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14338,7 +35580,7 @@ function runLeaveHooks(routes) {
     if (routes[i].onLeave) routes[i].onLeave.call(routes[i]);
   }
 }
-},{"./AsyncUtils":32}],48:[function(require,module,exports){
+},{"./AsyncUtils":43}],59:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14395,7 +35637,7 @@ function computeChangedRoutes(prevState, nextState) {
 
 exports['default'] = computeChangedRoutes;
 module.exports = exports['default'];
-},{"./PatternUtils":39}],49:[function(require,module,exports){
+},{"./PatternUtils":50}],60:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14429,7 +35671,7 @@ function getComponents(nextState, callback) {
 
 exports['default'] = getComponents;
 module.exports = exports['default'];
-},{"./AsyncUtils":32}],50:[function(require,module,exports){
+},{"./AsyncUtils":43}],61:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14454,7 +35696,7 @@ function getRouteParams(route, params) {
 
 exports['default'] = getRouteParams;
 module.exports = exports['default'];
-},{"./PatternUtils":39}],51:[function(require,module,exports){
+},{"./PatternUtils":50}],62:[function(require,module,exports){
 /* components */
 'use strict';
 
@@ -14559,7 +35801,7 @@ exports.match = _match3['default'];
 var _Router4 = _interopRequireDefault(_Router2);
 
 exports['default'] = _Router4['default'];
-},{"./History":33,"./IndexLink":34,"./IndexRedirect":35,"./IndexRoute":36,"./Lifecycle":37,"./Link":38,"./PropTypes":40,"./Redirect":41,"./Route":42,"./RouteContext":43,"./RouteUtils":44,"./Router":45,"./RoutingContext":46,"./match":53,"./useRoutes":55}],52:[function(require,module,exports){
+},{"./History":44,"./IndexLink":45,"./IndexRedirect":46,"./IndexRoute":47,"./Lifecycle":48,"./Link":49,"./PropTypes":51,"./Redirect":52,"./Route":53,"./RouteContext":54,"./RouteUtils":55,"./Router":56,"./RoutingContext":57,"./match":64,"./useRoutes":66}],63:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14683,7 +35925,7 @@ function isActive(pathname, query, indexOnly, location, routes, params) {
 
 exports['default'] = isActive;
 module.exports = exports['default'];
-},{"./PatternUtils":39}],53:[function(require,module,exports){
+},{"./PatternUtils":50}],64:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14749,7 +35991,7 @@ function match(_ref, callback) {
 exports['default'] = match;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./RouteUtils":44,"./useRoutes":55,"_process":1,"history/lib/createMemoryHistory":15,"history/lib/useBasename":20,"invariant":56}],54:[function(require,module,exports){
+},{"./RouteUtils":55,"./useRoutes":66,"_process":32,"history/lib/createMemoryHistory":15,"history/lib/useBasename":20,"invariant":67}],65:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14940,7 +36182,7 @@ function matchRoutes(routes, location, callback) {
 exports['default'] = matchRoutes;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./AsyncUtils":32,"./PatternUtils":39,"./RouteUtils":44,"_process":1,"warning":57}],55:[function(require,module,exports){
+},{"./AsyncUtils":43,"./PatternUtils":50,"./RouteUtils":55,"_process":32,"warning":68}],66:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -15234,14 +36476,14 @@ function useRoutes(createHistory) {
 exports['default'] = useRoutes;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./TransitionUtils":47,"./computeChangedRoutes":48,"./getComponents":49,"./isActive":52,"./matchRoutes":54,"_process":1,"history/lib/Actions":6,"history/lib/useQueries":21,"warning":57}],56:[function(require,module,exports){
+},{"./TransitionUtils":58,"./computeChangedRoutes":59,"./getComponents":60,"./isActive":63,"./matchRoutes":65,"_process":32,"history/lib/Actions":6,"history/lib/useQueries":21,"warning":68}],67:[function(require,module,exports){
 arguments[4][25][0].apply(exports,arguments)
-},{"dup":25}],57:[function(require,module,exports){
+},{"dup":25}],68:[function(require,module,exports){
 arguments[4][28][0].apply(exports,arguments)
-},{"dup":28}],58:[function(require,module,exports){
+},{"dup":28}],69:[function(require,module,exports){
 module.exports = require('./lib/SearchBar.js');
 
-},{"./lib/SearchBar.js":59}],59:[function(require,module,exports){
+},{"./lib/SearchBar.js":70}],70:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -15416,7 +36658,7 @@ var SearchBar = _react2['default'].createClass({
 
 exports['default'] = SearchBar;
 module.exports = exports['default'];
-},{"./Suggestions":60,"classnames":3,"es6-promise":5,"react":216}],60:[function(require,module,exports){
+},{"./Suggestions":71,"classnames":3,"es6-promise":5,"react":227}],71:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -15533,7 +36775,7 @@ var Suggestions = _react2['default'].createClass({
 
 exports['default'] = Suggestions;
 module.exports = exports['default'];
-},{"classnames":3,"react":216}],61:[function(require,module,exports){
+},{"classnames":3,"react":227}],72:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15570,7 +36812,7 @@ var AutoFocusUtils = {
 };
 
 module.exports = AutoFocusUtils;
-},{"./ReactMount":125,"./findDOMNode":168,"fbjs/lib/focusNode":198}],62:[function(require,module,exports){
+},{"./ReactMount":136,"./findDOMNode":179,"fbjs/lib/focusNode":209}],73:[function(require,module,exports){
 /**
  * Copyright 2013-2015 Facebook, Inc.
  * All rights reserved.
@@ -15976,7 +37218,7 @@ var BeforeInputEventPlugin = {
 };
 
 module.exports = BeforeInputEventPlugin;
-},{"./EventConstants":74,"./EventPropagators":78,"./FallbackCompositionState":79,"./SyntheticCompositionEvent":150,"./SyntheticInputEvent":154,"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/keyOf":208}],63:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPropagators":89,"./FallbackCompositionState":90,"./SyntheticCompositionEvent":161,"./SyntheticInputEvent":165,"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/keyOf":219}],74:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16116,7 +37358,7 @@ var CSSProperty = {
 };
 
 module.exports = CSSProperty;
-},{}],64:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16161,7 +37403,7 @@ if (ExecutionEnvironment.canUseDOM) {
   }
 }
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   // 'msTransform' is correct, but the other prefixes should be capitalized
   var badVendoredStyleNamePattern = /^(?:webkit|moz|o)[A-Z]/;
 
@@ -16177,7 +37419,7 @@ if ("production" !== 'production') {
     }
 
     warnedStyleNames[name] = true;
-    "production" !== 'production' ? warning(false, 'Unsupported style property %s. Did you mean %s?', name, camelizeStyleName(name)) : undefined;
+    "development" !== 'production' ? warning(false, 'Unsupported style property %s. Did you mean %s?', name, camelizeStyleName(name)) : undefined;
   };
 
   var warnBadVendoredStyleName = function (name) {
@@ -16186,7 +37428,7 @@ if ("production" !== 'production') {
     }
 
     warnedStyleNames[name] = true;
-    "production" !== 'production' ? warning(false, 'Unsupported vendor-prefixed style property %s. Did you mean %s?', name, name.charAt(0).toUpperCase() + name.slice(1)) : undefined;
+    "development" !== 'production' ? warning(false, 'Unsupported vendor-prefixed style property %s. Did you mean %s?', name, name.charAt(0).toUpperCase() + name.slice(1)) : undefined;
   };
 
   var warnStyleValueWithSemicolon = function (name, value) {
@@ -16195,7 +37437,7 @@ if ("production" !== 'production') {
     }
 
     warnedStyleValues[value] = true;
-    "production" !== 'production' ? warning(false, 'Style property values shouldn\'t contain a semicolon. ' + 'Try "%s: %s" instead.', name, value.replace(badStyleValueWithSemicolonPattern, '')) : undefined;
+    "development" !== 'production' ? warning(false, 'Style property values shouldn\'t contain a semicolon. ' + 'Try "%s: %s" instead.', name, value.replace(badStyleValueWithSemicolonPattern, '')) : undefined;
   };
 
   /**
@@ -16237,7 +37479,7 @@ var CSSPropertyOperations = {
         continue;
       }
       var styleValue = styles[styleName];
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         warnValidStyle(styleName, styleValue);
       }
       if (styleValue != null) {
@@ -16261,7 +37503,7 @@ var CSSPropertyOperations = {
       if (!styles.hasOwnProperty(styleName)) {
         continue;
       }
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         warnValidStyle(styleName, styles[styleName]);
       }
       var styleValue = dangerousStyleValue(styleName, styles[styleName]);
@@ -16292,7 +37534,7 @@ ReactPerf.measureMethods(CSSPropertyOperations, 'CSSPropertyOperations', {
 });
 
 module.exports = CSSPropertyOperations;
-},{"./CSSProperty":63,"./ReactPerf":131,"./dangerousStyleValue":165,"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/camelizeStyleName":192,"fbjs/lib/hyphenateStyleName":203,"fbjs/lib/memoizeStringOnly":210,"fbjs/lib/warning":215}],65:[function(require,module,exports){
+},{"./CSSProperty":74,"./ReactPerf":142,"./dangerousStyleValue":176,"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/camelizeStyleName":203,"fbjs/lib/hyphenateStyleName":214,"fbjs/lib/memoizeStringOnly":221,"fbjs/lib/warning":226}],76:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16353,7 +37595,7 @@ assign(CallbackQueue.prototype, {
     var callbacks = this._callbacks;
     var contexts = this._contexts;
     if (callbacks) {
-      !(callbacks.length === contexts.length) ? "production" !== 'production' ? invariant(false, 'Mismatched list of contexts in callback queue') : invariant(false) : undefined;
+      !(callbacks.length === contexts.length) ? "development" !== 'production' ? invariant(false, 'Mismatched list of contexts in callback queue') : invariant(false) : undefined;
       this._callbacks = null;
       this._contexts = null;
       for (var i = 0; i < callbacks.length; i++) {
@@ -16386,7 +37628,7 @@ assign(CallbackQueue.prototype, {
 PooledClass.addPoolingTo(CallbackQueue);
 
 module.exports = CallbackQueue;
-},{"./Object.assign":82,"./PooledClass":83,"fbjs/lib/invariant":204}],66:[function(require,module,exports){
+},{"./Object.assign":93,"./PooledClass":94,"fbjs/lib/invariant":215}],77:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16708,7 +37950,7 @@ var ChangeEventPlugin = {
 };
 
 module.exports = ChangeEventPlugin;
-},{"./EventConstants":74,"./EventPluginHub":75,"./EventPropagators":78,"./ReactUpdates":143,"./SyntheticEvent":152,"./getEventTarget":174,"./isEventSupported":179,"./isTextInputElement":180,"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/keyOf":208}],67:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPluginHub":86,"./EventPropagators":89,"./ReactUpdates":154,"./SyntheticEvent":163,"./getEventTarget":185,"./isEventSupported":190,"./isTextInputElement":191,"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/keyOf":219}],78:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16732,7 +37974,7 @@ var ClientReactRootIndex = {
 };
 
 module.exports = ClientReactRootIndex;
-},{}],68:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16807,7 +38049,7 @@ var DOMChildrenOperations = {
         var updatedChild = update.parentNode.childNodes[updatedIndex];
         var parentID = update.parentID;
 
-        !updatedChild ? "production" !== 'production' ? invariant(false, 'processUpdates(): Unable to find child %s of element. This ' + 'probably means the DOM was unexpectedly mutated (e.g., by the ' + 'browser), usually due to forgetting a <tbody> when using tables, ' + 'nesting tags like <form>, <p>, or <a>, or using non-SVG elements ' + 'in an <svg> parent. Try inspecting the child nodes of the element ' + 'with React ID `%s`.', updatedIndex, parentID) : invariant(false) : undefined;
+        !updatedChild ? "development" !== 'production' ? invariant(false, 'processUpdates(): Unable to find child %s of element. This ' + 'probably means the DOM was unexpectedly mutated (e.g., by the ' + 'browser), usually due to forgetting a <tbody> when using tables, ' + 'nesting tags like <form>, <p>, or <a>, or using non-SVG elements ' + 'in an <svg> parent. Try inspecting the child nodes of the element ' + 'with React ID `%s`.', updatedIndex, parentID) : invariant(false) : undefined;
 
         initialChildren = initialChildren || {};
         initialChildren[parentID] = initialChildren[parentID] || [];
@@ -16862,7 +38104,7 @@ ReactPerf.measureMethods(DOMChildrenOperations, 'DOMChildrenOperations', {
 });
 
 module.exports = DOMChildrenOperations;
-},{"./Danger":71,"./ReactMultiChildUpdateTypes":127,"./ReactPerf":131,"./setInnerHTML":184,"./setTextContent":185,"fbjs/lib/invariant":204}],69:[function(require,module,exports){
+},{"./Danger":82,"./ReactMultiChildUpdateTypes":138,"./ReactPerf":142,"./setInnerHTML":195,"./setTextContent":196,"fbjs/lib/invariant":215}],80:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16937,7 +38179,7 @@ var DOMPropertyInjection = {
     }
 
     for (var propName in Properties) {
-      !!DOMProperty.properties.hasOwnProperty(propName) ? "production" !== 'production' ? invariant(false, 'injectDOMPropertyConfig(...): You\'re trying to inject DOM property ' + '\'%s\' which has already been injected. You may be accidentally ' + 'injecting the same DOM property config twice, or you may be ' + 'injecting two configs that have conflicting property names.', propName) : invariant(false) : undefined;
+      !!DOMProperty.properties.hasOwnProperty(propName) ? "development" !== 'production' ? invariant(false, 'injectDOMPropertyConfig(...): You\'re trying to inject DOM property ' + '\'%s\' which has already been injected. You may be accidentally ' + 'injecting the same DOM property config twice, or you may be ' + 'injecting two configs that have conflicting property names.', propName) : invariant(false) : undefined;
 
       var lowerCased = propName.toLowerCase();
       var propConfig = Properties[propName];
@@ -16957,18 +38199,18 @@ var DOMPropertyInjection = {
         hasOverloadedBooleanValue: checkMask(propConfig, Injection.HAS_OVERLOADED_BOOLEAN_VALUE)
       };
 
-      !(!propertyInfo.mustUseAttribute || !propertyInfo.mustUseProperty) ? "production" !== 'production' ? invariant(false, 'DOMProperty: Cannot require using both attribute and property: %s', propName) : invariant(false) : undefined;
-      !(propertyInfo.mustUseProperty || !propertyInfo.hasSideEffects) ? "production" !== 'production' ? invariant(false, 'DOMProperty: Properties that have side effects must use property: %s', propName) : invariant(false) : undefined;
-      !(propertyInfo.hasBooleanValue + propertyInfo.hasNumericValue + propertyInfo.hasOverloadedBooleanValue <= 1) ? "production" !== 'production' ? invariant(false, 'DOMProperty: Value can be one of boolean, overloaded boolean, or ' + 'numeric value, but not a combination: %s', propName) : invariant(false) : undefined;
+      !(!propertyInfo.mustUseAttribute || !propertyInfo.mustUseProperty) ? "development" !== 'production' ? invariant(false, 'DOMProperty: Cannot require using both attribute and property: %s', propName) : invariant(false) : undefined;
+      !(propertyInfo.mustUseProperty || !propertyInfo.hasSideEffects) ? "development" !== 'production' ? invariant(false, 'DOMProperty: Properties that have side effects must use property: %s', propName) : invariant(false) : undefined;
+      !(propertyInfo.hasBooleanValue + propertyInfo.hasNumericValue + propertyInfo.hasOverloadedBooleanValue <= 1) ? "development" !== 'production' ? invariant(false, 'DOMProperty: Value can be one of boolean, overloaded boolean, or ' + 'numeric value, but not a combination: %s', propName) : invariant(false) : undefined;
 
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         DOMProperty.getPossibleStandardName[lowerCased] = propName;
       }
 
       if (DOMAttributeNames.hasOwnProperty(propName)) {
         var attributeName = DOMAttributeNames[propName];
         propertyInfo.attributeName = attributeName;
-        if ("production" !== 'production') {
+        if ("development" !== 'production') {
           DOMProperty.getPossibleStandardName[attributeName] = propName;
         }
       }
@@ -17051,7 +38293,7 @@ var DOMProperty = {
    * to warn in the case of missing properties. Available only in __DEV__.
    * @type {Object}
    */
-  getPossibleStandardName: "production" !== 'production' ? {} : null,
+  getPossibleStandardName: "development" !== 'production' ? {} : null,
 
   /**
    * All of the isCustomAttribute() functions that have been injected.
@@ -17097,7 +38339,7 @@ var DOMProperty = {
 };
 
 module.exports = DOMProperty;
-},{"fbjs/lib/invariant":204}],70:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],81:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17135,7 +38377,7 @@ function isAttributeNameSafe(attributeName) {
     return true;
   }
   illegalAttributeNameCache[attributeName] = true;
-  "production" !== 'production' ? warning(false, 'Invalid attribute name: `%s`', attributeName) : undefined;
+  "development" !== 'production' ? warning(false, 'Invalid attribute name: `%s`', attributeName) : undefined;
   return false;
 }
 
@@ -17143,7 +38385,7 @@ function shouldIgnoreValue(propertyInfo, value) {
   return value == null || propertyInfo.hasBooleanValue && !value || propertyInfo.hasNumericValue && isNaN(value) || propertyInfo.hasPositiveNumericValue && value < 1 || propertyInfo.hasOverloadedBooleanValue && value === false;
 }
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   var reactProps = {
     children: true,
     dangerouslySetInnerHTML: true,
@@ -17165,7 +38407,7 @@ if ("production" !== 'production') {
 
     // For now, only warn when we have a suggested correction. This prevents
     // logging too much when using transferPropsTo.
-    "production" !== 'production' ? warning(standardName == null, 'Unknown DOM property %s. Did you mean %s?', name, standardName) : undefined;
+    "development" !== 'production' ? warning(standardName == null, 'Unknown DOM property %s. Did you mean %s?', name, standardName) : undefined;
   };
 }
 
@@ -17211,7 +38453,7 @@ var DOMPropertyOperations = {
         return '';
       }
       return name + '=' + quoteAttributeValueForBrowser(value);
-    } else if ("production" !== 'production') {
+    } else if ("development" !== 'production') {
       warnUnknownProperty(name);
     }
     return null;
@@ -17270,7 +38512,7 @@ var DOMPropertyOperations = {
       }
     } else if (DOMProperty.isCustomAttribute(name)) {
       DOMPropertyOperations.setValueForAttribute(node, name, value);
-    } else if ("production" !== 'production') {
+    } else if ("development" !== 'production') {
       warnUnknownProperty(name);
     }
   },
@@ -17309,7 +38551,7 @@ var DOMPropertyOperations = {
       }
     } else if (DOMProperty.isCustomAttribute(name)) {
       node.removeAttribute(name);
-    } else if ("production" !== 'production') {
+    } else if ("development" !== 'production') {
       warnUnknownProperty(name);
     }
   }
@@ -17323,7 +38565,7 @@ ReactPerf.measureMethods(DOMPropertyOperations, 'DOMPropertyOperations', {
 });
 
 module.exports = DOMPropertyOperations;
-},{"./DOMProperty":69,"./ReactPerf":131,"./quoteAttributeValueForBrowser":182,"fbjs/lib/warning":215}],71:[function(require,module,exports){
+},{"./DOMProperty":80,"./ReactPerf":142,"./quoteAttributeValueForBrowser":193,"fbjs/lib/warning":226}],82:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17375,12 +38617,12 @@ var Danger = {
    * @internal
    */
   dangerouslyRenderMarkup: function (markupList) {
-    !ExecutionEnvironment.canUseDOM ? "production" !== 'production' ? invariant(false, 'dangerouslyRenderMarkup(...): Cannot render markup in a worker ' + 'thread. Make sure `window` and `document` are available globally ' + 'before requiring React when unit testing or use ' + 'ReactDOMServer.renderToString for server rendering.') : invariant(false) : undefined;
+    !ExecutionEnvironment.canUseDOM ? "development" !== 'production' ? invariant(false, 'dangerouslyRenderMarkup(...): Cannot render markup in a worker ' + 'thread. Make sure `window` and `document` are available globally ' + 'before requiring React when unit testing or use ' + 'ReactDOMServer.renderToString for server rendering.') : invariant(false) : undefined;
     var nodeName;
     var markupByNodeName = {};
     // Group markup by `nodeName` if a wrap is necessary, else by '*'.
     for (var i = 0; i < markupList.length; i++) {
-      !markupList[i] ? "production" !== 'production' ? invariant(false, 'dangerouslyRenderMarkup(...): Missing markup.') : invariant(false) : undefined;
+      !markupList[i] ? "development" !== 'production' ? invariant(false, 'dangerouslyRenderMarkup(...): Missing markup.') : invariant(false) : undefined;
       nodeName = getNodeName(markupList[i]);
       nodeName = getMarkupWrap(nodeName) ? nodeName : '*';
       markupByNodeName[nodeName] = markupByNodeName[nodeName] || [];
@@ -17422,14 +38664,14 @@ var Danger = {
           resultIndex = +renderNode.getAttribute(RESULT_INDEX_ATTR);
           renderNode.removeAttribute(RESULT_INDEX_ATTR);
 
-          !!resultList.hasOwnProperty(resultIndex) ? "production" !== 'production' ? invariant(false, 'Danger: Assigning to an already-occupied result index.') : invariant(false) : undefined;
+          !!resultList.hasOwnProperty(resultIndex) ? "development" !== 'production' ? invariant(false, 'Danger: Assigning to an already-occupied result index.') : invariant(false) : undefined;
 
           resultList[resultIndex] = renderNode;
 
           // This should match resultList.length and markupList.length when
           // we're done.
           resultListAssignmentCount += 1;
-        } else if ("production" !== 'production') {
+        } else if ("development" !== 'production') {
           console.error('Danger: Discarding unexpected node:', renderNode);
         }
       }
@@ -17437,9 +38679,9 @@ var Danger = {
 
     // Although resultList was populated out of order, it should now be a dense
     // array.
-    !(resultListAssignmentCount === resultList.length) ? "production" !== 'production' ? invariant(false, 'Danger: Did not assign to every index of resultList.') : invariant(false) : undefined;
+    !(resultListAssignmentCount === resultList.length) ? "development" !== 'production' ? invariant(false, 'Danger: Did not assign to every index of resultList.') : invariant(false) : undefined;
 
-    !(resultList.length === markupList.length) ? "production" !== 'production' ? invariant(false, 'Danger: Expected markup to render %s nodes, but rendered %s.', markupList.length, resultList.length) : invariant(false) : undefined;
+    !(resultList.length === markupList.length) ? "development" !== 'production' ? invariant(false, 'Danger: Expected markup to render %s nodes, but rendered %s.', markupList.length, resultList.length) : invariant(false) : undefined;
 
     return resultList;
   },
@@ -17453,9 +38695,9 @@ var Danger = {
    * @internal
    */
   dangerouslyReplaceNodeWithMarkup: function (oldChild, markup) {
-    !ExecutionEnvironment.canUseDOM ? "production" !== 'production' ? invariant(false, 'dangerouslyReplaceNodeWithMarkup(...): Cannot render markup in a ' + 'worker thread. Make sure `window` and `document` are available ' + 'globally before requiring React when unit testing or use ' + 'ReactDOMServer.renderToString() for server rendering.') : invariant(false) : undefined;
-    !markup ? "production" !== 'production' ? invariant(false, 'dangerouslyReplaceNodeWithMarkup(...): Missing markup.') : invariant(false) : undefined;
-    !(oldChild.tagName.toLowerCase() !== 'html') ? "production" !== 'production' ? invariant(false, 'dangerouslyReplaceNodeWithMarkup(...): Cannot replace markup of the ' + '<html> node. This is because browser quirks make this unreliable ' + 'and/or slow. If you want to render to the root you must use ' + 'server rendering. See ReactDOMServer.renderToString().') : invariant(false) : undefined;
+    !ExecutionEnvironment.canUseDOM ? "development" !== 'production' ? invariant(false, 'dangerouslyReplaceNodeWithMarkup(...): Cannot render markup in a ' + 'worker thread. Make sure `window` and `document` are available ' + 'globally before requiring React when unit testing or use ' + 'ReactDOMServer.renderToString() for server rendering.') : invariant(false) : undefined;
+    !markup ? "development" !== 'production' ? invariant(false, 'dangerouslyReplaceNodeWithMarkup(...): Missing markup.') : invariant(false) : undefined;
+    !(oldChild.tagName.toLowerCase() !== 'html') ? "development" !== 'production' ? invariant(false, 'dangerouslyReplaceNodeWithMarkup(...): Cannot replace markup of the ' + '<html> node. This is because browser quirks make this unreliable ' + 'and/or slow. If you want to render to the root you must use ' + 'server rendering. See ReactDOMServer.renderToString().') : invariant(false) : undefined;
 
     var newChild;
     if (typeof markup === 'string') {
@@ -17469,7 +38711,7 @@ var Danger = {
 };
 
 module.exports = Danger;
-},{"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/createNodesFromMarkup":195,"fbjs/lib/emptyFunction":196,"fbjs/lib/getMarkupWrap":200,"fbjs/lib/invariant":204}],72:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/createNodesFromMarkup":206,"fbjs/lib/emptyFunction":207,"fbjs/lib/getMarkupWrap":211,"fbjs/lib/invariant":215}],83:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17497,7 +38739,7 @@ var keyOf = require('fbjs/lib/keyOf');
 var DefaultEventPluginOrder = [keyOf({ ResponderEventPlugin: null }), keyOf({ SimpleEventPlugin: null }), keyOf({ TapEventPlugin: null }), keyOf({ EnterLeaveEventPlugin: null }), keyOf({ ChangeEventPlugin: null }), keyOf({ SelectEventPlugin: null }), keyOf({ BeforeInputEventPlugin: null })];
 
 module.exports = DefaultEventPluginOrder;
-},{"fbjs/lib/keyOf":208}],73:[function(require,module,exports){
+},{"fbjs/lib/keyOf":219}],84:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17622,7 +38864,7 @@ var EnterLeaveEventPlugin = {
 };
 
 module.exports = EnterLeaveEventPlugin;
-},{"./EventConstants":74,"./EventPropagators":78,"./ReactMount":125,"./SyntheticMouseEvent":156,"fbjs/lib/keyOf":208}],74:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPropagators":89,"./ReactMount":136,"./SyntheticMouseEvent":167,"fbjs/lib/keyOf":219}],85:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17715,7 +38957,7 @@ var EventConstants = {
 };
 
 module.exports = EventConstants;
-},{"fbjs/lib/keyMirror":207}],75:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":218}],86:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17780,7 +39022,7 @@ var InstanceHandle = null;
 
 function validateInstanceHandle() {
   var valid = InstanceHandle && InstanceHandle.traverseTwoPhase && InstanceHandle.traverseEnterLeave;
-  "production" !== 'production' ? warning(valid, 'InstanceHandle not injected before use!') : undefined;
+  "development" !== 'production' ? warning(valid, 'InstanceHandle not injected before use!') : undefined;
 }
 
 /**
@@ -17824,13 +39066,13 @@ var EventPluginHub = {
      */
     injectInstanceHandle: function (InjectedInstanceHandle) {
       InstanceHandle = InjectedInstanceHandle;
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         validateInstanceHandle();
       }
     },
 
     getInstanceHandle: function () {
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         validateInstanceHandle();
       }
       return InstanceHandle;
@@ -17861,7 +39103,7 @@ var EventPluginHub = {
    * @param {?function} listener The callback to store.
    */
   putListener: function (id, registrationName, listener) {
-    !(typeof listener === 'function') ? "production" !== 'production' ? invariant(false, 'Expected %s listener to be a function, instead got type %s', registrationName, typeof listener) : invariant(false) : undefined;
+    !(typeof listener === 'function') ? "development" !== 'production' ? invariant(false, 'Expected %s listener to be a function, instead got type %s', registrationName, typeof listener) : invariant(false) : undefined;
 
     var bankForRegistrationName = listenerBank[registrationName] || (listenerBank[registrationName] = {});
     bankForRegistrationName[id] = listener;
@@ -17976,7 +39218,7 @@ var EventPluginHub = {
     } else {
       forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
     }
-    !!eventQueue ? "production" !== 'production' ? invariant(false, 'processEventQueue(): Additional events were enqueued while processing ' + 'an event queue. Support for this has not yet been implemented.') : invariant(false) : undefined;
+    !!eventQueue ? "development" !== 'production' ? invariant(false, 'processEventQueue(): Additional events were enqueued while processing ' + 'an event queue. Support for this has not yet been implemented.') : invariant(false) : undefined;
     // This would be a good time to rethrow if any of the event handlers threw.
     ReactErrorUtils.rethrowCaughtError();
   },
@@ -17995,7 +39237,7 @@ var EventPluginHub = {
 };
 
 module.exports = EventPluginHub;
-},{"./EventPluginRegistry":76,"./EventPluginUtils":77,"./ReactErrorUtils":116,"./accumulateInto":162,"./forEachAccumulated":170,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],76:[function(require,module,exports){
+},{"./EventPluginRegistry":87,"./EventPluginUtils":88,"./ReactErrorUtils":127,"./accumulateInto":173,"./forEachAccumulated":181,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],87:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18035,15 +39277,15 @@ function recomputePluginOrdering() {
   for (var pluginName in namesToPlugins) {
     var PluginModule = namesToPlugins[pluginName];
     var pluginIndex = EventPluginOrder.indexOf(pluginName);
-    !(pluginIndex > -1) ? "production" !== 'production' ? invariant(false, 'EventPluginRegistry: Cannot inject event plugins that do not exist in ' + 'the plugin ordering, `%s`.', pluginName) : invariant(false) : undefined;
+    !(pluginIndex > -1) ? "development" !== 'production' ? invariant(false, 'EventPluginRegistry: Cannot inject event plugins that do not exist in ' + 'the plugin ordering, `%s`.', pluginName) : invariant(false) : undefined;
     if (EventPluginRegistry.plugins[pluginIndex]) {
       continue;
     }
-    !PluginModule.extractEvents ? "production" !== 'production' ? invariant(false, 'EventPluginRegistry: Event plugins must implement an `extractEvents` ' + 'method, but `%s` does not.', pluginName) : invariant(false) : undefined;
+    !PluginModule.extractEvents ? "development" !== 'production' ? invariant(false, 'EventPluginRegistry: Event plugins must implement an `extractEvents` ' + 'method, but `%s` does not.', pluginName) : invariant(false) : undefined;
     EventPluginRegistry.plugins[pluginIndex] = PluginModule;
     var publishedEvents = PluginModule.eventTypes;
     for (var eventName in publishedEvents) {
-      !publishEventForPlugin(publishedEvents[eventName], PluginModule, eventName) ? "production" !== 'production' ? invariant(false, 'EventPluginRegistry: Failed to publish event `%s` for plugin `%s`.', eventName, pluginName) : invariant(false) : undefined;
+      !publishEventForPlugin(publishedEvents[eventName], PluginModule, eventName) ? "development" !== 'production' ? invariant(false, 'EventPluginRegistry: Failed to publish event `%s` for plugin `%s`.', eventName, pluginName) : invariant(false) : undefined;
     }
   }
 }
@@ -18057,7 +39299,7 @@ function recomputePluginOrdering() {
  * @private
  */
 function publishEventForPlugin(dispatchConfig, PluginModule, eventName) {
-  !!EventPluginRegistry.eventNameDispatchConfigs.hasOwnProperty(eventName) ? "production" !== 'production' ? invariant(false, 'EventPluginHub: More than one plugin attempted to publish the same ' + 'event name, `%s`.', eventName) : invariant(false) : undefined;
+  !!EventPluginRegistry.eventNameDispatchConfigs.hasOwnProperty(eventName) ? "development" !== 'production' ? invariant(false, 'EventPluginHub: More than one plugin attempted to publish the same ' + 'event name, `%s`.', eventName) : invariant(false) : undefined;
   EventPluginRegistry.eventNameDispatchConfigs[eventName] = dispatchConfig;
 
   var phasedRegistrationNames = dispatchConfig.phasedRegistrationNames;
@@ -18085,7 +39327,7 @@ function publishEventForPlugin(dispatchConfig, PluginModule, eventName) {
  * @private
  */
 function publishRegistrationName(registrationName, PluginModule, eventName) {
-  !!EventPluginRegistry.registrationNameModules[registrationName] ? "production" !== 'production' ? invariant(false, 'EventPluginHub: More than one plugin attempted to publish the same ' + 'registration name, `%s`.', registrationName) : invariant(false) : undefined;
+  !!EventPluginRegistry.registrationNameModules[registrationName] ? "development" !== 'production' ? invariant(false, 'EventPluginHub: More than one plugin attempted to publish the same ' + 'registration name, `%s`.', registrationName) : invariant(false) : undefined;
   EventPluginRegistry.registrationNameModules[registrationName] = PluginModule;
   EventPluginRegistry.registrationNameDependencies[registrationName] = PluginModule.eventTypes[eventName].dependencies;
 }
@@ -18127,7 +39369,7 @@ var EventPluginRegistry = {
    * @see {EventPluginHub.injection.injectEventPluginOrder}
    */
   injectEventPluginOrder: function (InjectedEventPluginOrder) {
-    !!EventPluginOrder ? "production" !== 'production' ? invariant(false, 'EventPluginRegistry: Cannot inject event plugin ordering more than ' + 'once. You are likely trying to load more than one copy of React.') : invariant(false) : undefined;
+    !!EventPluginOrder ? "development" !== 'production' ? invariant(false, 'EventPluginRegistry: Cannot inject event plugin ordering more than ' + 'once. You are likely trying to load more than one copy of React.') : invariant(false) : undefined;
     // Clone the ordering so it cannot be dynamically mutated.
     EventPluginOrder = Array.prototype.slice.call(InjectedEventPluginOrder);
     recomputePluginOrdering();
@@ -18151,7 +39393,7 @@ var EventPluginRegistry = {
       }
       var PluginModule = injectedNamesToPlugins[pluginName];
       if (!namesToPlugins.hasOwnProperty(pluginName) || namesToPlugins[pluginName] !== PluginModule) {
-        !!namesToPlugins[pluginName] ? "production" !== 'production' ? invariant(false, 'EventPluginRegistry: Cannot inject two different event plugins ' + 'using the same name, `%s`.', pluginName) : invariant(false) : undefined;
+        !!namesToPlugins[pluginName] ? "development" !== 'production' ? invariant(false, 'EventPluginRegistry: Cannot inject two different event plugins ' + 'using the same name, `%s`.', pluginName) : invariant(false) : undefined;
         namesToPlugins[pluginName] = PluginModule;
         isOrderingDirty = true;
       }
@@ -18216,7 +39458,7 @@ var EventPluginRegistry = {
 };
 
 module.exports = EventPluginRegistry;
-},{"fbjs/lib/invariant":204}],77:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],88:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18248,8 +39490,8 @@ var injection = {
   Mount: null,
   injectMount: function (InjectedMount) {
     injection.Mount = InjectedMount;
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(InjectedMount && InjectedMount.getNode && InjectedMount.getID, 'EventPluginUtils.injection.injectMount(...): Injected Mount ' + 'module is missing getNode or getID.') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(InjectedMount && InjectedMount.getNode && InjectedMount.getID, 'EventPluginUtils.injection.injectMount(...): Injected Mount ' + 'module is missing getNode or getID.') : undefined;
     }
   }
 };
@@ -18268,7 +39510,7 @@ function isStartish(topLevelType) {
 }
 
 var validateEventDispatches;
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   validateEventDispatches = function (event) {
     var dispatchListeners = event._dispatchListeners;
     var dispatchIDs = event._dispatchIDs;
@@ -18278,7 +39520,7 @@ if ("production" !== 'production') {
     var IDsLen = idsIsArr ? dispatchIDs.length : dispatchIDs ? 1 : 0;
     var listenersLen = listenersIsArr ? dispatchListeners.length : dispatchListeners ? 1 : 0;
 
-    "production" !== 'production' ? warning(idsIsArr === listenersIsArr && IDsLen === listenersLen, 'EventPluginUtils: Invalid `event`.') : undefined;
+    "development" !== 'production' ? warning(idsIsArr === listenersIsArr && IDsLen === listenersLen, 'EventPluginUtils: Invalid `event`.') : undefined;
   };
 }
 
@@ -18306,7 +39548,7 @@ function executeDispatch(event, simulated, listener, domID) {
 function executeDispatchesInOrder(event, simulated) {
   var dispatchListeners = event._dispatchListeners;
   var dispatchIDs = event._dispatchIDs;
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     validateEventDispatches(event);
   }
   if (Array.isArray(dispatchListeners)) {
@@ -18334,7 +39576,7 @@ function executeDispatchesInOrder(event, simulated) {
 function executeDispatchesInOrderStopAtTrueImpl(event) {
   var dispatchListeners = event._dispatchListeners;
   var dispatchIDs = event._dispatchIDs;
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     validateEventDispatches(event);
   }
   if (Array.isArray(dispatchListeners)) {
@@ -18375,12 +39617,12 @@ function executeDispatchesInOrderStopAtTrue(event) {
  * @return {*} The return value of executing the single dispatch.
  */
 function executeDirectDispatch(event) {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     validateEventDispatches(event);
   }
   var dispatchListener = event._dispatchListeners;
   var dispatchID = event._dispatchIDs;
-  !!Array.isArray(dispatchListener) ? "production" !== 'production' ? invariant(false, 'executeDirectDispatch(...): Invalid `event`.') : invariant(false) : undefined;
+  !!Array.isArray(dispatchListener) ? "development" !== 'production' ? invariant(false, 'executeDirectDispatch(...): Invalid `event`.') : invariant(false) : undefined;
   var res = dispatchListener ? dispatchListener(event, dispatchID) : null;
   event._dispatchListeners = null;
   event._dispatchIDs = null;
@@ -18419,7 +39661,7 @@ var EventPluginUtils = {
 };
 
 module.exports = EventPluginUtils;
-},{"./EventConstants":74,"./ReactErrorUtils":116,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],78:[function(require,module,exports){
+},{"./EventConstants":85,"./ReactErrorUtils":127,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],89:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18460,8 +39702,8 @@ function listenerAtPhase(id, event, propagationPhase) {
  * "dispatch" object that pairs the event with the listener.
  */
 function accumulateDirectionalDispatches(domID, upwards, event) {
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(domID, 'Dispatching id must not be null') : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(domID, 'Dispatching id must not be null') : undefined;
   }
   var phase = upwards ? PropagationPhases.bubbled : PropagationPhases.captured;
   var listener = listenerAtPhase(domID, event, phase);
@@ -18555,7 +39797,7 @@ var EventPropagators = {
 };
 
 module.exports = EventPropagators;
-},{"./EventConstants":74,"./EventPluginHub":75,"./accumulateInto":162,"./forEachAccumulated":170,"fbjs/lib/warning":215}],79:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPluginHub":86,"./accumulateInto":173,"./forEachAccumulated":181,"fbjs/lib/warning":226}],90:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18651,7 +39893,7 @@ assign(FallbackCompositionState.prototype, {
 PooledClass.addPoolingTo(FallbackCompositionState);
 
 module.exports = FallbackCompositionState;
-},{"./Object.assign":82,"./PooledClass":83,"./getTextContentAccessor":177}],80:[function(require,module,exports){
+},{"./Object.assign":93,"./PooledClass":94,"./getTextContentAccessor":188}],91:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18882,7 +40124,7 @@ var HTMLDOMPropertyConfig = {
 };
 
 module.exports = HTMLDOMPropertyConfig;
-},{"./DOMProperty":69,"fbjs/lib/ExecutionEnvironment":190}],81:[function(require,module,exports){
+},{"./DOMProperty":80,"fbjs/lib/ExecutionEnvironment":201}],92:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18914,16 +40156,16 @@ var hasReadOnlyValue = {
 };
 
 function _assertSingleLink(inputProps) {
-  !(inputProps.checkedLink == null || inputProps.valueLink == null) ? "production" !== 'production' ? invariant(false, 'Cannot provide a checkedLink and a valueLink. If you want to use ' + 'checkedLink, you probably don\'t want to use valueLink and vice versa.') : invariant(false) : undefined;
+  !(inputProps.checkedLink == null || inputProps.valueLink == null) ? "development" !== 'production' ? invariant(false, 'Cannot provide a checkedLink and a valueLink. If you want to use ' + 'checkedLink, you probably don\'t want to use valueLink and vice versa.') : invariant(false) : undefined;
 }
 function _assertValueLink(inputProps) {
   _assertSingleLink(inputProps);
-  !(inputProps.value == null && inputProps.onChange == null) ? "production" !== 'production' ? invariant(false, 'Cannot provide a valueLink and a value or onChange event. If you want ' + 'to use value or onChange, you probably don\'t want to use valueLink.') : invariant(false) : undefined;
+  !(inputProps.value == null && inputProps.onChange == null) ? "development" !== 'production' ? invariant(false, 'Cannot provide a valueLink and a value or onChange event. If you want ' + 'to use value or onChange, you probably don\'t want to use valueLink.') : invariant(false) : undefined;
 }
 
 function _assertCheckedLink(inputProps) {
   _assertSingleLink(inputProps);
-  !(inputProps.checked == null && inputProps.onChange == null) ? "production" !== 'production' ? invariant(false, 'Cannot provide a checkedLink and a checked property or onChange event. ' + 'If you want to use checked or onChange, you probably don\'t want to ' + 'use checkedLink') : invariant(false) : undefined;
+  !(inputProps.checked == null && inputProps.onChange == null) ? "development" !== 'production' ? invariant(false, 'Cannot provide a checkedLink and a checked property or onChange event. ' + 'If you want to use checked or onChange, you probably don\'t want to ' + 'use checkedLink') : invariant(false) : undefined;
 }
 
 var propTypes = {
@@ -18969,7 +40211,7 @@ var LinkedValueUtils = {
         loggedTypeFailures[error.message] = true;
 
         var addendum = getDeclarationErrorAddendum(owner);
-        "production" !== 'production' ? warning(false, 'Failed form propType: %s%s', error.message, addendum) : undefined;
+        "development" !== 'production' ? warning(false, 'Failed form propType: %s%s', error.message, addendum) : undefined;
       }
     }
   },
@@ -19017,7 +40259,7 @@ var LinkedValueUtils = {
 };
 
 module.exports = LinkedValueUtils;
-},{"./ReactPropTypeLocations":133,"./ReactPropTypes":134,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],82:[function(require,module,exports){
+},{"./ReactPropTypeLocations":144,"./ReactPropTypes":145,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],93:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -19065,7 +40307,7 @@ function assign(target, sources) {
 }
 
 module.exports = assign;
-},{}],83:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19145,7 +40387,7 @@ var fiveArgumentPooler = function (a1, a2, a3, a4, a5) {
 
 var standardReleaser = function (instance) {
   var Klass = this;
-  !(instance instanceof Klass) ? "production" !== 'production' ? invariant(false, 'Trying to release an instance into a pool of a different type.') : invariant(false) : undefined;
+  !(instance instanceof Klass) ? "development" !== 'production' ? invariant(false, 'Trying to release an instance into a pool of a different type.') : invariant(false) : undefined;
   instance.destructor();
   if (Klass.instancePool.length < Klass.poolSize) {
     Klass.instancePool.push(instance);
@@ -19185,7 +40427,7 @@ var PooledClass = {
 };
 
 module.exports = PooledClass;
-},{"fbjs/lib/invariant":204}],84:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],95:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19226,7 +40468,7 @@ React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
 React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
-},{"./Object.assign":82,"./ReactDOM":95,"./ReactDOMServer":105,"./ReactIsomorphic":123,"./deprecated":166}],85:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactDOM":106,"./ReactDOMServer":116,"./ReactIsomorphic":134,"./deprecated":177}],96:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19256,14 +40498,14 @@ var ReactBrowserComponentMixin = {
    * @protected
    */
   getDOMNode: function () {
-    "production" !== 'production' ? warning(this.constructor[didWarnKey], '%s.getDOMNode(...) is deprecated. Please use ' + 'ReactDOM.findDOMNode(instance) instead.', ReactInstanceMap.get(this).getName() || this.tagName || 'Unknown') : undefined;
+    "development" !== 'production' ? warning(this.constructor[didWarnKey], '%s.getDOMNode(...) is deprecated. Please use ' + 'ReactDOM.findDOMNode(instance) instead.', ReactInstanceMap.get(this).getName() || this.tagName || 'Unknown') : undefined;
     this.constructor[didWarnKey] = true;
     return findDOMNode(this);
   }
 };
 
 module.exports = ReactBrowserComponentMixin;
-},{"./ReactInstanceMap":122,"./findDOMNode":168,"fbjs/lib/warning":215}],86:[function(require,module,exports){
+},{"./ReactInstanceMap":133,"./findDOMNode":179,"fbjs/lib/warning":226}],97:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19588,7 +40830,7 @@ ReactPerf.measureMethods(ReactBrowserEventEmitter, 'ReactBrowserEventEmitter', {
 });
 
 module.exports = ReactBrowserEventEmitter;
-},{"./EventConstants":74,"./EventPluginHub":75,"./EventPluginRegistry":76,"./Object.assign":82,"./ReactEventEmitterMixin":117,"./ReactPerf":131,"./ViewportMetrics":161,"./isEventSupported":179}],87:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPluginHub":86,"./EventPluginRegistry":87,"./Object.assign":93,"./ReactEventEmitterMixin":128,"./ReactPerf":142,"./ViewportMetrics":172,"./isEventSupported":190}],98:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -19613,8 +40855,8 @@ var warning = require('fbjs/lib/warning');
 function instantiateChild(childInstances, child, name) {
   // We found a component instance.
   var keyUnique = childInstances[name] === undefined;
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(keyUnique, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.', name) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(keyUnique, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.', name) : undefined;
   }
   if (child != null && keyUnique) {
     childInstances[name] = instantiateReactComponent(child, null);
@@ -19711,7 +40953,7 @@ var ReactChildReconciler = {
 };
 
 module.exports = ReactChildReconciler;
-},{"./ReactReconciler":136,"./instantiateReactComponent":178,"./shouldUpdateReactComponent":186,"./traverseAllChildren":187,"fbjs/lib/warning":215}],88:[function(require,module,exports){
+},{"./ReactReconciler":147,"./instantiateReactComponent":189,"./shouldUpdateReactComponent":197,"./traverseAllChildren":198,"fbjs/lib/warning":226}],99:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19894,7 +41136,7 @@ var ReactChildren = {
 };
 
 module.exports = ReactChildren;
-},{"./PooledClass":83,"./ReactElement":112,"./traverseAllChildren":187,"fbjs/lib/emptyFunction":196}],89:[function(require,module,exports){
+},{"./PooledClass":94,"./ReactElement":123,"./traverseAllChildren":198,"fbjs/lib/emptyFunction":207}],100:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19954,7 +41196,7 @@ var warnedSetProps = false;
 function warnSetProps() {
   if (!warnedSetProps) {
     warnedSetProps = true;
-    "production" !== 'production' ? warning(false, 'setProps(...) and replaceProps(...) are deprecated. ' + 'Instead, call render again at the top level.') : undefined;
+    "development" !== 'production' ? warning(false, 'setProps(...) and replaceProps(...) are deprecated. ' + 'Instead, call render again at the top level.') : undefined;
   }
 }
 
@@ -20224,13 +41466,13 @@ var RESERVED_SPEC_KEYS = {
     }
   },
   childContextTypes: function (Constructor, childContextTypes) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       validateTypeDef(Constructor, childContextTypes, ReactPropTypeLocations.childContext);
     }
     Constructor.childContextTypes = assign({}, Constructor.childContextTypes, childContextTypes);
   },
   contextTypes: function (Constructor, contextTypes) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       validateTypeDef(Constructor, contextTypes, ReactPropTypeLocations.context);
     }
     Constructor.contextTypes = assign({}, Constructor.contextTypes, contextTypes);
@@ -20247,7 +41489,7 @@ var RESERVED_SPEC_KEYS = {
     }
   },
   propTypes: function (Constructor, propTypes) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       validateTypeDef(Constructor, propTypes, ReactPropTypeLocations.prop);
     }
     Constructor.propTypes = assign({}, Constructor.propTypes, propTypes);
@@ -20263,7 +41505,7 @@ function validateTypeDef(Constructor, typeDef, location) {
     if (typeDef.hasOwnProperty(propName)) {
       // use a warning instead of an invariant so components
       // don't show up in prod but not in __DEV__
-      "production" !== 'production' ? warning(typeof typeDef[propName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', Constructor.displayName || 'ReactClass', ReactPropTypeLocationNames[location], propName) : undefined;
+      "development" !== 'production' ? warning(typeof typeDef[propName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', Constructor.displayName || 'ReactClass', ReactPropTypeLocationNames[location], propName) : undefined;
     }
   }
 }
@@ -20273,12 +41515,12 @@ function validateMethodOverride(proto, name) {
 
   // Disallow overriding of base class methods unless explicitly allowed.
   if (ReactClassMixin.hasOwnProperty(name)) {
-    !(specPolicy === SpecPolicy.OVERRIDE_BASE) ? "production" !== 'production' ? invariant(false, 'ReactClassInterface: You are attempting to override ' + '`%s` from your class specification. Ensure that your method names ' + 'do not overlap with React methods.', name) : invariant(false) : undefined;
+    !(specPolicy === SpecPolicy.OVERRIDE_BASE) ? "development" !== 'production' ? invariant(false, 'ReactClassInterface: You are attempting to override ' + '`%s` from your class specification. Ensure that your method names ' + 'do not overlap with React methods.', name) : invariant(false) : undefined;
   }
 
   // Disallow defining methods more than once unless explicitly allowed.
   if (proto.hasOwnProperty(name)) {
-    !(specPolicy === SpecPolicy.DEFINE_MANY || specPolicy === SpecPolicy.DEFINE_MANY_MERGED) ? "production" !== 'production' ? invariant(false, 'ReactClassInterface: You are attempting to define ' + '`%s` on your component more than once. This conflict may be due ' + 'to a mixin.', name) : invariant(false) : undefined;
+    !(specPolicy === SpecPolicy.DEFINE_MANY || specPolicy === SpecPolicy.DEFINE_MANY_MERGED) ? "development" !== 'production' ? invariant(false, 'ReactClassInterface: You are attempting to define ' + '`%s` on your component more than once. This conflict may be due ' + 'to a mixin.', name) : invariant(false) : undefined;
   }
 }
 
@@ -20291,8 +41533,8 @@ function mixSpecIntoComponent(Constructor, spec) {
     return;
   }
 
-  !(typeof spec !== 'function') ? "production" !== 'production' ? invariant(false, 'ReactClass: You\'re attempting to ' + 'use a component class as a mixin. Instead, just use a regular object.') : invariant(false) : undefined;
-  !!ReactElement.isValidElement(spec) ? "production" !== 'production' ? invariant(false, 'ReactClass: You\'re attempting to ' + 'use a component as a mixin. Instead, just use a regular object.') : invariant(false) : undefined;
+  !(typeof spec !== 'function') ? "development" !== 'production' ? invariant(false, 'ReactClass: You\'re attempting to ' + 'use a component class as a mixin. Instead, just use a regular object.') : invariant(false) : undefined;
+  !!ReactElement.isValidElement(spec) ? "development" !== 'production' ? invariant(false, 'ReactClass: You\'re attempting to ' + 'use a component as a mixin. Instead, just use a regular object.') : invariant(false) : undefined;
 
   var proto = Constructor.prototype;
 
@@ -20339,7 +41581,7 @@ function mixSpecIntoComponent(Constructor, spec) {
           var specPolicy = ReactClassInterface[name];
 
           // These cases should already be caught by validateMethodOverride.
-          !(isReactClassMethod && (specPolicy === SpecPolicy.DEFINE_MANY_MERGED || specPolicy === SpecPolicy.DEFINE_MANY)) ? "production" !== 'production' ? invariant(false, 'ReactClass: Unexpected spec policy %s for key %s ' + 'when mixing in component specs.', specPolicy, name) : invariant(false) : undefined;
+          !(isReactClassMethod && (specPolicy === SpecPolicy.DEFINE_MANY_MERGED || specPolicy === SpecPolicy.DEFINE_MANY)) ? "development" !== 'production' ? invariant(false, 'ReactClass: Unexpected spec policy %s for key %s ' + 'when mixing in component specs.', specPolicy, name) : invariant(false) : undefined;
 
           // For methods which are defined more than once, call the existing
           // methods before calling the new property, merging if appropriate.
@@ -20350,7 +41592,7 @@ function mixSpecIntoComponent(Constructor, spec) {
           }
         } else {
           proto[name] = property;
-          if ("production" !== 'production') {
+          if ("development" !== 'production') {
             // Add verbose displayName to the function, which helps when looking
             // at profiling tools.
             if (typeof property === 'function' && spec.displayName) {
@@ -20374,10 +41616,10 @@ function mixStaticSpecIntoComponent(Constructor, statics) {
     }
 
     var isReserved = (name in RESERVED_SPEC_KEYS);
-    !!isReserved ? "production" !== 'production' ? invariant(false, 'ReactClass: You are attempting to define a reserved ' + 'property, `%s`, that shouldn\'t be on the "statics" key. Define it ' + 'as an instance property instead; it will still be accessible on the ' + 'constructor.', name) : invariant(false) : undefined;
+    !!isReserved ? "development" !== 'production' ? invariant(false, 'ReactClass: You are attempting to define a reserved ' + 'property, `%s`, that shouldn\'t be on the "statics" key. Define it ' + 'as an instance property instead; it will still be accessible on the ' + 'constructor.', name) : invariant(false) : undefined;
 
     var isInherited = (name in Constructor);
-    !!isInherited ? "production" !== 'production' ? invariant(false, 'ReactClass: You are attempting to define ' + '`%s` on your component more than once. This conflict may be ' + 'due to a mixin.', name) : invariant(false) : undefined;
+    !!isInherited ? "development" !== 'production' ? invariant(false, 'ReactClass: You are attempting to define ' + '`%s` on your component more than once. This conflict may be ' + 'due to a mixin.', name) : invariant(false) : undefined;
     Constructor[name] = property;
   }
 }
@@ -20390,11 +41632,11 @@ function mixStaticSpecIntoComponent(Constructor, statics) {
  * @return {object} one after it has been mutated to contain everything in two.
  */
 function mergeIntoWithNoDuplicateKeys(one, two) {
-  !(one && two && typeof one === 'object' && typeof two === 'object') ? "production" !== 'production' ? invariant(false, 'mergeIntoWithNoDuplicateKeys(): Cannot merge non-objects.') : invariant(false) : undefined;
+  !(one && two && typeof one === 'object' && typeof two === 'object') ? "development" !== 'production' ? invariant(false, 'mergeIntoWithNoDuplicateKeys(): Cannot merge non-objects.') : invariant(false) : undefined;
 
   for (var key in two) {
     if (two.hasOwnProperty(key)) {
-      !(one[key] === undefined) ? "production" !== 'production' ? invariant(false, 'mergeIntoWithNoDuplicateKeys(): ' + 'Tried to merge two objects with the same key: `%s`. This conflict ' + 'may be due to a mixin; in particular, this may be caused by two ' + 'getInitialState() or getDefaultProps() methods returning objects ' + 'with clashing keys.', key) : invariant(false) : undefined;
+      !(one[key] === undefined) ? "development" !== 'production' ? invariant(false, 'mergeIntoWithNoDuplicateKeys(): ' + 'Tried to merge two objects with the same key: `%s`. This conflict ' + 'may be due to a mixin; in particular, this may be caused by two ' + 'getInitialState() or getDefaultProps() methods returning objects ' + 'with clashing keys.', key) : invariant(false) : undefined;
       one[key] = two[key];
     }
   }
@@ -20449,7 +41691,7 @@ function createChainedFunction(one, two) {
  */
 function bindAutoBindMethod(component, method) {
   var boundMethod = method.bind(component);
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     boundMethod.__reactBoundContext = component;
     boundMethod.__reactBoundMethod = method;
     boundMethod.__reactBoundArguments = null;
@@ -20465,9 +41707,9 @@ function bindAutoBindMethod(component, method) {
       // ignore the value of "this" that the user is trying to use, so
       // let's warn.
       if (newThis !== component && newThis !== null) {
-        "production" !== 'production' ? warning(false, 'bind(): React component methods may only be bound to the ' + 'component instance. See %s', componentName) : undefined;
+        "development" !== 'production' ? warning(false, 'bind(): React component methods may only be bound to the ' + 'component instance. See %s', componentName) : undefined;
       } else if (!args.length) {
-        "production" !== 'production' ? warning(false, 'bind(): You are binding a component method to the component. ' + 'React does this for you automatically in a high-performance ' + 'way, so you can safely remove this call. See %s', componentName) : undefined;
+        "development" !== 'production' ? warning(false, 'bind(): You are binding a component method to the component. ' + 'React does this for you automatically in a high-performance ' + 'way, so you can safely remove this call. See %s', componentName) : undefined;
         return boundMethod;
       }
       var reboundMethod = _bind.apply(boundMethod, arguments);
@@ -20532,7 +41774,7 @@ var ReactClassMixin = {
    * @deprecated
    */
   setProps: function (partialProps, callback) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       warnSetProps();
     }
     this.updater.enqueueSetProps(this, partialProps);
@@ -20551,7 +41793,7 @@ var ReactClassMixin = {
    * @deprecated
    */
   replaceProps: function (newProps, callback) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       warnSetProps();
     }
     this.updater.enqueueReplaceProps(this, newProps);
@@ -20583,8 +41825,8 @@ var ReactClass = {
       // This constructor is overridden by mocks. The argument is used
       // by mocks to assert on what gets mounted.
 
-      if ("production" !== 'production') {
-        "production" !== 'production' ? warning(this instanceof Constructor, 'Something is calling a React component directly. Use a factory or ' + 'JSX instead. See: https://fb.me/react-legacyfactory') : undefined;
+      if ("development" !== 'production') {
+        "development" !== 'production' ? warning(this instanceof Constructor, 'Something is calling a React component directly. Use a factory or ' + 'JSX instead. See: https://fb.me/react-legacyfactory') : undefined;
       }
 
       // Wire up auto-binding
@@ -20603,7 +41845,7 @@ var ReactClass = {
       // getInitialState and componentWillMount methods for initialization.
 
       var initialState = this.getInitialState ? this.getInitialState() : null;
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         // We allow auto-mocks to proceed as if they're returning null.
         if (typeof initialState === 'undefined' && this.getInitialState._isMockFunction) {
           // This is probably bad practice. Consider warning here and
@@ -20611,7 +41853,7 @@ var ReactClass = {
           initialState = null;
         }
       }
-      !(typeof initialState === 'object' && !Array.isArray(initialState)) ? "production" !== 'production' ? invariant(false, '%s.getInitialState(): must return an object or null', Constructor.displayName || 'ReactCompositeComponent') : invariant(false) : undefined;
+      !(typeof initialState === 'object' && !Array.isArray(initialState)) ? "development" !== 'production' ? invariant(false, '%s.getInitialState(): must return an object or null', Constructor.displayName || 'ReactCompositeComponent') : invariant(false) : undefined;
 
       this.state = initialState;
     };
@@ -20627,7 +41869,7 @@ var ReactClass = {
       Constructor.defaultProps = Constructor.getDefaultProps();
     }
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // This is a tag to indicate that the use of these method names is ok,
       // since it's used with createClass. If it's not, then it's likely a
       // mistake so we'll warn you to use the static property, property
@@ -20640,11 +41882,11 @@ var ReactClass = {
       }
     }
 
-    !Constructor.prototype.render ? "production" !== 'production' ? invariant(false, 'createClass(...): Class specification must implement a `render` method.') : invariant(false) : undefined;
+    !Constructor.prototype.render ? "development" !== 'production' ? invariant(false, 'createClass(...): Class specification must implement a `render` method.') : invariant(false) : undefined;
 
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(!Constructor.prototype.componentShouldUpdate, '%s has a method called ' + 'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' + 'The name is phrased as a question because the function is ' + 'expected to return a value.', spec.displayName || 'A component') : undefined;
-      "production" !== 'production' ? warning(!Constructor.prototype.componentWillRecieveProps, '%s has a method called ' + 'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?', spec.displayName || 'A component') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(!Constructor.prototype.componentShouldUpdate, '%s has a method called ' + 'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' + 'The name is phrased as a question because the function is ' + 'expected to return a value.', spec.displayName || 'A component') : undefined;
+      "development" !== 'production' ? warning(!Constructor.prototype.componentWillRecieveProps, '%s has a method called ' + 'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?', spec.displayName || 'A component') : undefined;
     }
 
     // Reduce time spent doing lookups by setting these on the prototype.
@@ -20666,7 +41908,7 @@ var ReactClass = {
 };
 
 module.exports = ReactClass;
-},{"./Object.assign":82,"./ReactComponent":90,"./ReactElement":112,"./ReactNoopUpdateQueue":129,"./ReactPropTypeLocationNames":132,"./ReactPropTypeLocations":133,"fbjs/lib/emptyObject":197,"fbjs/lib/invariant":204,"fbjs/lib/keyMirror":207,"fbjs/lib/keyOf":208,"fbjs/lib/warning":215}],90:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactComponent":101,"./ReactElement":123,"./ReactNoopUpdateQueue":140,"./ReactPropTypeLocationNames":143,"./ReactPropTypeLocations":144,"fbjs/lib/emptyObject":208,"fbjs/lib/invariant":215,"fbjs/lib/keyMirror":218,"fbjs/lib/keyOf":219,"fbjs/lib/warning":226}],101:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20727,9 +41969,9 @@ ReactComponent.prototype.isReactComponent = {};
  * @protected
  */
 ReactComponent.prototype.setState = function (partialState, callback) {
-  !(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null) ? "production" !== 'production' ? invariant(false, 'setState(...): takes an object of state variables to update or a ' + 'function which returns an object of state variables.') : invariant(false) : undefined;
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(partialState != null, 'setState(...): You passed an undefined or null state object; ' + 'instead, use forceUpdate().') : undefined;
+  !(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null) ? "development" !== 'production' ? invariant(false, 'setState(...): takes an object of state variables to update or a ' + 'function which returns an object of state variables.') : invariant(false) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(partialState != null, 'setState(...): You passed an undefined or null state object; ' + 'instead, use forceUpdate().') : undefined;
   }
   this.updater.enqueueSetState(this, partialState);
   if (callback) {
@@ -20763,7 +42005,7 @@ ReactComponent.prototype.forceUpdate = function (callback) {
  * we would like to deprecate them, we're not going to move them over to this
  * modern base class. Instead, we define a getter that warns if it's accessed.
  */
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   var deprecatedAPIs = {
     getDOMNode: ['getDOMNode', 'Use ReactDOM.findDOMNode(component) instead.'],
     isMounted: ['isMounted', 'Instead, make sure to clean up subscriptions and pending requests in ' + 'componentWillUnmount to prevent memory leaks.'],
@@ -20775,7 +42017,7 @@ if ("production" !== 'production') {
     if (canDefineProperty) {
       Object.defineProperty(ReactComponent.prototype, methodName, {
         get: function () {
-          "production" !== 'production' ? warning(false, '%s(...) is deprecated in plain JavaScript React classes. %s', info[0], info[1]) : undefined;
+          "development" !== 'production' ? warning(false, '%s(...) is deprecated in plain JavaScript React classes. %s', info[0], info[1]) : undefined;
           return undefined;
         }
       });
@@ -20789,7 +42031,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = ReactComponent;
-},{"./ReactNoopUpdateQueue":129,"./canDefineProperty":164,"fbjs/lib/emptyObject":197,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],91:[function(require,module,exports){
+},{"./ReactNoopUpdateQueue":140,"./canDefineProperty":175,"fbjs/lib/emptyObject":208,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],102:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20831,7 +42073,7 @@ var ReactComponentBrowserEnvironment = {
 };
 
 module.exports = ReactComponentBrowserEnvironment;
-},{"./ReactDOMIDOperations":100,"./ReactMount":125}],92:[function(require,module,exports){
+},{"./ReactDOMIDOperations":111,"./ReactMount":136}],103:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -20872,7 +42114,7 @@ var ReactComponentEnvironment = {
 
   injection: {
     injectEnvironment: function (environment) {
-      !!injected ? "production" !== 'production' ? invariant(false, 'ReactCompositeComponent: injectEnvironment() can only be called once.') : invariant(false) : undefined;
+      !!injected ? "development" !== 'production' ? invariant(false, 'ReactCompositeComponent: injectEnvironment() can only be called once.') : invariant(false) : undefined;
       ReactComponentEnvironment.unmountIDFromEnvironment = environment.unmountIDFromEnvironment;
       ReactComponentEnvironment.replaceNodeWithMarkupByID = environment.replaceNodeWithMarkupByID;
       ReactComponentEnvironment.processChildrenUpdates = environment.processChildrenUpdates;
@@ -20883,7 +42125,7 @@ var ReactComponentEnvironment = {
 };
 
 module.exports = ReactComponentEnvironment;
-},{"fbjs/lib/invariant":204}],93:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],104:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21028,7 +42270,7 @@ var ReactCompositeComponentMixin = {
     var canInstantiate = ('prototype' in Component);
 
     if (canInstantiate) {
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         ReactCurrentOwner.current = this;
         try {
           inst = new Component(publicProps, publicContext, ReactUpdateQueue);
@@ -21045,15 +42287,15 @@ var ReactCompositeComponentMixin = {
       inst = new StatelessComponent(Component);
     }
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // This will throw later in _renderValidatedComponent, but add an early
       // warning now to help debugging
       if (inst.render == null) {
-        "production" !== 'production' ? warning(false, '%s(...): No `render` method found on the returned component ' + 'instance: you may have forgotten to define `render`, returned ' + 'null/false from a stateless component, or tried to render an ' + 'element whose type is a function that isn\'t a React component.', Component.displayName || Component.name || 'Component') : undefined;
+        "development" !== 'production' ? warning(false, '%s(...): No `render` method found on the returned component ' + 'instance: you may have forgotten to define `render`, returned ' + 'null/false from a stateless component, or tried to render an ' + 'element whose type is a function that isn\'t a React component.', Component.displayName || Component.name || 'Component') : undefined;
       } else {
         // We support ES6 inheriting from React.Component, the module pattern,
         // and stateless components, but not ES6 classes that don't extend
-        "production" !== 'production' ? warning(Component.prototype && Component.prototype.isReactComponent || !canInstantiate || !(inst instanceof Component), '%s(...): React component classes must extend React.Component.', Component.displayName || Component.name || 'Component') : undefined;
+        "development" !== 'production' ? warning(Component.prototype && Component.prototype.isReactComponent || !canInstantiate || !(inst instanceof Component), '%s(...): React component classes must extend React.Component.', Component.displayName || Component.name || 'Component') : undefined;
       }
     }
 
@@ -21069,24 +42311,24 @@ var ReactCompositeComponentMixin = {
     // Store a reference from the instance back to the internal representation
     ReactInstanceMap.set(inst, this);
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // Since plain JS classes are defined without any special initialization
       // logic, we can not catch common errors early. Therefore, we have to
       // catch them here, at initialization time, instead.
-      "production" !== 'production' ? warning(!inst.getInitialState || inst.getInitialState.isReactClassApproved, 'getInitialState was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Did you mean to define a state property instead?', this.getName() || 'a component') : undefined;
-      "production" !== 'production' ? warning(!inst.getDefaultProps || inst.getDefaultProps.isReactClassApproved, 'getDefaultProps was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Use a static property to define defaultProps instead.', this.getName() || 'a component') : undefined;
-      "production" !== 'production' ? warning(!inst.propTypes, 'propTypes was defined as an instance property on %s. Use a static ' + 'property to define propTypes instead.', this.getName() || 'a component') : undefined;
-      "production" !== 'production' ? warning(!inst.contextTypes, 'contextTypes was defined as an instance property on %s. Use a ' + 'static property to define contextTypes instead.', this.getName() || 'a component') : undefined;
-      "production" !== 'production' ? warning(typeof inst.componentShouldUpdate !== 'function', '%s has a method called ' + 'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' + 'The name is phrased as a question because the function is ' + 'expected to return a value.', this.getName() || 'A component') : undefined;
-      "production" !== 'production' ? warning(typeof inst.componentDidUnmount !== 'function', '%s has a method called ' + 'componentDidUnmount(). But there is no such lifecycle method. ' + 'Did you mean componentWillUnmount()?', this.getName() || 'A component') : undefined;
-      "production" !== 'production' ? warning(typeof inst.componentWillRecieveProps !== 'function', '%s has a method called ' + 'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?', this.getName() || 'A component') : undefined;
+      "development" !== 'production' ? warning(!inst.getInitialState || inst.getInitialState.isReactClassApproved, 'getInitialState was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Did you mean to define a state property instead?', this.getName() || 'a component') : undefined;
+      "development" !== 'production' ? warning(!inst.getDefaultProps || inst.getDefaultProps.isReactClassApproved, 'getDefaultProps was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Use a static property to define defaultProps instead.', this.getName() || 'a component') : undefined;
+      "development" !== 'production' ? warning(!inst.propTypes, 'propTypes was defined as an instance property on %s. Use a static ' + 'property to define propTypes instead.', this.getName() || 'a component') : undefined;
+      "development" !== 'production' ? warning(!inst.contextTypes, 'contextTypes was defined as an instance property on %s. Use a ' + 'static property to define contextTypes instead.', this.getName() || 'a component') : undefined;
+      "development" !== 'production' ? warning(typeof inst.componentShouldUpdate !== 'function', '%s has a method called ' + 'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' + 'The name is phrased as a question because the function is ' + 'expected to return a value.', this.getName() || 'A component') : undefined;
+      "development" !== 'production' ? warning(typeof inst.componentDidUnmount !== 'function', '%s has a method called ' + 'componentDidUnmount(). But there is no such lifecycle method. ' + 'Did you mean componentWillUnmount()?', this.getName() || 'A component') : undefined;
+      "development" !== 'production' ? warning(typeof inst.componentWillRecieveProps !== 'function', '%s has a method called ' + 'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?', this.getName() || 'A component') : undefined;
     }
 
     var initialState = inst.state;
     if (initialState === undefined) {
       inst.state = initialState = null;
     }
-    !(typeof initialState === 'object' && !Array.isArray(initialState)) ? "production" !== 'production' ? invariant(false, '%s.state: must be set to an object or null', this.getName() || 'ReactCompositeComponent') : invariant(false) : undefined;
+    !(typeof initialState === 'object' && !Array.isArray(initialState)) ? "development" !== 'production' ? invariant(false, '%s.state: must be set to an object or null', this.getName() || 'ReactCompositeComponent') : invariant(false) : undefined;
 
     this._pendingStateQueue = null;
     this._pendingReplaceState = false;
@@ -21192,7 +42434,7 @@ var ReactCompositeComponentMixin = {
    */
   _processContext: function (context) {
     var maskedContext = this._maskContext(context);
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       var Component = this._currentElement.type;
       if (Component.contextTypes) {
         this._checkPropTypes(Component.contextTypes, maskedContext, ReactPropTypeLocations.context);
@@ -21211,12 +42453,12 @@ var ReactCompositeComponentMixin = {
     var inst = this._instance;
     var childContext = inst.getChildContext && inst.getChildContext();
     if (childContext) {
-      !(typeof Component.childContextTypes === 'object') ? "production" !== 'production' ? invariant(false, '%s.getChildContext(): childContextTypes must be defined in order to ' + 'use getChildContext().', this.getName() || 'ReactCompositeComponent') : invariant(false) : undefined;
-      if ("production" !== 'production') {
+      !(typeof Component.childContextTypes === 'object') ? "development" !== 'production' ? invariant(false, '%s.getChildContext(): childContextTypes must be defined in order to ' + 'use getChildContext().', this.getName() || 'ReactCompositeComponent') : invariant(false) : undefined;
+      if ("development" !== 'production') {
         this._checkPropTypes(Component.childContextTypes, childContext, ReactPropTypeLocations.childContext);
       }
       for (var name in childContext) {
-        !(name in Component.childContextTypes) ? "production" !== 'production' ? invariant(false, '%s.getChildContext(): key "%s" is not defined in childContextTypes.', this.getName() || 'ReactCompositeComponent', name) : invariant(false) : undefined;
+        !(name in Component.childContextTypes) ? "development" !== 'production' ? invariant(false, '%s.getChildContext(): key "%s" is not defined in childContextTypes.', this.getName() || 'ReactCompositeComponent', name) : invariant(false) : undefined;
       }
       return assign({}, currentContext, childContext);
     }
@@ -21233,7 +42475,7 @@ var ReactCompositeComponentMixin = {
    * @private
    */
   _processProps: function (newProps) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       var Component = this._currentElement.type;
       if (Component.propTypes) {
         this._checkPropTypes(Component.propTypes, newProps, ReactPropTypeLocations.prop);
@@ -21260,7 +42502,7 @@ var ReactCompositeComponentMixin = {
         try {
           // This is intentionally an invariant that gets caught. It's the same
           // behavior as without this statement except with a better message.
-          !(typeof propTypes[propName] === 'function') ? "production" !== 'production' ? invariant(false, '%s: %s type `%s` is invalid; it must be a function, usually ' + 'from React.PropTypes.', componentName || 'React class', ReactPropTypeLocationNames[location], propName) : invariant(false) : undefined;
+          !(typeof propTypes[propName] === 'function') ? "development" !== 'production' ? invariant(false, '%s: %s type `%s` is invalid; it must be a function, usually ' + 'from React.PropTypes.', componentName || 'React class', ReactPropTypeLocationNames[location], propName) : invariant(false) : undefined;
           error = propTypes[propName](props, propName, componentName, location);
         } catch (ex) {
           error = ex;
@@ -21273,9 +42515,9 @@ var ReactCompositeComponentMixin = {
 
           if (location === ReactPropTypeLocations.prop) {
             // Preface gives us something to blacklist in warning module
-            "production" !== 'production' ? warning(false, 'Failed Composite propType: %s%s', error.message, addendum) : undefined;
+            "development" !== 'production' ? warning(false, 'Failed Composite propType: %s%s', error.message, addendum) : undefined;
           } else {
-            "production" !== 'production' ? warning(false, 'Failed Context Types: %s%s', error.message, addendum) : undefined;
+            "development" !== 'production' ? warning(false, 'Failed Context Types: %s%s', error.message, addendum) : undefined;
           }
         }
       }
@@ -21349,8 +42591,8 @@ var ReactCompositeComponentMixin = {
 
     var shouldUpdate = this._pendingForceUpdate || !inst.shouldComponentUpdate || inst.shouldComponentUpdate(nextProps, nextState, nextContext);
 
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(typeof shouldUpdate !== 'undefined', '%s.shouldComponentUpdate(): Returned undefined instead of a ' + 'boolean value. Make sure to return true or false.', this.getName() || 'ReactCompositeComponent') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(typeof shouldUpdate !== 'undefined', '%s.shouldComponentUpdate(): Returned undefined instead of a ' + 'boolean value. Make sure to return true or false.', this.getName() || 'ReactCompositeComponent') : undefined;
     }
 
     if (shouldUpdate) {
@@ -21471,7 +42713,7 @@ var ReactCompositeComponentMixin = {
   _renderValidatedComponentWithoutOwnerOrContext: function () {
     var inst = this._instance;
     var renderedComponent = inst.render();
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // We allow auto-mocks to proceed as if they're returning null.
       if (typeof renderedComponent === 'undefined' && inst.render._isMockFunction) {
         // This is probably bad practice. Consider warning here and
@@ -21496,7 +42738,7 @@ var ReactCompositeComponentMixin = {
     }
     !(
     // TODO: An `isValidNode` function would probably be more appropriate
-    renderedComponent === null || renderedComponent === false || ReactElement.isValidElement(renderedComponent)) ? "production" !== 'production' ? invariant(false, '%s.render(): A valid ReactComponent must be returned. You may have ' + 'returned undefined, an array or some other invalid object.', this.getName() || 'ReactCompositeComponent') : invariant(false) : undefined;
+    renderedComponent === null || renderedComponent === false || ReactElement.isValidElement(renderedComponent)) ? "development" !== 'production' ? invariant(false, '%s.render(): A valid ReactComponent must be returned. You may have ' + 'returned undefined, an array or some other invalid object.', this.getName() || 'ReactCompositeComponent') : invariant(false) : undefined;
     return renderedComponent;
   },
 
@@ -21510,11 +42752,11 @@ var ReactCompositeComponentMixin = {
    */
   attachRef: function (ref, component) {
     var inst = this.getPublicInstance();
-    !(inst != null) ? "production" !== 'production' ? invariant(false, 'Stateless function components cannot have refs.') : invariant(false) : undefined;
+    !(inst != null) ? "development" !== 'production' ? invariant(false, 'Stateless function components cannot have refs.') : invariant(false) : undefined;
     var publicComponentInstance = component.getPublicInstance();
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       var componentName = component && component.getName ? component.getName() : 'a component';
-      "production" !== 'production' ? warning(publicComponentInstance != null, 'Stateless function components cannot be given refs ' + '(See ref "%s" in %s created by %s). ' + 'Attempts to access this ref will fail.', ref, componentName, this.getName()) : undefined;
+      "development" !== 'production' ? warning(publicComponentInstance != null, 'Stateless function components cannot be given refs ' + '(See ref "%s" in %s created by %s). ' + 'Attempts to access this ref will fail.', ref, componentName, this.getName()) : undefined;
     }
     var refs = inst.refs === emptyObject ? inst.refs = {} : inst.refs;
     refs[ref] = publicComponentInstance;
@@ -21578,7 +42820,7 @@ var ReactCompositeComponent = {
 };
 
 module.exports = ReactCompositeComponent;
-},{"./Object.assign":82,"./ReactComponentEnvironment":92,"./ReactCurrentOwner":94,"./ReactElement":112,"./ReactInstanceMap":122,"./ReactPerf":131,"./ReactPropTypeLocationNames":132,"./ReactPropTypeLocations":133,"./ReactReconciler":136,"./ReactUpdateQueue":142,"./shouldUpdateReactComponent":186,"fbjs/lib/emptyObject":197,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],94:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactComponentEnvironment":103,"./ReactCurrentOwner":105,"./ReactElement":123,"./ReactInstanceMap":133,"./ReactPerf":142,"./ReactPropTypeLocationNames":143,"./ReactPropTypeLocations":144,"./ReactReconciler":147,"./ReactUpdateQueue":153,"./shouldUpdateReactComponent":197,"fbjs/lib/emptyObject":208,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],105:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21609,7 +42851,7 @@ var ReactCurrentOwner = {
 };
 
 module.exports = ReactCurrentOwner;
-},{}],95:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21667,7 +42909,7 @@ if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' && typeof __REACT_DEVT
   });
 }
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   var ExecutionEnvironment = require('fbjs/lib/ExecutionEnvironment');
   if (ExecutionEnvironment.canUseDOM && window.top === window.self) {
 
@@ -21683,7 +42925,7 @@ if ("production" !== 'production') {
     // information on preventing compatibility mode
     var ieCompatibilityMode = document.documentMode && document.documentMode < 8;
 
-    "production" !== 'production' ? warning(!ieCompatibilityMode, 'Internet Explorer is running in compatibility mode; please add the ' + 'following tag to your HTML to prevent this from happening: ' + '<meta http-equiv="X-UA-Compatible" content="IE=edge" />') : undefined;
+    "development" !== 'production' ? warning(!ieCompatibilityMode, 'Internet Explorer is running in compatibility mode; please add the ' + 'following tag to your HTML to prevent this from happening: ' + '<meta http-equiv="X-UA-Compatible" content="IE=edge" />') : undefined;
 
     var expectedFeatures = [
     // shims
@@ -21702,7 +42944,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = React;
-},{"./ReactCurrentOwner":94,"./ReactDOMTextComponent":106,"./ReactDefaultInjection":109,"./ReactInstanceHandles":121,"./ReactMount":125,"./ReactPerf":131,"./ReactReconciler":136,"./ReactUpdates":143,"./ReactVersion":144,"./findDOMNode":168,"./renderSubtreeIntoContainer":183,"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/warning":215}],96:[function(require,module,exports){
+},{"./ReactCurrentOwner":105,"./ReactDOMTextComponent":117,"./ReactDefaultInjection":120,"./ReactInstanceHandles":132,"./ReactMount":136,"./ReactPerf":142,"./ReactReconciler":147,"./ReactUpdates":154,"./ReactVersion":155,"./findDOMNode":179,"./renderSubtreeIntoContainer":194,"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/warning":226}],107:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21753,7 +42995,7 @@ var ReactDOMButton = {
 };
 
 module.exports = ReactDOMButton;
-},{}],97:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21826,13 +43068,13 @@ function getDeclarationErrorAddendum(internalInstance) {
 }
 
 var legacyPropsDescriptor;
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   legacyPropsDescriptor = {
     props: {
       enumerable: false,
       get: function () {
         var component = this._reactInternalComponent;
-        "production" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .props of a DOM node; instead, ' + 'recreate the props as `render` did originally or read the DOM ' + 'properties/attributes directly from this node (e.g., ' + 'this.refs.box.className).%s', getDeclarationErrorAddendum(component)) : undefined;
+        "development" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .props of a DOM node; instead, ' + 'recreate the props as `render` did originally or read the DOM ' + 'properties/attributes directly from this node (e.g., ' + 'this.refs.box.className).%s', getDeclarationErrorAddendum(component)) : undefined;
         return component._currentElement.props;
       }
     }
@@ -21840,32 +43082,32 @@ if ("production" !== 'production') {
 }
 
 function legacyGetDOMNode() {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     var component = this._reactInternalComponent;
-    "production" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .getDOMNode() of a DOM node; ' + 'instead, use the node directly.%s', getDeclarationErrorAddendum(component)) : undefined;
+    "development" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .getDOMNode() of a DOM node; ' + 'instead, use the node directly.%s', getDeclarationErrorAddendum(component)) : undefined;
   }
   return this;
 }
 
 function legacyIsMounted() {
   var component = this._reactInternalComponent;
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .isMounted() of a DOM node.%s', getDeclarationErrorAddendum(component)) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .isMounted() of a DOM node.%s', getDeclarationErrorAddendum(component)) : undefined;
   }
   return !!component;
 }
 
 function legacySetStateEtc() {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     var component = this._reactInternalComponent;
-    "production" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .setState(), .replaceState(), or ' + '.forceUpdate() of a DOM node. This is a no-op.%s', getDeclarationErrorAddendum(component)) : undefined;
+    "development" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .setState(), .replaceState(), or ' + '.forceUpdate() of a DOM node. This is a no-op.%s', getDeclarationErrorAddendum(component)) : undefined;
   }
 }
 
 function legacySetProps(partialProps, callback) {
   var component = this._reactInternalComponent;
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .setProps() of a DOM node. ' + 'Instead, call ReactDOM.render again at the top level.%s', getDeclarationErrorAddendum(component)) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .setProps() of a DOM node. ' + 'Instead, call ReactDOM.render again at the top level.%s', getDeclarationErrorAddendum(component)) : undefined;
   }
   if (!component) {
     return;
@@ -21878,8 +43120,8 @@ function legacySetProps(partialProps, callback) {
 
 function legacyReplaceProps(partialProps, callback) {
   var component = this._reactInternalComponent;
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .replaceProps() of a DOM node. ' + 'Instead, call ReactDOM.render again at the top level.%s', getDeclarationErrorAddendum(component)) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(false, 'ReactDOMComponent: Do not access .replaceProps() of a DOM node. ' + 'Instead, call ReactDOM.render again at the top level.%s', getDeclarationErrorAddendum(component)) : undefined;
   }
   if (!component) {
     return;
@@ -21939,7 +43181,7 @@ function checkAndWarnForMutatedStyle(style1, style2, component) {
 
   styleMutationWarning[hash] = true;
 
-  "production" !== 'production' ? warning(false, '`%s` was passed a style object that has previously been mutated. ' + 'Mutating `style` is deprecated. Consider cloning it beforehand. Check ' + 'the `render` %s. Previous style: %s. Mutated style: %s.', componentName, owner ? 'of `' + ownerName + '`' : 'using <' + componentName + '>', friendlyStringify(style1), friendlyStringify(style2)) : undefined;
+  "development" !== 'production' ? warning(false, '`%s` was passed a style object that has previously been mutated. ' + 'Mutating `style` is deprecated. Consider cloning it beforehand. Check ' + 'the `render` %s. Previous style: %s. Mutated style: %s.', componentName, owner ? 'of `' + ownerName + '`' : 'using <' + componentName + '>', friendlyStringify(style1), friendlyStringify(style2)) : undefined;
 }
 
 /**
@@ -21951,27 +43193,27 @@ function assertValidProps(component, props) {
     return;
   }
   // Note the use of `==` which checks for null or undefined.
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     if (voidElementTags[component._tag]) {
-      "production" !== 'production' ? warning(props.children == null && props.dangerouslySetInnerHTML == null, '%s is a void element tag and must not have `children` or ' + 'use `props.dangerouslySetInnerHTML`.%s', component._tag, component._currentElement._owner ? ' Check the render method of ' + component._currentElement._owner.getName() + '.' : '') : undefined;
+      "development" !== 'production' ? warning(props.children == null && props.dangerouslySetInnerHTML == null, '%s is a void element tag and must not have `children` or ' + 'use `props.dangerouslySetInnerHTML`.%s', component._tag, component._currentElement._owner ? ' Check the render method of ' + component._currentElement._owner.getName() + '.' : '') : undefined;
     }
   }
   if (props.dangerouslySetInnerHTML != null) {
-    !(props.children == null) ? "production" !== 'production' ? invariant(false, 'Can only set one of `children` or `props.dangerouslySetInnerHTML`.') : invariant(false) : undefined;
-    !(typeof props.dangerouslySetInnerHTML === 'object' && HTML in props.dangerouslySetInnerHTML) ? "production" !== 'production' ? invariant(false, '`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. ' + 'Please visit https://fb.me/react-invariant-dangerously-set-inner-html ' + 'for more information.') : invariant(false) : undefined;
+    !(props.children == null) ? "development" !== 'production' ? invariant(false, 'Can only set one of `children` or `props.dangerouslySetInnerHTML`.') : invariant(false) : undefined;
+    !(typeof props.dangerouslySetInnerHTML === 'object' && HTML in props.dangerouslySetInnerHTML) ? "development" !== 'production' ? invariant(false, '`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. ' + 'Please visit https://fb.me/react-invariant-dangerously-set-inner-html ' + 'for more information.') : invariant(false) : undefined;
   }
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(props.innerHTML == null, 'Directly setting property `innerHTML` is not permitted. ' + 'For more information, lookup documentation on `dangerouslySetInnerHTML`.') : undefined;
-    "production" !== 'production' ? warning(!props.contentEditable || props.children == null, 'A component is `contentEditable` and contains `children` managed by ' + 'React. It is now your responsibility to guarantee that none of ' + 'those nodes are unexpectedly modified or duplicated. This is ' + 'probably not intentional.') : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(props.innerHTML == null, 'Directly setting property `innerHTML` is not permitted. ' + 'For more information, lookup documentation on `dangerouslySetInnerHTML`.') : undefined;
+    "development" !== 'production' ? warning(!props.contentEditable || props.children == null, 'A component is `contentEditable` and contains `children` managed by ' + 'React. It is now your responsibility to guarantee that none of ' + 'those nodes are unexpectedly modified or duplicated. This is ' + 'probably not intentional.') : undefined;
   }
-  !(props.style == null || typeof props.style === 'object') ? "production" !== 'production' ? invariant(false, 'The `style` prop expects a mapping from style properties to values, ' + 'not a string. For example, style={{marginRight: spacing + \'em\'}} when ' + 'using JSX.%s', getDeclarationErrorAddendum(component)) : invariant(false) : undefined;
+  !(props.style == null || typeof props.style === 'object') ? "development" !== 'production' ? invariant(false, 'The `style` prop expects a mapping from style properties to values, ' + 'not a string. For example, style={{marginRight: spacing + \'em\'}} when ' + 'using JSX.%s', getDeclarationErrorAddendum(component)) : invariant(false) : undefined;
 }
 
 function enqueuePutListener(id, registrationName, listener, transaction) {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     // IE8 has no API for event capturing and the `onScroll` event doesn't
     // bubble.
-    "production" !== 'production' ? warning(registrationName !== 'onScroll' || isEventSupported('scroll', true), 'This browser doesn\'t support the `onScroll` event') : undefined;
+    "development" !== 'production' ? warning(registrationName !== 'onScroll' || isEventSupported('scroll', true), 'This browser doesn\'t support the `onScroll` event') : undefined;
   }
   var container = ReactMount.findReactContainerForID(id);
   if (container) {
@@ -22022,9 +43264,9 @@ function trapBubbledEventsLocal() {
   var inst = this;
   // If a component renders to null or if another component fatals and causes
   // the state of the tree to be corrupted, `node` here can be null.
-  !inst._rootNodeID ? "production" !== 'production' ? invariant(false, 'Must be mounted to trap events') : invariant(false) : undefined;
+  !inst._rootNodeID ? "development" !== 'production' ? invariant(false, 'Must be mounted to trap events') : invariant(false) : undefined;
   var node = ReactMount.getNode(inst._rootNodeID);
-  !node ? "production" !== 'production' ? invariant(false, 'trapBubbledEvent(...): Requires node to be rendered.') : invariant(false) : undefined;
+  !node ? "development" !== 'production' ? invariant(false, 'trapBubbledEvent(...): Requires node to be rendered.') : invariant(false) : undefined;
 
   switch (inst._tag) {
     case 'iframe':
@@ -22104,7 +43346,7 @@ var hasOwnProperty = ({}).hasOwnProperty;
 
 function validateDangerousTag(tag) {
   if (!hasOwnProperty.call(validatedTagCache, tag)) {
-    !VALID_TAG_REGEX.test(tag) ? "production" !== 'production' ? invariant(false, 'Invalid tag: %s', tag) : invariant(false) : undefined;
+    !VALID_TAG_REGEX.test(tag) ? "development" !== 'production' ? invariant(false, 'Invalid tag: %s', tag) : invariant(false) : undefined;
     validatedTagCache[tag] = true;
   }
 }
@@ -22145,7 +43387,7 @@ function ReactDOMComponent(tag) {
   this._wrapperState = null;
   this._topLevelWrapper = null;
   this._nodeWithLegacyProperties = null;
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     this._unprocessedContextDev = null;
     this._processedContextDev = null;
   }
@@ -22208,13 +43450,13 @@ ReactDOMComponent.Mixin = {
     }
 
     assertValidProps(this, props);
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       if (context[validateDOMNesting.ancestorInfoContextKey]) {
         validateDOMNesting(this._tag, this, context[validateDOMNesting.ancestorInfoContextKey]);
       }
     }
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       this._unprocessedContextDev = context;
       this._processedContextDev = processChildContextDev(context, this);
       context = this._processedContextDev;
@@ -22287,7 +43529,7 @@ ReactDOMComponent.Mixin = {
       } else {
         if (propKey === STYLE) {
           if (propValue) {
-            if ("production" !== 'production') {
+            if ("development" !== 'production') {
               // See `_updateDOMProperties`. style block
               this._previousStyle = propValue;
             }
@@ -22440,7 +43682,7 @@ ReactDOMComponent.Mixin = {
         break;
     }
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // If the context is reference-equal to the old one, pass down the same
       // processed object so the update bailout in ReactReconciler behaves
       // correctly (and identically in dev and prod). See #5005.
@@ -22522,7 +43764,7 @@ ReactDOMComponent.Mixin = {
       }
       if (propKey === STYLE) {
         if (nextProp) {
-          if ("production" !== 'production') {
+          if ("development" !== 'production') {
             checkAndWarnForMutatedStyle(this._previousStyleCopy, this._previousStyle, this);
             this._previousStyle = nextProp;
           }
@@ -22660,7 +43902,7 @@ ReactDOMComponent.Mixin = {
          * take advantage of React's reconciliation for styling and <title>
          * management. So we just document it and throw in dangerous cases.
          */
-        !false ? "production" !== 'production' ? invariant(false, '<%s> tried to unmount. Because of cross-browser quirks it is ' + 'impossible to unmount some top-level components (eg <html>, ' + '<head>, and <body>) reliably and efficiently. To fix this, have a ' + 'single top-level component that never unmounts render these ' + 'elements.', this._tag) : invariant(false) : undefined;
+        !false ? "development" !== 'production' ? invariant(false, '<%s> tried to unmount. Because of cross-browser quirks it is ' + 'impossible to unmount some top-level components (eg <html>, ' + '<head>, and <body>) reliably and efficiently. To fix this, have a ' + 'single top-level component that never unmounts render these ' + 'elements.', this._tag) : invariant(false) : undefined;
         break;
     }
 
@@ -22689,7 +43931,7 @@ ReactDOMComponent.Mixin = {
       node.setProps = legacySetProps;
       node.replaceProps = legacyReplaceProps;
 
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         if (canDefineProperty) {
           Object.defineProperties(node, legacyPropsDescriptor);
         } else {
@@ -22716,7 +43958,7 @@ ReactPerf.measureMethods(ReactDOMComponent, 'ReactDOMComponent', {
 assign(ReactDOMComponent.prototype, ReactDOMComponent.Mixin, ReactMultiChild.Mixin);
 
 module.exports = ReactDOMComponent;
-},{"./AutoFocusUtils":61,"./CSSPropertyOperations":64,"./DOMProperty":69,"./DOMPropertyOperations":70,"./EventConstants":74,"./Object.assign":82,"./ReactBrowserEventEmitter":86,"./ReactComponentBrowserEnvironment":91,"./ReactDOMButton":96,"./ReactDOMInput":101,"./ReactDOMOption":102,"./ReactDOMSelect":103,"./ReactDOMTextarea":107,"./ReactMount":125,"./ReactMultiChild":126,"./ReactPerf":131,"./ReactUpdateQueue":142,"./canDefineProperty":164,"./escapeTextContentForBrowser":167,"./isEventSupported":179,"./setInnerHTML":184,"./setTextContent":185,"./validateDOMNesting":188,"fbjs/lib/invariant":204,"fbjs/lib/keyOf":208,"fbjs/lib/shallowEqual":213,"fbjs/lib/warning":215}],98:[function(require,module,exports){
+},{"./AutoFocusUtils":72,"./CSSPropertyOperations":75,"./DOMProperty":80,"./DOMPropertyOperations":81,"./EventConstants":85,"./Object.assign":93,"./ReactBrowserEventEmitter":97,"./ReactComponentBrowserEnvironment":102,"./ReactDOMButton":107,"./ReactDOMInput":112,"./ReactDOMOption":113,"./ReactDOMSelect":114,"./ReactDOMTextarea":118,"./ReactMount":136,"./ReactMultiChild":137,"./ReactPerf":142,"./ReactUpdateQueue":153,"./canDefineProperty":175,"./escapeTextContentForBrowser":178,"./isEventSupported":190,"./setInnerHTML":195,"./setTextContent":196,"./validateDOMNesting":199,"fbjs/lib/invariant":215,"fbjs/lib/keyOf":219,"fbjs/lib/shallowEqual":224,"fbjs/lib/warning":226}],109:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22743,7 +43985,7 @@ var mapObject = require('fbjs/lib/mapObject');
  * @private
  */
 function createDOMFactory(tag) {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     return ReactElementValidator.createFactory(tag);
   }
   return ReactElement.createFactory(tag);
@@ -22894,7 +44136,7 @@ var ReactDOMFactories = mapObject({
 }, createDOMFactory);
 
 module.exports = ReactDOMFactories;
-},{"./ReactElement":112,"./ReactElementValidator":113,"fbjs/lib/mapObject":209}],99:[function(require,module,exports){
+},{"./ReactElement":123,"./ReactElementValidator":124,"fbjs/lib/mapObject":220}],110:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22913,7 +44155,7 @@ var ReactDOMFeatureFlags = {
 };
 
 module.exports = ReactDOMFeatureFlags;
-},{}],100:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22962,7 +44204,7 @@ var ReactDOMIDOperations = {
    */
   updatePropertyByID: function (id, name, value) {
     var node = ReactMount.getNode(id);
-    !!INVALID_PROPERTY_ERRORS.hasOwnProperty(name) ? "production" !== 'production' ? invariant(false, 'updatePropertyByID(...): %s', INVALID_PROPERTY_ERRORS[name]) : invariant(false) : undefined;
+    !!INVALID_PROPERTY_ERRORS.hasOwnProperty(name) ? "development" !== 'production' ? invariant(false, 'updatePropertyByID(...): %s', INVALID_PROPERTY_ERRORS[name]) : invariant(false) : undefined;
 
     // If we're updating to null or undefined, we should remove the property
     // from the DOM node instead of inadvertantly setting to a string. This
@@ -23008,7 +44250,7 @@ ReactPerf.measureMethods(ReactDOMIDOperations, 'ReactDOMIDOperations', {
 });
 
 module.exports = ReactDOMIDOperations;
-},{"./DOMChildrenOperations":68,"./DOMPropertyOperations":70,"./ReactMount":125,"./ReactPerf":131,"fbjs/lib/invariant":204}],101:[function(require,module,exports){
+},{"./DOMChildrenOperations":79,"./DOMPropertyOperations":81,"./ReactMount":136,"./ReactPerf":142,"fbjs/lib/invariant":215}],112:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23072,7 +44314,7 @@ var ReactDOMInput = {
   },
 
   mountWrapper: function (inst, props) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       LinkedValueUtils.checkPropTypes('input', props, inst._currentElement._owner);
     }
 
@@ -23148,9 +44390,9 @@ function _handleChange(event) {
       // That's probably okay; we don't support it just as we don't support
       // mixing React with non-React.
       var otherID = ReactMount.getID(otherNode);
-      !otherID ? "production" !== 'production' ? invariant(false, 'ReactDOMInput: Mixing React and non-React radio inputs with the ' + 'same `name` is not supported.') : invariant(false) : undefined;
+      !otherID ? "development" !== 'production' ? invariant(false, 'ReactDOMInput: Mixing React and non-React radio inputs with the ' + 'same `name` is not supported.') : invariant(false) : undefined;
       var otherInstance = instancesByReactID[otherID];
-      !otherInstance ? "production" !== 'production' ? invariant(false, 'ReactDOMInput: Unknown radio button ID %s.', otherID) : invariant(false) : undefined;
+      !otherInstance ? "development" !== 'production' ? invariant(false, 'ReactDOMInput: Unknown radio button ID %s.', otherID) : invariant(false) : undefined;
       // If this is a controlled radio button group, forcing the input that
       // was previously checked to update will cause it to be come re-checked
       // as appropriate.
@@ -23162,7 +44404,7 @@ function _handleChange(event) {
 }
 
 module.exports = ReactDOMInput;
-},{"./LinkedValueUtils":81,"./Object.assign":82,"./ReactDOMIDOperations":100,"./ReactMount":125,"./ReactUpdates":143,"fbjs/lib/invariant":204}],102:[function(require,module,exports){
+},{"./LinkedValueUtils":92,"./Object.assign":93,"./ReactDOMIDOperations":111,"./ReactMount":136,"./ReactUpdates":154,"fbjs/lib/invariant":215}],113:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23190,8 +44432,8 @@ var valueContextKey = ReactDOMSelect.valueContextKey;
 var ReactDOMOption = {
   mountWrapper: function (inst, props, context) {
     // TODO (yungsters): Remove support for `selected` in <option>.
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(props.selected == null, 'Use the `defaultValue` or `value` props on <select> instead of ' + 'setting `selected` on <option>.') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(props.selected == null, 'Use the `defaultValue` or `value` props on <select> instead of ' + 'setting `selected` on <option>.') : undefined;
     }
 
     // Look up whether this option is 'selected' via context
@@ -23238,7 +44480,7 @@ var ReactDOMOption = {
       if (typeof child === 'string' || typeof child === 'number') {
         content += child;
       } else {
-        "production" !== 'production' ? warning(false, 'Only strings and numbers are supported as <option> children.') : undefined;
+        "development" !== 'production' ? warning(false, 'Only strings and numbers are supported as <option> children.') : undefined;
       }
     });
 
@@ -23249,7 +44491,7 @@ var ReactDOMOption = {
 };
 
 module.exports = ReactDOMOption;
-},{"./Object.assign":82,"./ReactChildren":88,"./ReactDOMSelect":103,"fbjs/lib/warning":215}],103:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactChildren":99,"./ReactDOMSelect":114,"fbjs/lib/warning":226}],114:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23311,9 +44553,9 @@ function checkSelectPropTypes(inst, props) {
       continue;
     }
     if (props.multiple) {
-      "production" !== 'production' ? warning(Array.isArray(props[propName]), 'The `%s` prop supplied to <select> must be an array if ' + '`multiple` is true.%s', propName, getDeclarationErrorAddendum(owner)) : undefined;
+      "development" !== 'production' ? warning(Array.isArray(props[propName]), 'The `%s` prop supplied to <select> must be an array if ' + '`multiple` is true.%s', propName, getDeclarationErrorAddendum(owner)) : undefined;
     } else {
-      "production" !== 'production' ? warning(!Array.isArray(props[propName]), 'The `%s` prop supplied to <select> must be a scalar ' + 'value if `multiple` is false.%s', propName, getDeclarationErrorAddendum(owner)) : undefined;
+      "development" !== 'production' ? warning(!Array.isArray(props[propName]), 'The `%s` prop supplied to <select> must be a scalar ' + 'value if `multiple` is false.%s', propName, getDeclarationErrorAddendum(owner)) : undefined;
     }
   }
 }
@@ -23381,7 +44623,7 @@ var ReactDOMSelect = {
   },
 
   mountWrapper: function (inst, props) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       checkSelectPropTypes(inst, props);
     }
 
@@ -23438,7 +44680,7 @@ function _handleChange(event) {
 }
 
 module.exports = ReactDOMSelect;
-},{"./LinkedValueUtils":81,"./Object.assign":82,"./ReactMount":125,"./ReactUpdates":143,"fbjs/lib/warning":215}],104:[function(require,module,exports){
+},{"./LinkedValueUtils":92,"./Object.assign":93,"./ReactMount":136,"./ReactUpdates":154,"fbjs/lib/warning":226}],115:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23651,7 +44893,7 @@ var ReactDOMSelection = {
 };
 
 module.exports = ReactDOMSelection;
-},{"./getNodeForCharacterOffset":176,"./getTextContentAccessor":177,"fbjs/lib/ExecutionEnvironment":190}],105:[function(require,module,exports){
+},{"./getNodeForCharacterOffset":187,"./getTextContentAccessor":188,"fbjs/lib/ExecutionEnvironment":201}],116:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23678,7 +44920,7 @@ var ReactDOMServer = {
 };
 
 module.exports = ReactDOMServer;
-},{"./ReactDefaultInjection":109,"./ReactServerRendering":140,"./ReactVersion":144}],106:[function(require,module,exports){
+},{"./ReactDefaultInjection":120,"./ReactServerRendering":151,"./ReactVersion":155}],117:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23748,7 +44990,7 @@ assign(ReactDOMTextComponent.prototype, {
    * @internal
    */
   mountComponent: function (rootID, transaction, context) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       if (context[validateDOMNesting.ancestorInfoContextKey]) {
         validateDOMNesting('span', null, context[validateDOMNesting.ancestorInfoContextKey]);
       }
@@ -23806,7 +45048,7 @@ assign(ReactDOMTextComponent.prototype, {
 });
 
 module.exports = ReactDOMTextComponent;
-},{"./DOMChildrenOperations":68,"./DOMPropertyOperations":70,"./Object.assign":82,"./ReactComponentBrowserEnvironment":91,"./ReactMount":125,"./escapeTextContentForBrowser":167,"./setTextContent":185,"./validateDOMNesting":188}],107:[function(require,module,exports){
+},{"./DOMChildrenOperations":79,"./DOMPropertyOperations":81,"./Object.assign":93,"./ReactComponentBrowserEnvironment":102,"./ReactMount":136,"./escapeTextContentForBrowser":178,"./setTextContent":196,"./validateDOMNesting":199}],118:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23852,7 +45094,7 @@ function forceUpdateIfMounted() {
  */
 var ReactDOMTextarea = {
   getNativeProps: function (inst, props, context) {
-    !(props.dangerouslySetInnerHTML == null) ? "production" !== 'production' ? invariant(false, '`dangerouslySetInnerHTML` does not make sense on <textarea>.') : invariant(false) : undefined;
+    !(props.dangerouslySetInnerHTML == null) ? "development" !== 'production' ? invariant(false, '`dangerouslySetInnerHTML` does not make sense on <textarea>.') : invariant(false) : undefined;
 
     // Always set children to the same thing. In IE9, the selection range will
     // get reset if `textContent` is mutated.
@@ -23867,7 +45109,7 @@ var ReactDOMTextarea = {
   },
 
   mountWrapper: function (inst, props) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       LinkedValueUtils.checkPropTypes('textarea', props, inst._currentElement._owner);
     }
 
@@ -23875,12 +45117,12 @@ var ReactDOMTextarea = {
     // TODO (yungsters): Remove support for children content in <textarea>.
     var children = props.children;
     if (children != null) {
-      if ("production" !== 'production') {
-        "production" !== 'production' ? warning(false, 'Use the `defaultValue` or `value` props instead of setting ' + 'children on <textarea>.') : undefined;
+      if ("development" !== 'production') {
+        "development" !== 'production' ? warning(false, 'Use the `defaultValue` or `value` props instead of setting ' + 'children on <textarea>.') : undefined;
       }
-      !(defaultValue == null) ? "production" !== 'production' ? invariant(false, 'If you supply `defaultValue` on a <textarea>, do not pass children.') : invariant(false) : undefined;
+      !(defaultValue == null) ? "development" !== 'production' ? invariant(false, 'If you supply `defaultValue` on a <textarea>, do not pass children.') : invariant(false) : undefined;
       if (Array.isArray(children)) {
-        !(children.length <= 1) ? "production" !== 'production' ? invariant(false, '<textarea> can only have at most one child.') : invariant(false) : undefined;
+        !(children.length <= 1) ? "development" !== 'production' ? invariant(false, '<textarea> can only have at most one child.') : invariant(false) : undefined;
         children = children[0];
       }
 
@@ -23920,7 +45162,7 @@ function _handleChange(event) {
 }
 
 module.exports = ReactDOMTextarea;
-},{"./LinkedValueUtils":81,"./Object.assign":82,"./ReactDOMIDOperations":100,"./ReactUpdates":143,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],108:[function(require,module,exports){
+},{"./LinkedValueUtils":92,"./Object.assign":93,"./ReactDOMIDOperations":111,"./ReactUpdates":154,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],119:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -23988,7 +45230,7 @@ var ReactDefaultBatchingStrategy = {
 };
 
 module.exports = ReactDefaultBatchingStrategy;
-},{"./Object.assign":82,"./ReactUpdates":143,"./Transaction":160,"fbjs/lib/emptyFunction":196}],109:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactUpdates":154,"./Transaction":171,"fbjs/lib/emptyFunction":207}],120:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -24074,7 +45316,7 @@ function inject() {
 
   ReactInjection.Component.injectEnvironment(ReactComponentBrowserEnvironment);
 
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     var url = ExecutionEnvironment.canUseDOM && window.location.href || '';
     if (/[?&]react_perf\b/.test(url)) {
       var ReactDefaultPerf = require('./ReactDefaultPerf');
@@ -24086,7 +45328,7 @@ function inject() {
 module.exports = {
   inject: inject
 };
-},{"./BeforeInputEventPlugin":62,"./ChangeEventPlugin":66,"./ClientReactRootIndex":67,"./DefaultEventPluginOrder":72,"./EnterLeaveEventPlugin":73,"./HTMLDOMPropertyConfig":80,"./ReactBrowserComponentMixin":85,"./ReactComponentBrowserEnvironment":91,"./ReactDOMComponent":97,"./ReactDOMTextComponent":106,"./ReactDefaultBatchingStrategy":108,"./ReactDefaultPerf":110,"./ReactEventListener":118,"./ReactInjection":119,"./ReactInstanceHandles":121,"./ReactMount":125,"./ReactReconcileTransaction":135,"./SVGDOMPropertyConfig":145,"./SelectEventPlugin":146,"./ServerReactRootIndex":147,"./SimpleEventPlugin":148,"fbjs/lib/ExecutionEnvironment":190}],110:[function(require,module,exports){
+},{"./BeforeInputEventPlugin":73,"./ChangeEventPlugin":77,"./ClientReactRootIndex":78,"./DefaultEventPluginOrder":83,"./EnterLeaveEventPlugin":84,"./HTMLDOMPropertyConfig":91,"./ReactBrowserComponentMixin":96,"./ReactComponentBrowserEnvironment":102,"./ReactDOMComponent":108,"./ReactDOMTextComponent":117,"./ReactDefaultBatchingStrategy":119,"./ReactDefaultPerf":121,"./ReactEventListener":129,"./ReactInjection":130,"./ReactInstanceHandles":132,"./ReactMount":136,"./ReactReconcileTransaction":146,"./SVGDOMPropertyConfig":156,"./SelectEventPlugin":157,"./ServerReactRootIndex":158,"./SimpleEventPlugin":159,"fbjs/lib/ExecutionEnvironment":201}],121:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -24324,7 +45566,7 @@ var ReactDefaultPerf = {
 };
 
 module.exports = ReactDefaultPerf;
-},{"./DOMProperty":69,"./ReactDefaultPerfAnalysis":111,"./ReactMount":125,"./ReactPerf":131,"fbjs/lib/performanceNow":212}],111:[function(require,module,exports){
+},{"./DOMProperty":80,"./ReactDefaultPerfAnalysis":122,"./ReactMount":136,"./ReactPerf":142,"fbjs/lib/performanceNow":223}],122:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -24526,7 +45768,7 @@ var ReactDefaultPerfAnalysis = {
 };
 
 module.exports = ReactDefaultPerfAnalysis;
-},{"./Object.assign":82}],112:[function(require,module,exports){
+},{"./Object.assign":93}],123:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -24589,7 +45831,7 @@ var ReactElement = function (type, key, ref, self, source, owner, props) {
     _owner: owner
   };
 
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     // The validation flag is currently mutative. We put it on
     // an external backing store so that we can freeze the whole object.
     // This can be replaced with a WeakMap once they are implemented in
@@ -24704,7 +45946,7 @@ ReactElement.cloneAndReplaceKey = function (oldElement, newKey) {
 ReactElement.cloneAndReplaceProps = function (oldElement, newProps) {
   var newElement = ReactElement(oldElement.type, oldElement.key, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, newProps);
 
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     // If the key on the original is valid, then the clone is valid
     newElement._store.validated = oldElement._store.validated;
   }
@@ -24774,7 +46016,7 @@ ReactElement.isValidElement = function (object) {
 };
 
 module.exports = ReactElement;
-},{"./Object.assign":82,"./ReactCurrentOwner":94,"./canDefineProperty":164}],113:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactCurrentOwner":105,"./canDefineProperty":175}],124:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -24845,7 +46087,7 @@ function validateExplicitKey(element, parentType) {
     // we already showed the warning
     return;
   }
-  "production" !== 'production' ? warning(false, 'Each child in an array or iterator should have a unique "key" prop.' + '%s%s%s', addenda.parentOrOwner || '', addenda.childOwner || '', addenda.url || '') : undefined;
+  "development" !== 'production' ? warning(false, 'Each child in an array or iterator should have a unique "key" prop.' + '%s%s%s', addenda.parentOrOwner || '', addenda.childOwner || '', addenda.url || '') : undefined;
 }
 
 /**
@@ -24951,19 +46193,19 @@ function checkPropTypes(componentName, propTypes, props, location) {
       try {
         // This is intentionally an invariant that gets caught. It's the same
         // behavior as without this statement except with a better message.
-        !(typeof propTypes[propName] === 'function') ? "production" !== 'production' ? invariant(false, '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', ReactPropTypeLocationNames[location], propName) : invariant(false) : undefined;
+        !(typeof propTypes[propName] === 'function') ? "development" !== 'production' ? invariant(false, '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', ReactPropTypeLocationNames[location], propName) : invariant(false) : undefined;
         error = propTypes[propName](props, propName, componentName, location);
       } catch (ex) {
         error = ex;
       }
-      "production" !== 'production' ? warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', ReactPropTypeLocationNames[location], propName, typeof error) : undefined;
+      "development" !== 'production' ? warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', ReactPropTypeLocationNames[location], propName, typeof error) : undefined;
       if (error instanceof Error && !(error.message in loggedTypeFailures)) {
         // Only monitor this failure once because there tends to be a lot of the
         // same error.
         loggedTypeFailures[error.message] = true;
 
         var addendum = getDeclarationErrorAddendum();
-        "production" !== 'production' ? warning(false, 'Failed propType: %s%s', error.message, addendum) : undefined;
+        "development" !== 'production' ? warning(false, 'Failed propType: %s%s', error.message, addendum) : undefined;
       }
     }
   }
@@ -24985,7 +46227,7 @@ function validatePropTypes(element) {
     checkPropTypes(name, componentClass.propTypes, element.props, ReactPropTypeLocations.prop);
   }
   if (typeof componentClass.getDefaultProps === 'function') {
-    "production" !== 'production' ? warning(componentClass.getDefaultProps.isReactClassApproved, 'getDefaultProps is only used on classic React.createClass ' + 'definitions. Use a static property named `defaultProps` instead.') : undefined;
+    "development" !== 'production' ? warning(componentClass.getDefaultProps.isReactClassApproved, 'getDefaultProps is only used on classic React.createClass ' + 'definitions. Use a static property named `defaultProps` instead.') : undefined;
   }
 }
 
@@ -24995,7 +46237,7 @@ var ReactElementValidator = {
     var validType = typeof type === 'string' || typeof type === 'function';
     // We warn in this case but don't throw. We expect the element creation to
     // succeed and there will likely be errors in render.
-    "production" !== 'production' ? warning(validType, 'React.createElement: type should not be null, undefined, boolean, or ' + 'number. It should be a string (for DOM elements) or a ReactClass ' + '(for composite components).%s', getDeclarationErrorAddendum()) : undefined;
+    "development" !== 'production' ? warning(validType, 'React.createElement: type should not be null, undefined, boolean, or ' + 'number. It should be a string (for DOM elements) or a ReactClass ' + '(for composite components).%s', getDeclarationErrorAddendum()) : undefined;
 
     var element = ReactElement.createElement.apply(this, arguments);
 
@@ -25026,12 +46268,12 @@ var ReactElementValidator = {
     // Legacy hook TODO: Warn if this is accessed
     validatedFactory.type = type;
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       if (canDefineProperty) {
         Object.defineProperty(validatedFactory, 'type', {
           enumerable: false,
           get: function () {
-            "production" !== 'production' ? warning(false, 'Factory.type is deprecated. Access the class directly ' + 'before passing it to createFactory.') : undefined;
+            "development" !== 'production' ? warning(false, 'Factory.type is deprecated. Access the class directly ' + 'before passing it to createFactory.') : undefined;
             Object.defineProperty(this, 'type', {
               value: type
             });
@@ -25056,7 +46298,7 @@ var ReactElementValidator = {
 };
 
 module.exports = ReactElementValidator;
-},{"./ReactCurrentOwner":94,"./ReactElement":112,"./ReactPropTypeLocationNames":132,"./ReactPropTypeLocations":133,"./canDefineProperty":164,"./getIteratorFn":175,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],114:[function(require,module,exports){
+},{"./ReactCurrentOwner":105,"./ReactElement":123,"./ReactPropTypeLocationNames":143,"./ReactPropTypeLocations":144,"./canDefineProperty":175,"./getIteratorFn":186,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],125:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -25108,7 +46350,7 @@ assign(ReactEmptyComponent.prototype, {
 ReactEmptyComponent.injection = ReactEmptyComponentInjection;
 
 module.exports = ReactEmptyComponent;
-},{"./Object.assign":82,"./ReactElement":112,"./ReactEmptyComponentRegistry":115,"./ReactReconciler":136}],115:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactElement":123,"./ReactEmptyComponentRegistry":126,"./ReactReconciler":147}],126:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -25157,7 +46399,7 @@ var ReactEmptyComponentRegistry = {
 };
 
 module.exports = ReactEmptyComponentRegistry;
-},{}],116:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25215,7 +46457,7 @@ var ReactErrorUtils = {
   }
 };
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   /**
    * To help development we can get better devtools integration by simulating a
    * real browser event.
@@ -25235,7 +46477,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = ReactErrorUtils;
-},{}],117:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25274,7 +46516,7 @@ var ReactEventEmitterMixin = {
 };
 
 module.exports = ReactEventEmitterMixin;
-},{"./EventPluginHub":75}],118:[function(require,module,exports){
+},{"./EventPluginHub":86}],129:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25486,7 +46728,7 @@ var ReactEventListener = {
 };
 
 module.exports = ReactEventListener;
-},{"./Object.assign":82,"./PooledClass":83,"./ReactInstanceHandles":121,"./ReactMount":125,"./ReactUpdates":143,"./getEventTarget":174,"fbjs/lib/EventListener":189,"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/getUnboundedScrollPosition":201}],119:[function(require,module,exports){
+},{"./Object.assign":93,"./PooledClass":94,"./ReactInstanceHandles":132,"./ReactMount":136,"./ReactUpdates":154,"./getEventTarget":185,"fbjs/lib/EventListener":200,"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/getUnboundedScrollPosition":212}],130:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25525,7 +46767,7 @@ var ReactInjection = {
 };
 
 module.exports = ReactInjection;
-},{"./DOMProperty":69,"./EventPluginHub":75,"./ReactBrowserEventEmitter":86,"./ReactClass":89,"./ReactComponentEnvironment":92,"./ReactEmptyComponent":114,"./ReactNativeComponent":128,"./ReactPerf":131,"./ReactRootIndex":138,"./ReactUpdates":143}],120:[function(require,module,exports){
+},{"./DOMProperty":80,"./EventPluginHub":86,"./ReactBrowserEventEmitter":97,"./ReactClass":100,"./ReactComponentEnvironment":103,"./ReactEmptyComponent":125,"./ReactNativeComponent":139,"./ReactPerf":142,"./ReactRootIndex":149,"./ReactUpdates":154}],131:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25650,7 +46892,7 @@ var ReactInputSelection = {
 };
 
 module.exports = ReactInputSelection;
-},{"./ReactDOMSelection":104,"fbjs/lib/containsNode":193,"fbjs/lib/focusNode":198,"fbjs/lib/getActiveElement":199}],121:[function(require,module,exports){
+},{"./ReactDOMSelection":115,"fbjs/lib/containsNode":204,"fbjs/lib/focusNode":209,"fbjs/lib/getActiveElement":210}],132:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25744,8 +46986,8 @@ function getParentID(id) {
  * @private
  */
 function getNextDescendantID(ancestorID, destinationID) {
-  !(isValidID(ancestorID) && isValidID(destinationID)) ? "production" !== 'production' ? invariant(false, 'getNextDescendantID(%s, %s): Received an invalid React DOM ID.', ancestorID, destinationID) : invariant(false) : undefined;
-  !isAncestorIDOf(ancestorID, destinationID) ? "production" !== 'production' ? invariant(false, 'getNextDescendantID(...): React has made an invalid assumption about ' + 'the DOM hierarchy. Expected `%s` to be an ancestor of `%s`.', ancestorID, destinationID) : invariant(false) : undefined;
+  !(isValidID(ancestorID) && isValidID(destinationID)) ? "development" !== 'production' ? invariant(false, 'getNextDescendantID(%s, %s): Received an invalid React DOM ID.', ancestorID, destinationID) : invariant(false) : undefined;
+  !isAncestorIDOf(ancestorID, destinationID) ? "development" !== 'production' ? invariant(false, 'getNextDescendantID(...): React has made an invalid assumption about ' + 'the DOM hierarchy. Expected `%s` to be an ancestor of `%s`.', ancestorID, destinationID) : invariant(false) : undefined;
   if (ancestorID === destinationID) {
     return ancestorID;
   }
@@ -25787,7 +47029,7 @@ function getFirstCommonAncestorID(oneID, twoID) {
     }
   }
   var longestCommonID = oneID.substr(0, lastCommonMarkerIndex);
-  !isValidID(longestCommonID) ? "production" !== 'production' ? invariant(false, 'getFirstCommonAncestorID(%s, %s): Expected a valid React DOM ID: %s', oneID, twoID, longestCommonID) : invariant(false) : undefined;
+  !isValidID(longestCommonID) ? "development" !== 'production' ? invariant(false, 'getFirstCommonAncestorID(%s, %s): Expected a valid React DOM ID: %s', oneID, twoID, longestCommonID) : invariant(false) : undefined;
   return longestCommonID;
 }
 
@@ -25807,9 +47049,9 @@ function getFirstCommonAncestorID(oneID, twoID) {
 function traverseParentPath(start, stop, cb, arg, skipFirst, skipLast) {
   start = start || '';
   stop = stop || '';
-  !(start !== stop) ? "production" !== 'production' ? invariant(false, 'traverseParentPath(...): Cannot traverse from and to the same ID, `%s`.', start) : invariant(false) : undefined;
+  !(start !== stop) ? "development" !== 'production' ? invariant(false, 'traverseParentPath(...): Cannot traverse from and to the same ID, `%s`.', start) : invariant(false) : undefined;
   var traverseUp = isAncestorIDOf(stop, start);
-  !(traverseUp || isAncestorIDOf(start, stop)) ? "production" !== 'production' ? invariant(false, 'traverseParentPath(%s, %s, ...): Cannot traverse from two IDs that do ' + 'not have a parent path.', start, stop) : invariant(false) : undefined;
+  !(traverseUp || isAncestorIDOf(start, stop)) ? "development" !== 'production' ? invariant(false, 'traverseParentPath(%s, %s, ...): Cannot traverse from two IDs that do ' + 'not have a parent path.', start, stop) : invariant(false) : undefined;
   // Traverse from `start` to `stop` one depth at a time.
   var depth = 0;
   var traverse = traverseUp ? getParentID : getNextDescendantID;
@@ -25822,7 +47064,7 @@ function traverseParentPath(start, stop, cb, arg, skipFirst, skipLast) {
       // Only break //after// visiting `stop`.
       break;
     }
-    !(depth++ < MAX_TREE_DEPTH) ? "production" !== 'production' ? invariant(false, 'traverseParentPath(%s, %s, ...): Detected an infinite loop while ' + 'traversing the React DOM ID tree. This may be due to malformed IDs: %s', start, stop, id) : invariant(false) : undefined;
+    !(depth++ < MAX_TREE_DEPTH) ? "development" !== 'production' ? invariant(false, 'traverseParentPath(%s, %s, ...): Detected an infinite loop while ' + 'traversing the React DOM ID tree. This may be due to malformed IDs: %s', start, stop, id) : invariant(false) : undefined;
   }
 }
 
@@ -25953,7 +47195,7 @@ var ReactInstanceHandles = {
 };
 
 module.exports = ReactInstanceHandles;
-},{"./ReactRootIndex":138,"fbjs/lib/invariant":204}],122:[function(require,module,exports){
+},{"./ReactRootIndex":149,"fbjs/lib/invariant":215}],133:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26001,7 +47243,7 @@ var ReactInstanceMap = {
 };
 
 module.exports = ReactInstanceMap;
-},{}],123:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26031,7 +47273,7 @@ var createElement = ReactElement.createElement;
 var createFactory = ReactElement.createFactory;
 var cloneElement = ReactElement.cloneElement;
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   createElement = ReactElementValidator.createElement;
   createFactory = ReactElementValidator.createFactory;
   cloneElement = ReactElementValidator.cloneElement;
@@ -26076,7 +47318,7 @@ var React = {
 };
 
 module.exports = React;
-},{"./Object.assign":82,"./ReactChildren":88,"./ReactClass":89,"./ReactComponent":90,"./ReactDOMFactories":98,"./ReactElement":112,"./ReactElementValidator":113,"./ReactPropTypes":134,"./ReactVersion":144,"./onlyChild":181}],124:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactChildren":99,"./ReactClass":100,"./ReactComponent":101,"./ReactDOMFactories":109,"./ReactElement":123,"./ReactElementValidator":124,"./ReactPropTypes":145,"./ReactVersion":155,"./onlyChild":192}],135:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26122,7 +47364,7 @@ var ReactMarkupChecksum = {
 };
 
 module.exports = ReactMarkupChecksum;
-},{"./adler32":163}],125:[function(require,module,exports){
+},{"./adler32":174}],136:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26175,7 +47417,7 @@ var instancesByReactRootID = {};
 /** Mapping from reactRootID to `container` nodes. */
 var containersByReactRootID = {};
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   /** __DEV__-only mapping from reactRootID to root elements. */
   var rootElementsByReactRootID = {};
 }
@@ -26241,7 +47483,7 @@ function getID(node) {
     if (nodeCache.hasOwnProperty(id)) {
       var cached = nodeCache[id];
       if (cached !== node) {
-        !!isValid(cached, id) ? "production" !== 'production' ? invariant(false, 'ReactMount: Two valid but unequal nodes with the same `%s`: %s', ATTR_NAME, id) : invariant(false) : undefined;
+        !!isValid(cached, id) ? "development" !== 'production' ? invariant(false, 'ReactMount: Two valid but unequal nodes with the same `%s`: %s', ATTR_NAME, id) : invariant(false) : undefined;
 
         nodeCache[id] = node;
       }
@@ -26319,7 +47561,7 @@ function getNodeFromInstance(instance) {
  */
 function isValid(node, id) {
   if (node) {
-    !(internalGetID(node) === id) ? "production" !== 'production' ? invariant(false, 'ReactMount: Unexpected modification of `%s`', ATTR_NAME) : invariant(false) : undefined;
+    !(internalGetID(node) === id) ? "development" !== 'production' ? invariant(false, 'ReactMount: Unexpected modification of `%s`', ATTR_NAME) : invariant(false) : undefined;
 
     var container = ReactMount.findReactContainerForID(id);
     if (container && containsNode(container, node)) {
@@ -26381,7 +47623,7 @@ function mountComponentIntoNode(componentInstance, rootID, container, transactio
       context[ownerDocumentContextKey] = container.ownerDocument;
     }
   }
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     if (context === emptyObject) {
       context = {};
     }
@@ -26493,7 +47735,7 @@ function findFirstReactDOMImpl(node) {
  */
 var TopLevelWrapper = function () {};
 TopLevelWrapper.prototype.isReactComponent = {};
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   TopLevelWrapper.displayName = 'TopLevelWrapper';
 }
 TopLevelWrapper.prototype.render = function () {
@@ -26553,7 +47795,7 @@ var ReactMount = {
       }
     });
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // Record the root element in case it later gets transplanted.
       rootElementsByReactRootID[getReactRootID(container)] = getReactRootElementInContainer(container);
     }
@@ -26569,7 +47811,7 @@ var ReactMount = {
    * @return {string} reactRoot ID prefix
    */
   _registerComponent: function (nextComponent, container) {
-    !(container && (container.nodeType === ELEMENT_NODE_TYPE || container.nodeType === DOC_NODE_TYPE || container.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)) ? "production" !== 'production' ? invariant(false, '_registerComponent(...): Target container is not a DOM element.') : invariant(false) : undefined;
+    !(container && (container.nodeType === ELEMENT_NODE_TYPE || container.nodeType === DOC_NODE_TYPE || container.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)) ? "development" !== 'production' ? invariant(false, '_registerComponent(...): Target container is not a DOM element.') : invariant(false) : undefined;
 
     ReactBrowserEventEmitter.ensureScrollValueMonitoring();
 
@@ -26589,7 +47831,7 @@ var ReactMount = {
     // Various parts of our code (such as ReactCompositeComponent's
     // _renderValidatedComponent) assume that calls to render aren't nested;
     // verify that that's the case.
-    "production" !== 'production' ? warning(ReactCurrentOwner.current == null, '_renderNewRootComponent(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from ' + 'render is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', ReactCurrentOwner.current && ReactCurrentOwner.current.getName() || 'ReactCompositeComponent') : undefined;
+    "development" !== 'production' ? warning(ReactCurrentOwner.current == null, '_renderNewRootComponent(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from ' + 'render is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', ReactCurrentOwner.current && ReactCurrentOwner.current.getName() || 'ReactCompositeComponent') : undefined;
 
     var componentInstance = instantiateReactComponent(nextElement, null);
     var reactRootID = ReactMount._registerComponent(componentInstance, container);
@@ -26600,7 +47842,7 @@ var ReactMount = {
 
     ReactUpdates.batchedUpdates(batchedMountComponentIntoNode, componentInstance, reactRootID, container, shouldReuseMarkup, context);
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // Record the root element in case it later gets transplanted.
       rootElementsByReactRootID[reactRootID] = getReactRootElementInContainer(container);
     }
@@ -26622,16 +47864,16 @@ var ReactMount = {
    * @return {ReactComponent} Component instance rendered in `container`.
    */
   renderSubtreeIntoContainer: function (parentComponent, nextElement, container, callback) {
-    !(parentComponent != null && parentComponent._reactInternalInstance != null) ? "production" !== 'production' ? invariant(false, 'parentComponent must be a valid React Component') : invariant(false) : undefined;
+    !(parentComponent != null && parentComponent._reactInternalInstance != null) ? "development" !== 'production' ? invariant(false, 'parentComponent must be a valid React Component') : invariant(false) : undefined;
     return ReactMount._renderSubtreeIntoContainer(parentComponent, nextElement, container, callback);
   },
 
   _renderSubtreeIntoContainer: function (parentComponent, nextElement, container, callback) {
-    !ReactElement.isValidElement(nextElement) ? "production" !== 'production' ? invariant(false, 'ReactDOM.render(): Invalid component element.%s', typeof nextElement === 'string' ? ' Instead of passing an element string, make sure to instantiate ' + 'it by passing it to React.createElement.' : typeof nextElement === 'function' ? ' Instead of passing a component class, make sure to instantiate ' + 'it by passing it to React.createElement.' :
+    !ReactElement.isValidElement(nextElement) ? "development" !== 'production' ? invariant(false, 'ReactDOM.render(): Invalid component element.%s', typeof nextElement === 'string' ? ' Instead of passing an element string, make sure to instantiate ' + 'it by passing it to React.createElement.' : typeof nextElement === 'function' ? ' Instead of passing a component class, make sure to instantiate ' + 'it by passing it to React.createElement.' :
     // Check if it quacks like an element
     nextElement != null && nextElement.props !== undefined ? ' This may be caused by unintentionally loading two independent ' + 'copies of React.' : '') : invariant(false) : undefined;
 
-    "production" !== 'production' ? warning(!container || !container.tagName || container.tagName.toUpperCase() !== 'BODY', 'render(): Rendering components directly into document.body is ' + 'discouraged, since its children are often manipulated by third-party ' + 'scripts and browser extensions. This may lead to subtle ' + 'reconciliation issues. Try rendering into a container element created ' + 'for your app.') : undefined;
+    "development" !== 'production' ? warning(!container || !container.tagName || container.tagName.toUpperCase() !== 'BODY', 'render(): Rendering components directly into document.body is ' + 'discouraged, since its children are often manipulated by third-party ' + 'scripts and browser extensions. This may lead to subtle ' + 'reconciliation issues. Try rendering into a container element created ' + 'for your app.') : undefined;
 
     var nextWrappedElement = new ReactElement(TopLevelWrapper, null, null, null, null, null, nextElement);
 
@@ -26656,14 +47898,14 @@ var ReactMount = {
     var containerHasReactMarkup = reactRootElement && !!internalGetID(reactRootElement);
     var containerHasNonRootReactChild = hasNonRootReactChild(container);
 
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(!containerHasNonRootReactChild, 'render(...): Replacing React-rendered children with a new root ' + 'component. If you intended to update the children of this node, ' + 'you should instead have the existing children update their state ' + 'and render the new components instead of calling ReactDOM.render.') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(!containerHasNonRootReactChild, 'render(...): Replacing React-rendered children with a new root ' + 'component. If you intended to update the children of this node, ' + 'you should instead have the existing children update their state ' + 'and render the new components instead of calling ReactDOM.render.') : undefined;
 
       if (!containerHasReactMarkup || reactRootElement.nextSibling) {
         var rootElementSibling = reactRootElement;
         while (rootElementSibling) {
           if (internalGetID(rootElementSibling)) {
-            "production" !== 'production' ? warning(false, 'render(): Target node has markup rendered by React, but there ' + 'are unrelated nodes as well. This is most commonly caused by ' + 'white-space inserted around server-rendered markup.') : undefined;
+            "development" !== 'production' ? warning(false, 'render(): Target node has markup rendered by React, but there ' + 'are unrelated nodes as well. This is most commonly caused by ' + 'white-space inserted around server-rendered markup.') : undefined;
             break;
           }
           rootElementSibling = rootElementSibling.nextSibling;
@@ -26729,9 +47971,9 @@ var ReactMount = {
     // _renderValidatedComponent) assume that calls to render aren't nested;
     // verify that that's the case. (Strictly speaking, unmounting won't cause a
     // render but we still don't expect to be in a render call here.)
-    "production" !== 'production' ? warning(ReactCurrentOwner.current == null, 'unmountComponentAtNode(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from render ' + 'is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', ReactCurrentOwner.current && ReactCurrentOwner.current.getName() || 'ReactCompositeComponent') : undefined;
+    "development" !== 'production' ? warning(ReactCurrentOwner.current == null, 'unmountComponentAtNode(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from render ' + 'is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', ReactCurrentOwner.current && ReactCurrentOwner.current.getName() || 'ReactCompositeComponent') : undefined;
 
-    !(container && (container.nodeType === ELEMENT_NODE_TYPE || container.nodeType === DOC_NODE_TYPE || container.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)) ? "production" !== 'production' ? invariant(false, 'unmountComponentAtNode(...): Target container is not a DOM element.') : invariant(false) : undefined;
+    !(container && (container.nodeType === ELEMENT_NODE_TYPE || container.nodeType === DOC_NODE_TYPE || container.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)) ? "development" !== 'production' ? invariant(false, 'unmountComponentAtNode(...): Target container is not a DOM element.') : invariant(false) : undefined;
 
     var reactRootID = getReactRootID(container);
     var component = instancesByReactRootID[reactRootID];
@@ -26744,8 +47986,8 @@ var ReactMount = {
       var containerID = internalGetID(container);
       var isContainerReactRoot = containerID && containerID === ReactInstanceHandles.getReactRootIDFromNodeID(containerID);
 
-      if ("production" !== 'production') {
-        "production" !== 'production' ? warning(!containerHasNonRootReactChild, 'unmountComponentAtNode(): The node you\'re attempting to unmount ' + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.') : undefined;
+      if ("development" !== 'production') {
+        "development" !== 'production' ? warning(!containerHasNonRootReactChild, 'unmountComponentAtNode(): The node you\'re attempting to unmount ' + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.') : undefined;
       }
 
       return false;
@@ -26753,7 +47995,7 @@ var ReactMount = {
     ReactUpdates.batchedUpdates(unmountComponentFromNode, component, container);
     delete instancesByReactRootID[reactRootID];
     delete containersByReactRootID[reactRootID];
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       delete rootElementsByReactRootID[reactRootID];
     }
     return true;
@@ -26770,10 +48012,10 @@ var ReactMount = {
     var reactRootID = ReactInstanceHandles.getReactRootIDFromNodeID(id);
     var container = containersByReactRootID[reactRootID];
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       var rootElement = rootElementsByReactRootID[reactRootID];
       if (rootElement && rootElement.parentNode !== container) {
-        "production" !== 'production' ? warning(
+        "development" !== 'production' ? warning(
         // Call internalGetID here because getID calls isValid which calls
         // findReactContainerForID (this function).
         internalGetID(rootElement) === reactRootID, 'ReactMount: Root element ID differed from reactRootID.') : undefined;
@@ -26785,7 +48027,7 @@ var ReactMount = {
           // warning is when the container is empty.
           rootElementsByReactRootID[reactRootID] = containerChild;
         } else {
-          "production" !== 'production' ? warning(false, 'ReactMount: Root element has been removed from its original ' + 'container. New container: %s', rootElement.parentNode) : undefined;
+          "development" !== 'production' ? warning(false, 'ReactMount: Root element has been removed from its original ' + 'container. New container: %s', rootElement.parentNode) : undefined;
         }
       }
     }
@@ -26832,9 +48074,9 @@ var ReactMount = {
 
     var deepestAncestor = findDeepestCachedAncestor(targetID) || ancestorNode;
 
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // This will throw on the next line; give an early warning
-      "production" !== 'production' ? warning(deepestAncestor != null, 'React can\'t find the root component node for data-reactid value ' + '`%s`. If you\'re seeing this message, it probably means that ' + 'you\'ve loaded two copies of React on the page. At this time, only ' + 'a single copy of React can be loaded at a time.', targetID) : undefined;
+      "development" !== 'production' ? warning(deepestAncestor != null, 'React can\'t find the root component node for data-reactid value ' + '`%s`. If you\'re seeing this message, it probably means that ' + 'you\'ve loaded two copies of React on the page. At this time, only ' + 'a single copy of React can be loaded at a time.', targetID) : undefined;
     }
 
     firstChildren[0] = deepestAncestor.firstChild;
@@ -26886,11 +48128,11 @@ var ReactMount = {
 
     firstChildren.length = 0;
 
-    !false ? "production" !== 'production' ? invariant(false, 'findComponentRoot(..., %s): Unable to find element. This probably ' + 'means the DOM was unexpectedly mutated (e.g., by the browser), ' + 'usually due to forgetting a <tbody> when using tables, nesting tags ' + 'like <form>, <p>, or <a>, or using non-SVG elements in an <svg> ' + 'parent. ' + 'Try inspecting the child nodes of the element with React ID `%s`.', targetID, ReactMount.getID(ancestorNode)) : invariant(false) : undefined;
+    !false ? "development" !== 'production' ? invariant(false, 'findComponentRoot(..., %s): Unable to find element. This probably ' + 'means the DOM was unexpectedly mutated (e.g., by the browser), ' + 'usually due to forgetting a <tbody> when using tables, nesting tags ' + 'like <form>, <p>, or <a>, or using non-SVG elements in an <svg> ' + 'parent. ' + 'Try inspecting the child nodes of the element with React ID `%s`.', targetID, ReactMount.getID(ancestorNode)) : invariant(false) : undefined;
   },
 
   _mountImageIntoNode: function (markup, container, shouldReuseMarkup, transaction) {
-    !(container && (container.nodeType === ELEMENT_NODE_TYPE || container.nodeType === DOC_NODE_TYPE || container.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)) ? "production" !== 'production' ? invariant(false, 'mountComponentIntoNode(...): Target container is not valid.') : invariant(false) : undefined;
+    !(container && (container.nodeType === ELEMENT_NODE_TYPE || container.nodeType === DOC_NODE_TYPE || container.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE)) ? "development" !== 'production' ? invariant(false, 'mountComponentIntoNode(...): Target container is not valid.') : invariant(false) : undefined;
 
     if (shouldReuseMarkup) {
       var rootElement = getReactRootElementInContainer(container);
@@ -26904,7 +48146,7 @@ var ReactMount = {
         rootElement.setAttribute(ReactMarkupChecksum.CHECKSUM_ATTR_NAME, checksum);
 
         var normalizedMarkup = markup;
-        if ("production" !== 'production') {
+        if ("development" !== 'production') {
           // because rootMarkup is retrieved from the DOM, various normalizations
           // will have occurred which will not be present in `markup`. Here,
           // insert markup into a <div> or <iframe> depending on the container
@@ -26926,15 +48168,15 @@ var ReactMount = {
         var diffIndex = firstDifferenceIndex(normalizedMarkup, rootMarkup);
         var difference = ' (client) ' + normalizedMarkup.substring(diffIndex - 20, diffIndex + 20) + '\n (server) ' + rootMarkup.substring(diffIndex - 20, diffIndex + 20);
 
-        !(container.nodeType !== DOC_NODE_TYPE) ? "production" !== 'production' ? invariant(false, 'You\'re trying to render a component to the document using ' + 'server rendering but the checksum was invalid. This usually ' + 'means you rendered a different component type or props on ' + 'the client from the one on the server, or your render() ' + 'methods are impure. React cannot handle this case due to ' + 'cross-browser quirks by rendering at the document root. You ' + 'should look for environment dependent code in your components ' + 'and ensure the props are the same client and server side:\n%s', difference) : invariant(false) : undefined;
+        !(container.nodeType !== DOC_NODE_TYPE) ? "development" !== 'production' ? invariant(false, 'You\'re trying to render a component to the document using ' + 'server rendering but the checksum was invalid. This usually ' + 'means you rendered a different component type or props on ' + 'the client from the one on the server, or your render() ' + 'methods are impure. React cannot handle this case due to ' + 'cross-browser quirks by rendering at the document root. You ' + 'should look for environment dependent code in your components ' + 'and ensure the props are the same client and server side:\n%s', difference) : invariant(false) : undefined;
 
-        if ("production" !== 'production') {
-          "production" !== 'production' ? warning(false, 'React attempted to reuse markup in a container but the ' + 'checksum was invalid. This generally means that you are ' + 'using server rendering and the markup generated on the ' + 'server was not what the client was expecting. React injected ' + 'new markup to compensate which works but you have lost many ' + 'of the benefits of server rendering. Instead, figure out ' + 'why the markup being generated is different on the client ' + 'or server:\n%s', difference) : undefined;
+        if ("development" !== 'production') {
+          "development" !== 'production' ? warning(false, 'React attempted to reuse markup in a container but the ' + 'checksum was invalid. This generally means that you are ' + 'using server rendering and the markup generated on the ' + 'server was not what the client was expecting. React injected ' + 'new markup to compensate which works but you have lost many ' + 'of the benefits of server rendering. Instead, figure out ' + 'why the markup being generated is different on the client ' + 'or server:\n%s', difference) : undefined;
         }
       }
     }
 
-    !(container.nodeType !== DOC_NODE_TYPE) ? "production" !== 'production' ? invariant(false, 'You\'re trying to render a component to the document but ' + 'you didn\'t use server rendering. We can\'t do this ' + 'without using server rendering due to cross-browser quirks. ' + 'See ReactDOMServer.renderToString() for server rendering.') : invariant(false) : undefined;
+    !(container.nodeType !== DOC_NODE_TYPE) ? "development" !== 'production' ? invariant(false, 'You\'re trying to render a component to the document but ' + 'you didn\'t use server rendering. We can\'t do this ' + 'without using server rendering due to cross-browser quirks. ' + 'See ReactDOMServer.renderToString() for server rendering.') : invariant(false) : undefined;
 
     if (transaction.useCreateElement) {
       while (container.lastChild) {
@@ -26973,7 +48215,7 @@ ReactPerf.measureMethods(ReactMount, 'ReactMount', {
 });
 
 module.exports = ReactMount;
-},{"./DOMProperty":69,"./Object.assign":82,"./ReactBrowserEventEmitter":86,"./ReactCurrentOwner":94,"./ReactDOMFeatureFlags":99,"./ReactElement":112,"./ReactEmptyComponentRegistry":115,"./ReactInstanceHandles":121,"./ReactInstanceMap":122,"./ReactMarkupChecksum":124,"./ReactPerf":131,"./ReactReconciler":136,"./ReactUpdateQueue":142,"./ReactUpdates":143,"./instantiateReactComponent":178,"./setInnerHTML":184,"./shouldUpdateReactComponent":186,"./validateDOMNesting":188,"fbjs/lib/containsNode":193,"fbjs/lib/emptyObject":197,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],126:[function(require,module,exports){
+},{"./DOMProperty":80,"./Object.assign":93,"./ReactBrowserEventEmitter":97,"./ReactCurrentOwner":105,"./ReactDOMFeatureFlags":110,"./ReactElement":123,"./ReactEmptyComponentRegistry":126,"./ReactInstanceHandles":132,"./ReactInstanceMap":133,"./ReactMarkupChecksum":135,"./ReactPerf":142,"./ReactReconciler":147,"./ReactUpdateQueue":153,"./ReactUpdates":154,"./instantiateReactComponent":189,"./setInnerHTML":195,"./shouldUpdateReactComponent":197,"./validateDOMNesting":199,"fbjs/lib/containsNode":204,"fbjs/lib/emptyObject":208,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],137:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27166,7 +48408,7 @@ var ReactMultiChild = {
   Mixin: {
 
     _reconcilerInstantiateChildren: function (nestedChildren, transaction, context) {
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         if (this._currentElement) {
           try {
             ReactCurrentOwner.current = this._currentElement._owner;
@@ -27181,7 +48423,7 @@ var ReactMultiChild = {
 
     _reconcilerUpdateChildren: function (prevChildren, nextNestedChildrenElements, transaction, context) {
       var nextChildren;
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         if (this._currentElement) {
           try {
             ReactCurrentOwner.current = this._currentElement._owner;
@@ -27470,7 +48712,7 @@ var ReactMultiChild = {
 };
 
 module.exports = ReactMultiChild;
-},{"./ReactChildReconciler":87,"./ReactComponentEnvironment":92,"./ReactCurrentOwner":94,"./ReactMultiChildUpdateTypes":127,"./ReactReconciler":136,"./flattenChildren":169}],127:[function(require,module,exports){
+},{"./ReactChildReconciler":98,"./ReactComponentEnvironment":103,"./ReactCurrentOwner":105,"./ReactMultiChildUpdateTypes":138,"./ReactReconciler":147,"./flattenChildren":180}],138:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27503,7 +48745,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 });
 
 module.exports = ReactMultiChildUpdateTypes;
-},{"fbjs/lib/keyMirror":207}],128:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":218}],139:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -27569,7 +48811,7 @@ function getComponentClassForElement(element) {
  * @return {function} The internal class constructor function.
  */
 function createInternalComponent(element) {
-  !genericComponentClass ? "production" !== 'production' ? invariant(false, 'There is no registered component for the tag %s', element.type) : invariant(false) : undefined;
+  !genericComponentClass ? "development" !== 'production' ? invariant(false, 'There is no registered component for the tag %s', element.type) : invariant(false) : undefined;
   return new genericComponentClass(element.type, element.props);
 }
 
@@ -27598,7 +48840,7 @@ var ReactNativeComponent = {
 };
 
 module.exports = ReactNativeComponent;
-},{"./Object.assign":82,"fbjs/lib/invariant":204}],129:[function(require,module,exports){
+},{"./Object.assign":93,"fbjs/lib/invariant":215}],140:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -27615,8 +48857,8 @@ module.exports = ReactNativeComponent;
 var warning = require('fbjs/lib/warning');
 
 function warnTDZ(publicInstance, callerName) {
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(false, '%s(...): Can only update a mounted or mounting component. ' + 'This usually means you called %s() on an unmounted component. ' + 'This is a no-op. Please check the code for the %s component.', callerName, callerName, publicInstance.constructor && publicInstance.constructor.displayName || '') : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(false, '%s(...): Can only update a mounted or mounting component. ' + 'This usually means you called %s() on an unmounted component. ' + 'This is a no-op. Please check the code for the %s component.', callerName, callerName, publicInstance.constructor && publicInstance.constructor.displayName || '') : undefined;
   }
 }
 
@@ -27717,7 +48959,7 @@ var ReactNoopUpdateQueue = {
 };
 
 module.exports = ReactNoopUpdateQueue;
-},{"fbjs/lib/warning":215}],130:[function(require,module,exports){
+},{"fbjs/lib/warning":226}],141:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27784,7 +49026,7 @@ var ReactOwner = {
    * @internal
    */
   addComponentAsRefTo: function (component, ref, owner) {
-    !ReactOwner.isValidOwner(owner) ? "production" !== 'production' ? invariant(false, 'addComponentAsRefTo(...): Only a ReactOwner can have refs. You might ' + 'be adding a ref to a component that was not created inside a component\'s ' + '`render` method, or you have multiple copies of React loaded ' + '(details: https://fb.me/react-refs-must-have-owner).') : invariant(false) : undefined;
+    !ReactOwner.isValidOwner(owner) ? "development" !== 'production' ? invariant(false, 'addComponentAsRefTo(...): Only a ReactOwner can have refs. You might ' + 'be adding a ref to a component that was not created inside a component\'s ' + '`render` method, or you have multiple copies of React loaded ' + '(details: https://fb.me/react-refs-must-have-owner).') : invariant(false) : undefined;
     owner.attachRef(ref, component);
   },
 
@@ -27798,7 +49040,7 @@ var ReactOwner = {
    * @internal
    */
   removeComponentAsRefFrom: function (component, ref, owner) {
-    !ReactOwner.isValidOwner(owner) ? "production" !== 'production' ? invariant(false, 'removeComponentAsRefFrom(...): Only a ReactOwner can have refs. You might ' + 'be removing a ref to a component that was not created inside a component\'s ' + '`render` method, or you have multiple copies of React loaded ' + '(details: https://fb.me/react-refs-must-have-owner).') : invariant(false) : undefined;
+    !ReactOwner.isValidOwner(owner) ? "development" !== 'production' ? invariant(false, 'removeComponentAsRefFrom(...): Only a ReactOwner can have refs. You might ' + 'be removing a ref to a component that was not created inside a component\'s ' + '`render` method, or you have multiple copies of React loaded ' + '(details: https://fb.me/react-refs-must-have-owner).') : invariant(false) : undefined;
     // Check that `component` is still the current ref because we do not want to
     // detach the ref if another component stole it.
     if (owner.getPublicInstance().refs[ref] === component.getPublicInstance()) {
@@ -27809,7 +49051,7 @@ var ReactOwner = {
 };
 
 module.exports = ReactOwner;
-},{"fbjs/lib/invariant":204}],131:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],142:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27847,7 +49089,7 @@ var ReactPerf = {
    * @param {object<string>} methodNames
    */
   measureMethods: function (object, objectName, methodNames) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       for (var key in methodNames) {
         if (!methodNames.hasOwnProperty(key)) {
           continue;
@@ -27866,7 +49108,7 @@ var ReactPerf = {
    * @return {function}
    */
   measure: function (objName, fnName, func) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       var measuredFunc = null;
       var wrapper = function () {
         if (ReactPerf.enableMeasure) {
@@ -27906,7 +49148,7 @@ function _noMeasure(objName, fnName, func) {
 }
 
 module.exports = ReactPerf;
-},{}],132:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27922,7 +49164,7 @@ module.exports = ReactPerf;
 
 var ReactPropTypeLocationNames = {};
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   ReactPropTypeLocationNames = {
     prop: 'prop',
     context: 'context',
@@ -27931,7 +49173,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = ReactPropTypeLocationNames;
-},{}],133:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27954,7 +49196,7 @@ var ReactPropTypeLocations = keyMirror({
 });
 
 module.exports = ReactPropTypeLocations;
-},{"fbjs/lib/keyMirror":207}],134:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":218}],145:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28311,7 +49553,7 @@ function getClassName(propValue) {
 }
 
 module.exports = ReactPropTypes;
-},{"./ReactElement":112,"./ReactPropTypeLocationNames":132,"./getIteratorFn":175,"fbjs/lib/emptyFunction":196}],135:[function(require,module,exports){
+},{"./ReactElement":123,"./ReactPropTypeLocationNames":143,"./getIteratorFn":186,"fbjs/lib/emptyFunction":207}],146:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28463,7 +49705,7 @@ assign(ReactReconcileTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
-},{"./CallbackQueue":65,"./Object.assign":82,"./PooledClass":83,"./ReactBrowserEventEmitter":86,"./ReactDOMFeatureFlags":99,"./ReactInputSelection":120,"./Transaction":160}],136:[function(require,module,exports){
+},{"./CallbackQueue":76,"./Object.assign":93,"./PooledClass":94,"./ReactBrowserEventEmitter":97,"./ReactDOMFeatureFlags":110,"./ReactInputSelection":131,"./Transaction":171}],147:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28571,7 +49813,7 @@ var ReactReconciler = {
 };
 
 module.exports = ReactReconciler;
-},{"./ReactRef":137}],137:[function(require,module,exports){
+},{"./ReactRef":148}],148:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28650,7 +49892,7 @@ ReactRef.detachRefs = function (instance, element) {
 };
 
 module.exports = ReactRef;
-},{"./ReactOwner":130}],138:[function(require,module,exports){
+},{"./ReactOwner":141}],149:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28680,7 +49922,7 @@ var ReactRootIndex = {
 };
 
 module.exports = ReactRootIndex;
-},{}],139:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -28704,7 +49946,7 @@ var ReactServerBatchingStrategy = {
 };
 
 module.exports = ReactServerBatchingStrategy;
-},{}],140:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28735,7 +49977,7 @@ var invariant = require('fbjs/lib/invariant');
  * @return {string} the HTML markup
  */
 function renderToString(element) {
-  !ReactElement.isValidElement(element) ? "production" !== 'production' ? invariant(false, 'renderToString(): You must pass a valid ReactElement.') : invariant(false) : undefined;
+  !ReactElement.isValidElement(element) ? "development" !== 'production' ? invariant(false, 'renderToString(): You must pass a valid ReactElement.') : invariant(false) : undefined;
 
   var transaction;
   try {
@@ -28763,7 +50005,7 @@ function renderToString(element) {
  * (for generating static pages)
  */
 function renderToStaticMarkup(element) {
-  !ReactElement.isValidElement(element) ? "production" !== 'production' ? invariant(false, 'renderToStaticMarkup(): You must pass a valid ReactElement.') : invariant(false) : undefined;
+  !ReactElement.isValidElement(element) ? "development" !== 'production' ? invariant(false, 'renderToStaticMarkup(): You must pass a valid ReactElement.') : invariant(false) : undefined;
 
   var transaction;
   try {
@@ -28788,7 +50030,7 @@ module.exports = {
   renderToString: renderToString,
   renderToStaticMarkup: renderToStaticMarkup
 };
-},{"./ReactDefaultBatchingStrategy":108,"./ReactElement":112,"./ReactInstanceHandles":121,"./ReactMarkupChecksum":124,"./ReactServerBatchingStrategy":139,"./ReactServerRenderingTransaction":141,"./ReactUpdates":143,"./instantiateReactComponent":178,"fbjs/lib/emptyObject":197,"fbjs/lib/invariant":204}],141:[function(require,module,exports){
+},{"./ReactDefaultBatchingStrategy":119,"./ReactElement":123,"./ReactInstanceHandles":132,"./ReactMarkupChecksum":135,"./ReactServerBatchingStrategy":150,"./ReactServerRenderingTransaction":152,"./ReactUpdates":154,"./instantiateReactComponent":189,"fbjs/lib/emptyObject":208,"fbjs/lib/invariant":215}],152:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -28876,7 +50118,7 @@ assign(ReactServerRenderingTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
-},{"./CallbackQueue":65,"./Object.assign":82,"./PooledClass":83,"./Transaction":160,"fbjs/lib/emptyFunction":196}],142:[function(require,module,exports){
+},{"./CallbackQueue":76,"./Object.assign":93,"./PooledClass":94,"./Transaction":171,"fbjs/lib/emptyFunction":207}],153:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -28906,17 +50148,17 @@ function enqueueUpdate(internalInstance) {
 function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
   var internalInstance = ReactInstanceMap.get(publicInstance);
   if (!internalInstance) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       // Only warn when we have a callerName. Otherwise we should be silent.
       // We're probably calling from enqueueCallback. We don't want to warn
       // there because we already warned for the corresponding lifecycle method.
-      "production" !== 'production' ? warning(!callerName, '%s(...): Can only update a mounted or mounting component. ' + 'This usually means you called %s() on an unmounted component. ' + 'This is a no-op. Please check the code for the %s component.', callerName, callerName, publicInstance.constructor.displayName) : undefined;
+      "development" !== 'production' ? warning(!callerName, '%s(...): Can only update a mounted or mounting component. ' + 'This usually means you called %s() on an unmounted component. ' + 'This is a no-op. Please check the code for the %s component.', callerName, callerName, publicInstance.constructor.displayName) : undefined;
     }
     return null;
   }
 
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(ReactCurrentOwner.current == null, '%s(...): Cannot update during an existing state transition ' + '(such as within `render`). Render methods should be a pure function ' + 'of props and state.', callerName) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(ReactCurrentOwner.current == null, '%s(...): Cannot update during an existing state transition ' + '(such as within `render`). Render methods should be a pure function ' + 'of props and state.', callerName) : undefined;
   }
 
   return internalInstance;
@@ -28936,10 +50178,10 @@ var ReactUpdateQueue = {
    * @final
    */
   isMounted: function (publicInstance) {
-    if ("production" !== 'production') {
+    if ("development" !== 'production') {
       var owner = ReactCurrentOwner.current;
       if (owner !== null) {
-        "production" !== 'production' ? warning(owner._warnedAboutRefsInRender, '%s is accessing isMounted inside its render() function. ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', owner.getName() || 'A component') : undefined;
+        "development" !== 'production' ? warning(owner._warnedAboutRefsInRender, '%s is accessing isMounted inside its render() function. ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', owner.getName() || 'A component') : undefined;
         owner._warnedAboutRefsInRender = true;
       }
     }
@@ -28963,7 +50205,7 @@ var ReactUpdateQueue = {
    * @internal
    */
   enqueueCallback: function (publicInstance, callback) {
-    !(typeof callback === 'function') ? "production" !== 'production' ? invariant(false, 'enqueueCallback(...): You called `setProps`, `replaceProps`, ' + '`setState`, `replaceState`, or `forceUpdate` with a callback that ' + 'isn\'t callable.') : invariant(false) : undefined;
+    !(typeof callback === 'function') ? "development" !== 'production' ? invariant(false, 'enqueueCallback(...): You called `setProps`, `replaceProps`, ' + '`setState`, `replaceState`, or `forceUpdate` with a callback that ' + 'isn\'t callable.') : invariant(false) : undefined;
     var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
 
     // Previously we would throw an error if we didn't have an internal
@@ -28988,7 +50230,7 @@ var ReactUpdateQueue = {
   },
 
   enqueueCallbackInternal: function (internalInstance, callback) {
-    !(typeof callback === 'function') ? "production" !== 'production' ? invariant(false, 'enqueueCallback(...): You called `setProps`, `replaceProps`, ' + '`setState`, `replaceState`, or `forceUpdate` with a callback that ' + 'isn\'t callable.') : invariant(false) : undefined;
+    !(typeof callback === 'function') ? "development" !== 'production' ? invariant(false, 'enqueueCallback(...): You called `setProps`, `replaceProps`, ' + '`setState`, `replaceState`, or `forceUpdate` with a callback that ' + 'isn\'t callable.') : invariant(false) : undefined;
     if (internalInstance._pendingCallbacks) {
       internalInstance._pendingCallbacks.push(callback);
     } else {
@@ -29086,7 +50328,7 @@ var ReactUpdateQueue = {
 
   enqueueSetPropsInternal: function (internalInstance, partialProps) {
     var topLevelWrapper = internalInstance._topLevelWrapper;
-    !topLevelWrapper ? "production" !== 'production' ? invariant(false, 'setProps(...): You called `setProps` on a ' + 'component with a parent. This is an anti-pattern since props will ' + 'get reactively updated when rendered. Instead, change the owner\'s ' + '`render` method to pass the correct value as props to the component ' + 'where it is created.') : invariant(false) : undefined;
+    !topLevelWrapper ? "development" !== 'production' ? invariant(false, 'setProps(...): You called `setProps` on a ' + 'component with a parent. This is an anti-pattern since props will ' + 'get reactively updated when rendered. Instead, change the owner\'s ' + '`render` method to pass the correct value as props to the component ' + 'where it is created.') : invariant(false) : undefined;
 
     // Merge with the pending element if it exists, otherwise with existing
     // element props.
@@ -29115,7 +50357,7 @@ var ReactUpdateQueue = {
 
   enqueueReplacePropsInternal: function (internalInstance, props) {
     var topLevelWrapper = internalInstance._topLevelWrapper;
-    !topLevelWrapper ? "production" !== 'production' ? invariant(false, 'replaceProps(...): You called `replaceProps` on a ' + 'component with a parent. This is an anti-pattern since props will ' + 'get reactively updated when rendered. Instead, change the owner\'s ' + '`render` method to pass the correct value as props to the component ' + 'where it is created.') : invariant(false) : undefined;
+    !topLevelWrapper ? "development" !== 'production' ? invariant(false, 'replaceProps(...): You called `replaceProps` on a ' + 'component with a parent. This is an anti-pattern since props will ' + 'get reactively updated when rendered. Instead, change the owner\'s ' + '`render` method to pass the correct value as props to the component ' + 'where it is created.') : invariant(false) : undefined;
 
     // Merge with the pending element if it exists, otherwise with existing
     // element props.
@@ -29134,7 +50376,7 @@ var ReactUpdateQueue = {
 };
 
 module.exports = ReactUpdateQueue;
-},{"./Object.assign":82,"./ReactCurrentOwner":94,"./ReactElement":112,"./ReactInstanceMap":122,"./ReactUpdates":143,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],143:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactCurrentOwner":105,"./ReactElement":123,"./ReactInstanceMap":133,"./ReactUpdates":154,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],154:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -29164,7 +50406,7 @@ var asapEnqueued = false;
 var batchingStrategy = null;
 
 function ensureInjected() {
-  !(ReactUpdates.ReactReconcileTransaction && batchingStrategy) ? "production" !== 'production' ? invariant(false, 'ReactUpdates: must inject a reconcile transaction class and batching ' + 'strategy') : invariant(false) : undefined;
+  !(ReactUpdates.ReactReconcileTransaction && batchingStrategy) ? "development" !== 'production' ? invariant(false, 'ReactUpdates: must inject a reconcile transaction class and batching ' + 'strategy') : invariant(false) : undefined;
 }
 
 var NESTED_UPDATES = {
@@ -29244,7 +50486,7 @@ function mountOrderComparator(c1, c2) {
 
 function runBatchedUpdates(transaction) {
   var len = transaction.dirtyComponentsLength;
-  !(len === dirtyComponents.length) ? "production" !== 'production' ? invariant(false, 'Expected flush transaction\'s stored dirty-components length (%s) to ' + 'match dirty-components array length (%s).', len, dirtyComponents.length) : invariant(false) : undefined;
+  !(len === dirtyComponents.length) ? "development" !== 'production' ? invariant(false, 'Expected flush transaction\'s stored dirty-components length (%s) to ' + 'match dirty-components array length (%s).', len, dirtyComponents.length) : invariant(false) : undefined;
 
   // Since reconciling a component higher in the owner hierarchy usually (not
   // always -- see shouldComponentUpdate()) will reconcile children, reconcile
@@ -29322,21 +50564,21 @@ function enqueueUpdate(component) {
  * if no updates are currently being performed.
  */
 function asap(callback, context) {
-  !batchingStrategy.isBatchingUpdates ? "production" !== 'production' ? invariant(false, 'ReactUpdates.asap: Can\'t enqueue an asap callback in a context where' + 'updates are not being batched.') : invariant(false) : undefined;
+  !batchingStrategy.isBatchingUpdates ? "development" !== 'production' ? invariant(false, 'ReactUpdates.asap: Can\'t enqueue an asap callback in a context where' + 'updates are not being batched.') : invariant(false) : undefined;
   asapCallbackQueue.enqueue(callback, context);
   asapEnqueued = true;
 }
 
 var ReactUpdatesInjection = {
   injectReconcileTransaction: function (ReconcileTransaction) {
-    !ReconcileTransaction ? "production" !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : invariant(false) : undefined;
+    !ReconcileTransaction ? "development" !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : invariant(false) : undefined;
     ReactUpdates.ReactReconcileTransaction = ReconcileTransaction;
   },
 
   injectBatchingStrategy: function (_batchingStrategy) {
-    !_batchingStrategy ? "production" !== 'production' ? invariant(false, 'ReactUpdates: must provide a batching strategy') : invariant(false) : undefined;
-    !(typeof _batchingStrategy.batchedUpdates === 'function') ? "production" !== 'production' ? invariant(false, 'ReactUpdates: must provide a batchedUpdates() function') : invariant(false) : undefined;
-    !(typeof _batchingStrategy.isBatchingUpdates === 'boolean') ? "production" !== 'production' ? invariant(false, 'ReactUpdates: must provide an isBatchingUpdates boolean attribute') : invariant(false) : undefined;
+    !_batchingStrategy ? "development" !== 'production' ? invariant(false, 'ReactUpdates: must provide a batching strategy') : invariant(false) : undefined;
+    !(typeof _batchingStrategy.batchedUpdates === 'function') ? "development" !== 'production' ? invariant(false, 'ReactUpdates: must provide a batchedUpdates() function') : invariant(false) : undefined;
+    !(typeof _batchingStrategy.isBatchingUpdates === 'boolean') ? "development" !== 'production' ? invariant(false, 'ReactUpdates: must provide an isBatchingUpdates boolean attribute') : invariant(false) : undefined;
     batchingStrategy = _batchingStrategy;
   }
 };
@@ -29358,7 +50600,7 @@ var ReactUpdates = {
 };
 
 module.exports = ReactUpdates;
-},{"./CallbackQueue":65,"./Object.assign":82,"./PooledClass":83,"./ReactPerf":131,"./ReactReconciler":136,"./Transaction":160,"fbjs/lib/invariant":204}],144:[function(require,module,exports){
+},{"./CallbackQueue":76,"./Object.assign":93,"./PooledClass":94,"./ReactPerf":142,"./ReactReconciler":147,"./Transaction":171,"fbjs/lib/invariant":215}],155:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -29372,8 +50614,8 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.6';
-},{}],145:[function(require,module,exports){
+module.exports = '0.14.5';
+},{}],156:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -29501,7 +50743,7 @@ var SVGDOMPropertyConfig = {
 };
 
 module.exports = SVGDOMPropertyConfig;
-},{"./DOMProperty":69}],146:[function(require,module,exports){
+},{"./DOMProperty":80}],157:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -29703,7 +50945,7 @@ var SelectEventPlugin = {
 };
 
 module.exports = SelectEventPlugin;
-},{"./EventConstants":74,"./EventPropagators":78,"./ReactInputSelection":120,"./SyntheticEvent":152,"./isTextInputElement":180,"fbjs/lib/ExecutionEnvironment":190,"fbjs/lib/getActiveElement":199,"fbjs/lib/keyOf":208,"fbjs/lib/shallowEqual":213}],147:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPropagators":89,"./ReactInputSelection":131,"./SyntheticEvent":163,"./isTextInputElement":191,"fbjs/lib/ExecutionEnvironment":201,"fbjs/lib/getActiveElement":210,"fbjs/lib/keyOf":219,"fbjs/lib/shallowEqual":224}],158:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -29733,7 +50975,7 @@ var ServerReactRootIndex = {
 };
 
 module.exports = ServerReactRootIndex;
-},{}],148:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30292,7 +51534,7 @@ var SimpleEventPlugin = {
         EventConstructor = SyntheticClipboardEvent;
         break;
     }
-    !EventConstructor ? "production" !== 'production' ? invariant(false, 'SimpleEventPlugin: Unhandled event type, `%s`.', topLevelType) : invariant(false) : undefined;
+    !EventConstructor ? "development" !== 'production' ? invariant(false, 'SimpleEventPlugin: Unhandled event type, `%s`.', topLevelType) : invariant(false) : undefined;
     var event = EventConstructor.getPooled(dispatchConfig, topLevelTargetID, nativeEvent, nativeEventTarget);
     EventPropagators.accumulateTwoPhaseDispatches(event);
     return event;
@@ -30321,7 +51563,7 @@ var SimpleEventPlugin = {
 };
 
 module.exports = SimpleEventPlugin;
-},{"./EventConstants":74,"./EventPropagators":78,"./ReactMount":125,"./SyntheticClipboardEvent":149,"./SyntheticDragEvent":151,"./SyntheticEvent":152,"./SyntheticFocusEvent":153,"./SyntheticKeyboardEvent":155,"./SyntheticMouseEvent":156,"./SyntheticTouchEvent":157,"./SyntheticUIEvent":158,"./SyntheticWheelEvent":159,"./getEventCharCode":171,"fbjs/lib/EventListener":189,"fbjs/lib/emptyFunction":196,"fbjs/lib/invariant":204,"fbjs/lib/keyOf":208}],149:[function(require,module,exports){
+},{"./EventConstants":85,"./EventPropagators":89,"./ReactMount":136,"./SyntheticClipboardEvent":160,"./SyntheticDragEvent":162,"./SyntheticEvent":163,"./SyntheticFocusEvent":164,"./SyntheticKeyboardEvent":166,"./SyntheticMouseEvent":167,"./SyntheticTouchEvent":168,"./SyntheticUIEvent":169,"./SyntheticWheelEvent":170,"./getEventCharCode":182,"fbjs/lib/EventListener":200,"fbjs/lib/emptyFunction":207,"fbjs/lib/invariant":215,"fbjs/lib/keyOf":219}],160:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30361,7 +51603,7 @@ function SyntheticClipboardEvent(dispatchConfig, dispatchMarker, nativeEvent, na
 SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 
 module.exports = SyntheticClipboardEvent;
-},{"./SyntheticEvent":152}],150:[function(require,module,exports){
+},{"./SyntheticEvent":163}],161:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30399,7 +51641,7 @@ function SyntheticCompositionEvent(dispatchConfig, dispatchMarker, nativeEvent, 
 SyntheticEvent.augmentClass(SyntheticCompositionEvent, CompositionEventInterface);
 
 module.exports = SyntheticCompositionEvent;
-},{"./SyntheticEvent":152}],151:[function(require,module,exports){
+},{"./SyntheticEvent":163}],162:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30437,7 +51679,7 @@ function SyntheticDragEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeE
 SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
-},{"./SyntheticMouseEvent":156}],152:[function(require,module,exports){
+},{"./SyntheticMouseEvent":167}],163:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30527,8 +51769,8 @@ assign(SyntheticEvent.prototype, {
   preventDefault: function () {
     this.defaultPrevented = true;
     var event = this.nativeEvent;
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(event, 'This synthetic event is reused for performance reasons. If you\'re ' + 'seeing this, you\'re calling `preventDefault` on a ' + 'released/nullified synthetic event. This is a no-op. See ' + 'https://fb.me/react-event-pooling for more information.') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(event, 'This synthetic event is reused for performance reasons. If you\'re ' + 'seeing this, you\'re calling `preventDefault` on a ' + 'released/nullified synthetic event. This is a no-op. See ' + 'https://fb.me/react-event-pooling for more information.') : undefined;
     }
     if (!event) {
       return;
@@ -30544,8 +51786,8 @@ assign(SyntheticEvent.prototype, {
 
   stopPropagation: function () {
     var event = this.nativeEvent;
-    if ("production" !== 'production') {
-      "production" !== 'production' ? warning(event, 'This synthetic event is reused for performance reasons. If you\'re ' + 'seeing this, you\'re calling `stopPropagation` on a ' + 'released/nullified synthetic event. This is a no-op. See ' + 'https://fb.me/react-event-pooling for more information.') : undefined;
+    if ("development" !== 'production') {
+      "development" !== 'production' ? warning(event, 'This synthetic event is reused for performance reasons. If you\'re ' + 'seeing this, you\'re calling `stopPropagation` on a ' + 'released/nullified synthetic event. This is a no-op. See ' + 'https://fb.me/react-event-pooling for more information.') : undefined;
     }
     if (!event) {
       return;
@@ -30615,7 +51857,7 @@ SyntheticEvent.augmentClass = function (Class, Interface) {
 PooledClass.addPoolingTo(SyntheticEvent, PooledClass.fourArgumentPooler);
 
 module.exports = SyntheticEvent;
-},{"./Object.assign":82,"./PooledClass":83,"fbjs/lib/emptyFunction":196,"fbjs/lib/warning":215}],153:[function(require,module,exports){
+},{"./Object.assign":93,"./PooledClass":94,"fbjs/lib/emptyFunction":207,"fbjs/lib/warning":226}],164:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30653,7 +51895,7 @@ function SyntheticFocusEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
-},{"./SyntheticUIEvent":158}],154:[function(require,module,exports){
+},{"./SyntheticUIEvent":169}],165:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30692,7 +51934,7 @@ function SyntheticInputEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticEvent.augmentClass(SyntheticInputEvent, InputEventInterface);
 
 module.exports = SyntheticInputEvent;
-},{"./SyntheticEvent":152}],155:[function(require,module,exports){
+},{"./SyntheticEvent":163}],166:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30778,7 +52020,7 @@ function SyntheticKeyboardEvent(dispatchConfig, dispatchMarker, nativeEvent, nat
 SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
-},{"./SyntheticUIEvent":158,"./getEventCharCode":171,"./getEventKey":172,"./getEventModifierState":173}],156:[function(require,module,exports){
+},{"./SyntheticUIEvent":169,"./getEventCharCode":182,"./getEventKey":183,"./getEventModifierState":184}],167:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30852,7 +52094,7 @@ function SyntheticMouseEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
-},{"./SyntheticUIEvent":158,"./ViewportMetrics":161,"./getEventModifierState":173}],157:[function(require,module,exports){
+},{"./SyntheticUIEvent":169,"./ViewportMetrics":172,"./getEventModifierState":184}],168:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30899,7 +52141,7 @@ function SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
-},{"./SyntheticUIEvent":158,"./getEventModifierState":173}],158:[function(require,module,exports){
+},{"./SyntheticUIEvent":169,"./getEventModifierState":184}],169:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30960,7 +52202,7 @@ function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEve
 SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
-},{"./SyntheticEvent":152,"./getEventTarget":174}],159:[function(require,module,exports){
+},{"./SyntheticEvent":163,"./getEventTarget":185}],170:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31016,7 +52258,7 @@ function SyntheticWheelEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
-},{"./SyntheticMouseEvent":156}],160:[function(require,module,exports){
+},{"./SyntheticMouseEvent":167}],171:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31141,7 +52383,7 @@ var Mixin = {
    * @return {*} Return value from `method`.
    */
   perform: function (method, scope, a, b, c, d, e, f) {
-    !!this.isInTransaction() ? "production" !== 'production' ? invariant(false, 'Transaction.perform(...): Cannot initialize a transaction when there ' + 'is already an outstanding transaction.') : invariant(false) : undefined;
+    !!this.isInTransaction() ? "development" !== 'production' ? invariant(false, 'Transaction.perform(...): Cannot initialize a transaction when there ' + 'is already an outstanding transaction.') : invariant(false) : undefined;
     var errorThrown;
     var ret;
     try {
@@ -31205,7 +52447,7 @@ var Mixin = {
    * invoked).
    */
   closeAll: function (startIndex) {
-    !this.isInTransaction() ? "production" !== 'production' ? invariant(false, 'Transaction.closeAll(): Cannot close transaction when none are open.') : invariant(false) : undefined;
+    !this.isInTransaction() ? "development" !== 'production' ? invariant(false, 'Transaction.closeAll(): Cannot close transaction when none are open.') : invariant(false) : undefined;
     var transactionWrappers = this.transactionWrappers;
     for (var i = startIndex; i < transactionWrappers.length; i++) {
       var wrapper = transactionWrappers[i];
@@ -31248,7 +52490,7 @@ var Transaction = {
 };
 
 module.exports = Transaction;
-},{"fbjs/lib/invariant":204}],161:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],172:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31276,7 +52518,7 @@ var ViewportMetrics = {
 };
 
 module.exports = ViewportMetrics;
-},{}],162:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -31307,7 +52549,7 @@ var invariant = require('fbjs/lib/invariant');
  */
 
 function accumulateInto(current, next) {
-  !(next != null) ? "production" !== 'production' ? invariant(false, 'accumulateInto(...): Accumulated items must not be null or undefined.') : invariant(false) : undefined;
+  !(next != null) ? "development" !== 'production' ? invariant(false, 'accumulateInto(...): Accumulated items must not be null or undefined.') : invariant(false) : undefined;
   if (current == null) {
     return next;
   }
@@ -31336,7 +52578,7 @@ function accumulateInto(current, next) {
 }
 
 module.exports = accumulateInto;
-},{"fbjs/lib/invariant":204}],163:[function(require,module,exports){
+},{"fbjs/lib/invariant":215}],174:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31379,7 +52621,7 @@ function adler32(data) {
 }
 
 module.exports = adler32;
-},{}],164:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31394,7 +52636,7 @@ module.exports = adler32;
 'use strict';
 
 var canDefineProperty = false;
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   try {
     Object.defineProperty({}, 'x', { get: function () {} });
     canDefineProperty = true;
@@ -31404,7 +52646,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = canDefineProperty;
-},{}],165:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31460,7 +52702,7 @@ function dangerousStyleValue(name, value) {
 }
 
 module.exports = dangerousStyleValue;
-},{"./CSSProperty":63}],166:[function(require,module,exports){
+},{"./CSSProperty":74}],177:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31490,9 +52732,9 @@ var warning = require('fbjs/lib/warning');
  */
 function deprecated(fnName, newModule, newPackage, ctx, fn) {
   var warned = false;
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     var newFn = function () {
-      "production" !== 'production' ? warning(warned,
+      "development" !== 'production' ? warning(warned,
       // Require examples in this string must be split to prevent React's
       // build tools from mistaking them for real requires.
       // Otherwise the build tools will attempt to build a '%s' module.
@@ -31509,7 +52751,7 @@ function deprecated(fnName, newModule, newPackage, ctx, fn) {
 }
 
 module.exports = deprecated;
-},{"./Object.assign":82,"fbjs/lib/warning":215}],167:[function(require,module,exports){
+},{"./Object.assign":93,"fbjs/lib/warning":226}],178:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31548,7 +52790,7 @@ function escapeTextContentForBrowser(text) {
 }
 
 module.exports = escapeTextContentForBrowser;
-},{}],168:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31577,10 +52819,10 @@ var warning = require('fbjs/lib/warning');
  * @return {?DOMElement} The root node of this element.
  */
 function findDOMNode(componentOrElement) {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     var owner = ReactCurrentOwner.current;
     if (owner !== null) {
-      "production" !== 'production' ? warning(owner._warnedAboutRefsInRender, '%s is accessing getDOMNode or findDOMNode inside its render(). ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', owner.getName() || 'A component') : undefined;
+      "development" !== 'production' ? warning(owner._warnedAboutRefsInRender, '%s is accessing getDOMNode or findDOMNode inside its render(). ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', owner.getName() || 'A component') : undefined;
       owner._warnedAboutRefsInRender = true;
     }
   }
@@ -31593,12 +52835,12 @@ function findDOMNode(componentOrElement) {
   if (ReactInstanceMap.has(componentOrElement)) {
     return ReactMount.getNodeFromInstance(componentOrElement);
   }
-  !(componentOrElement.render == null || typeof componentOrElement.render !== 'function') ? "production" !== 'production' ? invariant(false, 'findDOMNode was called on an unmounted component.') : invariant(false) : undefined;
-  !false ? "production" !== 'production' ? invariant(false, 'Element appears to be neither ReactComponent nor DOMNode (keys: %s)', Object.keys(componentOrElement)) : invariant(false) : undefined;
+  !(componentOrElement.render == null || typeof componentOrElement.render !== 'function') ? "development" !== 'production' ? invariant(false, 'findDOMNode was called on an unmounted component.') : invariant(false) : undefined;
+  !false ? "development" !== 'production' ? invariant(false, 'Element appears to be neither ReactComponent nor DOMNode (keys: %s)', Object.keys(componentOrElement)) : invariant(false) : undefined;
 }
 
 module.exports = findDOMNode;
-},{"./ReactCurrentOwner":94,"./ReactInstanceMap":122,"./ReactMount":125,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],169:[function(require,module,exports){
+},{"./ReactCurrentOwner":105,"./ReactInstanceMap":133,"./ReactMount":136,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],180:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31624,8 +52866,8 @@ function flattenSingleChildIntoContext(traverseContext, child, name) {
   // We found a component instance.
   var result = traverseContext;
   var keyUnique = result[name] === undefined;
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(keyUnique, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.', name) : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(keyUnique, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.', name) : undefined;
   }
   if (keyUnique && child != null) {
     result[name] = child;
@@ -31647,7 +52889,7 @@ function flattenChildren(children) {
 }
 
 module.exports = flattenChildren;
-},{"./traverseAllChildren":187,"fbjs/lib/warning":215}],170:[function(require,module,exports){
+},{"./traverseAllChildren":198,"fbjs/lib/warning":226}],181:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31677,7 +52919,7 @@ var forEachAccumulated = function (arr, cb, scope) {
 };
 
 module.exports = forEachAccumulated;
-},{}],171:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31728,7 +52970,7 @@ function getEventCharCode(nativeEvent) {
 }
 
 module.exports = getEventCharCode;
-},{}],172:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31832,7 +53074,7 @@ function getEventKey(nativeEvent) {
 }
 
 module.exports = getEventKey;
-},{"./getEventCharCode":171}],173:[function(require,module,exports){
+},{"./getEventCharCode":182}],184:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31877,7 +53119,7 @@ function getEventModifierState(nativeEvent) {
 }
 
 module.exports = getEventModifierState;
-},{}],174:[function(require,module,exports){
+},{}],185:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31907,7 +53149,7 @@ function getEventTarget(nativeEvent) {
 }
 
 module.exports = getEventTarget;
-},{}],175:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31948,7 +53190,7 @@ function getIteratorFn(maybeIterable) {
 }
 
 module.exports = getIteratorFn;
-},{}],176:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32022,7 +53264,7 @@ function getNodeForCharacterOffset(root, offset) {
 }
 
 module.exports = getNodeForCharacterOffset;
-},{}],177:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32056,7 +53298,7 @@ function getTextContentAccessor() {
 }
 
 module.exports = getTextContentAccessor;
-},{"fbjs/lib/ExecutionEnvironment":190}],178:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":201}],189:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32120,7 +53362,7 @@ function instantiateReactComponent(node) {
     instance = new ReactEmptyComponent(instantiateReactComponent);
   } else if (typeof node === 'object') {
     var element = node;
-    !(element && (typeof element.type === 'function' || typeof element.type === 'string')) ? "production" !== 'production' ? invariant(false, 'Element type is invalid: expected a string (for built-in components) ' + 'or a class/function (for composite components) but got: %s.%s', element.type == null ? element.type : typeof element.type, getDeclarationErrorAddendum(element._owner)) : invariant(false) : undefined;
+    !(element && (typeof element.type === 'function' || typeof element.type === 'string')) ? "development" !== 'production' ? invariant(false, 'Element type is invalid: expected a string (for built-in components) ' + 'or a class/function (for composite components) but got: %s.%s', element.type == null ? element.type : typeof element.type, getDeclarationErrorAddendum(element._owner)) : invariant(false) : undefined;
 
     // Special case string values
     if (typeof element.type === 'string') {
@@ -32136,11 +53378,11 @@ function instantiateReactComponent(node) {
   } else if (typeof node === 'string' || typeof node === 'number') {
     instance = ReactNativeComponent.createInstanceForText(node);
   } else {
-    !false ? "production" !== 'production' ? invariant(false, 'Encountered invalid React node of type %s', typeof node) : invariant(false) : undefined;
+    !false ? "development" !== 'production' ? invariant(false, 'Encountered invalid React node of type %s', typeof node) : invariant(false) : undefined;
   }
 
-  if ("production" !== 'production') {
-    "production" !== 'production' ? warning(typeof instance.construct === 'function' && typeof instance.mountComponent === 'function' && typeof instance.receiveComponent === 'function' && typeof instance.unmountComponent === 'function', 'Only React Components can be mounted.') : undefined;
+  if ("development" !== 'production') {
+    "development" !== 'production' ? warning(typeof instance.construct === 'function' && typeof instance.mountComponent === 'function' && typeof instance.receiveComponent === 'function' && typeof instance.unmountComponent === 'function', 'Only React Components can be mounted.') : undefined;
   }
 
   // Sets up the instance. This can probably just move into the constructor now.
@@ -32152,14 +53394,14 @@ function instantiateReactComponent(node) {
   instance._mountIndex = 0;
   instance._mountImage = null;
 
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     instance._isOwnerNecessary = false;
     instance._warnedAboutRefsInRender = false;
   }
 
   // Internal instances should fully constructed at this point, so they should
   // not get any new fields added to them at this point.
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     if (Object.preventExtensions) {
       Object.preventExtensions(instance);
     }
@@ -32169,7 +53411,7 @@ function instantiateReactComponent(node) {
 }
 
 module.exports = instantiateReactComponent;
-},{"./Object.assign":82,"./ReactCompositeComponent":93,"./ReactEmptyComponent":114,"./ReactNativeComponent":128,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],179:[function(require,module,exports){
+},{"./Object.assign":93,"./ReactCompositeComponent":104,"./ReactEmptyComponent":125,"./ReactNativeComponent":139,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],190:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32230,7 +53472,7 @@ function isEventSupported(eventNameSuffix, capture) {
 }
 
 module.exports = isEventSupported;
-},{"fbjs/lib/ExecutionEnvironment":190}],180:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":201}],191:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32271,7 +53513,7 @@ function isTextInputElement(elem) {
 }
 
 module.exports = isTextInputElement;
-},{}],181:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32300,12 +53542,12 @@ var invariant = require('fbjs/lib/invariant');
  * structure.
  */
 function onlyChild(children) {
-  !ReactElement.isValidElement(children) ? "production" !== 'production' ? invariant(false, 'onlyChild must be passed a children with exactly one child.') : invariant(false) : undefined;
+  !ReactElement.isValidElement(children) ? "development" !== 'production' ? invariant(false, 'onlyChild must be passed a children with exactly one child.') : invariant(false) : undefined;
   return children;
 }
 
 module.exports = onlyChild;
-},{"./ReactElement":112,"fbjs/lib/invariant":204}],182:[function(require,module,exports){
+},{"./ReactElement":123,"fbjs/lib/invariant":215}],193:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32332,7 +53574,7 @@ function quoteAttributeValueForBrowser(value) {
 }
 
 module.exports = quoteAttributeValueForBrowser;
-},{"./escapeTextContentForBrowser":167}],183:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":178}],194:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32349,7 +53591,7 @@ module.exports = quoteAttributeValueForBrowser;
 var ReactMount = require('./ReactMount');
 
 module.exports = ReactMount.renderSubtreeIntoContainer;
-},{"./ReactMount":125}],184:[function(require,module,exports){
+},{"./ReactMount":136}],195:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32440,7 +53682,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setInnerHTML;
-},{"fbjs/lib/ExecutionEnvironment":190}],185:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":201}],196:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32481,7 +53723,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setTextContent;
-},{"./escapeTextContentForBrowser":167,"./setInnerHTML":184,"fbjs/lib/ExecutionEnvironment":190}],186:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":178,"./setInnerHTML":195,"fbjs/lib/ExecutionEnvironment":201}],197:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32525,7 +53767,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 }
 
 module.exports = shouldUpdateReactComponent;
-},{}],187:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32654,8 +53896,8 @@ function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext)
           subtreeCount += traverseAllChildrenImpl(child, nextName, callback, traverseContext);
         }
       } else {
-        if ("production" !== 'production') {
-          "production" !== 'production' ? warning(didWarnAboutMaps, 'Using Maps as children is not yet fully supported. It is an ' + 'experimental feature that might be removed. Convert it to a ' + 'sequence / iterable of keyed ReactElements instead.') : undefined;
+        if ("development" !== 'production') {
+          "development" !== 'production' ? warning(didWarnAboutMaps, 'Using Maps as children is not yet fully supported. It is an ' + 'experimental feature that might be removed. Convert it to a ' + 'sequence / iterable of keyed ReactElements instead.') : undefined;
           didWarnAboutMaps = true;
         }
         // Iterator will provide entry [k,v] tuples rather than values.
@@ -32670,7 +53912,7 @@ function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext)
       }
     } else if (type === 'object') {
       var addendum = '';
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         addendum = ' If you meant to render a collection of children, use an array ' + 'instead or wrap the object using createFragment(object) from the ' + 'React add-ons.';
         if (children._isReactElement) {
           addendum = ' It looks like you\'re using an element created by a different ' + 'version of React. Make sure to use only one copy of React.';
@@ -32683,7 +53925,7 @@ function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext)
         }
       }
       var childrenString = String(children);
-      !false ? "production" !== 'production' ? invariant(false, 'Objects are not valid as a React child (found: %s).%s', childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString, addendum) : invariant(false) : undefined;
+      !false ? "development" !== 'production' ? invariant(false, 'Objects are not valid as a React child (found: %s).%s', childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString, addendum) : invariant(false) : undefined;
     }
   }
 
@@ -32715,7 +53957,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 }
 
 module.exports = traverseAllChildren;
-},{"./ReactCurrentOwner":94,"./ReactElement":112,"./ReactInstanceHandles":121,"./getIteratorFn":175,"fbjs/lib/invariant":204,"fbjs/lib/warning":215}],188:[function(require,module,exports){
+},{"./ReactCurrentOwner":105,"./ReactElement":123,"./ReactInstanceHandles":132,"./getIteratorFn":186,"fbjs/lib/invariant":215,"fbjs/lib/warning":226}],199:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -32735,7 +53977,7 @@ var warning = require('fbjs/lib/warning');
 
 var validateDOMNesting = emptyFunction;
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   // This validation code was written based on the HTML5 parsing spec:
   // https://html.spec.whatwg.org/multipage/syntax.html#has-an-element-in-scope
   //
@@ -33058,9 +54300,9 @@ if ("production" !== 'production') {
         if (ancestorTag === 'table' && childTag === 'tr') {
           info += ' Add a <tbody> to your code to match the DOM tree generated by ' + 'the browser.';
         }
-        "production" !== 'production' ? warning(false, 'validateDOMNesting(...): <%s> cannot appear as a child of <%s>. ' + 'See %s.%s', childTag, ancestorTag, ownerInfo, info) : undefined;
+        "development" !== 'production' ? warning(false, 'validateDOMNesting(...): <%s> cannot appear as a child of <%s>. ' + 'See %s.%s', childTag, ancestorTag, ownerInfo, info) : undefined;
       } else {
-        "production" !== 'production' ? warning(false, 'validateDOMNesting(...): <%s> cannot appear as a descendant of ' + '<%s>. See %s.', childTag, ancestorTag, ownerInfo) : undefined;
+        "development" !== 'production' ? warning(false, 'validateDOMNesting(...): <%s> cannot appear as a descendant of ' + '<%s>. See %s.', childTag, ancestorTag, ownerInfo) : undefined;
       }
     }
   };
@@ -33079,7 +54321,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = validateDOMNesting;
-},{"./Object.assign":82,"fbjs/lib/emptyFunction":196,"fbjs/lib/warning":215}],189:[function(require,module,exports){
+},{"./Object.assign":93,"fbjs/lib/emptyFunction":207,"fbjs/lib/warning":226}],200:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  *
@@ -33151,7 +54393,7 @@ var EventListener = {
         }
       };
     } else {
-      if ("production" !== 'production') {
+      if ("development" !== 'production') {
         console.error('Attempted to listen to events during the capture phase on a ' + 'browser that does not support the capture phase. Your application ' + 'will not receive some events.');
       }
       return {
@@ -33164,7 +54406,7 @@ var EventListener = {
 };
 
 module.exports = EventListener;
-},{"./emptyFunction":196}],190:[function(require,module,exports){
+},{"./emptyFunction":207}],201:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33201,7 +54443,7 @@ var ExecutionEnvironment = {
 };
 
 module.exports = ExecutionEnvironment;
-},{}],191:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33234,7 +54476,7 @@ function camelize(string) {
 }
 
 module.exports = camelize;
-},{}],192:[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33275,7 +54517,7 @@ function camelizeStyleName(string) {
 }
 
 module.exports = camelizeStyleName;
-},{"./camelize":191}],193:[function(require,module,exports){
+},{"./camelize":202}],204:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33331,7 +54573,7 @@ function containsNode(_x, _x2) {
 }
 
 module.exports = containsNode;
-},{"./isTextNode":206}],194:[function(require,module,exports){
+},{"./isTextNode":217}],205:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33417,7 +54659,7 @@ function createArrayFromMixed(obj) {
 }
 
 module.exports = createArrayFromMixed;
-},{"./toArray":214}],195:[function(require,module,exports){
+},{"./toArray":225}],206:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33473,7 +54715,7 @@ function getNodeName(markup) {
  */
 function createNodesFromMarkup(markup, handleScript) {
   var node = dummyNode;
-  !!!dummyNode ? "production" !== 'production' ? invariant(false, 'createNodesFromMarkup dummy not initialized') : invariant(false) : undefined;
+  !!!dummyNode ? "development" !== 'production' ? invariant(false, 'createNodesFromMarkup dummy not initialized') : invariant(false) : undefined;
   var nodeName = getNodeName(markup);
 
   var wrap = nodeName && getMarkupWrap(nodeName);
@@ -33490,7 +54732,7 @@ function createNodesFromMarkup(markup, handleScript) {
 
   var scripts = node.getElementsByTagName('script');
   if (scripts.length) {
-    !handleScript ? "production" !== 'production' ? invariant(false, 'createNodesFromMarkup(...): Unexpected <script> element rendered.') : invariant(false) : undefined;
+    !handleScript ? "development" !== 'production' ? invariant(false, 'createNodesFromMarkup(...): Unexpected <script> element rendered.') : invariant(false) : undefined;
     createArrayFromMixed(scripts).forEach(handleScript);
   }
 
@@ -33502,7 +54744,7 @@ function createNodesFromMarkup(markup, handleScript) {
 }
 
 module.exports = createNodesFromMarkup;
-},{"./ExecutionEnvironment":190,"./createArrayFromMixed":194,"./getMarkupWrap":200,"./invariant":204}],196:[function(require,module,exports){
+},{"./ExecutionEnvironment":201,"./createArrayFromMixed":205,"./getMarkupWrap":211,"./invariant":215}],207:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33541,7 +54783,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],197:[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33557,12 +54799,12 @@ module.exports = emptyFunction;
 
 var emptyObject = {};
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   Object.freeze(emptyObject);
 }
 
 module.exports = emptyObject;
-},{}],198:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33589,7 +54831,7 @@ function focusNode(node) {
 }
 
 module.exports = focusNode;
-},{}],199:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33602,21 +54844,15 @@ module.exports = focusNode;
  * @typechecks
  */
 
-/* eslint-disable fb-www/typeof-undefined */
-
 /**
  * Same as document.activeElement but wraps in a try-catch block. In IE it is
  * not safe to call document.activeElement if there is nothing focused.
  *
- * The activeElement will be null only if the document or document body is not
- * yet defined.
+ * The activeElement will be null only if the document body is not yet defined.
  */
-'use strict';
+"use strict";
 
 function getActiveElement() /*?DOMElement*/{
-  if (typeof document === 'undefined') {
-    return null;
-  }
   try {
     return document.activeElement || document.body;
   } catch (e) {
@@ -33625,7 +54861,7 @@ function getActiveElement() /*?DOMElement*/{
 }
 
 module.exports = getActiveElement;
-},{}],200:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33705,7 +54941,7 @@ svgElements.forEach(function (nodeName) {
  * @return {?array} Markup wrap configuration, if applicable.
  */
 function getMarkupWrap(nodeName) {
-  !!!dummyNode ? "production" !== 'production' ? invariant(false, 'Markup wrapping node not initialized') : invariant(false) : undefined;
+  !!!dummyNode ? "development" !== 'production' ? invariant(false, 'Markup wrapping node not initialized') : invariant(false) : undefined;
   if (!markupWrap.hasOwnProperty(nodeName)) {
     nodeName = '*';
   }
@@ -33721,7 +54957,7 @@ function getMarkupWrap(nodeName) {
 }
 
 module.exports = getMarkupWrap;
-},{"./ExecutionEnvironment":190,"./invariant":204}],201:[function(require,module,exports){
+},{"./ExecutionEnvironment":201,"./invariant":215}],212:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33760,7 +54996,7 @@ function getUnboundedScrollPosition(scrollable) {
 }
 
 module.exports = getUnboundedScrollPosition;
-},{}],202:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33794,7 +55030,7 @@ function hyphenate(string) {
 }
 
 module.exports = hyphenate;
-},{}],203:[function(require,module,exports){
+},{}],214:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33834,7 +55070,7 @@ function hyphenateStyleName(string) {
 }
 
 module.exports = hyphenateStyleName;
-},{"./hyphenate":202}],204:[function(require,module,exports){
+},{"./hyphenate":213}],215:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33860,7 +55096,7 @@ module.exports = hyphenateStyleName;
  */
 
 function invariant(condition, format, a, b, c, d, e, f) {
-  if ("production" !== 'production') {
+  if ("development" !== 'production') {
     if (format === undefined) {
       throw new Error('invariant requires an error message argument');
     }
@@ -33885,7 +55121,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 }
 
 module.exports = invariant;
-},{}],205:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33909,7 +55145,7 @@ function isNode(object) {
 }
 
 module.exports = isNode;
-},{}],206:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33935,7 +55171,7 @@ function isTextNode(object) {
 }
 
 module.exports = isTextNode;
-},{"./isNode":205}],207:[function(require,module,exports){
+},{"./isNode":216}],218:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33973,7 +55209,7 @@ var invariant = require('./invariant');
 var keyMirror = function (obj) {
   var ret = {};
   var key;
-  !(obj instanceof Object && !Array.isArray(obj)) ? "production" !== 'production' ? invariant(false, 'keyMirror(...): Argument must be an object.') : invariant(false) : undefined;
+  !(obj instanceof Object && !Array.isArray(obj)) ? "development" !== 'production' ? invariant(false, 'keyMirror(...): Argument must be an object.') : invariant(false) : undefined;
   for (key in obj) {
     if (!obj.hasOwnProperty(key)) {
       continue;
@@ -33984,7 +55220,7 @@ var keyMirror = function (obj) {
 };
 
 module.exports = keyMirror;
-},{"./invariant":204}],208:[function(require,module,exports){
+},{"./invariant":215}],219:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34020,7 +55256,7 @@ var keyOf = function (oneKeyObj) {
 };
 
 module.exports = keyOf;
-},{}],209:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34072,7 +55308,7 @@ function mapObject(object, callback, context) {
 }
 
 module.exports = mapObject;
-},{}],210:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34104,7 +55340,7 @@ function memoizeStringOnly(callback) {
 }
 
 module.exports = memoizeStringOnly;
-},{}],211:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34128,7 +55364,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = performance || {};
-},{"./ExecutionEnvironment":190}],212:[function(require,module,exports){
+},{"./ExecutionEnvironment":201}],223:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34163,7 +55399,7 @@ if (performance.now) {
 }
 
 module.exports = performanceNow;
-},{"./performance":211}],213:[function(require,module,exports){
+},{"./performance":222}],224:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34214,7 +55450,7 @@ function shallowEqual(objA, objB) {
 }
 
 module.exports = shallowEqual;
-},{}],214:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34245,11 +55481,11 @@ function toArray(obj) {
 
   // Some browse builtin objects can report typeof 'function' (e.g. NodeList in
   // old versions of Safari).
-  !(!Array.isArray(obj) && (typeof obj === 'object' || typeof obj === 'function')) ? "production" !== 'production' ? invariant(false, 'toArray: Array-like object expected') : invariant(false) : undefined;
+  !(!Array.isArray(obj) && (typeof obj === 'object' || typeof obj === 'function')) ? "development" !== 'production' ? invariant(false, 'toArray: Array-like object expected') : invariant(false) : undefined;
 
-  !(typeof length === 'number') ? "production" !== 'production' ? invariant(false, 'toArray: Object needs a length property') : invariant(false) : undefined;
+  !(typeof length === 'number') ? "development" !== 'production' ? invariant(false, 'toArray: Object needs a length property') : invariant(false) : undefined;
 
-  !(length === 0 || length - 1 in obj) ? "production" !== 'production' ? invariant(false, 'toArray: Object should have keys for indices') : invariant(false) : undefined;
+  !(length === 0 || length - 1 in obj) ? "development" !== 'production' ? invariant(false, 'toArray: Object should have keys for indices') : invariant(false) : undefined;
 
   // Old IE doesn't give collections access to hasOwnProperty. Assume inputs
   // without method will throw during the slice call and skip straight to the
@@ -34272,7 +55508,7 @@ function toArray(obj) {
 }
 
 module.exports = toArray;
-},{"./invariant":204}],215:[function(require,module,exports){
+},{"./invariant":215}],226:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -34297,7 +55533,7 @@ var emptyFunction = require('./emptyFunction');
 
 var warning = emptyFunction;
 
-if ("production" !== 'production') {
+if ("development" !== 'production') {
   warning = function (condition, format) {
     for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
       args[_key - 2] = arguments[_key];
@@ -34330,76 +55566,174 @@ if ("production" !== 'production') {
 }
 
 module.exports = warning;
-},{"./emptyFunction":196}],216:[function(require,module,exports){
+},{"./emptyFunction":207}],227:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":84}],217:[function(require,module,exports){
+},{"./lib/React":95}],228:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+var _ramda = require('ramda');
 
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
+var _ramda2 = _interopRequireDefault(_ramda);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function mapBadgeToImage(badge) {
-  var map = {
-    'Road Builder': 'assets/graphics/test.svg',
-    'Building Builder': 'assets/graphics/test.svg',
-    'Consistentency': 'assets/graphics/test2.svg',
-    'GPS trace Creator': 'assets/graphics/test3.svg',
-    'JOSM User': 'assets/graphics/test.svg',
-    'Long & Winding Road': 'assets/graphics/test2.svg',
-    'Mapathoner': '/assets/graphics/test3.svg',
-    'Node Builder': '/assets/graphics/test.svg',
-    'TaskMan Scrutinizer': '/assets/graphics/test3.svg',
-    'TaskMan Square Champion': '/assets/graphics/test.svg',
-    'Waterway Creator': '/assets/graphics/test2.svg',
-    'World Renown': '/assets/graphics/test3.svg'
-  };
-  return map[badge];
-}
+var sumCheck = require('./sum_check');
 
-// Strips whitespace
-function stripWS(text) {
-  return text.replace(/ /g, '');
-}
-
-exports.default = function (props) {
-  var list = Object.keys(props.badges).map(function (badge) {
-    return _react2.default.createElement(
-      'li',
-      { key: stripWS(badge) },
-      _react2.default.createElement('img', { src: mapBadgeToImage(badge), width: '100px' })
-    );
+// Note- waterway KMs, GPS trace KMs, and building mods are
+// captured but are not in the official spec.
+// Countries, tasks, task edits, and JOSM are in the spec
+// but are not implemented herse.
+module.exports.getBadgeProgress = function getBadgeProgress(user) {
+  var badgeProgress = sumCheck({
+    roads: Number(user.total_road_count_add),
+    roadMods: Number(user.total_road_count_mod),
+    buildings: Number(user.total_building_count_add),
+    // buildingMods: user.total_building_count_mod,
+    waterways: Number(user.total_waterway_count_add),
+    pois: Number(user.total_poi_count_add),
+    gpsTraces: Number(user.total_gpstrace_count_add),
+    roadKms: Number(user.total_road_km_add),
+    roadKmMods: Number(user.total_road_km_mod),
+    // waterwayKms: user.total_waterway_km_add,
+    // gpsTraceKmAdd: user.total_gpstrace_km_add,
+    // countries: user.,
+    // tasks: user.,
+    // taskEdits: user.,
+    // josm: user.,
+    hashtags: _ramda2.default.sum(_ramda2.default.values(user.hashtags))
   });
-  return _react2.default.createElement(
-    'div',
-    { className: 'Recent-Badges-Container' },
-    _react2.default.createElement(
-      'div',
-      { className: 'Block-header' },
-      'Recently Earned Badges'
-    ),
-    _react2.default.createElement(
-      'div',
-      { className: 'Badge-Box-Content' },
-      _react2.default.createElement(
-        'ul',
-        { className: 'Badge-Roll' },
-        list
-      )
-    )
-  );
+
+  var sortedBadges = Object.keys(badgeProgress).sort(function (a, b) {
+    return badgeProgress[a].points.percentage - badgeProgress[b].points.percentage;
+  });
+  var mostAttainableBadge = badgeProgress[sortedBadges.slice(-1)[0]];
+  mostAttainableBadge.name = badgeProgress[_ramda2.default.last(sortedBadges)].name;
+  return { all: badgeProgress, mostAttainable: mostAttainableBadge };
 };
 
-},{"react":216}],218:[function(require,module,exports){
+module.exports.sortBadgeHashtags = function sortBadgeHashtags(user) {
+  return user.badges.sort(function (a, b) {
+    return new Date(a.created_at) - new Date(b.created_at);
+  });
+};
+
+},{"./sum_check":229,"ramda":33}],229:[function(require,module,exports){
+'use strict';
+
+module.exports = function (data) {
+  var badges = {
+    roads: {
+      name: 'Road Builder',
+      id: 1,
+      tiers: { 1: 100, 2: 500, 3: 1000 }
+    },
+    roadMods: {
+      name: 'Road Maintainer',
+      id: 2,
+      tiers: { 1: 100, 2: 500, 3: 1000 }
+    },
+    pois: {
+      name: 'Point Creator',
+      id: 3,
+      tiers: { 1: 500, 2: 2500, 3: 5000 }
+    },
+    buildings: {
+      name: 'Building Builder',
+      id: 4,
+      tiers: { 1: 100, 2: 500, 3: 1000 }
+    },
+    gpsTraces: {
+      name: 'GPS Trace Creator',
+      id: 5,
+      tiers: { 1: 10, 2: 50, 3: 100 }
+    },
+    roadKms: {
+      name: 'Long & Winding Road',
+      id: 6,
+      tiers: { 1: 50, 2: 100, 3: 500 }
+    },
+    roadKmMods: {
+      name: 'Long & Winding Road Maintainer',
+      id: 7,
+      tiers: { 1: 50, 2: 100, 3: 500 }
+    },
+    waterways: {
+      name: 'Waterway Creator',
+      id: 8,
+      tiers: { 1: 50, 2: 100, 3: 500 }
+    },
+    countries: {
+      name: 'World Renown',
+      id: 9,
+      tiers: { 1: 5, 2: 10, 3: 25 }
+    },
+    tasks: {
+      name: 'TaskMan Square Champion',
+      id: 10,
+      tiers: { 1: 5, 2: 20, 3: 50 }
+    },
+    taskEdits: {
+      name: 'TaskMan Scrutinizer',
+      id: 11,
+      tiers: { 1: 5, 2: 20, 3: 50 }
+    },
+    josm: {
+      name: 'JOSM User',
+      id: 12,
+      tiers: { 1: 1, 2: 10, 3: 100 }
+    },
+    hashtags: {
+      name: 'Mapathoner',
+      id: 13,
+      tiers: { 1: 5, 2: 20, 3: 50 }
+    }
+  };
+
+  function checkBadgeLevel(userTotal, badge) {
+    if (userTotal >= badge.tiers[1] && userTotal < badge.tiers[2]) {
+      return 1;
+    } else if (userTotal >= badge.tiers[2] && userTotal < badge.tiers[3]) {
+      return 2;
+    } else if (userTotal >= badge.tiers[3]) {
+      return 3;
+    } else {
+      return 0;
+    }
+  }
+
+  var userBadges = {};
+  Object.keys(data).forEach(function (key) {
+    var userTotal = data[key];
+    var badge = badges[key];
+
+    var badgeLevel = checkBadgeLevel(userTotal, badge);
+    if (badgeLevel < 3) {
+      var nextBadgeLevel = badgeLevel + 1;
+      var currentPoints = Number(userTotal);
+      var lastPoints = 0;
+      if (badgeLevel > 0) lastPoints = badge.tiers[badgeLevel];
+      var nextPoints = badge.tiers[nextBadgeLevel];
+      var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
+      userBadges[key] = {
+        name: badge.name,
+        badgeLevel: badgeLevel,
+        nextBadgeLevel: nextBadgeLevel,
+        points: {
+          currentPoints: currentPoints,
+          nextPoints: nextPoints,
+          percentage: percentage
+        }
+      };
+    }
+  });
+
+  return userBadges;
+};
+
+},{}],230:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34424,9 +55758,9 @@ exports.default = _react2.default.createClass({
     // smaller of (horizontal resolution + 30) / 100 and 12.
     var chartSize = {};
     if (window.innerWidth >= 1100) {
-      chartSize = { tallerDiv: true, cellSize: 14.85, range: 12 };
+      chartSize = { tallerDiv: true, cellSize: 13.9, range: 12 };
     } else {
-      var months = ~ ~((window.innerWidth + 30) / 100);
+      var months = ~ ~((window.innerWidth + 100) / 100);
       if (months > 12) months = 12;
       chartSize = { tallerDiv: false, cellSize: 12, range: months };
     }
@@ -34438,7 +55772,7 @@ exports.default = _react2.default.createClass({
       range: chartSize.range,
       subDomain: 'day',
       rowLimit: 7,
-      domainLabelFormat: '%b',
+      domainLabelFormat: '%B',
       cellSize: chartSize.cellSize,
       displayLegend: false,
       cal: new _calHeatmap2.default()
@@ -34446,13 +55780,14 @@ exports.default = _react2.default.createClass({
   },
   handleResize: function handleResize(e) {
     this.setState({ windowWidth: window.innerWidth });
+    var containerWidth = document.getElementsByClassName('Contribute-Timeline-Container')[0].offsetWidth;
 
     // Set the number of calendar months to display at the
     // smaller of (horizontal resolution + 30) / 100 and 12.
-    if (this.state.windowWidth >= 1100) {
-      this.setState({ tallerDiv: true, cellSize: 14.85, range: 12 });
+    if (containerWidth >= 985) {
+      this.setState({ tallerDiv: true, cellSize: 13.9, range: 12 });
     } else {
-      var months = ~ ~((this.state.windowWidth + 30) / 100);
+      var months = ~ ~((this.state.windowWidth * 1.2 - 25) / 100);
       if (months > 12) months = 12;
       this.setState({ tallerDiv: false, cellSize: 12, range: months });
     }
@@ -34498,15 +55833,15 @@ exports.default = _react2.default.createClass({
       null,
       _react2.default.createElement(
         'div',
+        { className: 'Card-Section-Title Move-over' },
+        'CONTRIBUTION TIMELINE'
+      ),
+      _react2.default.createElement(
+        'div',
         { className: 'Contribute-Timeline-Container' },
         _react2.default.createElement(
           'div',
-          { className: 'Block-header' },
-          'Contribution Timeline'
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: this.state.tallerDiv ? 'Contribute-Timeline-Content taller' : 'Contribute-Timeline-Content' },
+          { className: this.state.tallerDiv ? 'Contribute-Timeline-Content tall' : 'Contribute-Timeline-Content' },
           _react2.default.createElement('div', { id: 'cal-heatmap' })
         )
       )
@@ -34514,7 +55849,40 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"cal-heatmap":2,"react":216}],219:[function(require,module,exports){
+},{"cal-heatmap":1,"react":227}],231:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+exports.default = function () {
+	return _react2.default.createElement(
+		"div",
+		{ className: "wrapper" },
+		_react2.default.createElement(
+			"div",
+			{ className: "footer-container" },
+			_react2.default.createElement(
+				"div",
+				{ className: "center-text" },
+				_react2.default.createElement(
+					"div",
+					{ className: "footer-mm center-text" },
+					"CC-BY Missing Maps 2015"
+				)
+			)
+		)
+	);
+};
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"react":227}],232:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34525,23 +55893,30 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function mapBadgeToImage(badge) {
   var map = {
     'Road Builder': 'assets/graphics/test.svg',
+    'Road Maintainer': 'assets/graphics/test.svg',
     'Building Builder': 'assets/graphics/test.svg',
     'Consistentency': 'assets/graphics/test2.svg',
-    'GPS trace Creator': 'assets/graphics/test3.svg',
+    'GPS Trace Creator': 'assets/graphics/test3.svg',
     'JOSM User': 'assets/graphics/test.svg',
     'Long & Winding Road': 'assets/graphics/test2.svg',
-    'Mapathoner': '/assets/graphics/test3.svg',
-    'Node Builder': '/assets/graphics/test.svg',
-    'TaskMan Scrutinizer': '/assets/graphics/test3.svg',
-    'TaskMan Square Champion': '/assets/graphics/test.svg',
-    'Waterway Creator': '/assets/graphics/test2.svg',
-    'World Renown': '/assets/graphics/test3.svg',
-    'Year long Mapper': '/assets/graphics/test3.svg'
+    'Long & Winding Road Maintainer': 'assets/graphics/test2.svg',
+    'Mapathoner': 'assets/graphics/test3.svg',
+    'Node Builder': 'assets/graphics/test.svg',
+    'TaskMan Scrutinizer': 'assets/graphics/test3.svg',
+    'TaskMan Square Champion': 'assets/graphics/test.svg',
+    'Waterway Creator': 'assets/graphics/test2.svg',
+    'World Renown': 'assets/graphics/test3.svg',
+    'Year-long Mapper': 'assets/graphics/test3.svg',
+    'Point Creator': 'assets/graphics/test3.svg'
   };
   return map[badge];
 }
@@ -34549,21 +55924,26 @@ function mapBadgeToImage(badge) {
 function mapBadgeToDescrip(badge) {
   var map = {
     'Road Builder': 'Wowie zomie bam sham!',
+    'Road Maintainer': 'Maintained all the roads!',
     'Building Builder': 'Built 15 buildings',
     'Consistentency': 'Mapped every day, wow!',
-    'GPS trace Creator': 'Traced some real good GPS imagery',
+    'GPS Trace Creator': 'Traced some real good GPS imagery',
     'JOSM User': 'Used JSOM to map an area',
     'Long & Winding Road': 'Mapping many, many roads.',
+    'Long & Winding Road Maintainer': 'Maintaining long, long roads.',
     'Mapathoner': 'Just cant stop mapping- mapped 10 days in a row.',
     'Node Builder': 'Wrote a truckful of nodes.',
     'TaskMan Scrutinizer': 'Scrutinize tasks with the vigilance of a nun with a ruler',
     'TaskMan Square Champion': 'Mapped squares like it was in fashion- 10 to be percise.',
     'Waterway Creator': 'A regular mapping Poseidian, lord of these open waters.',
     'World Renown': 'No land is outside your watchful gaze. Mapped in each continent.',
-    'Year long Mapper': 'You are so very dedicated. You have mapped for an entire year.'
+    'Year-long Mapper': 'You are so very dedicated. You have mapped for an entire year.',
+    'Point Creator': "You must really love points!"
   };
   return map[badge];
 }
+
+module.exports.descriptions = mapBadgeToDescrip;
 
 // Strips whitespace
 function stripWS(text) {
@@ -34571,7 +55951,16 @@ function stripWS(text) {
 }
 
 exports.default = function (props) {
-  var list = Object.keys(props.badges).map(function (badge) {
+  var badges = _ramda2.default.map(_ramda2.default.prop('name'), props.badges);
+  if (!props.progress.all) {
+    return _react2.default.createElement(
+      'div',
+      null,
+      'Loading...'
+    );
+  }
+
+  var list = badges.map(function (badge) {
     return _react2.default.createElement(
       'li',
       { key: stripWS(badge) },
@@ -34597,27 +55986,98 @@ exports.default = function (props) {
       )
     );
   });
+
+  var progressBadges = Object.keys(props.progress.all).map(function (val) {
+    var badge = props.progress.all[val];
+    return {
+      'description': mapBadgeToDescrip(badge.name),
+      'progress': "You're " + Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel,
+      'name': badge.name
+    };
+  });
+
+  var progressList = progressBadges.map(function (badge) {
+    return _react2.default.createElement(
+      'li',
+      { key: stripWS(badge.name) },
+      _react2.default.createElement(
+        'div',
+        { className: 'badge-home' },
+        _react2.default.createElement('img', { src: mapBadgeToImage(badge.name), width: '150px' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'badge-Details' },
+          _react2.default.createElement(
+            'div',
+            { className: 'badge-Name' },
+            badge.name
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'badge-Description' },
+            _react2.default.createElement('div', { className: 'line-break' }),
+            badge.description
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'badge-Description' },
+            badge.progress
+          )
+        )
+      )
+    );
+  });
   return _react2.default.createElement(
     'div',
-    { id: 'Badge-Container' },
+    null,
     _react2.default.createElement(
       'div',
-      { className: 'Block-header' },
-      'Earned Badges'
+      { id: 'Badge-Container' },
+      _react2.default.createElement(
+        'div',
+        { className: 'Badge-Box-Content' },
+        _react2.default.createElement(
+          'div',
+          { className: 'badgeroll-frame' },
+          _react2.default.createElement(
+            'div',
+            { className: 'badgeroll-center card' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-title' },
+              'EARNED BADGES'
+            ),
+            _react2.default.createElement(
+              'ul',
+              { className: 'Badge-Roll' },
+              list
+            )
+          )
+        )
+      )
     ),
     _react2.default.createElement(
       'div',
-      { className: 'Badge-Box-Content' },
+      { id: 'Badge-Container' },
       _react2.default.createElement(
         'div',
-        { className: 'badgeroll-frame' },
+        { className: 'Badge-Box-Content' },
         _react2.default.createElement(
           'div',
-          { className: 'badgeroll-center' },
+          { className: 'badgeroll-frame' },
           _react2.default.createElement(
-            'ul',
-            { className: 'Badge-Roll' },
-            list
+            'div',
+            { className: 'badgeroll-center card' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-title' },
+              'BADGE PROGRESS'
+            ),
+            _react2.default.createElement(
+              'ul',
+              { className: 'Badge-Roll' },
+              progressList
+            )
           )
         )
       )
@@ -34625,63 +56085,85 @@ exports.default = function (props) {
   );
 };
 
-},{"react":216}],220:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _ContributionBox = require('../components/ContributionBox.js');
-
-var _ContributionBox2 = _interopRequireDefault(_ContributionBox);
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (props) {
-	console.log(props);
-	return _react2.default.createElement(
-		'div',
-		null,
-		_react2.default.createElement(
-			'div',
-			{ id: 'MapContainer' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'Block-header' },
-				'Map of Contributions'
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'MapContent' },
-				props.stats.building_count
-			)
-		),
-		_react2.default.createElement(
-			'div',
-			{ id: 'NumberContainer' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'Block-header' },
-				'Statistics'
-			),
-			_react2.default.createElement('div', { className: 'NumberContent' })
-		),
-		_react2.default.createElement(_ContributionBox2.default, null)
-	);
-};
-
-},{"../components/ContributionBox.js":218,"react":216}],221:[function(require,module,exports){
+},{"ramda":33,"react":227}],233:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.default = QuickStatsBox;
+
+exports.default = function () {
+	return _react2.default.createElement(
+		"header",
+		null,
+		_react2.default.createElement(
+			"div",
+			{ className: "headerwidth" },
+			_react2.default.createElement(
+				"div",
+				{ className: "nav-icon" },
+				_react2.default.createElement(
+					"a",
+					{ href: "" },
+					_react2.default.createElement("img", { src: "./assets/graphics/MissingMapsLogo-Grey.svg", width: "100px" })
+				)
+			),
+			_react2.default.createElement(
+				"div",
+				{ className: "nav-list" },
+				_react2.default.createElement(
+					"ul",
+					null,
+					_react2.default.createElement(
+						"li",
+						{ className: "nav-item" },
+						_react2.default.createElement(
+							"a",
+							{ href: "{{site.baseurl}}/contribute/" },
+							"contribute"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						{ className: "nav-item" },
+						_react2.default.createElement(
+							"a",
+							{ href: "{{site.baseurl}}/events/" },
+							"events"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						{ className: "nav-item" },
+						_react2.default.createElement(
+							"a",
+							{ href: "{{site.baseurl}}/about/" },
+							"about"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						{ className: "nav-item" },
+						_react2.default.createElement(
+							"a",
+							{ href: "" },
+							"leaderboards"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						{ className: "nav-item" },
+						_react2.default.createElement(
+							"a",
+							{ href: "" },
+							"user pages"
+						)
+					)
+				)
+			)
+		)
+	);
+};
 
 var _react = require("react");
 
@@ -34689,117 +56171,608 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function QuickStatsBox(props) {
-	return _react2.default.createElement(
-		"div",
-		{ className: "Quick-User-Stats-Container" },
-		_react2.default.createElement(
-			"div",
-			{ className: "Block-header" },
-			"Quick Stats"
-		),
-		_react2.default.createElement(
-			"div",
-			{ className: "Quick-User-Stats-Content" },
-			_react2.default.createElement(
-				"div",
-				{ className: "center-text" },
-				_react2.default.createElement(
-					"div",
-					{ className: "Quick-User-Stats-Block" },
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"Buildings "
-						),
-						props.badges.building_count
-					),
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement("h1", null)
-					)
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "Quick-User-Stats-Block" },
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"Road Count "
-						),
-						props.badges.road_count
-					),
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"km of Roads "
-						),
-						props.badges.road_km
-					)
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "Quick-User-Stats-Block" },
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"Waterway "
-						),
-						props.badges.waterway_km
-					),
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"km of Waterways "
-						),
-						props.badges.waterway_count
-					)
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "Quick-User-Stats-Block" },
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"Country Last Mapped "
-						),
-						props.badges.countries
-					),
-					_react2.default.createElement(
-						"p",
-						null,
-						_react2.default.createElement(
-							"h1",
-							null,
-							"Recent Hashtags"
-						)
-					)
-				)
-			)
-		)
-	);
-}
+},{"react":227}],234:[function(require,module,exports){
+'use strict';
 
-},{"react":216}],222:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
+
+var _badge_cruncher = require('../badge_logic/badge_cruncher.js');
+
+var _FullBadgeBox = require('../components/FullBadgeBox.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (props) {
+  var progress = (0, _badge_cruncher.getBadgeProgress)(props.data);
+  var mostAttainableBadge = progress.mostAttainable;
+  return _react2.default.createElement(
+    'div',
+    { id: 'Recent-Container' },
+    _react2.default.createElement(
+      'div',
+      { className: 'Card' },
+      _react2.default.createElement(
+        'div',
+        { className: 'Card-title' },
+        'What\'s Next'
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'Card-Content' },
+        _react2.default.createElement(
+          'div',
+          { className: 'Card-Left' },
+          _react2.default.createElement(
+            'div',
+            { className: 'Card-Textbox' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Section-Title' },
+              'UPCOMING'
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'You\'\'re really close to earning the ',
+              mostAttainableBadge.name,
+              ' badge!'
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Here are some projects you can help out with to get it!'
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'Card-Textbox' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Section-Title' },
+              'TRENDING PROJECTS'
+            ),
+
+            // This should be changed to grabbing from hashtags endpoint
+            // and not the users hashtags
+            _ramda2.default.take(2, Object.keys(props.data.hashtags)).map(function (hashtag) {
+              return _react2.default.createElement(
+                'p',
+                { key: hashtag },
+                '#',
+                hashtag
+              );
+            })
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'Card-Right' },
+          _react2.default.createElement(
+            'div',
+            { className: 'Card-Textbox' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Section-Title' },
+              'NEXT BADGE...'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Badge>' },
+              _react2.default.createElement(
+                'div',
+                { className: 'next-badge-overlay' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'nextBadgeHome' },
+                  _react2.default.createElement('img', { src: 'assets/graphics/test.svg', width: '100px' }),
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    mostAttainableBadge.points.percentage,
+                    '%'
+                  )
+                )
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Badge-Name' },
+              (0, _FullBadgeBox.descriptions)(mostAttainableBadge.name)
+            )
+          )
+        )
+      )
+    )
+  );
+};
+
+},{"../badge_logic/badge_cruncher.js":228,"../components/FullBadgeBox.js":232,"ramda":33,"react":227}],235:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PieChart = require('react-chartjs').Pie;
+
+exports.default = _react2.default.createClass({
+  displayName: 'PieChart',
+
+  getInitialState: function getInitialState() {
+    var stats = this.props.user || [];
+
+    var chartDataCount = [{
+      value: Math.floor(stats.total_building_count_add),
+      color: '#BEBFBF',
+      highlight: '#D2D3D3',
+      label: 'Buildings'
+    }, {
+      value: Math.floor(stats.total_road_count_add),
+      color: '#E1E300',
+      highlight: '#E8EA6B',
+      label: 'Roads'
+    }, {
+      value: Math.floor(stats.total_poi_count_add),
+      color: '#FFA3A2',
+      highlight: '#FFC6C5',
+      label: 'Points of Interest'
+    }, {
+      value: Math.floor(stats.total_waterway_count_add),
+      color: '#91B7FF',
+      highlight: '#BDD4FF',
+      label: 'Waterways'
+    }];
+    var chartDataDist = [{
+      value: Math.floor(stats.total_road_km_add),
+      color: '#E1E300',
+      highlight: '#E8EA6B',
+      label: 'Roads'
+    }, {
+      value: Math.floor(stats.total_waterway_count_add),
+      color: '#91B7FF',
+      highlight: '#BDD4FF',
+      label: 'Waterways'
+    }, {
+      value: 0,
+      color: '#BEBFBF',
+      highlight: '#D2D3D3',
+      label: 'Buildings'
+    }, {
+      value: 0,
+      color: '#FFA3A2',
+      highlight: '#FFC6C5',
+      label: 'Points of Interest'
+    }];
+    return {
+      chartOptions: {
+        animationSteps: 50,
+        animationEasing: 'easeOutQuart'
+      },
+      chartData: chartDataCount,
+      chartDataCount: chartDataCount,
+      chartDataDist: chartDataDist
+    };
+  },
+  loadDist: function loadDist() {
+    this.setState({
+      chartData: this.state.chartDataDist
+    });
+  },
+  loadCounts: function loadCounts() {
+    this.setState({
+      chartData: this.state.chartDataCount
+    });
+  },
+
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      null,
+      _react2.default.createElement(
+        'div',
+        { className: 'Pie-Tin' },
+        _react2.default.createElement(PieChart, { data: this.state.chartData, options: this.state.chartOptions, width: '250', height: '155' })
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'ChartControls' },
+        _react2.default.createElement('input', { type: 'button', onClick: this.loadCounts, value: 'By Quantity' }),
+        _react2.default.createElement('input', { type: 'button', onClick: this.loadDist, value: 'By Distance' })
+      )
+    );
+  }
+});
+
+},{"react":227,"react-chartjs":34}],236:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (props) {
+  if (!props.data) {
+    return _react2.default.createElement(
+      "div",
+      null,
+      "Loading..."
+    );
+  }
+
+  var data = props.data;
+  var total = Number(data.total_road_count_add) + Number(data.total_road_count_mod) + Number(data.total_building_count_add) + Number(data.total_building_count_mod) + Number(data.total_waterway_count_add) + Number(data.total_poi_count_add);
+  var latest = data.latest;
+  var last_edit_total = Number(latest.road_count_add) + Number(latest.road_count_mod) + Number(latest.building_count_add) + Number(latest.building_count_mod) + Number(latest.waterway_count_add) + Number(latest.poi_count_add);
+
+  var country = data.latest.countries[0].name;
+  var hashtag = data.latest.hashtags[0].hashtag;
+  return _react2.default.createElement(
+    "div",
+    { id: "Recent-Container" },
+    _react2.default.createElement(
+      "div",
+      { className: "Card" },
+      _react2.default.createElement(
+        "div",
+        { className: "Card-title" },
+        "Recent Contributions"
+      ),
+      _react2.default.createElement(
+        "div",
+        { className: "Card-Content" },
+        _react2.default.createElement(
+          "div",
+          { className: "Card-Left" },
+          _react2.default.createElement(
+            "div",
+            { className: "Card-Textbox" },
+            _react2.default.createElement(
+              "div",
+              { className: "Card-Section-Title" },
+              "Total Edits"
+            ),
+            _react2.default.createElement(
+              "h3",
+              null,
+              total
+            )
+          ),
+          _react2.default.createElement(
+            "div",
+            { className: "Card-Textbox" },
+            _react2.default.createElement(
+              "div",
+              { className: "Card-Section-Title" },
+              "Last Edit"
+            ),
+            _react2.default.createElement(
+              "p",
+              null,
+              last_edit_total,
+              " contributions"
+            ),
+            _react2.default.createElement(
+              "p",
+              null,
+              "at 2:36pm Today"
+            ),
+            _react2.default.createElement(
+              "p",
+              null,
+              "To #",
+              hashtag
+            ),
+            _react2.default.createElement(
+              "p",
+              null,
+              "In ",
+              country
+            )
+          )
+        ),
+        _react2.default.createElement(
+          "div",
+          { className: "Card-Right" },
+          _react2.default.createElement(
+            "div",
+            { className: "Card-Textbox" },
+            _react2.default.createElement(
+              "div",
+              { className: "Card-Section-Title" },
+              "Last Badge Earned"
+            ),
+            _react2.default.createElement(
+              "div",
+              { className: "Card-Badge>" },
+              _react2.default.createElement("img", { src: "assets/graphics/test2.svg", width: "100px" })
+            ),
+            _react2.default.createElement(
+              "div",
+              { className: "Card-Badge-Name" },
+              data.badges.length > 0 ? data.badges[0].name : _react2.default.createElement(
+                "div",
+                null,
+                "No badges! Go map!"
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+};
+
+},{"react":227}],237:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _ContributionBox = require('../components/ContributionBox.js');
+
+var _ContributionBox2 = _interopRequireDefault(_ContributionBox);
+
+var _PieChart = require('../components/PieChart.js');
+
+var _PieChart2 = _interopRequireDefault(_PieChart);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
+
+var _leaflet = require('leaflet');
+
+var _leaflet2 = _interopRequireDefault(_leaflet);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createClass({
+  displayName: 'Stats',
+
+  getInitialState: function getInitialState() {
+    return {
+      map: {},
+      position: [51.505, -0.09]
+    };
+  },
+  componentDidMount: function componentDidMount() {
+    var map = _leaflet2.default.map('map').setView(this.state.position, 2);
+
+    _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    this.setState({
+      map: map
+    });
+  },
+  render: function render() {
+    var user = this.props.data;
+    return _react2.default.createElement(
+      'div',
+      { id: 'Stats-Container' },
+      _react2.default.createElement(
+        'div',
+        { className: 'Card' },
+        _react2.default.createElement(
+          'div',
+          { className: 'Card-title' },
+          user.name,
+          '\'\'s Statistics'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'Card-Content' },
+          _react2.default.createElement(
+            'div',
+            { className: 'Split-3' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Content Split-Content' },
+              _react2.default.createElement(
+                'div',
+                { className: 'Card-Section-Title' },
+                'PROJECTS CONTRIBUTED TO'
+              ),
+              _react2.default.createElement(
+                'table',
+                { className: 'table-curve' },
+                _react2.default.createElement(
+                  'tbody',
+                  null,
+                  _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement(
+                      'th',
+                      null,
+                      'Project Hashtag'
+                    ),
+                    _react2.default.createElement(
+                      'th',
+                      null,
+                      'Edits'
+                    )
+                  ),
+                  _ramda2.default.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                    return _react2.default.createElement(
+                      'tr',
+                      { key: hashtag },
+                      _react2.default.createElement(
+                        'td',
+                        { key: hashtag },
+                        '#',
+                        hashtag
+                      ),
+                      _react2.default.createElement(
+                        'td',
+                        null,
+                        user.hashtags[hashtag]
+                      )
+                    );
+                  })
+                )
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'Split-3' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Content Split-Content' },
+              _react2.default.createElement(
+                'div',
+                { className: 'Card-Section-Title' },
+                'BY THE NUMBERS'
+              ),
+              _react2.default.createElement(
+                'table',
+                { className: 'table-curve' },
+                _react2.default.createElement(
+                  'tbody',
+                  null,
+                  _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      'Buildings added'
+                    ),
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      Number(user.total_building_count_add)
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      'Roads Added'
+                    ),
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      Number(user.total_road_count_add)
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      'km of Roads Added'
+                    ),
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      Number(user.total_road_km_add).toFixed(2)
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      'km of Waterways Added'
+                    ),
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      Number(user.total_waterway_km_add).toFixed(2)
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tr',
+                    null,
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      'Point of Interests Added'
+                    ),
+                    _react2.default.createElement(
+                      'td',
+                      null,
+                      Number(user.total_poi_count_add)
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'Split-3' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Card-Content Split-Content' },
+              _react2.default.createElement(
+                'div',
+                { className: 'Card-Section-Title' },
+                'TYPE OF EDITS'
+              ),
+              _react2.default.createElement(_PieChart2.default, { user: user })
+            )
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'Stat-Component-Container' },
+          _react2.default.createElement(_ContributionBox2.default, { timestamps: user.edit_times }),
+          _react2.default.createElement(
+            'div',
+            { className: 'Card-Section-Title Move-over' },
+            'WORLD REACH'
+          ),
+          _react2.default.createElement(
+            'div',
+            { id: 'MapContainer' },
+            _react2.default.createElement(
+              'div',
+              { className: 'MapContent' },
+              _react2.default.createElement('div', { id: 'map' })
+            )
+          )
+        )
+      )
+    );
+  }
+});
+
+},{"../components/ContributionBox.js":230,"../components/PieChart.js":235,"leaflet":31,"ramda":33,"react":227}],238:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34817,46 +56790,48 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = function (props) {
   return _react2.default.createElement(
     'div',
-    { id: 'Subhead-Container' },
+    null,
     _react2.default.createElement(
       'div',
-      { id: 'Subhead-Content' },
+      { id: 'Subhead-Container' },
       _react2.default.createElement(
         'div',
-        { className: 'ProfilePicture' },
-        _react2.default.createElement('img', { src: 'assets/graphics/circle.svg', width: '120px' })
-      ),
-      _react2.default.createElement(
-        'div',
-        { className: 'Username titleheader' },
-        props.username,
-        ' ',
-        _react2.default.createElement('img', { src: 'assets/graphics/twitter.svg' })
-      ),
-      _react2.default.createElement(
-        'div',
-        { className: 'Subhead-Nav' },
+        { id: 'Subhead-Content' },
         _react2.default.createElement(
-          _reactRouter.IndexLink,
-          { to: '/' + props.username },
-          'Overview'
+          'div',
+          { className: 'ProfilePicture' },
+          _react2.default.createElement('img', { src: 'assets/graphics/dummy.svg', width: '120px' })
         ),
         _react2.default.createElement(
-          _reactRouter.Link,
-          { to: '/' + props.username + '/badges' },
-          'Badges'
+          'div',
+          { className: 'Username titleheader' },
+          props.user.name,
+          _react2.default.createElement(
+            'p',
+            null,
+            'Mapping Maestro'
+          )
         ),
         _react2.default.createElement(
-          _reactRouter.Link,
-          { to: '/' + props.username + '/stats' },
-          'Stats'
+          'div',
+          { className: 'Subhead-Nav' },
+          _react2.default.createElement(
+            _reactRouter.IndexLink,
+            { to: '/' + props.user.id, activeClassName: 'activeLink' },
+            'Overview'
+          ),
+          _react2.default.createElement(
+            _reactRouter.Link,
+            { to: '/' + props.user.id + '/badges', activeClassName: 'activeLink' },
+            'Badges'
+          )
         )
       )
     )
   );
 };
 
-},{"react":216,"react-router":51}],223:[function(require,module,exports){
+},{"react":227,"react-router":62}],239:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34871,27 +56846,38 @@ var _FullBadgeBox = require('../components/FullBadgeBox.js');
 
 var _FullBadgeBox2 = _interopRequireDefault(_FullBadgeBox);
 
+var _badge_cruncher = require('../badge_logic/badge_cruncher');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
   displayName: 'BadgeView',
 
   getInitialState: function getInitialState() {
+    var progress = {};
+    if (this.props.user) {
+      progress = (0, _badge_cruncher.getBadgeProgress)(this.props.user);
+    }
     return {
-      badges: this.props.user.badges || []
+      earnedBadges: this.props.user.badges || [],
+      progress: progress
     };
   },
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    var user = nextProps.user;
+    var progress = (0, _badge_cruncher.getBadgeProgress)(user);
+
     this.setState({
-      badges: nextProps.user.badges
+      earnedBadges: nextProps.user.badges,
+      progress: progress
     });
   },
   render: function render() {
-    return _react2.default.createElement(_FullBadgeBox2.default, { badges: this.state.badges });
+    return _react2.default.createElement(_FullBadgeBox2.default, { badges: this.state.earnedBadges, progress: this.state.progress });
   }
 });
 
-},{"../components/FullBadgeBox.js":219,"react":216}],224:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher":228,"../components/FullBadgeBox.js":232,"react":227}],240:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34902,17 +56888,17 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _BadgeBox = require('../components/BadgeBox.js');
+var _Recent = require('../components/Recent.js');
 
-var _BadgeBox2 = _interopRequireDefault(_BadgeBox);
+var _Recent2 = _interopRequireDefault(_Recent);
 
-var _QuickStatsBox = require('../components/QuickStatsBox.js');
+var _Next = require('../components/Next.js');
 
-var _QuickStatsBox2 = _interopRequireDefault(_QuickStatsBox);
+var _Next2 = _interopRequireDefault(_Next);
 
-var _ContributionBox = require('../components/ContributionBox.js');
+var _Stats = require('../components/Stats.js');
 
-var _ContributionBox2 = _interopRequireDefault(_ContributionBox);
+var _Stats2 = _interopRequireDefault(_Stats);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34943,53 +56929,16 @@ exports.default = _react2.default.createClass({
         _react2.default.createElement(
           'div',
           { className: 'box' },
-          _react2.default.createElement(_BadgeBox2.default, { badges: this.state.user.badges }),
-          _react2.default.createElement(_QuickStatsBox2.default, { badges: this.state.user.stats }),
-          _react2.default.createElement(_ContributionBox2.default, { timestamps: this.state.user.edit_times })
+          _react2.default.createElement(_Recent2.default, { data: this.state.user }),
+          _react2.default.createElement(_Next2.default, { data: this.state.user }),
+          _react2.default.createElement(_Stats2.default, { data: this.state.user })
         )
       );
     }
   }
 });
 
-},{"../components/BadgeBox.js":217,"../components/ContributionBox.js":218,"../components/QuickStatsBox.js":221,"react":216}],225:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _FullStatsBox = require('../components/FullStatsBox.js');
-
-var _FullStatsBox2 = _interopRequireDefault(_FullStatsBox);
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _react2.default.createClass({
-  displayName: 'StatsView',
-
-  getInitialState: function getInitialState() {
-    return {
-      stats: this.props.user.stats || [],
-      edit_times: this.props.user.edit_times || []
-    };
-  },
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    this.setState({
-      stats: nextProps.user.stats,
-      edit_times: nextProps.user.edit_times
-    });
-  },
-  render: function render() {
-    return _react2.default.createElement(_FullStatsBox2.default, { stats: this.state.stats, times: this.state.edit_times });
-  }
-});
-
-},{"../components/FullStatsBox.js":220,"react":216}],226:[function(require,module,exports){
+},{"../components/Next.js":234,"../components/Recent.js":236,"../components/Stats.js":237,"react":227}],241:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35003,6 +56952,14 @@ var _react2 = _interopRequireDefault(_react);
 var _UserSubHead = require('../components/UserSubHead');
 
 var _UserSubHead2 = _interopRequireDefault(_UserSubHead);
+
+var _Header = require('../components/Header.js');
+
+var _Header2 = _interopRequireDefault(_Header);
+
+var _Footer = require('../components/Footer.js');
+
+var _Footer2 = _interopRequireDefault(_Footer);
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -35020,8 +56977,8 @@ exports.default = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     var component = this;
-    if ("production" === 'development') {
-      (0, _isomorphicFetch2.default)('/test/fixtures/db.json').then(function (response) {
+    if ("development" === 'development') {
+      (0, _isomorphicFetch2.default)('http://104.236.25.175:3000/users/' + this.props.params.id).then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response');
         }
@@ -35036,16 +56993,19 @@ exports.default = _react2.default.createClass({
     }
   },
   render: function render() {
+    console.log(this.state);
     return _react2.default.createElement(
       'div',
       null,
-      _react2.default.createElement(_UserSubHead2.default, { username: this.props.params.id }),
+      _react2.default.createElement(_Header2.default, null),
+      _react2.default.createElement('div', { className: 'white' }),
       _react2.default.createElement(
         'div',
         { id: 'User-Container' },
         _react2.default.createElement(
           'div',
           { id: 'Main-User-Container' },
+          _react2.default.createElement(_UserSubHead2.default, { user: this.state.user }),
           typeof this.state.user !== 'undefined' ? this.props.children && _react2.default.cloneElement(this.props.children, {
             user: this.state.user
           }) : _react2.default.createElement(
@@ -35054,12 +57014,13 @@ exports.default = _react2.default.createClass({
             'Loading...'
           )
         )
-      )
+      ),
+      _react2.default.createElement(_Footer2.default, null)
     );
   }
 });
 
-},{"../components/UserSubHead":222,"isomorphic-fetch":29,"react":216}],227:[function(require,module,exports){
+},{"../components/Footer.js":231,"../components/Header.js":233,"../components/UserSubHead":238,"isomorphic-fetch":29,"react":227}],242:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35069,6 +57030,18 @@ Object.defineProperty(exports, "__esModule", {
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _Header = require('../components/Header.js');
+
+var _Header2 = _interopRequireDefault(_Header);
+
+var _Footer = require('../components/Footer.js');
+
+var _Footer2 = _interopRequireDefault(_Footer);
+
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
 
 var _reactSearchBar = require('react-search-bar');
 
@@ -35081,27 +57054,67 @@ exports.default = _react2.default.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      users: ['leo', 'bill', 'barbara', 'christine', 'allie', 'lucille', 'glenn', 'jeanette', 'madge', 'winifred']
+      users: [],
+      names: []
     };
   },
+  componentDidMount: function componentDidMount() {
+    var component = this;
+    if ("development" === 'development') {
+      fetch('http://104.236.25.175:3000/users').then(function (response) {
+        if (response.status >= 400) {
+          throw new Error('Bad response');
+        }
+        return response.json();
+      }).then(function (users) {
+        var names = _ramda2.default.map(_ramda2.default.prop('name'), users);
+        if (component.isMounted()) {
+          component.setState({
+            users: users,
+            names: names
+          });
+        }
+      });
+    }
+  },
   onChange: function onChange(input, resolve) {
-    resolve(this.state.users.filter(function (suggestion) {
+    resolve(this.state.names.filter(function (suggestion) {
       return suggestion.toLowerCase().startsWith(input.toLowerCase());
     }));
   },
   onSubmit: function onSubmit(input) {
-    this.props.history.push('/' + input);
+    var user = _ramda2.default.find(_ramda2.default.propEq('name', input))(this.state.users);
+    this.props.history.push('/' + user.id);
   },
 
   render: function render() {
-    return _react2.default.createElement(_reactSearchBar2.default, {
-      placeholder: 'Search for a user',
-      onChange: this.onChange,
-      onSubmit: this.onSubmit });
+    return _react2.default.createElement(
+      'div',
+      null,
+      _react2.default.createElement(_Header2.default, null),
+      _react2.default.createElement(
+        'div',
+        { className: 'Search-Container' },
+        _react2.default.createElement(
+          'div',
+          { className: 'Search-Box' },
+          _react2.default.createElement('img', { src: 'assets/graphics/test.svg', width: '150px' }),
+          _react2.default.createElement(
+            'div',
+            { className: 'Search-Content' },
+            _react2.default.createElement(_reactSearchBar2.default, {
+              placeholder: 'Search for OSM user',
+              onChange: this.onChange,
+              onSubmit: this.onSubmit })
+          )
+        )
+      ),
+      _react2.default.createElement(_Footer2.default, null)
+    );
   }
 });
 
-},{"react":216,"react-search-bar":58}],228:[function(require,module,exports){
+},{"../components/Footer.js":231,"../components/Header.js":233,"ramda":33,"react":227,"react-search-bar":69}],243:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -35134,10 +57147,6 @@ var _BadgeView = require('./containers/BadgeView.js');
 
 var _BadgeView2 = _interopRequireDefault(_BadgeView);
 
-var _StatsView = require('./containers/StatsView.js');
-
-var _StatsView2 = _interopRequireDefault(_StatsView);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var history = (0, _createHashHistory2.default)({
@@ -35155,10 +57164,9 @@ _reactDom2.default.render(_react2.default.createElement(
       _reactRouter.Route,
       { path: ':id', component: _User2.default },
       _react2.default.createElement(_reactRouter.IndexRoute, { component: _Overview2.default }),
-      _react2.default.createElement(_reactRouter.Route, { path: '/:id/badges', component: _BadgeView2.default }),
-      _react2.default.createElement(_reactRouter.Route, { path: '/:id/stats', component: _StatsView2.default })
+      _react2.default.createElement(_reactRouter.Route, { path: '/:id/badges', component: _BadgeView2.default })
     )
   )
 ), document.getElementById('app'));
 
-},{"./containers/BadgeView.js":223,"./containers/Overview.js":224,"./containers/StatsView.js":225,"./containers/User":226,"./containers/Users":227,"history/lib/createHashHistory":12,"react":216,"react-dom":31,"react-router":51}]},{},[228]);
+},{"./containers/BadgeView.js":239,"./containers/Overview.js":240,"./containers/User":241,"./containers/Users":242,"history/lib/createHashHistory":12,"react":227,"react-dom":42,"react-router":62}]},{},[243]);

@@ -39,12 +39,6 @@ export default React.createClass({
         label: 'Roads'
       },
       {
-        value: Math.floor(stats.total_waterway_count_add),
-        color: '#91B7FF',
-        highlight: '#BDD4FF',
-        label: 'Waterways'
-      },
-      {
         value: 0,
         color: '#BEBFBF',
         highlight: '#D2D3D3',
@@ -55,6 +49,12 @@ export default React.createClass({
         color: '#FFA3A2',
         highlight: '#FFC6C5',
         label: 'Points of Interest'
+      },
+      {
+        value: Math.floor(stats.total_waterway_count_add),
+        color: '#91B7FF',
+        highlight: '#BDD4FF',
+        label: 'Waterways'
       }
     ];
     return {
@@ -79,6 +79,7 @@ export default React.createClass({
   },
 
   render: function () {
+    console.log(this.state.chartData)
     return <div>
       <div className = "Pie-Tin">
         <PieChart data={this.state.chartData} options={this.state.chartOptions} width='250' height='155' />
