@@ -1,4 +1,6 @@
 import React from 'react';
+import Header from '../components/Header.js';
+import Footer from '../components/Footer.js';
 import R from 'ramda';
 import SearchBar from 'react-search-bar';
 
@@ -42,10 +44,21 @@ export default React.createClass({
 
   render: function () {
     return (
-      <SearchBar
-        placeholder="Search for a user"
-        onChange={this.onChange}
-        onSubmit={this.onSubmit} />
+      <div>
+      <Header />
+        <div className = "Search-Container">
+          <div className = "Search-Box">
+            <img src="assets/graphics/test.svg" width = "150px"></img>
+            <div className = "Search-Content">
+              <SearchBar
+                placeholder="Search for OSM user"
+                onChange={this.onChange}
+                onSubmit={this.onSubmit} />
+              </div>
+            </div>
+        </div>
+        <Footer />
+      </div>
     );
   }
 });

@@ -5,18 +5,18 @@ export default (props) => {
 
   var data = props.data;
   var total = Number(data.total_road_count_add) +
-              Number(data.total_road_count_mod) +
-              Number(data.total_building_count_add) +
-              Number(data.total_building_count_mod) +
-              Number(data.total_waterway_count_add) +
-              Number(data.total_poi_count_add);
+    Number(data.total_road_count_mod) +
+    Number(data.total_building_count_add) +
+    Number(data.total_building_count_mod) +
+    Number(data.total_waterway_count_add) +
+    Number(data.total_poi_count_add);
   var latest = data.latest;
   var last_edit_total = Number(latest.road_count_add) +
-              Number(latest.road_count_mod) +
-            Number(latest.building_count_add) +
-            Number(latest.building_count_mod) +
-            Number(latest.waterway_count_add) +
-            Number(latest.poi_count_add);
+    Number(latest.road_count_mod) +
+    Number(latest.building_count_add) +
+    Number(latest.building_count_mod) +
+    Number(latest.waterway_count_add) +
+    Number(latest.poi_count_add);
 
   var country = data.latest.countries[0].name;
   var hashtag = data.latest.hashtags[0].hashtag;
@@ -52,14 +52,14 @@ export default (props) => {
               <div className = "Card-Badge-Name">
                 {
                   (data.badges.length > 0)
-                  ? data.badges[0].name
-                  : <div>No badges! Go map!</div>
-                }
+                    ? data.badges[0].name
+                    : <div>No badges! Go map!</div>
+                    }
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 };
