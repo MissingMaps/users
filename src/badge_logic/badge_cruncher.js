@@ -42,7 +42,7 @@ var R = require('ramda')
 //   });
 // };
 
-function getBadgeProgress (user) {
+module.exports.getBadgeProgress = function getBadgeProgress (user) {
   var sumBadges = sumCheck({
     roads: Number(user.total_road_count_add),
     roadMods: Number(user.total_road_count_mod),
