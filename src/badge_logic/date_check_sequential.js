@@ -11,6 +11,9 @@ module.exports = function (dates) {
   // containing each sequential date
   // http://stackoverflow.com/questions/16690905/javascript-get-sequential-dates-in-array
   function sequentializeDates (dates) {
+    dates = dates.map(function (date) {
+      return new Date(date);
+    });
     var k = 0;
     var sorted = [];
     sorted[k] = [];
@@ -32,32 +35,40 @@ module.exports = function (dates) {
     return sorted;
   }
 
-  function checkBadgeLevel (sequentialDates, badge) {
-    for (var i = 0; i < sequentialDates.length; ++i) {
-      var dayStreakLength = sequentialDates[i].length;
-      if (dayStreakLength >= badge.tiers[1] && dayStreakLength < badge.tiers[2]) {
-        return 1;
-      } else if (dayStreakLength >= badge.tiers[2] && dayStreakLength < badge.tiers[3]) {
-        return 2;
-      } else if (dayStreakLength >= badge.tiers[3]) {
-        return 3;
-      } else {
-        return 0;
-      }
+  function checkBadgeLevel (dayStreakLength, badge) {
+    if (dayStreakLength >= badge.tiers[1] && dayStreakLength < badge.tiers[2]) {
+      return 1;
+    } else if (dayStreakLength >= badge.tiers[2] && dayStreakLength < badge.tiers[3]) {
+      return 2;
+    } else if (dayStreakLength >= badge.tiers[3]) {
+      return 3;
+    } else {
+      return 0;
     }
   }
 
+  // returns the length of the longest array in an array
+  var findLongestStreak = function (array) {
+    var elements = array.length;
+    var count = 0;
+    for (var i = 0; i < elements; i++) {
+      if (array[i].length > count) {
+        count = array[i].length;
+      }
+    }
+    return count;
+  };
+
   var sequentialDates = sequentializeDates(dates);
-  console.log(sequentialDates)
+  var userTotal = findLongestStreak(sequentialDates);
   var key = 'daysInRow';
-  var userTotal = uniqueDates.length;
   var badge = badges[key];
 
   var userBadges = {};
   var badgeLevel = checkBadgeLevel(userTotal, badge);
   if (badgeLevel < 3) {
     var nextBadgeLevel = badgeLevel + 1;
-    var currentPoints = Number(userTotal);
+    var currentPoints = userTotal;
     var lastPoints = 0;
     if (badgeLevel > 0) lastPoints = badge.tiers[badgeLevel];
     var nextPoints = badge.tiers[nextBadgeLevel];
