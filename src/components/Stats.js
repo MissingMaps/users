@@ -3,6 +3,8 @@ import PieChart from '../components/PieChart.js';
 import React from 'react';
 import R from 'ramda';
 import L from 'leaflet';
+import centroid from 'turf-centroid';
+import polygon from 'turf-polygon';
 
 export default React.createClass({
   getInitialState: function () {
@@ -17,6 +19,15 @@ export default React.createClass({
     L.tileLayer('http://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoic3RhdGVvZnNhdGVsbGl0ZSIsImEiOiJlZTM5ODI5NGYwZWM2MjRlZmEyNzEyMWRjZWJlY2FhZiJ9.omsA8QDSKggbxiJjumiA_w.', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    var geo_extent = this.props.data.geo_extent;
+    L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+    L.geoJson(geo_extent).addTo(map);
+    geo_extent.geometry.coordinates.forEach(function (feature) {
+      var poly = polygon(feature);
+      var c = centroid(poly);
+      L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
+    });
 
     this.setState({
       map: map
@@ -88,7 +99,7 @@ export default React.createClass({
                 <div className = "Card-Section-Title">
                   TYPE OF EDITS
                 </div>
-	              <PieChart user={user} />
+                <PieChart user={user} />
               </div>
             </div>
           </div>

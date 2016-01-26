@@ -13,7 +13,7 @@ export default React.createClass({
   componentDidMount: function () {
     let component = this;
     if (process.env.NODE_ENV === 'development') {
-      fetch(`http://104.236.25.175:3000/users/${this.props.params.id}`)
+      fetch(`http://missingmaps-api.devseed.com/users/${this.props.params.id}`)
       .then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response');
