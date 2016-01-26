@@ -46,11 +46,12 @@ function mapBadgeToDescrip (badge) {
 }
 
 function mapBadgeToTask (badge, x) {
+  console.log(badge);
   var map = {
       'Road Builder': (x) => `Add ${x} roads.`,
       'Road Maintainer': (x) => `Modify ${x} roads.`,
       'Building Builder': (x) => `Build ${x} buildings.`,
-      'Consistentency': (x) => 'Map every day for a week.',
+      'Consistency': (x) => 'Map every day for a week.',
       'GPS Trace Creator': (x) => 'Upload more GPS traces through OSM',
       'JOSM User': (x) => 'Use JSOM to map an area',
       'Long & Winding Road': (x) => `Add ${x} km of roads.`,
