@@ -57025,7 +57025,7 @@ exports.default = _react2.default.createClass({
   componentDidMount: function componentDidMount() {
     var component = this;
     if ("development" === 'development') {
-      (0, _isomorphicFetch2.default)('http://104.236.25.175:3000/users/' + this.props.params.id).then(function (response) {
+      (0, _isomorphicFetch2.default)('http://missingmaps-api.devseed.com/users/' + this.props.params.id).then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response');
         }
@@ -57108,7 +57108,7 @@ exports.default = _react2.default.createClass({
   componentDidMount: function componentDidMount() {
     var component = this;
     if ("development" === 'development') {
-      fetch('http://104.236.25.175:3000/users').then(function (response) {
+      fetch('http://missingmaps-api.devseed.com/users').then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response');
         }
