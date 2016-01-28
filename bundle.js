@@ -56391,7 +56391,6 @@ function mapBadgeToDescrip(badge) {
 }
 
 function mapBadgeToTask(badge, x) {
-  console.log(badge);
   var map = {
     'Road Builder': function RoadBuilder(x) {
       return 'Add ' + x + ' roads.';
@@ -56486,7 +56485,7 @@ exports.default = function (props) {
     var badge = props.progress.all[val];
     return {
       'description': mapBadgeToDescrip(badge.name),
-      'progress': Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel + '. ' + mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
+      'progress': Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' + mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
       'name': badge.name
     };
   });
@@ -57073,7 +57072,7 @@ exports.default = _react2.default.createClass({
     }).addTo(map);
 
     var geo_extent = this.props.data.geo_extent;
-    _leaflet2.default.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+    _leaflet2.default.Icon.Default.imagePath = 'assets/images/';
     _leaflet2.default.geoJson(geo_extent).addTo(map);
     geo_extent.geometry.coordinates.forEach(function (feature) {
       var poly = (0, _turfPolygon2.default)(feature);
@@ -57505,7 +57504,6 @@ exports.default = _react2.default.createClass({
     }
   },
   render: function render() {
-    console.log(this.state);
     return _react2.default.createElement(
       'div',
       null,

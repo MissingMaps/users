@@ -46,22 +46,21 @@ function mapBadgeToDescrip (badge) {
 }
 
 function mapBadgeToTask (badge, x) {
-  console.log(badge);
   var map = {
-      'Road Builder': (x) => `Add ${x} roads.`,
-      'Road Maintainer': (x) => `Modify ${x} roads.`,
-      'Building Builder': (x) => `Build ${x} buildings.`,
-      'Consistency': (x) => 'Map every day for a week.',
-      'GPS Trace Creator': (x) => 'Upload more GPS traces through OSM',
-      'JOSM User': (x) => 'Use JSOM to map an area',
-      'Long & Winding Road': (x) => `Add ${x} km of roads.`,
-      'Long & Winding Road Maintainer': (x) => `Modify ${x} km of roads.`,
-      'Mapathoner': (x) => `Participate in ${x} in a row.`,
-      'Node Builder': (x) => `Add ${x} nodes.`,
-      'Waterway Creator': (x) => `Add ${x} km of waterways`,
-      'World Renown': (x) => `Map in ${x} different countries`,
-      'Year-long Mapper': (x) => `Map ${x} days.`,
-      'Point Creator': (x) => `Add ${x} points of interests`
+    'Road Builder': (x) => `Add ${x} roads.`,
+    'Road Maintainer': (x) => `Modify ${x} roads.`,
+    'Building Builder': (x) => `Build ${x} buildings.`,
+    'Consistency': (x) => 'Map every day for a week.',
+    'GPS Trace Creator': (x) => 'Upload more GPS traces through OSM',
+    'JOSM User': (x) => 'Use JSOM to map an area',
+    'Long & Winding Road': (x) => `Add ${x} km of roads.`,
+    'Long & Winding Road Maintainer': (x) => `Modify ${x} km of roads.`,
+    'Mapathoner': (x) => `Participate in ${x} in a row.`,
+    'Node Builder': (x) => `Add ${x} nodes.`,
+    'Waterway Creator': (x) => `Add ${x} km of waterways`,
+    'World Renown': (x) => `Map in ${x} different countries`,
+    'Year-long Mapper': (x) => `Map ${x} days.`,
+    'Point Creator': (x) => `Add ${x} points of interests`
   };
   return map[badge](x);
 }
@@ -101,10 +100,10 @@ export default (props) => {
     var badge = props.progress.all[val];
     return {
       'description': mapBadgeToDescrip(badge.name),
-      'progress': Math.floor(badge.points.percentage) + "% of the way to level " + badge.nextBadgeLevel + '. ' +
-                  mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
+      'progress': Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' +
+        mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
       'name': badge.name
-    }
+    };
   });
 
   var progressList = progressBadges.map((badge) => {
@@ -126,9 +125,8 @@ export default (props) => {
           </div>
         </div>
       </li>
-    )
-
-  })
+    );
+  });
   return (
     <div>
       <div id = "Badge-Container">

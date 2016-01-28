@@ -21,7 +21,7 @@ export default React.createClass({
     }).addTo(map);
 
     var geo_extent = this.props.data.geo_extent;
-    L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+    L.Icon.Default.imagePath = 'assets/images/';
     L.geoJson(geo_extent).addTo(map);
     geo_extent.geometry.coordinates.forEach(function (feature) {
       var poly = polygon(feature);
