@@ -5,7 +5,7 @@ import {getBadgeProgress} from '../badge_logic/badge_cruncher';
 export default React.createClass({
   getInitialState: function () {
     var progress = {};
-    if (this.props.user) {
+    if (Object.keys(this.props.user).length) {
       progress = getBadgeProgress(this.props.user);
     }
     return {

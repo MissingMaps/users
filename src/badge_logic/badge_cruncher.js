@@ -1,12 +1,14 @@
-var sumCheck = require('./sum_check');
+import sumCheck from './sum_check';
+import dateSequentialCheck from './date_check_sequential';
+import dateTotalCheck from './date_check_total';
 import R from 'ramda';
 
-// Note- waterway KMs, GPS trace KMs, and building mods are
-// captured but are not in the official spec.
-// Countries, tasks, task edits, and JOSM are in the spec
-// but are not implemented herse.
+// // Note- waterway KMs, GPS trace KMs, and building mods are
+// // captured but are not in the official spec.
+// // Countries, tasks, task edits, and JOSM are in the spec
+// // but are not implemented here.
 module.exports.getBadgeProgress = function getBadgeProgress (user) {
-  var badgeProgress = sumCheck({
+  var sumBadges = sumCheck({
     roads: Number(user.total_road_count_add),
     roadMods: Number(user.total_road_count_mod),
     buildings: Number(user.total_building_count_add),
@@ -25,12 +27,20 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     hashtags: R.sum(R.values(user.hashtags))
   });
 
-  var sortedBadges = Object.keys(badgeProgress).sort(function (a, b) {
-    return badgeProgress[a].points.percentage - badgeProgress[b].points.percentage;
+  var consistencyBadge = dateSequentialCheck(user.edit_times);
+  var historyBadge = dateTotalCheck(user.edit_times);
+
+  var sortedSumBadges = Object.keys(sumBadges).sort(function (a, b) {
+    return sumBadges[a].points.percentage - sumBadges[b].points.percentage;
   });
-  var mostAttainableBadge = badgeProgress[sortedBadges.slice(-1)[0]];
-  mostAttainableBadge.name = badgeProgress[R.last(sortedBadges)].name;
-  return {all: badgeProgress, mostAttainable: mostAttainableBadge};
+
+  var mostAttainableBadge = sumBadges[sortedSumBadges.slice(-1)[0]];
+  mostAttainableBadge.name = sumBadges[R.last(sortedSumBadges)].name;
+
+  return {
+    all: R.mergeAll([sumBadges, consistencyBadge, historyBadge]),
+    mostAttainable: mostAttainableBadge
+  };
 };
 
 module.exports.sortBadgeHashtags = function sortBadgeHashtags (user) {
