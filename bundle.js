@@ -55572,7 +55572,294 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":95}],228:[function(require,module,exports){
+var each = require('turf-meta').coordEach;
+var point = require('turf-point');
+
+/**
+ * Takes one or more features and calculates the centroid using the arithmetic mean of all vertices.
+ * This lessens the effect of small islands and artifacts when calculating
+ * the centroid of a set of polygons.
+ *
+ * @module turf/centroid
+ * @category measurement
+ * @param {(Feature|FeatureCollection)} features input features
+ * @return {Feature<Point>} the centroid of the input features
+ * @example
+ * var poly = {
+ *   "type": "Feature",
+ *   "properties": {},
+ *   "geometry": {
+ *     "type": "Polygon",
+ *     "coordinates": [[
+ *       [105.818939,21.004714],
+ *       [105.818939,21.061754],
+ *       [105.890007,21.061754],
+ *       [105.890007,21.004714],
+ *       [105.818939,21.004714]
+ *     ]]
+ *   }
+ * };
+ *
+ * var centroidPt = turf.centroid(poly);
+ *
+ * var result = {
+ *   "type": "FeatureCollection",
+ *   "features": [poly, centroidPt]
+ * };
+ *
+ * //=result
+ */
+module.exports = function(features) {
+  var xSum = 0, ySum = 0, len = 0;
+  each(features, function(coord) {
+    xSum += coord[0];
+    ySum += coord[1];
+    len++;
+  }, true);
+  return point([xSum / len, ySum / len]);
+};
+
+},{"turf-meta":229,"turf-point":230}],229:[function(require,module,exports){
+/**
+ * Lazily iterate over coordinates in any GeoJSON object, similar to
+ * Array.forEach.
+ *
+ * @param {Object} layer any GeoJSON object
+ * @param {Function} callback a method that takes (value)
+ * @param {boolean=} excludeWrapCoord whether or not to include
+ * the final coordinate of LinearRings that wraps the ring in its iteration.
+ * @example
+ * var point = { type: 'Point', coordinates: [0, 0] };
+ * coordEach(point, function(coords) {
+ *   // coords is equal to [0, 0]
+ * });
+ */
+function coordEach(layer, callback, excludeWrapCoord) {
+  var i, j, k, g, geometry, stopG, coords,
+    geometryMaybeCollection,
+    wrapShrink = 0,
+    isGeometryCollection,
+    isFeatureCollection = layer.type === 'FeatureCollection',
+    isFeature = layer.type === 'Feature',
+    stop = isFeatureCollection ? layer.features.length : 1;
+
+  // This logic may look a little weird. The reason why it is that way
+  // is because it's trying to be fast. GeoJSON supports multiple kinds
+  // of objects at its root: FeatureCollection, Features, Geometries.
+  // This function has the responsibility of handling all of them, and that
+  // means that some of the `for` loops you see below actually just don't apply
+  // to certain inputs. For instance, if you give this just a
+  // Point geometry, then both loops are short-circuited and all we do
+  // is gradually rename the input until it's called 'geometry'.
+  //
+  // This also aims to allocate as few resources as possible: just a
+  // few numbers and booleans, rather than any temporary arrays as would
+  // be required with the normalization approach.
+  for (i = 0; i < stop; i++) {
+
+    geometryMaybeCollection = (isFeatureCollection ? layer.features[i].geometry :
+        (isFeature ? layer.geometry : layer));
+    isGeometryCollection = geometryMaybeCollection.type === 'GeometryCollection';
+    stopG = isGeometryCollection ? geometryMaybeCollection.geometries.length : 1;
+
+    for (g = 0; g < stopG; g++) {
+
+      geometry = isGeometryCollection ?
+          geometryMaybeCollection.geometries[g] : geometryMaybeCollection;
+      coords = geometry.coordinates;
+
+      wrapShrink = (excludeWrapCoord &&
+        (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon')) ?
+        1 : 0;
+
+      if (geometry.type === 'Point') {
+        callback(coords);
+      } else if (geometry.type === 'LineString' || geometry.type === 'MultiPoint') {
+        for (j = 0; j < coords.length; j++) callback(coords[j]);
+      } else if (geometry.type === 'Polygon' || geometry.type === 'MultiLineString') {
+        for (j = 0; j < coords.length; j++)
+          for (k = 0; k < coords[j].length - wrapShrink; k++)
+            callback(coords[j][k]);
+      } else if (geometry.type === 'MultiPolygon') {
+        for (j = 0; j < coords.length; j++)
+          for (k = 0; k < coords[j].length; k++)
+            for (l = 0; l < coords[j][k].length - wrapShrink; l++)
+              callback(coords[j][k][l]);
+      } else {
+        throw new Error('Unknown Geometry Type');
+      }
+    }
+  }
+}
+module.exports.coordEach = coordEach;
+
+/**
+ * Lazily reduce coordinates in any GeoJSON object into a single value,
+ * similar to how Array.reduce works. However, in this case we lazily run
+ * the reduction, so an array of all coordinates is unnecessary.
+ *
+ * @param {Object} layer any GeoJSON object
+ * @param {Function} callback a method that takes (memo, value) and returns
+ * a new memo
+ * @param {boolean=} excludeWrapCoord whether or not to include
+ * the final coordinate of LinearRings that wraps the ring in its iteration.
+ * @param {*} memo the starting value of memo: can be any type.
+ */
+function coordReduce(layer, callback, memo, excludeWrapCoord) {
+  coordEach(layer, function(coord) {
+    memo = callback(memo, coord);
+  }, excludeWrapCoord);
+  return memo;
+}
+module.exports.coordReduce = coordReduce;
+
+/**
+ * Lazily iterate over property objects in any GeoJSON object, similar to
+ * Array.forEach.
+ *
+ * @param {Object} layer any GeoJSON object
+ * @param {Function} callback a method that takes (value)
+ * @example
+ * var point = { type: 'Feature', geometry: null, properties: { foo: 1 } };
+ * propEach(point, function(props) {
+ *   // props is equal to { foo: 1}
+ * });
+ */
+function propEach(layer, callback) {
+  var i;
+  switch (layer.type) {
+      case 'FeatureCollection':
+        features = layer.features;
+        for (i = 0; i < layer.features.length; i++) {
+            callback(layer.features[i].properties);
+        }
+        break;
+      case 'Feature':
+        callback(layer.properties);
+        break;
+  }
+}
+module.exports.propEach = propEach;
+
+/**
+ * Lazily reduce properties in any GeoJSON object into a single value,
+ * similar to how Array.reduce works. However, in this case we lazily run
+ * the reduction, so an array of all properties is unnecessary.
+ *
+ * @param {Object} layer any GeoJSON object
+ * @param {Function} callback a method that takes (memo, coord) and returns
+ * a new memo
+ * @param {*} memo the starting value of memo: can be any type.
+ */
+function propReduce(layer, callback, memo) {
+  propEach(layer, function(prop) {
+    memo = callback(memo, prop);
+  });
+  return memo;
+}
+module.exports.propReduce = propReduce;
+
+},{}],230:[function(require,module,exports){
+/**
+ * Takes coordinates and properties (optional) and returns a new {@link Point} feature.
+ *
+ * @module turf/point
+ * @category helper
+ * @param {number} longitude position west to east in decimal degrees
+ * @param {number} latitude position south to north in decimal degrees
+ * @param {Object} properties an Object that is used as the {@link Feature}'s
+ * properties
+ * @return {Point} a Point feature
+ * @example
+ * var pt1 = turf.point([-75.343, 39.984]);
+ *
+ * //=pt1
+ */
+var isArray = Array.isArray || function(arg) {
+  return Object.prototype.toString.call(arg) === '[object Array]';
+};
+module.exports = function(coordinates, properties) {
+  if (!isArray(coordinates)) throw new Error('Coordinates must be an array');
+  if (coordinates.length < 2) throw new Error('Coordinates must be at least 2 numbers long');
+  return {
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: coordinates
+    },
+    properties: properties || {}
+  };
+};
+
+},{}],231:[function(require,module,exports){
+/**
+ * Takes an array of LinearRings and optionally an {@link Object} with properties and returns a GeoJSON {@link Polygon} feature.
+ *
+ * @module turf/polygon
+ * @category helper
+ * @param {Array<Array<Number>>} rings an array of LinearRings
+ * @param {Object} properties an optional properties object
+ * @return {Polygon} a Polygon feature
+ * @throws {Error} throw an error if a LinearRing of the polygon has too few positions
+ * or if a LinearRing of the Polygon does not have matching Positions at the
+ * beginning & end.
+ * @example
+ * var polygon = turf.polygon([[
+ *  [-2.275543, 53.464547],
+ *  [-2.275543, 53.489271],
+ *  [-2.215118, 53.489271],
+ *  [-2.215118, 53.464547],
+ *  [-2.275543, 53.464547]
+ * ]], { name: 'poly1', population: 400});
+ *
+ * //=polygon
+ */
+module.exports = function(coordinates, properties){
+
+  if (coordinates === null) throw new Error('No coordinates passed');
+
+  for (var i = 0; i < coordinates.length; i++) {
+    var ring = coordinates[i];
+    for (var j = 0; j < ring[ring.length - 1].length; j++) {
+      if (ring.length < 4) {
+        throw new Error('Each LinearRing of a Polygon must have 4 or more Positions.');
+      }
+      if (ring[ring.length - 1][j] !== ring[0][j]) {
+        throw new Error('First and last Position are not equivalent.');
+      }
+    }
+  }
+
+  var polygon = {
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": coordinates
+    },
+    "properties": properties
+  };
+
+  if (!polygon.properties) {
+    polygon.properties = {};
+  }
+
+  return polygon;
+};
+
+},{}],232:[function(require,module,exports){
 'use strict';
+
+var _sum_check = require('./sum_check');
+
+var _sum_check2 = _interopRequireDefault(_sum_check);
+
+var _date_check_sequential = require('./date_check_sequential');
+
+var _date_check_sequential2 = _interopRequireDefault(_date_check_sequential);
+
+var _date_check_total = require('./date_check_total');
+
+var _date_check_total2 = _interopRequireDefault(_date_check_total);
 
 var _ramda = require('ramda');
 
@@ -55580,14 +55867,12 @@ var _ramda2 = _interopRequireDefault(_ramda);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var sumCheck = require('./sum_check');
-
-// Note- waterway KMs, GPS trace KMs, and building mods are
-// captured but are not in the official spec.
-// Countries, tasks, task edits, and JOSM are in the spec
-// but are not implemented herse.
+// // Note- waterway KMs, GPS trace KMs, and building mods are
+// // captured but are not in the official spec.
+// // Countries, tasks, task edits, and JOSM are in the spec
+// // but are not implemented here.
 module.exports.getBadgeProgress = function getBadgeProgress(user) {
-  var badgeProgress = sumCheck({
+  var sumBadges = (0, _sum_check2.default)({
     roads: Number(user.total_road_count_add),
     roadMods: Number(user.total_road_count_mod),
     buildings: Number(user.total_building_count_add),
@@ -55606,12 +55891,20 @@ module.exports.getBadgeProgress = function getBadgeProgress(user) {
     hashtags: _ramda2.default.sum(_ramda2.default.values(user.hashtags))
   });
 
-  var sortedBadges = Object.keys(badgeProgress).sort(function (a, b) {
-    return badgeProgress[a].points.percentage - badgeProgress[b].points.percentage;
+  var consistencyBadge = (0, _date_check_sequential2.default)(user.edit_times);
+  var historyBadge = (0, _date_check_total2.default)(user.edit_times);
+
+  var sortedSumBadges = Object.keys(sumBadges).sort(function (a, b) {
+    return sumBadges[a].points.percentage - sumBadges[b].points.percentage;
   });
-  var mostAttainableBadge = badgeProgress[sortedBadges.slice(-1)[0]];
-  mostAttainableBadge.name = badgeProgress[_ramda2.default.last(sortedBadges)].name;
-  return { all: badgeProgress, mostAttainable: mostAttainableBadge };
+
+  var mostAttainableBadge = sumBadges[sortedSumBadges.slice(-1)[0]];
+  mostAttainableBadge.name = sumBadges[_ramda2.default.last(sortedSumBadges)].name;
+
+  return {
+    all: _ramda2.default.mergeAll([sumBadges, consistencyBadge, historyBadge]),
+    mostAttainable: mostAttainableBadge
+  };
 };
 
 module.exports.sortBadgeHashtags = function sortBadgeHashtags(user) {
@@ -55620,7 +55913,161 @@ module.exports.sortBadgeHashtags = function sortBadgeHashtags(user) {
   });
 };
 
-},{"./sum_check":229,"ramda":33}],229:[function(require,module,exports){
+},{"./date_check_sequential":233,"./date_check_total":234,"./sum_check":235,"ramda":33}],233:[function(require,module,exports){
+'use strict';
+
+module.exports = function (dates) {
+  var badges = {
+    daysInRow: {
+      name: 'Consistency',
+      id: 14,
+      tiers: { 1: 5, 2: 20, 3: 50 }
+    }
+  };
+
+  // function takes array of dates and returns an array of arrays
+  // containing each sequential date
+  // http://stackoverflow.com/questions/16690905/javascript-get-sequential-dates-in-array
+  function sequentializeDates(dates) {
+    dates = dates.map(function (date) {
+      return new Date(date);
+    });
+    var k = 0;
+    var sorted = [];
+    sorted[k] = [];
+    dates.sort(function (a, b) {
+      return +a > +b ? 1 : +a === +b ? 0 : -1;
+    }).forEach(function (v, i) {
+      var a = v;
+      var b = dates[i + 1] || 0;
+      sorted[k].push(+a);
+      if (+b - +a > 86400000) {
+        sorted[++k] = [];
+      }
+      return 1;
+    });
+    sorted.sort(function (a, b) {
+      return a.length > b.length ? -1 : 1;
+    });
+    return sorted;
+  }
+
+  function checkBadgeLevel(dayStreakLength, badge) {
+    if (dayStreakLength >= badge.tiers[1] && dayStreakLength < badge.tiers[2]) {
+      return 1;
+    } else if (dayStreakLength >= badge.tiers[2] && dayStreakLength < badge.tiers[3]) {
+      return 2;
+    } else if (dayStreakLength >= badge.tiers[3]) {
+      return 3;
+    } else {
+      return 0;
+    }
+  }
+
+  // returns the length of the longest array in an array
+  var findLongestStreak = function findLongestStreak(array) {
+    var elements = array.length;
+    var count = 0;
+    for (var i = 0; i < elements; i++) {
+      if (array[i].length > count) {
+        count = array[i].length;
+      }
+    }
+    return count;
+  };
+
+  var sequentialDates = sequentializeDates(dates);
+  var userTotal = findLongestStreak(sequentialDates);
+  var key = 'daysInRow';
+  var badge = badges[key];
+
+  var userBadges = {};
+  var badgeLevel = checkBadgeLevel(userTotal, badge);
+  if (badgeLevel < 3) {
+    var nextBadgeLevel = badgeLevel + 1;
+    var currentPoints = userTotal;
+    var lastPoints = 0;
+    if (badgeLevel > 0) lastPoints = badge.tiers[badgeLevel];
+    var nextPoints = badge.tiers[nextBadgeLevel];
+    var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
+    userBadges[key] = {
+      name: badge.name,
+      badgeLevel: badgeLevel,
+      nextBadgeLevel: nextBadgeLevel,
+      points: {
+        currentPoints: currentPoints,
+        nextPoints: nextPoints,
+        percentage: percentage
+      }
+    };
+  }
+
+  return userBadges;
+};
+
+},{}],234:[function(require,module,exports){
+'use strict';
+
+var R = require('ramda');
+
+module.exports = function (dates) {
+  var badges = {
+    daysTotal: {
+      name: 'Year-long Mapper',
+      id: 15,
+      tiers: { 1: 25, 2: 50, 3: 100 }
+    }
+  };
+
+  function checkBadgeLevel(uniqueDatesLength, badge) {
+    if (uniqueDatesLength >= badge.tiers[1] && uniqueDatesLength < badge.tiers[2]) {
+      return 1;
+    } else if (uniqueDatesLength >= badge.tiers[2] && uniqueDatesLength < badge.tiers[3]) {
+      return 2;
+    } else if (uniqueDatesLength >= badge.tiers[3]) {
+      return 3;
+    } else {
+      return 0;
+    }
+  }
+
+  // Truncate hours/minutes/seconds from timestamp
+  dates = dates.map(function (date) {
+    date = new Date(date);
+    return date.setHours(0, 0, 0, 0);
+  });
+
+  // Get unique dates and check badge level
+  var uniqueDates = R.uniq(dates);
+  var key = 'daysTotal';
+  var userTotal = uniqueDates.length;
+  var badge = badges[key];
+
+  var userBadges = {};
+  var badgeLevel = checkBadgeLevel(userTotal, badge);
+  if (badgeLevel < 3) {
+    var nextBadgeLevel = badgeLevel + 1;
+    var currentPoints = Number(userTotal);
+    var lastPoints = 0;
+    if (badgeLevel > 0) lastPoints = badge.tiers[badgeLevel];
+    var nextPoints = badge.tiers[nextBadgeLevel];
+    var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
+    userBadges[key] = {
+      name: badge.name,
+      badgeLevel: badgeLevel,
+      nextBadgeLevel: nextBadgeLevel,
+      points: {
+        currentPoints: currentPoints,
+        nextPoints: nextPoints,
+        percentage: percentage
+      }
+    };
+  }
+
+  return userBadges;
+};
+
+},{"ramda":33}],235:[function(require,module,exports){
 'use strict';
 
 module.exports = function (data) {
@@ -55733,7 +56180,7 @@ module.exports = function (data) {
   return userBadges;
 };
 
-},{}],230:[function(require,module,exports){
+},{}],236:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -55849,7 +56296,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"cal-heatmap":1,"react":227}],231:[function(require,module,exports){
+},{"cal-heatmap":1,"react":227}],237:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55882,7 +56329,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"react":227}],232:[function(require,module,exports){
+},{"react":227}],238:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -55944,6 +56391,7 @@ function mapBadgeToDescrip(badge) {
 }
 
 function mapBadgeToTask(badge, x) {
+  console.log(badge);
   var map = {
     'Road Builder': function RoadBuilder(x) {
       return 'Add ' + x + ' roads.';
@@ -55954,7 +56402,7 @@ function mapBadgeToTask(badge, x) {
     'Building Builder': function BuildingBuilder(x) {
       return 'Build ' + x + ' buildings.';
     },
-    'Consistentency': function Consistentency(x) {
+    'Consistency': function Consistency(x) {
       return 'Map every day for a week.';
     },
     'GPS Trace Creator': function GPSTraceCreator(x) {
@@ -56132,7 +56580,7 @@ exports.default = function (props) {
   );
 };
 
-},{"ramda":33,"react":227}],233:[function(require,module,exports){
+},{"ramda":33,"react":227}],239:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -56218,7 +56666,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"react":227}],234:[function(require,module,exports){
+},{"react":227}],240:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56343,7 +56791,7 @@ exports.default = function (props) {
   );
 };
 
-},{"../badge_logic/badge_cruncher.js":228,"../components/FullBadgeBox.js":232,"ramda":33,"react":227}],235:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":232,"../components/FullBadgeBox.js":238,"ramda":33,"react":227}],241:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56446,7 +56894,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"react":227,"react-chartjs":34}],236:[function(require,module,exports){
+},{"react":227,"react-chartjs":34}],242:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -56571,7 +57019,7 @@ exports.default = function (props) {
   );
 };
 
-},{"react":227}],237:[function(require,module,exports){
+},{"react":227}],243:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56598,6 +57046,14 @@ var _leaflet = require('leaflet');
 
 var _leaflet2 = _interopRequireDefault(_leaflet);
 
+var _turfCentroid = require('turf-centroid');
+
+var _turfCentroid2 = _interopRequireDefault(_turfCentroid);
+
+var _turfPolygon = require('turf-polygon');
+
+var _turfPolygon2 = _interopRequireDefault(_turfPolygon);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
@@ -56615,6 +57071,15 @@ exports.default = _react2.default.createClass({
     _leaflet2.default.tileLayer('http://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoic3RhdGVvZnNhdGVsbGl0ZSIsImEiOiJlZTM5ODI5NGYwZWM2MjRlZmEyNzEyMWRjZWJlY2FhZiJ9.omsA8QDSKggbxiJjumiA_w.', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    var geo_extent = this.props.data.geo_extent;
+    _leaflet2.default.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+    _leaflet2.default.geoJson(geo_extent).addTo(map);
+    geo_extent.geometry.coordinates.forEach(function (feature) {
+      var poly = (0, _turfPolygon2.default)(feature);
+      var c = (0, _turfCentroid2.default)(poly);
+      _leaflet2.default.marker(_ramda2.default.reverse(c.geometry.coordinates)).addTo(map);
+    });
 
     this.setState({
       map: map
@@ -56819,7 +57284,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/ContributionBox.js":230,"../components/PieChart.js":235,"leaflet":31,"ramda":33,"react":227}],238:[function(require,module,exports){
+},{"../components/ContributionBox.js":236,"../components/PieChart.js":241,"leaflet":31,"ramda":33,"react":227,"turf-centroid":228,"turf-polygon":231}],244:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56878,7 +57343,7 @@ exports.default = function (props) {
   );
 };
 
-},{"react":227,"react-router":62}],239:[function(require,module,exports){
+},{"react":227,"react-router":62}],245:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56902,7 +57367,7 @@ exports.default = _react2.default.createClass({
 
   getInitialState: function getInitialState() {
     var progress = {};
-    if (this.props.user) {
+    if (Object.keys(this.props.user).length) {
       progress = (0, _badge_cruncher.getBadgeProgress)(this.props.user);
     }
     return {
@@ -56924,7 +57389,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../badge_logic/badge_cruncher":228,"../components/FullBadgeBox.js":232,"react":227}],240:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher":232,"../components/FullBadgeBox.js":238,"react":227}],246:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56985,7 +57450,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/Next.js":234,"../components/Recent.js":236,"../components/Stats.js":237,"react":227}],241:[function(require,module,exports){
+},{"../components/Next.js":240,"../components/Recent.js":242,"../components/Stats.js":243,"react":227}],247:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -57067,7 +57532,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/Footer.js":231,"../components/Header.js":233,"../components/UserSubHead":238,"isomorphic-fetch":29,"react":227}],242:[function(require,module,exports){
+},{"../components/Footer.js":237,"../components/Header.js":239,"../components/UserSubHead":244,"isomorphic-fetch":29,"react":227}],248:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -57164,7 +57629,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/Footer.js":231,"../components/Header.js":233,"ramda":33,"react":227,"react-search-bar":69}],243:[function(require,module,exports){
+},{"../components/Footer.js":237,"../components/Header.js":239,"ramda":33,"react":227,"react-search-bar":69}],249:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -57219,4 +57684,4 @@ _reactDom2.default.render(_react2.default.createElement(
   )
 ), document.getElementById('app'));
 
-},{"./containers/BadgeView.js":239,"./containers/Overview.js":240,"./containers/User":241,"./containers/Users":242,"history/lib/createHashHistory":12,"react":227,"react-dom":42,"react-router":62}]},{},[243]);
+},{"./containers/BadgeView.js":245,"./containers/Overview.js":246,"./containers/User":247,"./containers/Users":248,"history/lib/createHashHistory":12,"react":227,"react-dom":42,"react-router":62}]},{},[249]);
