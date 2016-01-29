@@ -67,7 +67,6 @@ module.exports = function (dates) {
   };
 
   var sequentialDates = sequentializeDates(dates);
-  console.log(sequentialDates)
   var userTotal = findLongestStreak(sequentialDates);
   var key = 'daysInRow';
   var badge = badges[key];
@@ -92,8 +91,6 @@ module.exports = function (dates) {
       }
     };
   }
-
-  console.log(userBadges)
 
   return userBadges;
 };
