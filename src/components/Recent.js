@@ -14,7 +14,7 @@ export default (props) => {
 
   var latest = data.latest;
   var latestTime = moment(new Date(latest.created_at))
-    .format('MMM Do YY[, at ]h:mm:ss a');
+    .format('MMM Do YY[,] h:mm:ss a');
 
   var last_edit_total = Number(latest.road_count_add) +
     Number(latest.road_count_mod) +
@@ -43,7 +43,7 @@ export default (props) => {
                 Last Edit
               </div>
               <p>{last_edit_total} contributions</p>
-              <p>{latestTime}</p>
+              <p>Last at {latestTime}</p>
               <p>To #{hashtag}</p>
               <p>In {country}</p>
             </div>

@@ -24,7 +24,7 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     // tasks: user.,
     // taskEdits: user.,
     // josm: user.,
-    hashtags: R.sum(R.values(user.hashtags))
+    hashtags: Object.keys(user.hashtags).length
   });
 
   var consistencyBadge = dateSequentialCheck(user.edit_times);
