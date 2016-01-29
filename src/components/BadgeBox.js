@@ -13,7 +13,7 @@ function mapBadgeToImage (badge) {
     'TaskMan Scrutinizer': '/assets/graphics/test3.svg',
     'TaskMan Square Champion': '/assets/graphics/test.svg',
     'Waterway Creator': '/assets/graphics/test2.svg',
-    'World Renown': '/assets/graphics/test3.svg',
+    'World Renown': '/assets/graphics/test3.svg'
   };
   return map[badge];
 }
