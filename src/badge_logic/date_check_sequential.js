@@ -1,3 +1,5 @@
+import R from 'ramda';
+
 module.exports = function (dates) {
   var badges = {
     daysInRow: {
@@ -11,9 +13,14 @@ module.exports = function (dates) {
   // containing each sequential date
   // http://stackoverflow.com/questions/16690905/javascript-get-sequential-dates-in-array
   function sequentializeDates (dates) {
-    dates = dates.map(function (date) {
-      return new Date(date);
-    });
+    // Filter out non-unique dates
+    dates = R.uniq(
+      dates.map(function (date) {
+        date = new Date(date);
+        return date.setHours(0, 0, 0, 0);
+      })
+    );
+
     var k = 0;
     var sorted = [];
     sorted[k] = [];
@@ -60,6 +67,7 @@ module.exports = function (dates) {
   };
 
   var sequentialDates = sequentializeDates(dates);
+  console.log(sequentialDates)
   var userTotal = findLongestStreak(sequentialDates);
   var key = 'daysInRow';
   var badge = badges[key];
@@ -84,6 +92,8 @@ module.exports = function (dates) {
       }
     };
   }
+
+  console.log(userBadges)
 
   return userBadges;
 };
