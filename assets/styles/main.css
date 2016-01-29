@@ -200,8 +200,7 @@ input[type="text"] {
   -webkit-border-radius: 18px;
   border-radius: 6px;
   border: 0px;
-  /*  border:1px solid $darkgreen;
-*/
+  /*  border:1px solid $darkgreen; */
   box-shadow: 0px 2px #38803D;
   display: inline-block;
   cursor: pointer;
@@ -835,6 +834,10 @@ th, td {
     .ChartControls input:hover {
       background-color: #fefefe;
       border-color: #aeafb0; }
+    .ChartControls input.disabled {
+      pointer-events: none;
+      opacity: .65;
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255, 255, 255, 0.75) 3px, rgba(255, 255, 255, 0.75) 6px); }
 
 .next-badge-overlay {
   position: absolute;

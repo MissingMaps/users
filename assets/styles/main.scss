@@ -81,7 +81,7 @@ li{
 /*                  Base: ;                     */
 /*                                              */
 /*                  Text                        */
-/* weights: 300 thin, 400 regular, 700 bold, 900 black */ 
+/* weights: 300 thin, 400 regular, 700 bold, 900 black */
 /*----------------------------------------------*/
 
 h1{
@@ -93,7 +93,7 @@ a{
   text-decoration: none;
   color: $darkgrey;
   &:hover{
-    color: lighten(darkgrey, 5);   
+    color: lighten(darkgrey, 5);
   }
   &:focus{
     color: lighten(darkgrey, 5);
@@ -185,8 +185,6 @@ header{
   background-color: $darkestgrey;
 }
 
-
-
 .nav-icon{
   padding-left: 8px;
   padding-top: 7px;
@@ -240,7 +238,7 @@ header{
 
 
 /*----------------------------------------------*/
-/*Interactive Buttons*/ 
+/*Interactive Buttons*/
 /*----------------------------------------------*/
 input[type="text"]{
   border:0px solid $lightgrey;
@@ -260,13 +258,13 @@ input[type="text"]{
 }
 
 .button{
-    background-color: $osmgreen;
+  background-color: $osmgreen;
   -moz-border-radius:18px;
   -webkit-border-radius:18px;
   border-radius:6px;
   border: 0px;
-/*  border:1px solid $darkgreen;
-*/  box-shadow: 0px 2px $darkgreen;
+/*  border:1px solid $darkgreen; */
+  box-shadow: 0px 2px $darkgreen;
   display:inline-block;
   cursor:pointer;
   transition: active 0.25s;
@@ -290,7 +288,7 @@ input[type="text"]{
     text-decoration: none;
     color: white;
     &:hover{
-      color: white;   
+      color: white;
     }
     &:visited{
       color: white;
@@ -303,22 +301,22 @@ input[type="text"]{
 }
 
 :-moz-placeholder { /* Firefox 18- */
-   color: lighten($darkgrey, 8);  
+   color: lighten($darkgrey, 8);
 }
 
 ::-moz-placeholder {  /* Firefox 19+ */
-   color: lighten($darkgrey, 8);  
+   color: lighten($darkgrey, 8);
 }
 
-:-ms-input-placeholder {  
-   color: lighten($darkgrey, 8);  
+:-ms-input-placeholder {
+   color: lighten($darkgrey, 8);
 }
 
 
 
 /*----------------------------------------------*/
 /*              Overview Styles   */
-/*               Navigation Bar   */                 
+/*               Navigation Bar   */
 /*----------------------------------------------*/
 #Subhead-Container{
   background-color: white;
@@ -376,7 +374,7 @@ input[type="text"]{
     border-bottom: 0px;
     &:hover{
       background-color: #DDD;
-      color: #999;  
+      color: #999;
     }
   }
     .activeLink {
@@ -390,11 +388,11 @@ input[type="text"]{
     transform: translate(-50%, 0);
   margin-left: auto;
   margin-right: auto;
-  } 
+  }
 }
 /*----------------------------------------------*/
 /*              Overview Styles   */
-/*                 Containers      */              
+/*                 Containers      */
 /*----------------------------------------------*/
 #User-Container{
   width:100%;
@@ -513,7 +511,7 @@ input[type="text"]{
 
 /*----------------------------------------------*/
 /*              Overview Styles     */
-/*                  Text            */         
+/*                  Text            */
 /*----------------------------------------------*/
 .Block-header{
   padding-top: 14px;
@@ -532,7 +530,7 @@ input[type="text"]{
 
 /*----------------------------------------------*/
 /*              Overview Styles   */
-/*                  Text            */        
+/*                  Text            */
 /*----------------------------------------------*/
 /*.hashtag-title{
   font-weight: 900;
@@ -559,11 +557,11 @@ input[type="text"]{
 
 /*----------------------------------------------*/
 /*             Badge Views Style    */
-/*                                   */   
+/*                                   */
 /*----------------------------------------------*/
 
 .badgeicon {
-  position: relative; 
+  position: relative;
   float: left;
   pointer-events: none;
 }
@@ -635,7 +633,7 @@ input[type="text"]{
 }
 
 /*----------------------------------------------*/
-/*Container Styles*/ 
+/*Container Styles*/
 /*----------------------------------------------*/
 .container{
   max-width: 800px;
@@ -686,7 +684,7 @@ input[type="text"]{
 
 
 /*----------------------------------------------*/
-/*FullStats Sytling*/ 
+/*FullStats Sytling*/
 /*----------------------------------------------*/
 #MapContainer{
   width: 96%;
@@ -830,7 +828,7 @@ input[type="text"]{
 }
 
 /*----------------------------------------------*/
-/* Card Styling */ 
+/* Card Styling */
 /*----------------------------------------------*/
 .Card-Content{
   padding: 20px;
@@ -861,7 +859,7 @@ input[type="text"]{
 }
 
 h3{
-  margin: 4px 0px 8px;  
+  margin: 4px 0px 8px;
   font-size: 2em;
 }
 
@@ -1005,6 +1003,16 @@ th, td {
     &:hover{
       background-color: lighten($lightgrey, 14);
       border-color: lighten($darkgrey, 25%);
+    }
+    &.disabled {
+      pointer-events: none;
+      opacity: .65;
+      background-image: repeating-linear-gradient(
+        45deg, transparent,
+        transparent 3px,
+        rgba(255,255,255,.75) 3px,
+        rgba(255,255,255,.75) 6px
+      );
     }
   }
 }
