@@ -571,11 +571,6 @@ input[type='text'] {
   width: 96%;
   min-width: 300px;
   margin: 0 auto 20px auto; }
-  @media screen and (max-width: 1100px) {
-    #MapContainer {
-      position: relative;
-      max-width: 75%;
-      margin: 50px 10px 0 10px; } }
 
 .MapContent {
   height: 360px;
