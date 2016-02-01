@@ -28,10 +28,14 @@ export default React.createClass({
          var result = doc.evaluate('/osm/user/img/@href', doc, null, XPathResult.STRING_TYPE, null); */
       var urlBegin = xmlString.split('<img href="')[1];
       var url = urlBegin.substring(0, urlBegin.indexOf('"/>'));
+      var urls = url.split('&amp;d=');
+      if (urls.length > 1) url = urls[0];
+
       component.setState({userPic: url});
       return url;
     });
   },
+
   componentWillReceiveProps: function (nextProps) {
     if (nextProps) {
       var userId = nextProps.user.id;
