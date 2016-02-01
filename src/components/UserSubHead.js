@@ -1,5 +1,4 @@
 import React from 'react';
-import toArray from 'stream-to-array';
 import fetch from 'isomorphic-fetch';
 import {Link, IndexLink} from 'react-router';
 
@@ -11,7 +10,8 @@ export default React.createClass({
       userPic: ''
     };
   },
-  getUserPic: function (userId) {
+  setUserPic: function (userId) {
+    var component = this;
     return fetch('http://api.openstreetmap.org/api/0.6/user/' + userId)
     .then(function (res) {
       if (res.status >= 200 && res.status < 300) {
@@ -26,21 +26,20 @@ export default React.createClass({
          sometimes an issue at the OSM endpoint. */
       /* var doc = new DOMParser().parseFromString(xmlString, 'text/xml');
          var result = doc.evaluate('/osm/user/img/@href', doc, null, XPathResult.STRING_TYPE, null); */
-      var urlBegin = xmlString.split('<img href=')[1];
-      var url = urlBegin.substring(0, urlBegin.indexOf('/>'));
+      var urlBegin = xmlString.split('<img href="')[1];
+      var url = urlBegin.substring(0, urlBegin.indexOf('"/>'));
+      component.setState({userPic: url});
       return url;
     });
   },
   componentWillReceiveProps: function (nextProps) {
     if (nextProps) {
-      var userName = nextProps.user.name;
       var userId = nextProps.user.id;
-      var userPic = this.getUserPic(userId);
       this.setState({
-        userName: userName,
-        userId: userId,
-        userPic: userPic
+        userName: nextProps.user.name,
+        userId: userId
       });
+      this.setUserPic(userId);
     }
   },
   render: function () {
@@ -49,7 +48,7 @@ export default React.createClass({
         <div id = "Subhead-Container">
           <div id = "Subhead-Content">
             <div className = "ProfilePicture">
-              <img src="assets/graphics/dummy.svg" width="120px"></img>
+              <img src={this.state.userPic} width="120px"></img>
             </div>
             <div className = "Username titleheader">
               {this.state.userName}
