@@ -21,16 +21,15 @@ export default React.createClass({
       }
     })
     .then(function (xmlString) {
-      /* This code is more correct because it uses the browser's
-         XML parser, but it chokes on malformed URLs which are
-         sometimes an issue at the OSM endpoint. */
-      /* var doc = new DOMParser().parseFromString(xmlString, 'text/xml');
-         var result = doc.evaluate('/osm/user/img/@href', doc, null, XPathResult.STRING_TYPE, null); */
+      var url = '';
+      var urls = [];
       var urlBegin = xmlString.split('<img href="')[1];
-      var url = urlBegin.substring(0, urlBegin.indexOf('"/>'));
-      var urls = url.split('&amp;d=');
-      if (urls.length > 1) url = urls[0];
-
+      if (!urlBegin) url = 'assets/graphics/osm-user-blank.png';
+      else {
+        url = urlBegin.substring(0, urlBegin.indexOf('"/>'));
+        urls = url.split('&amp;d=');
+        if (urls.length > 1) url = urls[0];
+      }
       component.setState({userPic: url});
       return url;
     });
