@@ -58,9 +58,9 @@ export default React.createClass({
       var localGenericUrl = 'assets/graphics/osm-user-blank.png';
       var url = '';
       var urls = [];
-      // Check for img tag in user profile
+      // Check for img href in user profile
       var urlBegin = xmlString.split('<img href="')[1];
-      // If no img tag, set state to the local generic image
+      // If no img href, set state to the local generic image
       // (user's profile pic is generic)
       if (!urlBegin) {
         url = localGenericUrl;
@@ -69,14 +69,16 @@ export default React.createClass({
         url = urlBegin.substring(0, urlBegin.indexOf('"/>'));
         urls = url.split('&amp;d=');
         if (urls.length < 2) {
-          // If one img href tag, use it to set state
-          // (it is the user's custom OSM profile icon)
+          // If one img href, use the 'large' version to set
+          // state (it is the user's custom OSM profile pic)
+          url = url.replace('/original/', '/large/');
           component.setState({userPic: url});
         } else {
-          // If more than one img href tag, user is using Gravatar,
-          // so check whether they use a custom or default icon and
-          // set state to local default or their custom accordingly
-          component.setGravatar(urls[0], localGenericUrl, component);
+          // If >one img href, pic is from Gravatar, so check if
+          // user has custom or generic pic and set state to local
+          // generic or 128px version of their pic accordingly.
+          url = urls[0].replace('?s=256', '?s=128');
+          component.setGravatar(url, localGenericUrl, component);
         }
       }
     });
@@ -97,7 +99,7 @@ export default React.createClass({
         <div id = "Subhead-Container">
           <div id = "Subhead-Content">
             <div className = "ProfilePicture">
-              <img src={this.state.userPic} width="120px"></img>
+              <img src={this.state.userPic} width="128px"></img>
             </div>
             <div className = "Username titleheader">
               {this.state.userName}
