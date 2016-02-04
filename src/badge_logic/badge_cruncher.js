@@ -5,7 +5,7 @@ import R from 'ramda';
 
 // // Note- waterway KMs, GPS trace KMs, and building mods are
 // // captured but are not in the official spec.
-// // Countries, tasks, task edits, and JOSM are in the spec
+// // Countries, tasks, and task edits are in the spec
 // // but are not implemented here.
 module.exports.getBadgeProgress = function getBadgeProgress (user) {
   var sumBadges = sumCheck({
@@ -23,7 +23,7 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     // countries: user.,
     // tasks: user.,
     // taskEdits: user.,
-    // josm: user.,
+    josm: user.total_josm_edit_count,
     hashtags: Object.keys(user.hashtags).length
   });
 
