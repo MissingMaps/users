@@ -28,9 +28,8 @@ export default React.createClass({
     // but resolve to different checksums. This list may grow as
     // more are discovered.
     var genericHashes = [
-      'c8dc8819527dbe51bc56c1819ccd208e',
-      'e80e0a0da66ad312f6012729eb8f21f0',
-      '9b1f5539a95b09345c56d932e30ab335'
+      '9a2ccc34a976d9e034142f01b205d8e8',
+      '1189394e6979d5a03c75384b58b79b7c'
     ];
     binaryXHR(imageUrl, function (err, image) {
       if (!err) {
@@ -55,7 +54,7 @@ export default React.createClass({
       }
     })
     .then(function (xmlString) {
-      var localGenericUrl = 'assets/graphics/osm-user-blank.png';
+      var localGenericUrl = 'assets/graphics/osm-user-blank.jpg';
       var url = '';
       var urls = [];
       // Check for img href in user profile
@@ -98,8 +97,9 @@ export default React.createClass({
       <div>
         <div id = "Subhead-Container">
           <div id = "Subhead-Content">
-            <div className = "ProfilePicture">
-              <img src={this.state.userPic} width="128px"></img>
+            <div
+              className = "ProfilePicture"
+              style = {{backgroundImage: 'url(' + this.state.userPic + ')'}}>
             </div>
             <div className = "Username titleheader">
               {this.state.userName}
