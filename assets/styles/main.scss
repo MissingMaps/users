@@ -921,14 +921,12 @@ input[type='text'] {
 /*FullStats Sytling*/
 /*----------------------------------------------*/
 #MapContainer{
-  width: 75%;
+  width: 99%;
   min-width: 300px;
   margin: 1em 1em 0 0;
-  float: right;
   @media screen and (max-width: 1100px){
     position: relative;
-    margin: 50px 10px 0px 10px;
-    max-width: 75%;
+    margin: 0;
     }
 }
 
@@ -1105,7 +1103,7 @@ h3 {
   padding-bottom: 4px;
 }
 
-.Split-3 {
+.Split{
   /*  background-color: rgba(0,0,0,0.1); */
   width: 33.3%;
   min-width: 300px;
@@ -1452,30 +1450,29 @@ table{
   margin-top: 3px;
 }
 
-.Split-4{
+.Split-ByNumbers{
   width: 39%;
-  min-width: 300px;
-  display: inline-block;
-  vertical-align:top;
-  padding-bottom: 2em;
-  @media screen and (max-width: 1000px){
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+  height: auto;
+}
+
+.Split-Diversity{
+  width: 26.6%;
+  height: auto;
+}
+
+.Split-WorldReach{
+  width: 20%;
+  min-width: 200px;
+  padding-right: 20px;
+  height: auto;
+  table{
+    width: 200px;
   }
 }
 
-.Split-5{
-  width: 26.6%;
-  min-width: 300px;
-  height: 240px;
-  display: inline-block;
-  vertical-align:top;
-  padding-bottom: 2em;
-  @media screen and (max-width: 1000px){
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+.Split-Map{
+  vertical-align: top;
+  width: 75%;
+  height: auto;
 }
 

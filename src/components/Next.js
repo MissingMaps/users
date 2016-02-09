@@ -7,7 +7,7 @@ export default (props) => {
   var progress = getBadgeProgress(props.data);
   var mostAttainableBadge = progress.mostAttainable;
   return (
-      <div className = "Split-3">
+      <div className = "Split">
         <div className = "descriptor">Upcoming Badges</div>
         <div className = "Upcoming-Badges-Box">
           <img src= 'assets/graphics/test2.svg' width= "75px"></img>

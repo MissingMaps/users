@@ -45,7 +45,7 @@ export default React.createClass({
 
     return (
       <div id = "Stats-Container">
-            <div className = "Split-4">
+            <div className = "Split Split-ByNumbers">
               <div className = "Card-Content Split-Content">
                 <div className = "descriptor">By The Numbers</div>
                 <div className = "Stats-Item">
@@ -92,7 +92,7 @@ export default React.createClass({
                 </div>
               </div>
             </div>
-            <div className = "Split-5">
+            <div className = "Split Split-Diversity">
               <div className = "Card-Content Split-Content">
                 <div className = "descriptor">
                    Diversity of Edits
@@ -100,7 +100,7 @@ export default React.createClass({
                 <PieChart user={user} />
               </div>
             </div>
-            <div className = "Split-3">
+            <div className = "Split">
               <div className = "Card-Content Split-Content">
                 <div className = "descriptor">Projects Contributed To</div>
                 <table className = "table-curve">
@@ -126,9 +126,29 @@ export default React.createClass({
             <div className = "descriptor">
               WORLD REACH
             </div>
-            <div id = "MapContainer">
-              <div className = "MapContent">
-                <div id="map"></div>
+            <div className = "Split Split-WorldReach">
+                <table className = "table-curve">
+                  <tbody>
+                    <tr>
+                      <th>Countries most mapped</th>
+                      <th></th>
+                    </tr>
+                    {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                      return (
+                        <tr key={hashtag}>
+                          <td key={hashtag}>{hashtag}</td>
+                          <td><div className="emphasizedText">{user.hashtags[hashtag]}</div></td>
+                        </tr>
+                        );
+                    })}
+                  </tbody>
+                </table>
+            </div>
+            <div className = "Split Split-Map">
+              <div id = "MapContainer">
+                <div className = "MapContent">
+                  <div id="map"></div>
+                </div>
               </div>
             </div>
           </div>

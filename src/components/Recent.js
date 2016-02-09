@@ -42,7 +42,7 @@ export default (props) => {
   var hashtag = data.latest.hashtags[0].hashtag;
 
   return (
-        <div className = "Split-3">
+        <div className = "Split">
           <div className = "descriptor">Latest Edit</div>
           <div className = "Recent-Edit-Box">
             <div className = "EmphasizedNumber">{last_edit_total}</div>
