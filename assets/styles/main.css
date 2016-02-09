@@ -459,6 +459,7 @@ input[type='text'] {
   right: 0;
   top: 50px; }
   .Subhead-Nav a {
+    background-color: #A6A6A6;
     padding: 16px 20px;
     margin-left: 20px;
     border-bottom: 0px;
@@ -1206,5 +1207,5 @@ table {
 
 .Split-Map {
   vertical-align: top;
-  width: 75%;
+  width: 78%;
   height: auto; }

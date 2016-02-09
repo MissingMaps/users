@@ -94,7 +94,7 @@ export default React.createClass({
             </div>
             <div className = "Split Split-Diversity">
               <div className = "Card-Content Split-Content">
-                <div className = "descriptor">
+                <div className = "descriptor centerme">
                    Diversity of Edits
                 </div>
                 <PieChart user={user} />
