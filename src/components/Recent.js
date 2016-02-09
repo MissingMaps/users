@@ -12,7 +12,11 @@ export default (props) => {
     Number(data.total_building_count_mod) +
     Number(data.total_waterway_count_add) +
     Number(data.total_poi_count_add);
+
   var latest = data.latest;
+  var latestTime = moment(new Date(latest.created_at))
+    .format('MMM Do YY[,] h:mm:ss a');
+
   var last_edit_total = Number(latest.road_count_add) +
     Number(latest.road_count_mod) +
     Number(latest.building_count_add) +
@@ -36,6 +40,7 @@ export default (props) => {
 
   var country = data.latest.countries[0].name;
   var hashtag = data.latest.hashtags[0].hashtag;
+
   return (
         <div className = "Split-3">
           <div className = "descriptor">Latest Edit</div>

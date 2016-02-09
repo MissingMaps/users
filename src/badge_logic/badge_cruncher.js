@@ -20,11 +20,11 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     roadKmMods: Number(user.total_road_km_mod),
     // waterwayKms: user.total_waterway_km_add,
     // gpsTraceKmAdd: user.total_gpstrace_km_add,
-    // countries: user.,
+    countries: user.country_count,
     // tasks: user.,
     // taskEdits: user.,
-    // josm: user.,
-    hashtags: R.sum(R.values(user.hashtags))
+    josm: user.total_josm_edit_count,
+    hashtags: Object.keys(user.hashtags).length
   });
 
   var consistencyBadge = dateSequentialCheck(user.edit_times);
