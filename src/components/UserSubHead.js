@@ -9,7 +9,7 @@ export default (props) => {
           <div className = "ProfilePicture">
             <img src="assets/graphics/dummy.svg" width="120px"></img>
           </div>
-          <div className = "Username titleheader">
+          <div className = "Username title">
             {props.user.name}
             <p>Mapping Maestro</p>
           </div>

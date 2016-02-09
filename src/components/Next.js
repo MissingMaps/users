@@ -7,22 +7,15 @@ export default (props) => {
   var progress = getBadgeProgress(props.data);
   var mostAttainableBadge = progress.mostAttainable;
   return (
-    <div id = "Recent-Container">
-      <div className = "Card">
-    <div className = "Card-title">What's Next</div>
-    <div className = "Card-Content">
-      <div className = "Card-Left">
-        <div className = "Card-Textbox">
-          <div className = "Card-Section-Title">
-          UPCOMING
-          </div>
-          <p>You''re really close to earning the {mostAttainableBadge.name} badge!</p>
-          <p>Here are some projects you can help out with to get it!</p>
+      <div className = "Split-3">
+        <div className = "descriptor">Upcoming Badges</div>
+        <div className = "Upcoming-Badges-Box">
+          <img src= 'assets/graphics/test2.svg' width= "75px"></img>
+          <img src= 'assets/graphics/test2.svg' width= "75px"></img>
+          <div className = "See-More-Badges">+</div>
         </div>
-        <div className = "Card-Textbox">
-          <div className = "Card-Section-Title">
-          TRENDING PROJECTS
-          </div>
+        <div className = "descriptor">Possible Projects</div>
+        <div className = "button invert-btn-grn">Trending Hashtags</div>
           {
             // This should be changed to grabbing from hashtags endpoint
             // and not the users hashtags
@@ -30,28 +23,6 @@ export default (props) => {
               return <p key={hashtag}>#{hashtag}</p>;
             })
           }
-        </div>
       </div>
-      <div className = "Card-Right">
-        <div className = "Card-Textbox">
-          <div className = "Card-Section-Title">
-          NEXT BADGE...
-          </div>
-          <div className = "Card-Badge>">
-            <div className="next-badge-overlay">
-              <div className = "nextBadgeHome">
-              <img src="assets/graphics/test.svg" width = "100px"></img>
-              <p>{Math.floor(mostAttainableBadge.points.percentage)}%</p>
-              </div>
-            </div>
-          </div>
-          <div className = "Card-Badge-Name">
-            {descriptions(mostAttainableBadge.name)}
-          </div>
-        </div>
-      </div>
-    </div>
-      </div>
-    </div>
   );
 };

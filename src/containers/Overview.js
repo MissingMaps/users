@@ -2,6 +2,7 @@ import React from 'react';
 import Recent from '../components/Recent.js';
 import Next from '../components/Next.js';
 import Stats from '../components/Stats.js';
+import RecentBadge from '../components/RecentBadge.js';
 
 export default React.createClass({
   getInitialState: function () {
@@ -21,9 +22,12 @@ export default React.createClass({
       return (
         <div id="overview">
           <div className = "box">
-            <Recent data = {this.state.user}/>
-            <Next data = {this.state.user}/>
-            <Stats data = {this.state.user}/>
+            <div className = "User-Page-Top">
+              <Recent data = {this.state.user}/>
+              <RecentBadge />
+              <Next data = {this.state.user}/>
+            </div>
+              <Stats data = {this.state.user}/>
           </div>
         </div>
       );

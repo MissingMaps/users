@@ -37,14 +37,23 @@ export default React.createClass({
     var user = this.props.data;
     return (
       <div id = "Stats-Container">
-        <div className = "Card">
-          <div className = "Card-title">{user.name}'s Statistics</div>
-          <div className = "Card-Content">
             <div className = "Split-3">
               <div className = "Card-Content Split-Content">
-                <div className = "Card-Section-Title">
-                  PROJECTS CONTRIBUTED TO
+                <div className = "descriptor">By The Numbers</div>
+
+              </div>
+            </div>
+            <div className = "Split-3">
+              <div className = "Card-Content Split-Content">
+                <div className = "descriptor">
+                   Diversity of Edits
                 </div>
+                <PieChart user={user} />
+              </div>
+            </div>
+            <div className = "Split-3">
+              <div className = "Card-Content Split-Content">
+                <div className = "descriptor">Projects Contributed To</div>
                 <table className = "table-curve">
                   <tbody>
                     <tr>
@@ -62,50 +71,10 @@ export default React.createClass({
                   </tbody>
                 </table>
               </div>
-            </div>
-            <div className = "Split-3">
-              <div className = "Card-Content Split-Content">
-                <div className = "Card-Section-Title">
-                  BY THE NUMBERS
-                </div>
-                <table className = "table-curve">
-                  <tbody>
-                    <tr>
-                      <td>Buildings added</td>
-                      <td>{Number(user.total_building_count_add)}</td>
-                    </tr>
-                    <tr>
-                      <td>Roads Added</td>
-                      <td>{Number(user.total_road_count_add)}</td>
-                    </tr>
-                    <tr>
-                      <td>km of Roads Added</td>
-                      <td>{Number(user.total_road_km_add).toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>km of Waterways Added</td>
-                      <td>{Number(user.total_waterway_km_add).toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>Point of Interests Added</td>
-                      <td>{Number(user.total_poi_count_add)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className = "Split-3">
-              <div className = "Card-Content Split-Content">
-                <div className = "Card-Section-Title">
-                  TYPE OF EDITS
-                </div>
-                <PieChart user={user} />
-              </div>
-            </div>
           </div>
           <div className ="Stat-Component-Container">
             <ContributionBox timestamps={user.edit_times} />
-            <div className = "Card-Section-Title Move-over">
+            <div className = "descriptor">
               WORLD REACH
             </div>
             <div id = "MapContainer">
@@ -114,7 +83,6 @@ export default React.createClass({
               </div>
             </div>
           </div>
-        </div>
       </div>
     );
   }
