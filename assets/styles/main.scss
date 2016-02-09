@@ -48,7 +48,7 @@ ul,li {
 }
 
 body{
-  background-color: #F2F2F2;
+  background-color: #f7f7f7;
 }
 
 ::-moz-selection { /* Code for Firefox */
@@ -553,11 +553,11 @@ input[type='text'] {
     color: $darkgrey;
   }
   @media screen and (max-width: 500px){
-    font-size: 1.6em;
-    top: 62px;
+    font-size: 1.4em;
+    top: 64px;
     padding-left: 16px;
     p{
-    margin-top: 8px;
+    margin-top: 9px;
     font-size: 16px;
     }
   }
@@ -720,6 +720,7 @@ input[type='text'] {
 .Contribute-Timeline-Container{
   width: 99%;
   height: 180px;
+  margin-bottom: 2em;
   @media screen and (max-width: 1000px){
     min-width: 300px;
     margin-left: auto;
@@ -755,6 +756,7 @@ input[type='text'] {
   display: inline;
   li {
     padding: 8px;
+    display: inline-block;
   }
 }
 
@@ -817,6 +819,10 @@ input[type='text'] {
   float: right;
   width: 210px;
   text-align: left;
+  .sub-head{
+    padding-bottom: 0px;
+    line-height: 1.2em;
+  }
   @media screen and (max-width: 630px) {
     float: initial;
     margin-right: auto;
@@ -840,7 +846,7 @@ input[type='text'] {
 .line-break {
   float: right;
   width: 190px;
-  height: 3px;
+  height: 1px;
   margin-right: 20px;
   margin-bottom: 18px;
   background-color: darken($lightgrey, 8%);
@@ -900,11 +906,8 @@ input[type='text'] {
 
 .badgeroll-center {
   max-width: 832px;
-  margin-top: 10px;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 20px;
-  padding-left: 20px;
+  margin: 0 auto 0 auto;
+  padding: 0 20px 2em 20px;
   @media screen and (max-width: 1101px) {
     max-width: 400px;
   }
@@ -1011,7 +1014,6 @@ input[type='text'] {
 #Badge-Container {
   min-width: 300px;
   max-width: 100%;
-  padding-top: 30px;
   @media screen and (max-width: 1100px) {
     position: relative;
     max-width: 75%;
@@ -1027,6 +1029,7 @@ input[type='text'] {
   max-width: 1100px;
   padding: 0px;
   display: inline-block;
+  margin-bottom: 2em;
   @media screen and (max-width: 1134px){
     max-width: 95%;
   }
@@ -1177,15 +1180,15 @@ table{
 
 .Search-Box {
   position: absolute;
-  top: 160px;
   width: 100%;
+  padding-top: 4.5em;
   input {
     font-family: 'lato';
     font-size: 1em;
     width: 200px;
     height: 40px;
-    margin-top: 20px;
-    margin-right: 20px;
+    margin-top: 2;
+    margin-right: 200pxpx;
     padding-left: 10px;
     background-color: white;
     &.search-bar-submit {
@@ -1423,3 +1426,56 @@ table{
 .Card-Badge{
   padding-top: 20px;
 }
+
+.footer-container{
+  background-color: $darkgrey;
+  color: $lightgrey;
+  padding: 0.6em 0 0.5em 0;
+}
+
+.Stats-Item{
+  width: 172px;
+  height: 50px;
+  padding: 10px;
+  display: inline-block;
+  img{
+    float:left;
+    vertical-align: middle;
+  }
+}
+
+.Stat-Info{
+  vertical-align: top;
+  float: right;
+  text-align: left;
+  width: 110px;
+  margin-top: 3px;
+}
+
+.Split-4{
+  width: 39%;
+  min-width: 300px;
+  display: inline-block;
+  vertical-align:top;
+  padding-bottom: 2em;
+  @media screen and (max-width: 1000px){
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.Split-5{
+  width: 26.6%;
+  min-width: 300px;
+  height: 240px;
+  display: inline-block;
+  vertical-align:top;
+  padding-bottom: 2em;
+  @media screen and (max-width: 1000px){
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+

@@ -83,7 +83,7 @@ export default (props) => {
         <div className = "badge-home">
           <img src={mapBadgeToImage(badge)} width="150px"></img>
           <div className = "badge-Details">
-            <div className = "badge-Name">
+            <div className = "sub-head">
               {badge}
             </div>
             <div className = "badge-Description">
@@ -112,7 +112,7 @@ export default (props) => {
         <div className = "badge-home">
           <img src={mapBadgeToImage(badge.name)} width="150px"></img>
           <div className = "badge-Details">
-            <div className = "badge-Name">
+            <div className = "sub-head">
               {badge.name}
             </div>
             <div className = "badge-Description">
@@ -132,7 +132,7 @@ export default (props) => {
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content">
           <div className = "badgeroll-frame">
-            <div className = "badgeroll-center card">
+            <div className = "badgeroll-center">
               <div className = "Card-title">
                 EARNED BADGES
               </div>
@@ -146,7 +146,7 @@ export default (props) => {
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content">
           <div className = "badgeroll-frame">
-            <div className = "badgeroll-center card">
+            <div className = "badgeroll-center">
               <div className = "Card-title">
                 BADGE PROGRESS
               </div>

@@ -35,15 +35,64 @@ export default React.createClass({
   },
   render: function () {
     var user = this.props.data;
+
+    var total = Number(user.total_road_count_add) +
+      Number(user.total_road_count_mod) +
+      Number(user.total_building_count_add) +
+      Number(user.total_building_count_mod) +
+      Number(user.total_waterway_count_add) +
+      Number(user.total_poi_count_add);
+
     return (
       <div id = "Stats-Container">
-            <div className = "Split-3">
+            <div className = "Split-4">
               <div className = "Card-Content Split-Content">
                 <div className = "descriptor">By The Numbers</div>
-
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><div className="emphasizedNumber">{total}</div></p>
+                    <p>Total Edits</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><div className="emphasizedNumber">???</div></p>
+                    <p>Changesets</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><div className="emphasizedNumber">{Number(user.total_building_count_add)}</div></p>
+                    <p>Buildings</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><div className="emphasizedNumber">{Number(user.total_road_count_add)}</div></p>
+                    <p>Roads</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><div className="emphasizedNumber">{Number(user.total_waterway_km_add).toFixed(1)}</div></p>
+                    <p>Waterways</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><div className="emphasizedNumber">{Number(user.total_poi_count_add)}</div></p>
+                    <p>Point of Interest</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className = "Split-3">
+            <div className = "Split-5">
               <div className = "Card-Content Split-Content">
                 <div className = "descriptor">
                    Diversity of Edits
