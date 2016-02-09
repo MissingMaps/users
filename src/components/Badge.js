@@ -31,7 +31,7 @@ export default React.createClass({
 
     return (
       <div className="Badge" style={{backgroundImage: progStyle}}>
-        <div className="Badge Interior"></div>
+        <div className="Badge Interior" style={{backgroundImage: this.state.imgUrl}}></div>
       </div>
     );
   }
