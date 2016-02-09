@@ -10,7 +10,7 @@ export default React.createClass({
   },
 
   getImgUrl: function (category, level) {
-    return 'assets/graphics/badges' + category + '-' + level + '-graphic.svg';
+    return 'url(assets/graphics/badges/' + category + '-' + (level + 1) + '-graphic.svg)';
   },
   getProgressGradientBreaks: function (percentage) {
     var breakA = 90;
@@ -24,14 +24,14 @@ export default React.createClass({
     return {A: breakA, B: breakB};
   },
   render: function () {
-    var progStyle = 'linear-gradient(' + this.state.progressBreaks.A +
-                  'deg, #dbdbda 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),' +
-                  'linear-gradient(' + this.state.progressBreaks.B +
-                  'deg, #1E9FCC 50%, #dbdbda 50%, #dbdbda)';
+    var progressStyle = 'linear-gradient(' + this.state.progressBreaks.A +
+                        'deg, #dbdbda 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),' +
+                        'linear-gradient(' + this.state.progressBreaks.B +
+                        'deg, #1E9FCC 50%, #dbdbda 50%, #dbdbda)';
 
     return (
-      <div className="Badge" style={{backgroundImage: progStyle}}>
-        <div className="Badge Interior" style={{backgroundImage: this.state.imgUrl}}></div>
+      <div className="Badge" style={{backgroundImage: progressStyle}}>
+        <div className="Badge-Interior" style={{backgroundImage: this.state.imgUrl}}></div>
       </div>
     );
   }
