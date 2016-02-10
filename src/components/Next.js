@@ -2,16 +2,17 @@ import React from 'react';
 import R from 'ramda';
 import { getBadgeProgress } from '../badge_logic/badge_cruncher.js';
 import { descriptions } from '../components/FullBadgeBox.js';
+import Badge from '../components/Badge.js'
 
 export default (props) => {
   var progress = getBadgeProgress(props.data);
-  var mostAttainableBadge = progress.mostAttainable;
+  var mostObtainableBadges = progress.mostAttainable;
   return (
       <div className = "Split">
         <div className = "descriptor">Upcoming Badges</div>
         <div className = "Upcoming-Badges-Box">
-          <img src= 'assets/graphics/test2.svg' width= "75px"></img>
-          <img src= 'assets/graphics/test2.svg' width= "75px"></img>
+          <Badge badge={mostObtainableBadges[0]} />
+          <Badge badge={mostObtainableBadges[1]} />
           <div className = "See-More-Badges">+</div>
         </div>
         <div className = "descriptor">Possible Projects</div>

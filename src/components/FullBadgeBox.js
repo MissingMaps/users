@@ -1,6 +1,6 @@
 import React from 'react';
 import R from 'ramda';
-import Badge from '../components/Badge';
+import Badge from '../components/Badge.js';
 
 function mapBadgeToImage (badge) {
   var map = {
@@ -101,16 +101,6 @@ export default (props) => {
       </li>
     );
   });
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // This step should not need to be in here. Ideally, numeric ID would
-  // be served by the API for the badge progress sub-object.
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  var idLookup = {
-    roads: 1, roadMods: 2, pois: 3, buildings: 4, gpsTraces: 5, roadKms: 6,
-    roadKmMods: 7, waterways: 8, countries: 9, tasks: 10, taskEdits: 11,
-    josm: 12, hashtags: 13, daysInRow: 14, daysTotal: 15, hotProjects: 16,
-    rcProjects: 17, msfProjects: 18
-  };
 
   var progressBadges = Object.keys(props.progress.all).map(function (val) {
     var badge = props.progress.all[val];
@@ -120,8 +110,8 @@ export default (props) => {
       progress: Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' +
         mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
       name: badge.name,
-      category: idLookup[val],
-      level: badge.badgeLevel,
+      category: badge.category,
+      badgeLevel: badge.badgeLevel,
       points: badge.points
 
     };

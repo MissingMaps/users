@@ -4,7 +4,7 @@ export default React.createClass({
   getInitialState: function () {
     var badge = this.props.badge;
     return {
-      imgUrl: this.getImgUrl(badge.category, badge.level),
+      imgUrl: this.getImgUrl(badge.category, badge.badgeLevel),
       progressBreaks: this.getProgressGradientBreaks(badge.points.percentage)
     };
   },
