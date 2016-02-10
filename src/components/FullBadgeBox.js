@@ -1,35 +1,14 @@
 import React from 'react';
 import R from 'ramda';
-import Badge from '../components/Badge.js';
-
-function mapBadgeToImage (badge) {
-  var map = {
-    'Road Builder': 'assets/graphics/test.svg',
-    'Road Maintainer': 'assets/graphics/test.svg',
-    'Building Builder': 'assets/graphics/test.svg',
-    'Consistentency': 'assets/graphics/test2.svg',
-    'GPS Trace Creator': 'assets/graphics/test3.svg',
-    'JOSM User': 'assets/graphics/test.svg',
-    'Long & Winding Road': 'assets/graphics/test2.svg',
-    'Long & Winding Road Maintainer': 'assets/graphics/test2.svg',
-    'Mapathoner': 'assets/graphics/test3.svg',
-    'Node Builder': 'assets/graphics/test.svg',
-    'TaskMan Scrutinizer': 'assets/graphics/test3.svg',
-    'TaskMan Square Champion': 'assets/graphics/test.svg',
-    'Waterway Creator': 'assets/graphics/test2.svg',
-    'World Renown': 'assets/graphics/test3.svg',
-    'Year-long Mapper': 'assets/graphics/test3.svg',
-    'Point Creator': 'assets/graphics/test3.svg'
-  };
-  return map[badge];
-}
+import BadgeInProgress from '../components/BadgeInProgress.js';
+import BadgeCompleted from '../components/BadgeCompleted.js';
 
 function mapBadgeToDescrip (badge) {
   var map = {
     'Road Builder': 'Map many roads across the land.',
     'Road Maintainer': 'Updated and corrected misplaced roads.',
     'Building Builder': 'Built all those buildings!',
-    'Consistentency': 'Mapped every day for a week!',
+    'Consistency': 'Mapped every day for a week!',
     'GPS Trace Creator': 'Uploaded GPS traces through their OSM',
     'JOSM User': 'Used JSOM to map an area',
     'Long & Winding Road': 'Created lots of roads.',
@@ -87,7 +66,7 @@ export default (props) => {
     return (
       <li key={stripWS(badge.name)}>
         <div className = "badge-home">
-
+         <BadgeCompleted badge={badge} badgeClass={'progress'}/>
           <div className = "badge-Details">
             <div className = "sub-head">
               {badge.name}
@@ -121,7 +100,7 @@ export default (props) => {
     return (
       <li key={stripWS(badge.name)}>
         <div className = "badge-home">
-          <Badge badge={badge} badgeClass={'progress'}/>
+          <BadgeInProgress badge={badge} badgeClass={'progress'}/>
           <div className = "badge-Details">
             <div className = "sub-head">
               {badge.name}

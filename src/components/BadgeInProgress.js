@@ -3,18 +3,18 @@ import React from 'react';
 export default React.createClass({
   getInitialState: function () {
     var badge = this.props.badge;
+    var badgeClass = this.props.badgeClass;
     return {
-      imgUrl: this.getImgUrl(badge.category, badge.badgeLevel),
+      imgUrl: 'url(assets/graphics/badges/' +
+               badge.category + '-' + (badge.badgeLevel + 1) + '-graphic.svg)',
       progressBreaks: this.getProgressGradientBreaks(badge.points.percentage),
-      badgeClass: 'Badge ' + this.props.badgeClass,
-      interiorClass: 'Badge-Interior ' + this.props.badgeClass
+      badgeClass: 'Badge ' + badgeClass,
+      interiorClass: 'Badge-Interior ' + badgeClass
     };
   },
-
-  getImgUrl: function (category, level) {
-    return 'url(assets/graphics/badges/' + category + '-' + (level + 1) + '-graphic.svg)';
-  },
   getProgressGradientBreaks: function (percentage) {
+    // Calculates the linear-gradient breakpoint angles necessary to
+    // represent progress percentage
     var breakA = 90;
     var breakB = 90;
     if (percentage < 50) {
@@ -30,7 +30,6 @@ export default React.createClass({
                         'deg, #dbdbda 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),' +
                         'linear-gradient(' + this.state.progressBreaks.B +
                         'deg, #1e9fcc 50%, #dbdbda 50%, #dbdbda)';
-
     return (
       <div className={this.state.badgeClass} style={{backgroundImage: progressStyle}}>
         <div className={this.state.interiorClass} style={{backgroundImage: this.state.imgUrl}}></div>

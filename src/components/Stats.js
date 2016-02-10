@@ -51,42 +51,42 @@ export default React.createClass({
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><div className="emphasizedNumber">{total}</div></p>
+                    <p><span className="emphasizedNumber">{total}</span></p>
                     <p>Total Edits</p>
                   </div>
                 </div>
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><div className="emphasizedNumber">???</div></p>
+                    <p><span className="emphasizedNumber">???</span></p>
                     <p>Changesets</p>
                   </div>
                 </div>
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><div className="emphasizedNumber">{Number(user.total_building_count_add)}</div></p>
+                    <p><span className="emphasizedNumber">{Number(user.total_building_count_add)}</span></p>
                     <p>Buildings</p>
                   </div>
                 </div>
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><div className="emphasizedNumber">{Number(user.total_road_count_add)}</div></p>
+                    <p><span className="emphasizedNumber">{Number(user.total_road_count_add)}</span></p>
                     <p>Roads</p>
                   </div>
                 </div>
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><div className="emphasizedNumber">{Number(user.total_waterway_km_add).toFixed(1)}</div></p>
+                    <p><span className="emphasizedNumber">{Number(user.total_waterway_km_add).toFixed(1)}</span></p>
                     <p>Waterways</p>
                   </div>
                 </div>
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><div className="emphasizedNumber">{Number(user.total_poi_count_add)}</div></p>
+                    <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
                     <p>Point of Interest</p>
                   </div>
                 </div>
