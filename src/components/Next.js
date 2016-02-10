@@ -1,6 +1,6 @@
 import React from 'react';
 import R from 'ramda';
-import { getBadgeProgress } from '../badge_logic/badge_cruncher.js';
+import {getBadgeProgress} from '../badge_logic/badge_cruncher.js';
 import BadgeInProgress from '../components/BadgeInProgress.js';
 
 export default (props) => {

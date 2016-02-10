@@ -52,16 +52,14 @@ function stripWS (text) {
 }
 
 export default (props) => {
+  if (!props.progress.all) {
+    return <div>Loading...</div>;
+  }
   var badges = R.compose(
     R.uniqBy(R.prop('name')),
     R.reverse,
     R.sortBy(R.prop('level'))
   )(props.badges);
-
-  if (!props.progress.all) {
-    return <div>Loading...</div>;
-  }
-
   var list = badges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>
@@ -83,7 +81,6 @@ export default (props) => {
 
   var progressBadges = Object.keys(props.progress.all).map(function (val) {
     var badge = props.progress.all[val];
-
     return {
       description: mapBadgeToDescrip(badge.name),
       progress: Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' +
@@ -94,7 +91,6 @@ export default (props) => {
       points: badge.points
     };
   });
-
   var progressList = progressBadges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>
@@ -116,6 +112,7 @@ export default (props) => {
       </li>
     );
   });
+
   return (
     <div>
       <div id = "Badge-Container">

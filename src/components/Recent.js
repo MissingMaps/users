@@ -38,7 +38,7 @@ export default (props) => {
     }
   }
 
-  var country = data.latest.countries[0].name;
+  // var country = data.latest.countries[0].name;
   var hashtag = data.latest.hashtags[0].hashtag;
 
   return (
@@ -48,7 +48,7 @@ export default (props) => {
             <div className = "EmphasizedNumber">{last_edit_total}</div>
             <div className = "Recent-Edit-Sidebar">
               <p>edit{is_plural} made</p>
-              <p>{ last_edit_day } at { last_edit_minutes }</p>
+              <p>{last_edit_day} at {last_edit_minutes}</p>
               <p>#{hashtag}</p>
             </div>
           </div>
