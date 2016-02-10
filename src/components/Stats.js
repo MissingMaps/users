@@ -35,16 +35,74 @@ export default React.createClass({
   },
   render: function () {
     var user = this.props.data;
+
+    var total = Number(user.total_road_count_add) +
+      Number(user.total_road_count_mod) +
+      Number(user.total_building_count_add) +
+      Number(user.total_building_count_mod) +
+      Number(user.total_waterway_count_add) +
+      Number(user.total_poi_count_add);
+
     return (
       <div id = "Stats-Container">
-        <div className = "Card">
-          <div className = "Card-title">{user.name}'s Statistics</div>
-          <div className = "Card-Content">
-            <div className = "Split-3">
+            <div className = "Split Split-ByNumbers">
               <div className = "Card-Content Split-Content">
-                <div className = "Card-Section-Title">
-                  PROJECTS CONTRIBUTED TO
+                <div className = "descriptor">By The Numbers</div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><span className="emphasizedNumber">{total}</span></p>
+                    <p>Total Edits</p>
+                  </div>
                 </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><span className="emphasizedNumber">???</span></p>
+                    <p>Changesets</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><span className="emphasizedNumber">{Number(user.total_building_count_add)}</span></p>
+                    <p>Buildings</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><span className="emphasizedNumber">{Number(user.total_road_count_add)}</span></p>
+                    <p>Roads</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><span className="emphasizedNumber">{Number(user.total_waterway_km_add).toFixed(1)}</span></p>
+                    <p>Waterways</p>
+                  </div>
+                </div>
+                <div className = "Stats-Item">
+                  <img src="assets/graphics/circle.svg" width="50px"></img>
+                    <div className="Stat-Info">
+                    <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
+                    <p>Point of Interest</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className = "Split Split-Diversity">
+              <div className = "Card-Content Split-Content">
+                <div className = "descriptor centerme">
+                   Diversity of Edits
+                </div>
+                <PieChart user={user} />
+              </div>
+            </div>
+            <div className = "Split">
+              <div className = "Card-Content Split-Content">
+                <div className = "descriptor">Projects Contributed To</div>
                 <table className = "table-curve">
                   <tbody>
                     <tr>
@@ -62,59 +120,38 @@ export default React.createClass({
                   </tbody>
                 </table>
               </div>
-            </div>
-            <div className = "Split-3">
-              <div className = "Card-Content Split-Content">
-                <div className = "Card-Section-Title">
-                  BY THE NUMBERS
-                </div>
-                <table className = "table-curve">
-                  <tbody>
-                    <tr>
-                      <td>Buildings added</td>
-                      <td>{Number(user.total_building_count_add)}</td>
-                    </tr>
-                    <tr>
-                      <td>Roads Added</td>
-                      <td>{Number(user.total_road_count_add)}</td>
-                    </tr>
-                    <tr>
-                      <td>km of Roads Added</td>
-                      <td>{Number(user.total_road_km_add).toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>km of Waterways Added</td>
-                      <td>{Number(user.total_waterway_km_add).toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>Point of Interests Added</td>
-                      <td>{Number(user.total_poi_count_add)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className = "Split-3">
-              <div className = "Card-Content Split-Content">
-                <div className = "Card-Section-Title">
-                  TYPE OF EDITS
-                </div>
-                <PieChart user={user} />
-              </div>
-            </div>
           </div>
           <div className ="Stat-Component-Container">
             <ContributionBox timestamps={user.edit_times} />
-            <div className = "Card-Section-Title Move-over">
+            <div className = "descriptor">
               WORLD REACH
             </div>
-            <div id = "MapContainer">
-              <div className = "MapContent">
-                <div id="map"></div>
+            <div className = "Split Split-WorldReach">
+                <table className = "table-curve">
+                  <tbody>
+                    <tr>
+                      <th>Countries most mapped</th>
+                      <th></th>
+                    </tr>
+                    {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                      return (
+                        <tr key={hashtag}>
+                          <td key={hashtag}>{hashtag}</td>
+                          <td><div className="emphasizedText">{user.hashtags[hashtag]}</div></td>
+                        </tr>
+                        );
+                    })}
+                  </tbody>
+                </table>
+            </div>
+            <div className = "Split Split-Map">
+              <div id = "MapContainer">
+                <div className = "MapContent">
+                  <div id="map"></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
     );
   }

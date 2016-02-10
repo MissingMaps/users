@@ -20,10 +20,10 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     roadKmMods: Number(user.total_road_km_mod),
     // waterwayKms: user.total_waterway_km_add,
     // gpsTraceKmAdd: user.total_gpstrace_km_add,
-    // countries: user.,
+    countries: user.country_count,
     // tasks: user.,
     // taskEdits: user.,
-    // josm: user.,
+    josm: user.total_josm_edit_count,
     hashtags: Object.keys(user.hashtags).length
   });
 
@@ -34,12 +34,14 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     return sumBadges[a].points.percentage - sumBadges[b].points.percentage;
   });
 
-  var mostAttainableBadge = sumBadges[sortedSumBadges.slice(-1)[0]];
-  mostAttainableBadge.name = sumBadges[R.last(sortedSumBadges)].name;
+  var mostObtainableNames = sortedSumBadges.slice(-3);
+  var mostObtainable = sumBadges[mostObtainableNames[2]];
+  var secondMostObtainable = sumBadges[mostObtainableNames[1]];
+  var thirdMostObtainable = sumBadges[mostObtainableNames[0]];
 
   return {
     all: R.mergeAll([sumBadges, consistencyBadge, historyBadge]),
-    mostAttainable: mostAttainableBadge
+    mostAttainable: [mostObtainable, secondMostObtainable, thirdMostObtainable]
   };
 };
 

@@ -112,7 +112,7 @@ export default React.createClass({
   render: function () {
     return <div>
       <div className = "Pie-Tin">
-        <PieChart data={this.state.chartData} options={this.state.chartOptions} width='250' height='155' />
+        <PieChart data={this.state.chartData} options={this.state.chartOptions} width='155' height='155' />
       </div>
       <div className = "ChartControls">
         <input type="button" onClick={this.loadCounts} value="By Quantity"

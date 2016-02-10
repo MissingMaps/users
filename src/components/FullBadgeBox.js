@@ -1,34 +1,14 @@
 import React from 'react';
 import R from 'ramda';
-
-function mapBadgeToImage (badge) {
-  var map = {
-    'Road Builder': 'assets/graphics/test.svg',
-    'Road Maintainer': 'assets/graphics/test.svg',
-    'Building Builder': 'assets/graphics/test.svg',
-    'Consistentency': 'assets/graphics/test2.svg',
-    'GPS Trace Creator': 'assets/graphics/test3.svg',
-    'JOSM User': 'assets/graphics/test.svg',
-    'Long & Winding Road': 'assets/graphics/test2.svg',
-    'Long & Winding Road Maintainer': 'assets/graphics/test2.svg',
-    'Mapathoner': 'assets/graphics/test3.svg',
-    'Node Builder': 'assets/graphics/test.svg',
-    'TaskMan Scrutinizer': 'assets/graphics/test3.svg',
-    'TaskMan Square Champion': 'assets/graphics/test.svg',
-    'Waterway Creator': 'assets/graphics/test2.svg',
-    'World Renown': 'assets/graphics/test3.svg',
-    'Year-long Mapper': 'assets/graphics/test3.svg',
-    'Point Creator': 'assets/graphics/test3.svg'
-  };
-  return map[badge];
-}
+import BadgeInProgress from '../components/BadgeInProgress.js';
+import BadgeCompleted from '../components/BadgeCompleted.js';
 
 function mapBadgeToDescrip (badge) {
   var map = {
     'Road Builder': 'Map many roads across the land.',
     'Road Maintainer': 'Updated and corrected misplaced roads.',
     'Building Builder': 'Built all those buildings!',
-    'Consistentency': 'Mapped every day for a week!',
+    'Consistency': 'Mapped every day for a week!',
     'GPS Trace Creator': 'Uploaded GPS traces through their OSM',
     'JOSM User': 'Used JSOM to map an area',
     'Long & Winding Road': 'Created lots of roads.',
@@ -72,23 +52,26 @@ function stripWS (text) {
 }
 
 export default (props) => {
-  var badges = R.map(R.prop('name'), props.badges);
   if (!props.progress.all) {
     return <div>Loading...</div>;
   }
-
+  var badges = R.compose(
+    R.uniqBy(R.prop('name')),
+    R.reverse,
+    R.sortBy(R.prop('level'))
+  )(props.badges);
   var list = badges.map((badge) => {
     return (
-      <li key={stripWS(badge)}>
+      <li key={stripWS(badge.name)}>
         <div className = "badge-home">
-          <img src={mapBadgeToImage(badge)} width="150px"></img>
+         <BadgeCompleted badge={badge}/>
           <div className = "badge-Details">
-            <div className = "badge-Name">
-              {badge}
+            <div className = "sub-head">
+              {badge.name}
             </div>
             <div className = "badge-Description">
               <div className = "line-break"></div>
-              {mapBadgeToDescrip(badge)}
+              {mapBadgeToDescrip(badge.name)}
             </div>
           </div>
         </div>
@@ -99,20 +82,22 @@ export default (props) => {
   var progressBadges = Object.keys(props.progress.all).map(function (val) {
     var badge = props.progress.all[val];
     return {
-      'description': mapBadgeToDescrip(badge.name),
-      'progress': Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' +
+      description: mapBadgeToDescrip(badge.name),
+      progress: Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' +
         mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
-      'name': badge.name
+      name: badge.name,
+      category: badge.category,
+      badgeLevel: badge.badgeLevel,
+      points: badge.points
     };
   });
-
   var progressList = progressBadges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>
         <div className = "badge-home">
-          <img src={mapBadgeToImage(badge.name)} width="150px"></img>
+          <BadgeInProgress badge={badge} badgeClass={'progress'}/>
           <div className = "badge-Details">
-            <div className = "badge-Name">
+            <div className = "sub-head">
               {badge.name}
             </div>
             <div className = "badge-Description">
@@ -127,12 +112,13 @@ export default (props) => {
       </li>
     );
   });
+
   return (
     <div>
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content">
           <div className = "badgeroll-frame">
-            <div className = "badgeroll-center card">
+            <div className = "badgeroll-center">
               <div className = "Card-title">
                 EARNED BADGES
               </div>
@@ -146,7 +132,7 @@ export default (props) => {
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content">
           <div className = "badgeroll-frame">
-            <div className = "badgeroll-center card">
+            <div className = "badgeroll-center">
               <div className = "Card-title">
                 BADGE PROGRESS
               </div>
