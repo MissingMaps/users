@@ -1,8 +1,7 @@
 import React from 'react';
 import R from 'ramda';
 import { getBadgeProgress } from '../badge_logic/badge_cruncher.js';
-import { descriptions } from '../components/FullBadgeBox.js';
-import Badge from '../components/Badge.js'
+import Badge from '../components/Badge.js';
 
 export default (props) => {
   var progress = getBadgeProgress(props.data);
@@ -11,8 +10,8 @@ export default (props) => {
       <div className = "Split">
         <div className = "descriptor">Upcoming Badges</div>
         <div className = "Upcoming-Badges-Box">
-          <Badge badge={mostObtainableBadges[0]} />
-          <Badge badge={mostObtainableBadges[1]} />
+          <Badge badge={mostObtainableBadges[0]} badgeClass={'upcoming'}/>
+          <Badge badge={mostObtainableBadges[1]} badgeClass={'upcoming'}/>
           <div className = "See-More-Badges">+</div>
         </div>
         <div className = "descriptor">Possible Projects</div>
