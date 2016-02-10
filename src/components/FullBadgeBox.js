@@ -66,7 +66,7 @@ export default (props) => {
     return (
       <li key={stripWS(badge.name)}>
         <div className = "badge-home">
-         <BadgeCompleted badge={badge} badgeClass={'progress'}/>
+         <BadgeCompleted badge={badge}/>
           <div className = "badge-Details">
             <div className = "sub-head">
               {badge.name}
@@ -92,7 +92,6 @@ export default (props) => {
       category: badge.category,
       badgeLevel: badge.badgeLevel,
       points: badge.points
-
     };
   });
 

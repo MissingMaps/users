@@ -3,13 +3,11 @@ import React from 'react';
 export default React.createClass({
   getInitialState: function () {
     var badge = this.props.badge;
-    var badgeClass = this.props.badgeClass;
     return {
       imgUrl: 'url(assets/graphics/badges/' +
                badge.category + '-' + (badge.badgeLevel + 1) + '-graphic.svg)',
       progressBreaks: this.getProgressGradientBreaks(badge.points.percentage),
-      badgeClass: 'Badge ' + badgeClass,
-      interiorClass: 'Badge-Interior ' + badgeClass
+      badgeClass: this.props.badgeClass
     };
   },
   getProgressGradientBreaks: function (percentage) {
@@ -31,8 +29,13 @@ export default React.createClass({
                         'linear-gradient(' + this.state.progressBreaks.B +
                         'deg, #1e9fcc 50%, #dbdbda 50%, #dbdbda)';
     return (
-      <div className={this.state.badgeClass} style={{backgroundImage: progressStyle}}>
-        <div className={this.state.interiorClass} style={{backgroundImage: this.state.imgUrl}}></div>
+      <div
+        className={'Badge ' + this.state.badgeClass}
+        style={{backgroundImage: progressStyle}}>
+        <div
+          className={'Badge-Interior ' + this.state.badgeClass}
+          style={{backgroundImage: this.state.imgUrl}}>
+        </div>
       </div>
     );
   }
