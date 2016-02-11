@@ -121,7 +121,7 @@ export default React.createClass({
                       return (
                         <tr key={hashtag}>
                           <td key={hashtag}>#{hashtag}</td>
-                          <td>{user.hashtags[hashtag]}</td>
+                          <td><span className="emphasizedText">{user.hashtags[hashtag]}</span></td>
                         </tr>
                         );
                     })}
