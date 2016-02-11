@@ -589,10 +589,11 @@ input[type='text'] {
   a {
     font-weight: 700;
     margin-left: 20px;
-    padding: 16px 20px;
+    padding: 17px 20px;
     transition: background-color .1s;
     border-bottom: 0;
     background-color: #a6a6a6;
+    // padding-bottom: 10px !important;
     &:hover {
       color: #999;
       background-color: #ddd;
