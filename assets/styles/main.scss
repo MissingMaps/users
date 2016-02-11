@@ -331,7 +331,7 @@ header {
     height: 16px;
     margin: 3px 6px 0 0;
     content: '';
-    background: url('/assets/graphics/menubox.svg');
+    background: url('../graphics/menubox.svg');
   }
   @media screen and (max-width: 500px) {
     display: block;
@@ -1281,23 +1281,24 @@ table {
   input {
     font-family: 'lato';
     font-size: 1em;
-    width: 200px;
-    height: 40px;
-    margin-top: 2;
-    margin-right: 200pxpx;
+    width: 250px;
+    height: 30px;
     padding-left: 10px;
     background-color: white;
     &.search-bar-submit {
-      width: 100px;
-      padding-left: 0;
-      transition: background-color .1s;
-      color: $darkgrey;
-      border: 1px solid lighten($lightgrey, 0);
-      border-radius: 4px;
-      outline: none;
-      background-color: lighten($lightgrey, 10);
+      background-image: url('../graphics/search.svg');
+      background-size: 15px;
+      background-position: center center;
+      background-repeat: no-repeat;
+      color: rgba(0, 0, 0, 0);
+      height: 30px;
+      width: 30px;
+      background-color: $mmTeal;
+      border-color: $mmTeal;
+      border-radius: 0px 5px 5px 0px;
+      cursor: pointer;
       &:active {
-        background-color: lighten($lightgrey, 20);
+        background-color: lighten($mmTeal, 20);
       }
     }
   }
@@ -1313,19 +1314,42 @@ table {
 }
 
 .search-bar-suggestions {
-  margin-top: 10px;
   text-align: left;
-  li {
+  margin: 14px 10px 10px 70px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border: 1px solid $border-grey;
+  box-shadow: 0px 2px $lightgrey;
+  width: 250px;
+  background-color: white;
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+  .descriptor{
+    padding: 6px 0px 2px 10px;
+  }
+  li{
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 4px;
+    padding-left: 18px;
+    padding-bottom: 4px;
     display: block;
-    width: 194px;
-    margin-top: 4px;
-    padding: 4px;
     cursor: pointer;
-    transition: background-color .3s;
-    background-color: lighten($lightgrey, 10);
-    &:hover {
-      background-color: lighten($lightgrey, 20);
+    transition: background-color 0.3s;
+    background-color: white;
+    line-height: 1.8em;
+    &:hover{
+      background-color: desaturate(lighten($mmTeal, 46), 40);
     };
+    strong {
+      font-weight: normal;
+      color: black;
+    }
+    span {
+      font-weight: 500;
+      color: black;
+    }
   }
 }
 
