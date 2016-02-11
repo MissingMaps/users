@@ -21,13 +21,20 @@ export default React.createClass({
     }).addTo(map);
 
     var geo_extent = this.props.data.geo_extent;
+    var coordinates = geo_extent.geometry.coordinates;
     L.Icon.Default.imagePath = 'assets/images/';
     L.geoJson(geo_extent).addTo(map);
-    geo_extent.geometry.coordinates.forEach(function (feature) {
-      var poly = polygon(feature);
+    if (geo_extent.geometry.type === 'MultiPolygon') {
+      coordinates.forEach(function (feature) {
+        var poly = polygon(feature);
+        var c = centroid(poly);
+        L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
+      });
+    } else {
+      var poly = polygon(coordinates);
       var c = centroid(poly);
       L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
-    });
+    }
 
     this.setState({
       map: map
@@ -138,7 +145,7 @@ export default React.createClass({
                       return (
                         <tr key={country[0]}>
                           <td key={country[0]}>{country[0]}</td>
-                          <td><div className="emphasizedText">{country[1]}</div></td>
+                          <td><span className="emphasizedText">{country[1]}</span></td>
                         </tr>
                         );
                     })}
