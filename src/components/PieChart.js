@@ -4,7 +4,6 @@ var PieChart = require('react-chartjs').Pie;
 export default React.createClass({
   getInitialState: function () {
     var stats = this.props.user || [];
-    console.log(stats)
 
     var roadCount = Math.floor(stats.total_road_count_add);
     var buildCount = Math.floor(stats.total_building_count_add);
