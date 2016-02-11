@@ -21,13 +21,20 @@ export default React.createClass({
     }).addTo(map);
 
     var geo_extent = this.props.data.geo_extent;
+    var coordinates = geo_extent.geometry.coordinates;
     L.Icon.Default.imagePath = 'assets/images/';
     L.geoJson(geo_extent).addTo(map);
-    geo_extent.geometry.coordinates.forEach(function (feature) {
-      var poly = polygon(feature);
+    if (geo_extent.geometry.type === 'MultiPolygon') {
+      coordinates.forEach(function (feature) {
+        var poly = polygon(feature);
+        var c = centroid(poly);
+        L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
+      });
+    } else {
+      var poly = polygon(coordinates);
       var c = centroid(poly);
       L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
-    });
+    }
 
     this.setState({
       map: map
@@ -35,6 +42,8 @@ export default React.createClass({
   },
   render: function () {
     var user = this.props.data;
+    var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
+    var changesetCount = user.changeset_count;
 
     var total = Number(user.total_road_count_add) +
       Number(user.total_road_count_mod) +
@@ -58,7 +67,7 @@ export default React.createClass({
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><span className="emphasizedNumber">???</span></p>
+                    <p><span className="emphasizedNumber">{changesetCount}</span></p>
                     <p>Changesets</p>
                   </div>
                 </div>
@@ -113,7 +122,7 @@ export default React.createClass({
                       return (
                         <tr key={hashtag}>
                           <td key={hashtag}>#{hashtag}</td>
-                          <td>{user.hashtags[hashtag]}</td>
+                          <td><span className="emphasizedText">{user.hashtags[hashtag]}</span></td>
                         </tr>
                         );
                     })}
@@ -133,11 +142,11 @@ export default React.createClass({
                       <th>Countries most mapped</th>
                       <th></th>
                     </tr>
-                    {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                    {R.take(11, countries).map(function (country) {
                       return (
-                        <tr key={hashtag}>
-                          <td key={hashtag}>{hashtag}</td>
-                          <td><div className="emphasizedText">{user.hashtags[hashtag]}</div></td>
+                        <tr key={country[0]}>
+                          <td key={country[0]}>{country[0]}</td>
+                          <td><span className="emphasizedText">{country[1]}</span></td>
                         </tr>
                         );
                     })}

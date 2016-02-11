@@ -9,8 +9,8 @@ export default React.createClass({
     var buildCount = Math.floor(stats.total_building_count_add);
     var waterCount = Math.floor(stats.total_waterway_count_add);
     var poiCount = Math.floor(stats.total_poi_count_add);
-    var roadKm = Math.floor(stats.total_road_km_add);
-    var waterKm = Math.floor(stats.total_waterway_km_add);
+    var roadKm = Number(stats.total_road_km_add).toFixed(2);
+    var waterKm = Number(stats.total_waterway_km_add).toFixed(2);
 
     var noDist = false;
     var noCount = false;
@@ -26,8 +26,8 @@ export default React.createClass({
     if (noCount === true) {
       chartDataCount = [{
         value: 1,
-        color: '#dedede',
-        highlight: '#dedede',
+        color: '#d6d6d6',
+        highlight: '#d6d6d6',
         label: 'No Edits'
       }];
       tooltipTemplate = 'No Edits';
@@ -35,26 +35,26 @@ export default React.createClass({
       chartDataCount = [
         {
           value: roadCount,
-          color: '#eaeaea',
-          highlight: '#f2f2f2',
+          color: '#faf3b6',
+          highlight: '#dcd599',
           label: 'Roads'
         },
         {
           value: waterCount,
-          color: '#cccccc',
-          highlight: '#dddddd',
+          color: '#a8dde1',
+          highlight: '#8abcc0',
           label: 'Waterways'
         },
         {
           value: buildCount,
-          color: '#969696',
-          highlight: '#aaaaaa',
+          color: '#fbd1b3',
+          highlight: '#dcb296',
           label: 'Buildings'
         },
         {
           value: poiCount,
-          color: '#6b6b6b',
-          highlight: '#8e8e8e',
+          color: '#d3e7b9',
+          highlight: '#b5c89b',
           label: 'Points of Interest'
         }
       ];
@@ -62,26 +62,26 @@ export default React.createClass({
     var chartDataDist = [
       {
         value: roadKm,
-        color: '##f7f7f7',
-        highlight: '#E8EA6B',
+        color: '#faf3b6',
+        highlight: '#dcd599',
         label: 'Roads'
       },
       {
         value: waterKm,
-        color: '#cccccc',
-        highlight: '#BDD4FF',
+        color: '#a8dde1',
+        highlight: '8abcc0',
         label: 'Waterways'
       },
       {
         value: 0,
-        color: '#969696',
-        highlight: '#D2D3D3',
+        color: '#fbd1b3',
+        highlight: '#dcb296',
         label: 'Buildings'
       },
       {
         value: 0,
-        color: '#525252',
-        highlight: '#FFC6C5',
+        color: '#d3e7b9',
+        highlight: '#b5c89b',
         label: 'Points of Interest'
       }
     ];
