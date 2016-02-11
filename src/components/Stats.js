@@ -35,6 +35,7 @@ export default React.createClass({
   },
   render: function () {
     var user = this.props.data;
+    var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
 
     var total = Number(user.total_road_count_add) +
       Number(user.total_road_count_mod) +
@@ -133,11 +134,11 @@ export default React.createClass({
                       <th>Countries most mapped</th>
                       <th></th>
                     </tr>
-                    {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                    {R.take(11, countries).map(function (country) {
                       return (
-                        <tr key={hashtag}>
-                          <td key={hashtag}>{hashtag}</td>
-                          <td><div className="emphasizedText">{user.hashtags[hashtag]}</div></td>
+                        <tr key={country[0]}>
+                          <td key={country[0]}>{country[0]}</td>
+                          <td><div className="emphasizedText">{country[1]}</div></td>
                         </tr>
                         );
                     })}
