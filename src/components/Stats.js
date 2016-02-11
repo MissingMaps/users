@@ -43,6 +43,7 @@ export default React.createClass({
   render: function () {
     var user = this.props.data;
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
+    var changesetCount = user.changeset_count;
 
     var total = Number(user.total_road_count_add) +
       Number(user.total_road_count_mod) +
@@ -66,7 +67,7 @@ export default React.createClass({
                 <div className = "Stats-Item">
                   <img src="assets/graphics/circle.svg" width="50px"></img>
                     <div className="Stat-Info">
-                    <p><span className="emphasizedNumber">???</span></p>
+                    <p><span className="emphasizedNumber">{changesetCount}</span></p>
                     <p>Changesets</p>
                   </div>
                 </div>
