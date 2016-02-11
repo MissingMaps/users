@@ -593,7 +593,6 @@ input[type='text'] {
     transition: background-color .1s;
     border-bottom: 0;
     background-color: #a6a6a6;
-    // padding-bottom: 10px !important;
     &:hover {
       color: #999;
       background-color: #ddd;
@@ -1210,17 +1209,6 @@ h3 {
     margin-right: auto;
     margin-left: auto;
   }
-}
-
-.Split2 {
-  position: relative;
-  float: left;
-  width: 100%;
-  min-width: 300px;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
-  background-color: red;
 }
 
 table,

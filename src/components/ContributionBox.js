@@ -7,7 +7,7 @@ export default React.createClass({
     // smaller of (horizontal resolution + 30) / 100 and 12.
     var chartSize = {};
     if (window.innerWidth >= 1100) {
-      chartSize = {tallerDiv: true, cellSize: 13.9, range: 12};
+      chartSize = {tallerDiv: true, cellSize: 13.6, range: 12};
     } else {
       var months = ~~((window.innerWidth + 100) / 100);
       if (months > 12) months = 12;

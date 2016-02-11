@@ -999,16 +999,6 @@ h3 {
       margin-right: auto;
       margin-left: auto; } }
 
-.Split2 {
-  position: relative;
-  float: left;
-  width: 100%;
-  min-width: 300px;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
-  background-color: red; }
-
 table,
 th,
 td {
