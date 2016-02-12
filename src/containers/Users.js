@@ -37,7 +37,6 @@ export default React.createClass({
   },
   onChange: function (input, resolve) {
     resolve(this.state.names.filter((suggestion) => {
-      console.log(suggestion.startsWith(input.toLowerCase()))
       return suggestion.startsWith(input.toLowerCase());
     }));
   },
