@@ -767,6 +767,10 @@ input[type='text'] {
   li {
     display: inline-block;
     padding: 0 20px 30px 0;
+    vertical-align: top;
+    @media screen and (min-width: 1154px) {
+      width: 45%;
+    }
     @media screen and (max-width: 1154px) {
       width: 45%;
     }
