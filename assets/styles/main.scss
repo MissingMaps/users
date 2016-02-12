@@ -331,7 +331,7 @@ header {
     height: 16px;
     margin: 3px 6px 0 0;
     content: '';
-    background: url('/assets/graphics/menubox.svg');
+    background: url('../graphics/menubox.svg');
   }
   @media screen and (max-width: 500px) {
     display: block;
@@ -389,7 +389,6 @@ input[type='text'] {
   -webkit-border-radius: 5px;
   outline: none;
   background-color: lighten($lightgrey, 10);
-  box-shadow: -1px -2px $lightgrey;
   &:focus {
     background-color: white;
   }
@@ -1263,7 +1262,8 @@ table {
 .Search-Container {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 90%;
+  min-height: 580px;
   text-align: center;
   background-color: #eee;
 }
@@ -1279,25 +1279,35 @@ table {
   width: 100%;
   padding-top: 4.5em;
   input {
+    box-sizing: none;
     font-family: 'lato';
-    font-size: 1em;
-    width: 200px;
-    height: 40px;
-    margin-top: 2;
-    margin-right: 200pxpx;
-    padding-left: 10px;
+    font-size: 0.9em;
+    width: 180px;
+    height: 30px;
+    margin: none;
+    color: $darkgrey;
+    border: 1px solid $border-grey;
+    -webkit-border-radius: 5px 0px 0px 5px;
     background-color: white;
+    margin-top: 20px;
+    padding: 2px 0px 2px 6px;
+    outline: none;
+    border-right: 0px;
     &.search-bar-submit {
-      width: 100px;
-      padding-left: 0;
-      transition: background-color .1s;
-      color: $darkgrey;
-      border: 1px solid lighten($lightgrey, 0);
-      border-radius: 4px;
+      background-image: url('../graphics/search.svg');
+      background-size: 15px;
+      background-position: center center;
+      background-repeat: no-repeat;
+      color: rgba(0, 0, 0, 0);
+      height: 30px;
+      width: 30px;
+      background-color: $mmTeal;
+      border-color: $mmTeal;
+      border-radius: 0px 5px 5px 0px;
+      cursor: pointer;
       outline: none;
-      background-color: lighten($lightgrey, 10);
       &:active {
-        background-color: lighten($lightgrey, 20);
+        background-color: lighten($mmTeal, 20);
       }
     }
   }
@@ -1313,21 +1323,70 @@ table {
 }
 
 .search-bar-suggestions {
-  margin-top: 10px;
   text-align: left;
-  li {
+  margin: 10px 0 0 66px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border: 1px solid $border-grey;
+  box-shadow: 0px 2px $lightgrey;
+  width: 207px;
+  background-color: white;
+  position: relative;
+  max-height: 216px;
+  overflow: hidden;
+  position:relative;
+  .descriptor{
+    padding: 6px 0px 2px 10px;
+  }
+  li{
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 4px;
+    padding-left: 18px;
+    padding-bottom: 4px;
     display: block;
-    width: 194px;
-    margin-top: 4px;
-    padding: 4px;
     cursor: pointer;
-    transition: background-color .3s;
-    background-color: lighten($lightgrey, 10);
-    &:hover {
-      background-color: lighten($lightgrey, 20);
+    transition: background-color 0.3s;
+    background-color: white;
+    line-height: 1.8em;
+    &:hover{
+      background-color: desaturate(lighten($mmTeal, 46), 40);
     };
+    strong {
+      font-weight: normal;
+      color: $darkestgrey;
+    }
+    span {
+      font-weight: 500;
+      color: $darkestgrey;
+    }
   }
 }
+
+.-suggestions:after, .search-bar-suggestions:before {
+  bottom: 100%;
+  left: 90%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.search-bar-suggestions:after {
+  border-color: rgba(49, 213, 213, 0);
+  border-bottom-color: white;
+  border-width: 9px;
+  margin-left: -11px;
+}
+.search-bar-suggestions:before {
+  border-color: rgba(194, 225, 245, 0);
+  border-bottom-color: $border-grey;
+  border-width: 10px;
+  margin-left: -12px;
+}
+
 
 .Pie-Tin {
   font-family: 'Lato', sans-serif;
