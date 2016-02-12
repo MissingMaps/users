@@ -32,9 +32,9 @@ export default React.createClass({
   render: function () {
     return (
       <div>
-        <div id = "User-Container">
-        <Header />
+      <Header />
         <div className = "white"></div>
+        <div id = "User-Container">
           <div id = "Main-User-Container">
             <UserSubHead user={this.state.user}/>
             {(
@@ -45,8 +45,8 @@ export default React.createClass({
                 : <div>Loading...</div>)
             }
           </div>
-        <Footer />
         </div>
+        <Footer />
       </div>
     );
   }

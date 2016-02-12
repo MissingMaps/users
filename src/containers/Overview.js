@@ -24,7 +24,7 @@ export default React.createClass({
       return (
         <div id="overview">
           <div className = "box">
-            <div className = "User-Page-Top">
+            <div className = "User-Page-Top section-user">
               <Recent data = {this.state.user}/>
               <RecentBadge badge={latestBadge}/>
               <Next data = {this.state.user}/>
