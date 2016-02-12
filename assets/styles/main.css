@@ -595,6 +595,7 @@ input[type='text'] {
       margin-left: auto; } }
 
 .Contribute-Timeline-Content {
+  float: left;
   height: 130px; }
   .Contribute-Timeline-Content.tall {
     height: 155px; }

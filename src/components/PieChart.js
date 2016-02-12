@@ -114,12 +114,12 @@ export default React.createClass({
       <div className = "Pie-Tin">
         <PieChart data={this.state.chartData} options={this.state.chartOptions} width='200px' height='200px' />
       </div>
-    {/*<div className = "ChartControls">
+    {/* <div className = "ChartControls">
         <input type="button" onClick={this.loadCounts} value="By Quantity"
          className = {this.state.noCount ? 'disabled' : ''}/>
         <input type="button" onClick={this.loadDist} value="By Distance"
          className = {this.state.noDist ? 'disabled' : ''} />
-      </div>*/}
+      </div> */}
     </div>;
   }
 });
