@@ -157,6 +157,7 @@ a {
   font-weight: 300;
   padding: .5em 0 .75em 0;
   letter-spacing: .01em;
+  float: left;
 }
 
 .textbox {
@@ -764,7 +765,18 @@ input[type='text'] {
   display: inline;
   li {
     display: inline-block;
-    padding: 8px;
+    padding: 0 20px 30px 0;
+    @media screen and (max-width: 1154px) {
+      width: 45%;
+    }
+    @media screen and (max-width: 894px) {
+      padding: 0 0px 30px 60px;
+      width: 40%;
+    }
+    @media screen and (max-width: 500px) {
+      padding: 0 0px 30px 0px;
+      width: 60%;
+    }
   }
 }
 
@@ -807,8 +819,6 @@ input[type='text'] {
 }
 
 .badge-home {
-  width: 400px;
-  height: 200px;
   hr {
     max-width: 80%;
   }
@@ -819,19 +829,22 @@ input[type='text'] {
 }
 
 .badge-Details {
-  position: relative;
-  float: right;
-  width: 210px;
+  float: left;
+  width: 50%;
   text-align: left;
+  margin-left: 30px;
   .sub-head {
     line-height: 1.2em;
     padding-bottom: 0;
+    width: 100%;
+    @media screen and (max-width: 894px) {
+      margin-top: 15px;
+    }
   }
-  @media screen and (max-width: 630px) {
+  @media screen and (max-width: 894px) {
     float: initial;
-    margin-right: auto;
-    margin-left: auto;
-    text-align: center;
+    margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -845,10 +858,10 @@ input[type='text'] {
 .Badge-Description {
   font-weight: 300;
   margin-bottom: 10px;
+  float: left;
 }
 
 .line-break {
-  float: right;
   width: 190px;
   height: 1px;
   margin-right: 20px;
@@ -882,15 +895,10 @@ input[type='text'] {
   &.progress {
     width: 150px;
     height: 150px;
-    margin-top: 20px;
-    margin-right: 30px;
   }
   &.upcoming {
     width: 80px;
     height: 80px;
-    margin-top: 5px;
-    margin-right: 10px;
-    margin-bottom: 3px;
   }
 }
 
@@ -968,6 +976,32 @@ input[type='text'] {
   margin: 3px auto 0 auto;
 }
 
+.Badge-Popup {
+  font-weight: 300;
+  position: absolute;
+  z-index: 1;
+  top: 95px;
+  left: 95px;
+  width: 200px;
+  margin-top: 5px;
+  margin-left: 15px;
+  padding: 10px 10px;
+  -webkit-transition: opacity .25s ease-in-out;
+  -webkit-transition: all .25s ease-in-out;
+     -moz-transition: opacity .25s ease-in-out;
+     -moz-transition: all .25s ease-in-out;
+          transition: opacity .25s ease-in-out;
+          transition: all .25s ease-in-out;
+  border: 1px solid $border-grey;
+  border-radius: 5px;
+  background-color: $lightgrey;
+  &.hidden {
+    margin-top: 0;
+    margin-left: 0;
+    opacity: 0;
+  }
+}
+
 /*----------------------------------------------*/
 /*Container Styles*/
 /*----------------------------------------------*/
@@ -1004,11 +1038,11 @@ input[type='text'] {
 }
 
 .badgeroll-center {
-  max-width: 832px;
+  max-width: 80%;
   margin: 0 auto 0 auto;
-  padding: 0 20px 2em 20px;
-  @media screen and (max-width: 1101px) {
-    max-width: 400px;
+  padding: 0px 20px .8em 20px;
+  @media screen and (max-width: 1154px) {
+    max-width: 100%;
   }
   @media screen and (max-width: 600px) {
     padding: 0;
@@ -1108,6 +1142,7 @@ input[type='text'] {
   max-width: 100%;
   margin-right: auto;
   margin-left: auto;
+  padding-top: 65px;
   &.front {
     text-align: center;
   }
@@ -1116,12 +1151,10 @@ input[type='text'] {
 #Badge-Container {
   min-width: 300px;
   max-width: 100%;
-  @media screen and (max-width: 1100px) {
-    position: relative;
-    max-width: 75%;
-    margin: 50px 10px 0 10px;
-    margin-right: auto;
-    margin-left: auto;
+  @media screen and (max-width: 768px) {
+    max-width: 100%;
+    text-align: center;
+    margin: auto;
   }
 }
 
@@ -1156,7 +1189,7 @@ input[type='text'] {
   font-weight: 800;
   width: 100%;
   padding-top: 8px;
-  padding-bottom: 2px;
+  padding-bottom: 20px;
   text-align: center;
   color: #bbb;
 }
@@ -1584,11 +1617,11 @@ table {
   display: inline-block;
   width: 80px;
   height: 80px;
-  border: 3px solid #bbb;
   transition: background-color .1s;
   text-align: center;
   vertical-align: top;
   color: #bbb;
+  border: 3px solid #bbb;
   border-radius: 50%;
   background-color: #ddd;
   &:hover {
@@ -1832,45 +1865,45 @@ table {
   margin: 10px auto 10px auto;
 }
 
-.cal-heatmap-container .graph
-{
-  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+.cal-heatmap-container .graph {
+  font-family: 'Lucida Grande', Lucida, Verdana, sans-serif;
 }
 
-.cal-heatmap-container .graph-label
-{
+.cal-heatmap-container .graph-label {
+  font-size: 10px;
+
   fill: #999;
-  font-size: 10px
 }
 
-.cal-heatmap-container .graph, .cal-heatmap-container .graph-legend rect {
-  shape-rendering: crispedges
+.cal-heatmap-container .graph,
+.cal-heatmap-container .graph-legend rect {
+  shape-rendering: crispedges;
 }
 
-.cal-heatmap-container .graph-rect
-{
+.cal-heatmap-container .graph-rect {
   fill: #d0d0d0;
 }
 
-.cal-heatmap-container .graph-subdomain-group rect:hover
-{
+.cal-heatmap-container .graph-subdomain-group rect:hover {
   stroke: #000;
-  stroke-width: 1px
+  stroke-width: 1px;
 }
 
 .cal-heatmap-container .subdomain-text {
   font-size: 8px;
+  pointer-events: none;
+
   fill: #999;
-  pointer-events: none
 }
 
 .cal-heatmap-container .hover_cursor:hover {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .cal-heatmap-container .qi {
   background-color: #999;
-  fill: #999
+
+  fill: #999;
 }
 
 .Stat-Component-Container {
@@ -1887,92 +1920,88 @@ Remove comment to apply this style to date with value equal to 0
 }
 */
 
-.cal-heatmap-container .q1
-{
-  background-color: #65E5E8;
-  fill: #65E5E8
+.cal-heatmap-container .q1 {
+  background-color: #65e5e8;
+
+  fill: #65e5e8;
 }
 
-.cal-heatmap-container .q2
-{
-  background-color: #55DCDF;
-  fill: #55DCDF
+.cal-heatmap-container .q2 {
+  background-color: #55dcdf;
+
+  fill: #55dcdf;
 }
 
-.cal-heatmap-container .q3
-{
-  background-color: #45D4D6;
-  fill: #45D4D6
+.cal-heatmap-container .q3 {
+  background-color: #45d4d6;
+
+  fill: #45d4d6;
 }
 
-.cal-heatmap-container .q4
-{
-  background-color: #36CBCE;
-  fill: #36CBCE
+.cal-heatmap-container .q4 {
+  background-color: #36cbce;
+
+  fill: #36cbce;
 }
 
-.cal-heatmap-container .q5
-{
-  background-color: #26C5C8;
-  fill: #26C5C8
+.cal-heatmap-container .q5 {
+  background-color: #26c5c8;
+
+  fill: #26c5c8;
 }
 
-.cal-heatmap-container rect.highlight
-{
-  stroke:#444;
-  stroke-width:1
+.cal-heatmap-container rect.highlight {
+  stroke: #444;
+  stroke-width: 1;
 }
 
-.cal-heatmap-container text.highlight
-{
-  fill: #444
+.cal-heatmap-container text.highlight {
+  fill: #444;
 }
 
-.cal-heatmap-container rect.now
-{
-  stroke: red
+.cal-heatmap-container rect.now {
+  stroke: red;
 }
 
-.cal-heatmap-container text.now
-{
+.cal-heatmap-container text.now {
+  font-weight: 800;
+
   fill: red;
-  font-weight: 800
 }
 
 .cal-heatmap-container .domain-background {
   fill: none;
-  shape-rendering: crispedges
+  shape-rendering: crispedges;
 }
 
 .ch-tooltip {
-  padding: 10px;
-  background: #222;
-  color: #bbb;
   font-size: 12px;
   line-height: 1.4;
-  width: 140px;
   position: absolute;
   z-index: 99999;
-  text-align: center;
-  border-radius: 2px;
-  box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
   display: none;
   box-sizing: border-box;
+  width: 140px;
+  padding: 10px;
+  text-align: center;
+  color: #bbb;
+  border-radius: 2px;
+  background: #222;
+  box-shadow: 2px 2px 2px rgba(0,0,0,.2);
 }
 
-.ch-tooltip::after{
+.ch-tooltip::after {
   position: absolute;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  content: "";
-  padding: 0;
-  display: block;
   bottom: -6px;
   left: 50%;
+  display: block;
+  width: 0;
+  height: 0;
   margin-left: -6px;
-    border-width: 6px 6px 0;
-    border-top-color: #222;
+  padding: 0;
+  content: '';
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: transparent;
+  border-top-color: #222;
 }
-
