@@ -7,22 +7,17 @@ export default (props) => {
   var progress = getBadgeProgress(props.data);
   var mostObtainableBadges = progress.mostAttainable;
   return (
-      <div className = "Split">
+      <div className = "Split split-smbadges">
         <div className = "descriptor">Upcoming Badges</div>
         <div className = "Upcoming-Badges-Box">
           <BadgeInProgress badge={mostObtainableBadges[0]} badgeClass={'upcoming'}/>
           <BadgeInProgress badge={mostObtainableBadges[1]} badgeClass={'upcoming'}/>
           <div className = "See-More-Badges">+</div>
         </div>
-        <div className = "descriptor">Possible Projects</div>
-        <div className = "button invert-btn-grn">Trending Hashtags</div>
-          {
-            // This should be changed to grabbing from hashtags endpoint
-            // and not the users hashtags
-            R.take(2, Object.keys(props.data.hashtags)).map(function (hashtag) {
-              return <p key={hashtag}>#{hashtag}</p>;
-            })
-          }
+        <div className="block-contribute">
+          <p className="side-text">Up your badge game by continuing to contribute.</p>
+          <div className = "button invert-btn-grn">Contribute Now</div>
+        </div>
       </div>
   );
 };

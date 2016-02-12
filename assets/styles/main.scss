@@ -529,7 +529,8 @@ input[type='text'] {
   max-width: 1100px;
   height: 90px;
   margin: 0 auto 1em auto;
-  background-color: $darkgrey;
+  background-color: lighten($darkestgrey, 5);
+  padding-top: 30px;
 }
 
 #Subhead-Content {
@@ -615,8 +616,8 @@ input[type='text'] {
 .white {
   position: absolute;
   width: 100%;
-  height: 90px;
-  background-color: $darkgrey;
+  height: 121px;
+  background-color: lighten($darkestgrey, 5);
 }
 
 /*----------------------------------------------*/
@@ -638,12 +639,19 @@ input[type='text'] {
   background-color: #eee;
 }
 
+.section-user { 
+  margin: 2em 0;
+}
+
 #Main-User-Container {
   position: relative;
   margin-right: 20px;
   margin-left: 20px;
   @media screen and (max-width: 1100px) {
     height: auto;
+  }
+  @media screen and (max-width: 320px) {
+    margin: 0 10px;
   }
 }
 
@@ -958,7 +966,6 @@ input[type='text'] {
 
 .Overview-Badge-Container {
   position: relative;
-  width: 185px;
   margin: 3px auto 0 auto;
 }
 
@@ -1020,6 +1027,11 @@ input[type='text'] {
   @media screen and (max-width: 1100px) {
     position: relative;
     margin: 0;
+  }
+  @media screen and (max-width: 320px) {
+    min-width: 260px;
+    margin-left: 15px;
+    width: 60%;
   }
 }
 
@@ -1121,11 +1133,13 @@ input[type='text'] {
   max-width: 1100px;
   margin-bottom: 2em;
   padding: 0;
-  @media screen and (max-width: 1134px) {
-    max-width: 95%;
+  @media screen and (max-width: 968px) {
+    position: relative;
+    top: -255px;
   }
-  @media screen and (max-width: 600px) {
-    max-width: 90%;
+  @media screen and (max-width: 733px) {
+    max-width: 98%;
+    top: 0px;
   }
 }
 
@@ -1153,11 +1167,21 @@ input[type='text'] {
 /* Card Styling */
 /*----------------------------------------------*/
 .Card-Content {
-  margin-right: 30px;
-  padding-top: 10px;
   word-wrap: break-word;
+
+  table {
+    @media screen and (max-width: 733px) {
+        width: 100%;
+    }
+  }
+
   p {
     margin: 4px 0;
+
+    @media screen and (max-width: 1100px) {
+      font-size: 0.75em;
+      margin: 0px;
+    }
   }
 }
 
@@ -1199,15 +1223,26 @@ h3 {
 .Split {
   display: inline-block;
   /*  background-color: rgba(0,0,0,0.1); */
-  width: 33.3%;
+  width: 28%;
   min-width: 300px;
   height: 240px;
   padding-bottom: 2em;
   vertical-align: top;
+  float: left;
   @media screen and (max-width: 1000px) {
     display: block;
     margin-right: auto;
     margin-left: auto;
+  }
+  @media screen and (max-width: 968px) {
+    width: 42%;
+  }
+  @media screen and (max-width: 733px) {
+    width: 100%;
+  }
+  @media screen and (max-width: 320px) {
+    margin-bottom: 15px;
+    height: auto;
   }
 }
 
@@ -1219,7 +1254,7 @@ td {
 th,
 td {
   line-height: 28px;
-  padding: 0 0;
+  padding: 2px 0;
   text-align: left;
 }
 
@@ -1331,8 +1366,18 @@ table {
 
 .Pie-Tin {
   font-family: 'Lato', sans-serif;
-  margin: 1em 0;
-  text-align: center;
+  float: left;
+  margin-right: 20px;
+  padding-top: 10px;
+
+  canvas {
+    width: 80%;
+  }
+
+  @media screen and (max-width: 565px) {
+    margin-bottom: 15px;
+    margin-right: 0px;
+  }
 }
 
 .ChartControls {
@@ -1442,21 +1487,21 @@ table {
 }
 
 .Recent-Edit-Box {
-  width: 280px;
-  height: 80px;
-  margin: 4px 0 1em 0;
-  padding: 14px 20px 0 10px;
+  padding: 15px;
   border: solid 2px rgba(0,0,0,.12);
   background: rgba(0,0,0,.1);
   .EmphasizedNumber {
-    font-size: 3em;
+    font-size: 4.3em;
+    display: inline;
+    line-height: 35px;
     float: left;
-    width: 104px;
-    margin-top: 26px;
-    text-align: center;
+    margin: 15px 15px 0;
   }
   .Recent-Edit-Sidebar {
-    float: right;
+    display: inline-block;
+    font-size: .9em;
+    vertical-align: middle;
+    margin: 0 10;
   }
 }
 
@@ -1494,6 +1539,7 @@ table {
   font-weight: 300;
   text-transform: uppercase;
   color: lighten($TextColor, 20);
+  margin-bottom: 10px;
 }
 
 .emphasizedNumber {
@@ -1502,6 +1548,11 @@ table {
   line-height: 20px;
   margin-top: 2px;
   color: $DataColor;
+  @media screen and (max-width: 320px) {
+    font-size: 1.5em;
+    margin-top: 4px;
+    display: block;
+  }
 }
 
 .emphasizedText {
@@ -1537,21 +1588,42 @@ table {
 
 .Stats-Item {
   display: inline-block;
-  width: 172px;
+  width: 29%;
   height: 50px;
   padding: 10px;
+
+  @media screen and (max-width: 1140px) {
+    width: 25%;
+  }
+
+  @media screen and (max-width: 595px) {
+    width: 28%
+  }
+
+  @media screen and (max-width: 535px) {
+    width: 46%;
+    padding: 10px 10px 10px 0;
+  }
+
   img {
     float: left;
     vertical-align: middle;
+    margin-right: 10px;
+
+    @media screen and (max-width: 1100px) {
+      width: 40px;
+    }
   }
 }
 
 .Stat-Info {
-  float: right;
-  width: 110px;
+  float: left;
   margin-top: 3px;
   text-align: left;
   vertical-align: top;
+  @media screen and (max-width: 320px) {
+      margin-top: 0;
+    }
 }
 
 .Split-ByNumbers {
@@ -1560,8 +1632,13 @@ table {
 }
 
 .Split-Diversity {
-  width: 26.6%;
+  width: 60%;
   height: auto;
+  border: none;
+  padding-top: 15px;
+  @media screen and (max-width: 968px) {
+    width: 100%;
+  }
 }
 
 .Split-WorldReach {
@@ -1569,15 +1646,113 @@ table {
   min-width: 200px;
   height: auto;
   padding-right: 20px;
+
+  @media screen and (max-width: 320px) {
+    width: 100%;
+    padding-right: 0px;
+  }
+
   table {
     width: 200px;
+    @media screen and (max-width: 320px) {
+      width: 100%;
+    }
+  }
+}
+
+.split-badge {
+  min-width: 200px;
+}
+
+.split-smbadges, .split-badge {
+  border-bottom: 1px solid $lightgrey;
+  height: 220px;
+  @media screen and (max-width: 968px) {
+    min-width: 300px;
+    float: right;
+    clear: right;
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  @media screen and (max-width: 733px) {
+    width: 46%;
+  }
+  @media screen and (max-width: 655px) {
+    width: 100%;
+  }
+}
+
+.split-badge {
+  @media screen and (max-width: 733px) {
+    float: left;
+  }
+}
+
+.split-smbadges { 
+  @media screen and (max-width: 968px) {
+    float: right;
+  }
+}
+
+.split-stats, .Contribute-Timeline-Container { 
+  padding-bottom: 10px;
+}
+
+.split-stats, .split-contributes {
+  border-right: 1px solid $lightgrey;
+  padding-right: 3%;
+  margin-right: 3%;
+  @media screen and (max-width: 968px) {
+    padding-right: 0;
+    margin-right: 0;
+    border: none;
+  }
+}
+
+.split-smbadges, .split-contributes, .Split-Diversity, .split-stats, .Contribute-Timeline-Container { 
+  @media screen and (max-width: 655px) {
+    margin-bottom: 35px;
+    padding-bottom: 35px;
+    border-bottom: 1px solid $lightgrey;
+  }
+}
+
+.split-stats {
+  @media screen and (max-width: 733px) {
+    height: auto;
   }
 }
 
 .Split-Map {
-  width: 78%;
+  width: 73%;
   height: auto;
   vertical-align: top;
+  @media screen and (max-width: 827px) {
+    width: 100%;
+  }
+}
+
+.sub-section { 
+  margin-bottom: 45px;
+  @media screen and (max-width: 733px) {
+    float: left;
+    width: 46%;
+    padding-right: 20px;
+  }
+  @media screen and (max-width: 560px) {
+    float: left;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 30px;
+  }
+}
+
+.block-contribute {
+  margin-top: 30px;
+}
+
+.side-text {
+  font-size: .8em;
 }
 
 
@@ -1630,6 +1805,10 @@ table {
 .cal-heatmap-container .qi {
   background-color: #999;
   fill: #999
+}
+
+.Stat-Component-Container {
+  clear: both;
 }
 
 /*
