@@ -10,7 +10,8 @@ export default React.createClass({
     return {
       userName: '',
       userId: 0,
-      userPic: ''
+      userPic: '',
+      userTagline: ''
     };
   },
   arrayBufferToBase64: function (buffer) {
@@ -85,12 +86,29 @@ export default React.createClass({
   componentWillReceiveProps: function (nextProps) {
     if (nextProps) {
       var userId = nextProps.user.id;
+      var userTagline = this.userTagline(nextProps.user.badges.length);
       this.setState({
         userName: nextProps.user.name,
-        userId: userId
+        userId: userId,
+        userTagline: userTagline
       });
       this.setUserPic(userId);
     }
+  },
+  userTagline: function (badgeCount) {
+    if (badgeCount < 1) {
+      return 'Beginner Mapper';
+    }
+    if (badgeCount > 1 && badgeCount < 8) {
+      return 'Novice Mapper';
+    }
+    if (badgeCount > 8 && badgeCount < 16) {
+      return 'Journeyman Mapper';
+    }
+    if (badgeCount > 16 && badgeCount < 30) {
+      return 'Super Mapper';
+    }
+    return 'Map Addict';
   },
   render: function () {
     return (
@@ -102,7 +120,7 @@ export default React.createClass({
             </div>
             <div className = "Username titleheader">
               {this.state.userName}
-              <p>Mapping Maestro</p>
+              <p>{this.state.userTagline}</p>
             </div>
             <div className = "Subhead-Nav">
               <IndexLink to={`/${this.state.userId}`} activeClassName="activeLink">Overview</IndexLink>

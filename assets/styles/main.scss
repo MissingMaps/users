@@ -925,6 +925,7 @@ input[type='text'] {
   &.upcoming {
     width: 80px;
     height: 80px;
+    margin-right: 10px;
   }
 }
 
@@ -1012,11 +1013,8 @@ input[type='text'] {
   margin-top: 5px;
   margin-left: 15px;
   padding: 10px 10px;
-  -webkit-transition: opacity .25s ease-in-out;
   -webkit-transition: all .25s ease-in-out;
-     -moz-transition: opacity .25s ease-in-out;
      -moz-transition: all .25s ease-in-out;
-          transition: opacity .25s ease-in-out;
           transition: all .25s ease-in-out;
   border: 1px solid $border-grey;
   border-radius: 5px;
