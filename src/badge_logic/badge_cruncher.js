@@ -3,14 +3,14 @@ import dateSequentialCheck from './date_check_sequential';
 import dateTotalCheck from './date_check_total';
 import R from 'ramda';
 
-// // Note- waterway KMs, GPS trace KMs, and building mods are
-// // captured but are not in the official spec.
-// // Countries, tasks, task edits, and JOSM are in the spec
-// // but are not implemented here.
+// Note- waterway KMs, GPS trace KMs, and building mods are
+// captured but are not in the official spec.
+// Tasks and task edits are in the spec but are not implemented here.
+// Note: road count and road count mods were also removed.
 module.exports.getBadgeProgress = function getBadgeProgress (user) {
   var sumBadges = sumCheck({
-    roads: Number(user.total_road_count_add),
-    roadMods: Number(user.total_road_count_mod),
+    // roads: Number(user.total_road_count_add),
+    // roadMods: Number(user.total_road_count_mod),
     buildings: Number(user.total_building_count_add),
     // buildingMods: user.total_building_count_mod,
     waterways: Number(user.total_waterway_count_add),
