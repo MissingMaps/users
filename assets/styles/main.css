@@ -792,14 +792,21 @@ input[type='text'] {
   top: 95px;
   left: 95px;
   width: 200px;
+  margin-top: 5px;
+  margin-left: 15px;
   padding: 5px 10px;
   -webkit-transition: opacity .25s ease-in-out;
+  -webkit-transition: all .25s ease-in-out;
   -moz-transition: opacity .25s ease-in-out;
+  -moz-transition: all .25s ease-in-out;
   transition: opacity .25s ease-in-out;
+  transition: all .25s ease-in-out;
   border: 3px solid #606161;
   border-radius: 10px;
   background-color: #dbdbda; }
   .Badge-Popup.hidden {
+    margin-top: 0;
+    margin-left: 0;
     opacity: 0; }
 
 /*----------------------------------------------*/
