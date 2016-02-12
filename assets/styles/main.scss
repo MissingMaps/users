@@ -541,17 +541,17 @@ input[type='text'] {
 }
 
 .Username {
-  position: absolute;
-  top: 57px;
   padding-left: .5em;
   color: white;
+  margin-top: 30px;
   p {
     font-size: .5em;
     font-weight: 300;
     margin: 0;
-    margin-top: 6px;
-    color: $darkgrey;
-    color: $darkgrey;
+    color: lighten($darkgrey, 10);
+  }
+  @media screen and (max-width: 753px) {
+    width: 60%;
   }
   @media screen and (max-width: 500px) {
     font-size: 1.4em;
@@ -562,14 +562,16 @@ input[type='text'] {
       margin-top: 9px;
     }
   }
+  @media screen and (max-width: 375px) {
+    width: 57%;
+    margin-top: 10px;
+  }
 };
 
 .ProfilePicture {
-  z-index: 100;
   display: inline-block;
   width: 120px;
   height: 120px;
-  margin-top: 12px;
   margin-left: 0;
   border-width: 6px;
   border-style: solid;
@@ -579,37 +581,56 @@ input[type='text'] {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  float: left;
+  @media screen and (max-width: 424px) {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 .Subhead-Nav {
-  position: absolute;
-  top: 50px;
-  right: 0;
+  padding-top: 61px;
   display: inline-block;
   float: right;
+
   a {
     font-weight: 700;
+    border-radius: 5px 5px 0 0;
     margin-left: 20px;
-    padding: 17px 20px;
+    padding: 10px 20px 6px;
     transition: background-color .1s;
     border-bottom: 0;
     background-color: #a6a6a6;
     &:hover {
       color: #999;
       background-color: #ddd;
+      @media screen and (max-width: 753px) {
+        background-color: initial;
+      }
+    }
+    @media screen and (max-width: 753px) {
+      background-color: initial;
+      border: #fff; 
+      margin-left: 15px;
+    }
+    @media screen and (max-width: 375px) {
+      padding: 10px 5px 6px;
     }
   }
   .activeLink {
     border: none;
     background-color: #eee;
+
+    @media screen and (max-width: 753px) {
+      background-color: initial;
+      border-bottom: 3px solid $mmGreen;
+    }
   }
-  @media screen and (max-width: 700px) {
-    top: 125px;
-    right: auto;
-    left: 53.1%;
-    margin-right: auto;
-    margin-left: auto;
-    transform: translate(-50%, 0);
+  @media screen and (max-width: 753px) {
+    float: initial;
+    padding: 20px 0 10px;
+    z-index: 100;
+    position: relative;
   }
 }
 
@@ -1004,6 +1025,9 @@ input[type='text'] {
     margin-top: 0;
     margin-left: 0;
     opacity: 0;
+  }
+  @media screen and (max-width: 375px) {
+    left: 5;
   }
 }
 
