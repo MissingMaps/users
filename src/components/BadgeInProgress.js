@@ -8,7 +8,7 @@ export default React.createClass({
                badge.category + '-' + (badge.badgeLevel + 1) + '-graphic.svg)',
       progressBreaks: this.getProgressGradientBreaks(badge.points.percentage),
       badgeClass: this.props.badgeClass,
-      badgeProgress: badge.progress,
+      badgeDescription: badge.description,
       hidden: true
     };
   },
@@ -41,7 +41,7 @@ export default React.createClass({
     if (this.state.badgeClass === 'progress') {
       popup = (
         <div className={'Badge-Popup' + (this.state.hidden ? ' hidden' : '')} >
-          {this.state.badgeProgress}
+          {this.state.badgeDescription}
         </div>
       );
     }

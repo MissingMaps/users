@@ -27,22 +27,22 @@ function mapBadgeToDescrip (badge) {
 
 function mapBadgeToTask (badge, x) {
   var map = {
-    'On The Road Again': (x) => `Add ${x} km of roads.`,
-    'Long and Winding Road': (x) => `Modify ${x} km of roads.`,
-    'The Wright Stuff': (x) => `Build ${x} buildings.`,
-    'Consistency': (x) => 'Map every day for a week.',
-    'Field Mapper': (x) => 'Upload more GPS traces through OSM',
-    'Awesome JOSM': (x) => 'Use JSOM to map an area',
-    'Mapathoner': (x) => `Participate in ${x} in a row.`,
-    'On Point': (x) => `Add ${x} nodes.`,
-    'White Water Rafting': (x) => `Add ${x} km of waterways.`,
-    'World Renown': (x) => `Map in ${x} different countries.`,
-    'Year-Long Mapper': (x) => `Map ${x} days.`,
-    'Task Champion': (x) => `Complete ${x} HOTOSM tasks.`,
-    'Scrutinizer': (x) => `Validate ${x} HOTOSM tasks.`,
-    'Crisis Mapper': (x) => `Map on ${x} HOTOSM projects.`,
-    'Red Cross Mapper': (x) => `Map on ${x} Red Cross projects.`,
-    'MSF Mapper': (x) => `Map on ${x} MSF projects.`
+    'On The Road Again': (x) => `Add ${x} more km of roads.`,
+    'Long and Winding Road': (x) => `Modify ${x} more km of roads.`,
+    'The Wright Stuff': (x) => `Build ${x} more buildings.`,
+    'Consistency': (x) => `Map ${x} more consecutive days.`,
+    'Field Mapper': (x) => `Upload ${x} more GPS traces through OSM`,
+    'Awesome JOSM': (x) => `Use JSOM to map an area ${x} more times`,
+    'Mapathoner': (x) => `Participate in ${x} more mapthons`,
+    'On Point': (x) => `Add ${x} more nodes.`,
+    'White Water Rafting': (x) => `Add ${x} more km of waterways.`,
+    'World Renown': (x) => `Map in ${x} more different countries.`,
+    'Year-Long Mapper': (x) => `Map ${x} more days in total.`,
+    'Task Champion': (x) => `Complete ${x} more HOTOSM tasks.`,
+    'Scrutinizer': (x) => `Validate ${x} more HOTOSM tasks.`,
+    'Crisis Mapper': (x) => `Map on ${x} more HOTOSM projects.`,
+    'Red Cross Mapper': (x) => `Map on ${x} more Red Cross projects.`,
+    'MSF Mapper': (x) => `Map on ${x} more MSF projects.`
   };
   return map[badge](x);
 }
@@ -85,7 +85,7 @@ export default (props) => {
     var badge = props.progress.all[val];
     return {
       description: mapBadgeToDescrip(badge.name),
-      progress: Math.floor(badge.points.percentage) + '% of the way to level ' + badge.nextBadgeLevel + '. ' +
+      progress: Math.floor(badge.points.percentage) + '% of the way to Level ' + badge.nextBadgeLevel + '. ' +
         mapBadgeToTask(badge.name, Math.floor(badge.points.nextPoints - badge.points.currentPoints)),
       name: badge.name,
       category: badge.category,
@@ -104,7 +104,7 @@ export default (props) => {
             </div>
             <div className = "badge-Description">
               <div className = "line-break"></div>
-              {badge.description}
+              {badge.progress}
             </div>
           </div>
         </div>
