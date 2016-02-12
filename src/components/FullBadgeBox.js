@@ -104,9 +104,6 @@ export default (props) => {
               <div className = "line-break"></div>
               {badge.description}
             </div>
-            <div className = "badge-Description">
-              {badge.progress}
-            </div>
           </div>
         </div>
       </li>

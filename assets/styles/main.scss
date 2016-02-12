@@ -962,6 +962,25 @@ input[type='text'] {
   margin: 3px auto 0 auto;
 }
 
+.Badge-Popup {
+  font-weight: 600;
+  position: absolute;
+  z-index: 1;
+  top: 95px;
+  left: 95px;
+  width: 200px;
+  padding: 5px 10px;
+  -webkit-transition: opacity .25s ease-in-out;
+     -moz-transition: opacity .25s ease-in-out;
+          transition: opacity .25s ease-in-out;
+  border: 3px solid $darkgrey;
+  border-radius: 10px;
+  background-color: $lightgrey;
+  &.hidden {
+    opacity: 0;
+  }
+}
+
 /*----------------------------------------------*/
 /*Container Styles*/
 /*----------------------------------------------*/
@@ -1473,11 +1492,11 @@ table {
   display: inline-block;
   width: 80px;
   height: 80px;
-  border: 3px solid #bbb;
   transition: background-color .1s;
   text-align: center;
   vertical-align: top;
   color: #bbb;
+  border: 3px solid #bbb;
   border-radius: 50%;
   background-color: #ddd;
   &:hover {
@@ -1591,45 +1610,45 @@ table {
   margin: 10px auto 10px auto;
 }
 
-.cal-heatmap-container .graph
-{
-  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+.cal-heatmap-container .graph {
+  font-family: 'Lucida Grande', Lucida, Verdana, sans-serif;
 }
 
-.cal-heatmap-container .graph-label
-{
+.cal-heatmap-container .graph-label {
+  font-size: 10px;
+
   fill: #999;
-  font-size: 10px
 }
 
-.cal-heatmap-container .graph, .cal-heatmap-container .graph-legend rect {
-  shape-rendering: crispedges
+.cal-heatmap-container .graph,
+.cal-heatmap-container .graph-legend rect {
+  shape-rendering: crispedges;
 }
 
-.cal-heatmap-container .graph-rect
-{
+.cal-heatmap-container .graph-rect {
   fill: #d0d0d0;
 }
 
-.cal-heatmap-container .graph-subdomain-group rect:hover
-{
+.cal-heatmap-container .graph-subdomain-group rect:hover {
   stroke: #000;
-  stroke-width: 1px
+  stroke-width: 1px;
 }
 
 .cal-heatmap-container .subdomain-text {
   font-size: 8px;
+  pointer-events: none;
+
   fill: #999;
-  pointer-events: none
 }
 
 .cal-heatmap-container .hover_cursor:hover {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .cal-heatmap-container .qi {
   background-color: #999;
-  fill: #999
+
+  fill: #999;
 }
 
 /*
@@ -1642,92 +1661,88 @@ Remove comment to apply this style to date with value equal to 0
 }
 */
 
-.cal-heatmap-container .q1
-{
-  background-color: #65E5E8;
-  fill: #65E5E8
+.cal-heatmap-container .q1 {
+  background-color: #65e5e8;
+
+  fill: #65e5e8;
 }
 
-.cal-heatmap-container .q2
-{
-  background-color: #55DCDF;
-  fill: #55DCDF
+.cal-heatmap-container .q2 {
+  background-color: #55dcdf;
+
+  fill: #55dcdf;
 }
 
-.cal-heatmap-container .q3
-{
-  background-color: #45D4D6;
-  fill: #45D4D6
+.cal-heatmap-container .q3 {
+  background-color: #45d4d6;
+
+  fill: #45d4d6;
 }
 
-.cal-heatmap-container .q4
-{
-  background-color: #36CBCE;
-  fill: #36CBCE
+.cal-heatmap-container .q4 {
+  background-color: #36cbce;
+
+  fill: #36cbce;
 }
 
-.cal-heatmap-container .q5
-{
-  background-color: #26C5C8;
-  fill: #26C5C8
+.cal-heatmap-container .q5 {
+  background-color: #26c5c8;
+
+  fill: #26c5c8;
 }
 
-.cal-heatmap-container rect.highlight
-{
-  stroke:#444;
-  stroke-width:1
+.cal-heatmap-container rect.highlight {
+  stroke: #444;
+  stroke-width: 1;
 }
 
-.cal-heatmap-container text.highlight
-{
-  fill: #444
+.cal-heatmap-container text.highlight {
+  fill: #444;
 }
 
-.cal-heatmap-container rect.now
-{
-  stroke: red
+.cal-heatmap-container rect.now {
+  stroke: red;
 }
 
-.cal-heatmap-container text.now
-{
+.cal-heatmap-container text.now {
+  font-weight: 800;
+
   fill: red;
-  font-weight: 800
 }
 
 .cal-heatmap-container .domain-background {
   fill: none;
-  shape-rendering: crispedges
+  shape-rendering: crispedges;
 }
 
 .ch-tooltip {
-  padding: 10px;
-  background: #222;
-  color: #bbb;
   font-size: 12px;
   line-height: 1.4;
-  width: 140px;
   position: absolute;
   z-index: 99999;
-  text-align: center;
-  border-radius: 2px;
-  box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
   display: none;
   box-sizing: border-box;
+  width: 140px;
+  padding: 10px;
+  text-align: center;
+  color: #bbb;
+  border-radius: 2px;
+  background: #222;
+  box-shadow: 2px 2px 2px rgba(0,0,0,.2);
 }
 
-.ch-tooltip::after{
+.ch-tooltip::after {
   position: absolute;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  content: "";
-  padding: 0;
-  display: block;
   bottom: -6px;
   left: 50%;
+  display: block;
+  width: 0;
+  height: 0;
   margin-left: -6px;
-    border-width: 6px 6px 0;
-    border-top-color: #222;
+  padding: 0;
+  content: '';
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: transparent;
+  border-top-color: #222;
 }
-

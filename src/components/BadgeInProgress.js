@@ -7,8 +7,17 @@ export default React.createClass({
       imgUrl: 'url(assets/graphics/badges/' +
                badge.category + '-' + (badge.badgeLevel + 1) + '-graphic.svg)',
       progressBreaks: this.getProgressGradientBreaks(badge.points.percentage),
-      badgeClass: this.props.badgeClass
+      badgeClass: this.props.badgeClass,
+      badgeProgress: badge.progress,
+      hidden: true
     };
+  },
+  mouseOver: function () {
+    this.setState({hidden: false});
+  },
+
+  mouseOut: function () {
+    this.setState({hidden: true});
   },
   getProgressGradientBreaks: function (percentage) {
     // Calculates the linear-gradient breakpoint angles necessary to
@@ -31,7 +40,12 @@ export default React.createClass({
     return (
       <div
         className={'Badge ' + this.state.badgeClass}
-        style={{backgroundImage: progressStyle}}>
+        style={{backgroundImage: progressStyle}}
+        onMouseOver={this.mouseOver}
+        onMouseOut={this.mouseOut}>
+        <div className={'Badge-Popup' + (this.state.hidden ? ' hidden' : '')} >
+          {this.state.badgeProgress}
+        </div>
         <div
           className={'Badge-Interior ' + this.state.badgeClass}
           style={{backgroundImage: this.state.imgUrl}}>
