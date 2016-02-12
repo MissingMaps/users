@@ -55,7 +55,7 @@ export default React.createClass({
           value: poiCount,
           color: '#d3e7b9',
           highlight: '#b5c89b',
-          label: 'Points of Interest'
+          label: 'POIs'
         }
       ];
     }
@@ -82,7 +82,7 @@ export default React.createClass({
         value: 0,
         color: '#d3e7b9',
         highlight: '#b5c89b',
-        label: 'Points of Interest'
+        label: 'POIs'
       }
     ];
     return {
