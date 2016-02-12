@@ -26,9 +26,9 @@ export default React.createClass({
     var icon = L.icon({
       iconUrl: 'assets/images/blurred-marker.png',
       shadowUrl: 'assets/images/blurred-marker.png',
-      iconSize: [30, 30],
+      iconSize: [60, 60],
       shadowSize: [10, 10],
-      iconAnchor: [15, 15],
+      iconAnchor: [30, 30],
       shadowAnchor: [5, 5]
     });
 
