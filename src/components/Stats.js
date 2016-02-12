@@ -92,7 +92,6 @@ export default React.createClass({
               <PieChart user={user} />
             </div>
             <div className = "Card-Content Split-Content">
-             {/* <div className = "descriptor">By The Numbers</div> */}
               <div className = "Stats-Item">
                 <img src="assets/graphics/circle.svg" width="50px"></img>
                 <div className="Stat-Info">
@@ -117,14 +116,28 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/circle.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_road_count_add)}</span></p>
+                  <p>
+                    <span className="emphasizedNumber">
+                      {Number(user.total_road_count_add)}
+                    </span>
+                    <span className="emphasizedNumber small">
+                      {' (' + Number(user.total_road_km_add).toFixed(1) + 'km)'}
+                    </span>
+                  </p>
                   <p>Roads</p>
                 </div>
               </div>
               <div className = "Stats-Item">
                 <img src="assets/graphics/circle.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_waterway_km_add).toFixed(1)}</span></p>
+                  <p>
+                    <span className="emphasizedNumber">
+                      {Number(user.total_waterway_count_add)}
+                    </span>
+                    <span className="emphasizedNumber small">
+                      {' (' + Number(user.total_waterway_km_add).toFixed(1) + 'km)'}
+                    </span>
+                  </p>
                   <p>Waterways</p>
                 </div>
               </div>
