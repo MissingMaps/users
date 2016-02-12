@@ -970,10 +970,16 @@ input[type='text'] {
       width: 100%; } }
   .Card-Content p {
     margin: 4px 0; }
-    @media screen and (max-width: 1100px) {
+    @media screen and (max-width: 1160px) {
       .Card-Content p {
         font-size: 0.75em;
         margin: 0px; } }
+    @media screen and (max-width: 968px) {
+      .Card-Content p {
+        font-size: 1em; } }
+    @media screen and (max-width: 710px) {
+      .Card-Content p {
+        font-size: 0.75em; } }
 
 .Card-Left {
   float: left;
@@ -1135,8 +1141,9 @@ table {
     width: 80%; }
   @media screen and (max-width: 565px) {
     .Pie-Tin {
-      margin-bottom: 15px;
-      margin-right: 0px; } }
+      margin-bottom: 20px;
+      margin-right: 0px;
+      width: 100%; } }
 
 .ChartControls {
   font-family: 'Lato', sans-serif;

@@ -1178,9 +1178,15 @@ input[type='text'] {
   p {
     margin: 4px 0;
 
-    @media screen and (max-width: 1100px) {
+    @media screen and (max-width: 1160px) {
       font-size: 0.75em;
       margin: 0px;
+    }
+    @media screen and (max-width: 968px){
+      font-size: 1em;
+    }
+    @media screen and (max-width: 710px){
+      font-size: 0.75em;
     }
   }
 }
@@ -1375,8 +1381,9 @@ table {
   }
 
   @media screen and (max-width: 565px) {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     margin-right: 0px;
+    width:100%
   }
 }
 
