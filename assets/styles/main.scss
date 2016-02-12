@@ -389,7 +389,6 @@ input[type='text'] {
   -webkit-border-radius: 5px;
   outline: none;
   background-color: lighten($lightgrey, 10);
-  box-shadow: -1px -2px $lightgrey;
   &:focus {
     background-color: white;
   }
@@ -1263,7 +1262,8 @@ table {
 .Search-Container {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 90%;
+  min-height: 580px;
   text-align: center;
   background-color: #eee;
 }
@@ -1279,12 +1279,20 @@ table {
   width: 100%;
   padding-top: 4.5em;
   input {
+    box-sizing: none;
     font-family: 'lato';
-    font-size: 1em;
-    width: 200px;
+    font-size: 0.9em;
+    width: 180px;
     height: 30px;
-    padding-left: 10px;
+    margin: none;
+    color: $darkgrey;
+    border: 1px solid $border-grey;
+    -webkit-border-radius: 5px 0px 0px 5px;
     background-color: white;
+    margin-top: 20px;
+    padding: 2px 0px 2px 6px;
+    outline: none;
+    border-right: 0px;
     &.search-bar-submit {
       background-image: url('../graphics/search.svg');
       background-size: 15px;
@@ -1297,6 +1305,7 @@ table {
       border-color: $mmTeal;
       border-radius: 0px 5px 5px 0px;
       cursor: pointer;
+      outline: none;
       &:active {
         background-color: lighten($mmTeal, 20);
       }
@@ -1315,16 +1324,17 @@ table {
 
 .search-bar-suggestions {
   text-align: left;
-  margin: 10px 0 0 90px;
+  margin: 10px 0 0 66px;
   padding-top: 4px;
   padding-bottom: 4px;
   border: 1px solid $border-grey;
   box-shadow: 0px 2px $lightgrey;
-  width: 194px;
+  width: 207px;
   background-color: white;
   position: relative;
-  height: 320px;
+  max-height: 216px;
   overflow: hidden;
+  position:relative;
   .descriptor{
     padding: 6px 0px 2px 10px;
   }
@@ -1344,14 +1354,39 @@ table {
     };
     strong {
       font-weight: normal;
-      color: black;
+      color: $darkestgrey;
     }
     span {
       font-weight: 500;
-      color: black;
+      color: $darkestgrey;
     }
   }
 }
+
+.-suggestions:after, .search-bar-suggestions:before {
+  bottom: 100%;
+  left: 90%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.search-bar-suggestions:after {
+  border-color: rgba(49, 213, 213, 0);
+  border-bottom-color: white;
+  border-width: 9px;
+  margin-left: -11px;
+}
+.search-bar-suggestions:before {
+  border-color: rgba(194, 225, 245, 0);
+  border-bottom-color: $border-grey;
+  border-width: 10px;
+  margin-left: -12px;
+}
+
 
 .Pie-Tin {
   font-family: 'Lato', sans-serif;
