@@ -595,6 +595,7 @@ input[type='text'] {
       margin-left: auto; } }
 
 .Contribute-Timeline-Content {
+  float: left;
   height: 130px; }
   .Contribute-Timeline-Content.tall {
     height: 155px; }
@@ -1372,11 +1373,15 @@ table {
   line-height: 20px;
   margin-top: 2px;
   color: #22bdc1; }
+  .emphasizedNumber.small {
+    font-size: 1em; }
   @media screen and (max-width: 320px) {
     .emphasizedNumber {
       font-size: 1.5em;
       margin-top: 4px;
-      display: block; } }
+      display: block; }
+      .emphasizedNumber.small {
+        font-size: .75em; } }
 
 .emphasizedText {
   font-weight: 700;

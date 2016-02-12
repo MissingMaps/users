@@ -738,6 +738,7 @@ input[type='text'] {
 };
 
 .Contribute-Timeline-Content {
+  float:left;
   height: 130px;
   &.tall {
     height: 155px;
@@ -1651,10 +1652,16 @@ table {
   line-height: 20px;
   margin-top: 2px;
   color: $DataColor;
+  &.small {
+    font-size: 1em;
+  }
   @media screen and (max-width: 320px) {
     font-size: 1.5em;
     margin-top: 4px;
     display: block;
+    &.small {
+      font-size: .75em;
+    }
   }
 }
 

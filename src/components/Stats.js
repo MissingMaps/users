@@ -23,17 +23,26 @@ export default React.createClass({
     var geo_extent = this.props.data.geo_extent;
     var coordinates = geo_extent.geometry.coordinates;
     L.Icon.Default.imagePath = 'assets/images/';
+    var icon = L.icon({
+      iconUrl: 'assets/images/blurred-marker.png',
+      shadowUrl: 'assets/images/blurred-marker.png',
+      iconSize: [60, 60],
+      shadowSize: [10, 10],
+      iconAnchor: [30, 30],
+      shadowAnchor: [5, 5]
+    });
+
     L.geoJson(geo_extent).addTo(map);
     if (geo_extent.geometry.type === 'MultiPolygon') {
       coordinates.forEach(function (feature) {
         var poly = polygon(feature);
         var c = centroid(poly);
-        L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
+        L.marker(R.reverse(c.geometry.coordinates), {icon: icon}).addTo(map);
       });
     } else {
       var poly = polygon(coordinates);
       var c = centroid(poly);
-      L.marker(R.reverse(c.geometry.coordinates)).addTo(map);
+      L.marker(R.reverse(c.geometry.coordinates), {icon: icon}).addTo(map);
     }
 
     this.setState({
@@ -83,7 +92,6 @@ export default React.createClass({
               <PieChart user={user} />
             </div>
             <div className = "Card-Content Split-Content">
-             {/* <div className = "descriptor">By The Numbers</div> */}
               <div className = "Stats-Item">
                 <img src="assets/graphics/circle.svg" width="50px"></img>
                 <div className="Stat-Info">
@@ -108,14 +116,28 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/circle.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_road_count_add)}</span></p>
+                  <p>
+                    <span className="emphasizedNumber">
+                      {Number(user.total_road_count_add)}
+                    </span>
+                    <span className="emphasizedNumber small">
+                      {' (' + Number(user.total_road_km_add).toFixed(1) + 'km)'}
+                    </span>
+                  </p>
                   <p>Roads</p>
                 </div>
               </div>
               <div className = "Stats-Item">
                 <img src="assets/graphics/circle.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_waterway_km_add).toFixed(1)}</span></p>
+                  <p>
+                    <span className="emphasizedNumber">
+                      {Number(user.total_waterway_count_add)}
+                    </span>
+                    <span className="emphasizedNumber small">
+                      {' (' + Number(user.total_waterway_km_add).toFixed(1) + 'km)'}
+                    </span>
+                  </p>
                   <p>Waterways</p>
                 </div>
               </div>
