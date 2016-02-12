@@ -36,7 +36,7 @@ export default React.createClass({
     var progressStyle = 'linear-gradient(' + this.state.progressBreaks.A +
                         'deg, #dbdbda 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),' +
                         'linear-gradient(' + this.state.progressBreaks.B +
-                        'deg, #1e9fcc 50%, #dbdbda 50%, #dbdbda)';
+                        'deg, #fef387 50%, #dbdbda 50%, #dbdbda)';
     var popup = '';
     if (this.state.badgeClass === 'progress') {
       popup = (

@@ -749,9 +749,8 @@ input[type='text'] {
 .Badge {
   position: relative;
   float: left;
-  border: 3px solid #606161;
   border-radius: 50%;
-  background-image: linear-gradient(90deg, #dbdbda 50%, transparent 50%, transparent), linear-gradient(90deg, #1e9fcc 50%, #dbdbda 50%, #dbdbda); }
+  background-image: linear-gradient(90deg, #dbdbda 50%, transparent 50%, transparent), linear-gradient(90deg, #fef387 50%, #dbdbda 50%, #dbdbda); }
   .Badge.progress {
     width: 150px;
     height: 150px; }
@@ -772,22 +771,22 @@ input[type='text'] {
   .Badge-Interior.progress {
     width: 135px;
     height: 135px;
-    -webkit-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    -moz-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    -o-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    -ms-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    filter: saturate(0.3) brightness(1.25) contrast(0.75); }
+    -webkit-filter: saturate(0) brightness(1.5) contrast(0.75);
+    -moz-filter: saturate(0) brightness(1.5) contrast(0.75);
+    -o-filter: saturate(0) brightness(1.5) contrast(0.75);
+    -ms-filter: saturate(0) brightness(1.5) contrast(0.75);
+    filter: saturate(0) brightness(1.5) contrast(0.75); }
   .Badge-Interior.upcoming {
     width: 71px;
     height: 71px;
     margin-top: 3px;
     margin-left: 3px;
     background-size: 75px;
-    -webkit-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    -moz-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    -o-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    -ms-filter: saturate(0.3) brightness(1.25) contrast(0.75);
-    filter: saturate(0.3) brightness(1.25) contrast(0.75); }
+    -webkit-filter: saturate(0) brightness(1.5) contrast(0.75);
+    -moz-filter: saturate(0) brightness(1.5) contrast(0.75);
+    -o-filter: saturate(0) brightness(1.5) contrast(0.75);
+    -ms-filter: saturate(0) brightness(1.5) contrast(0.75);
+    filter: saturate(0) brightness(1.5) contrast(0.75); }
 
 .Badge-Completed,
 .Badge-Border {

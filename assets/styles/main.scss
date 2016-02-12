@@ -914,10 +914,9 @@ input[type='text'] {
 .Badge {
   position: relative;
   float: left;
-  border: 3px solid $darkgrey;
   border-radius: 50%;
   background-image: linear-gradient(90deg, $lightgrey 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),
-  linear-gradient(90deg, $mmblue 50%, $lightgrey 50%, $lightgrey);
+  linear-gradient(90deg, $badgeyellow 50%, $lightgrey 50%, $lightgrey);
   &.progress {
     width: 150px;
     height: 150px;
@@ -941,12 +940,11 @@ input[type='text'] {
   &.progress {
     width: 135px;
     height: 135px;
-
-    -webkit-filter: saturate(.3) brightness(1.25) contrast(.75);
-       -moz-filter: saturate(.3) brightness(1.25) contrast(.75);
-         -o-filter: saturate(.3) brightness(1.25) contrast(.75);
-        -ms-filter: saturate(.3) brightness(1.25) contrast(.75);
-            filter: saturate(.3) brightness(1.25) contrast(.75);
+    -webkit-filter: saturate(0) brightness(1.5) contrast(.75);
+       -moz-filter: saturate(0) brightness(1.5) contrast(.75);
+         -o-filter: saturate(0) brightness(1.5) contrast(.75);
+        -ms-filter: saturate(0) brightness(1.5) contrast(.75);
+            filter: saturate(0) brightness(1.5) contrast(.75);
   }
   &.upcoming {
     width: 71px;
@@ -955,11 +953,11 @@ input[type='text'] {
     margin-left: 3px;
     background-size: 75px;
 
-    -webkit-filter: saturate(.3) brightness(1.25) contrast(.75);
-       -moz-filter: saturate(.3) brightness(1.25) contrast(.75);
-         -o-filter: saturate(.3) brightness(1.25) contrast(.75);
-        -ms-filter: saturate(.3) brightness(1.25) contrast(.75);
-            filter: saturate(.3) brightness(1.25) contrast(.75);
+    -webkit-filter: saturate(0) brightness(1.5) contrast(.75);
+       -moz-filter: saturate(0) brightness(1.5) contrast(.75);
+         -o-filter: saturate(0) brightness(1.5) contrast(.75);
+        -ms-filter: saturate(0) brightness(1.5) contrast(.75);
+            filter: saturate(0) brightness(1.5) contrast(.75);
   }
 }
 
