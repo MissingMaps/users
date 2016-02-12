@@ -977,7 +977,7 @@ input[type='text'] {
 }
 
 .Badge-Popup {
-  font-weight: 600;
+  font-weight: 300;
   position: absolute;
   z-index: 1;
   top: 95px;
@@ -985,15 +985,15 @@ input[type='text'] {
   width: 200px;
   margin-top: 5px;
   margin-left: 15px;
-  padding: 5px 10px;
+  padding: 10px 10px;
   -webkit-transition: opacity .25s ease-in-out;
   -webkit-transition: all .25s ease-in-out;
      -moz-transition: opacity .25s ease-in-out;
      -moz-transition: all .25s ease-in-out;
           transition: opacity .25s ease-in-out;
           transition: all .25s ease-in-out;
-  border: 1px solid $darkgrey;
-  border-radius: 10px;
+  border: 1px solid $border-grey;
+  border-radius: 5px;
   background-color: $lightgrey;
   &.hidden {
     margin-top: 0;

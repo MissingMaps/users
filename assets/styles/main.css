@@ -799,7 +799,7 @@ input[type='text'] {
   margin: 3px auto 0 auto; }
 
 .Badge-Popup {
-  font-weight: 600;
+  font-weight: 300;
   position: absolute;
   z-index: 1;
   top: 95px;
@@ -807,15 +807,15 @@ input[type='text'] {
   width: 200px;
   margin-top: 5px;
   margin-left: 15px;
-  padding: 5px 10px;
+  padding: 10px 10px;
   -webkit-transition: opacity .25s ease-in-out;
   -webkit-transition: all .25s ease-in-out;
   -moz-transition: opacity .25s ease-in-out;
   -moz-transition: all .25s ease-in-out;
   transition: opacity .25s ease-in-out;
   transition: all .25s ease-in-out;
-  border: 1px solid #606161;
-  border-radius: 10px;
+  border: 1px solid #c6c7c7;
+  border-radius: 5px;
   background-color: #dbdbda; }
   .Badge-Popup.hidden {
     margin-top: 0;
