@@ -157,6 +157,7 @@ a {
   font-weight: 300;
   padding: .5em 0 .75em 0;
   letter-spacing: .01em;
+  float:left;
 }
 
 .textbox {
@@ -838,6 +839,7 @@ input[type='text'] {
 .Badge-Description {
   font-weight: 300;
   margin-bottom: 10px;
+  float: left;
 }
 
 .line-break {
@@ -875,15 +877,10 @@ input[type='text'] {
   &.progress {
     width: 150px;
     height: 150px;
-    margin-top: 20px;
-    margin-right: 30px;
   }
   &.upcoming {
     width: 80px;
     height: 80px;
-    margin-top: 5px;
-    margin-right: 10px;
-    margin-bottom: 3px;
   }
 }
 
