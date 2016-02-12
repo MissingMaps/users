@@ -41,19 +41,21 @@ export default (props) => {
   }
 
   return (
-    <div className = "Split">
-      <div className = "descriptor">Latest Edit</div>
-      <div className = "Recent-Edit-Box">
-        <div className = "EmphasizedNumber">{latestTotal}</div>
-        <div className = "Recent-Edit-Sidebar">
-          <p>edit{is_plural} made</p>
-          <p>{last_edit_day} at {last_edit_minutes}</p>
-          <p>#{data.latest.hashtags[0].hashtag}</p>
+    <div className = "Split split-stats">
+      <div className = "sub-section">
+        <h3 className = "descriptor">Latest Edit</h3>
+        <div className = "Recent-Edit-Box">
+          <span className = "EmphasizedNumber">{latestTotal}</span>
+          <div className = "Recent-Edit-Sidebar">
+            <p>edit{is_plural} made</p>
+            <p>{last_edit_day} at {last_edit_minutes}</p>
+            <p>#{data.latest.hashtags[0].hashtag}</p>
+          </div>
         </div>
       </div>
-      <div className = "descriptor">Historical Comparison</div>
-      <div className = "Average-Comparison">
-        <div className = "emphasizedText">{lastChangesetComparison}%</div> increase against your average.
+      <div className = "sub-section">
+        <h3 className = "descriptor">Historical Comparison</h3>
+        <span className = "emphasizedText">{lastChangesetComparison}%</span> increase against your average.
       </div>
     </div>
   );

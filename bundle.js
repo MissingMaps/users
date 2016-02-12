@@ -60494,7 +60494,7 @@ exports.default = _react2.default.createClass({
       _react2.default.createElement(
         'div',
         { className: 'Pie-Tin' },
-        _react2.default.createElement(PieChart, { data: this.state.chartData, options: this.state.chartOptions, width: '250', height: '155' })
+        _react2.default.createElement(PieChart, { data: this.state.chartData, options: this.state.chartOptions, width: '250', height: '250' })
       ),
       _react2.default.createElement(
         'div',
