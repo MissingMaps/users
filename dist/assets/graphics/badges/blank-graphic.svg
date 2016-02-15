@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="103px" height="103px" viewBox="0 0 103 103" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>Untitled 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="1-1-graphic" sketch:type="MSLayerGroup">
+            <g id="Page-1" sketch:type="MSShapeGroup">
+                <g id="Badge_Inner">
+                    <g id="Group">
+                        <g id="Shape">
+                            <path d="M51.5,0.9 C23.5,0.9 0.8,23.5 0.8,51.5 C0.8,65.5 6.5,78.1 15.7,87.3 L87.3,15.7 C78.1,6.5 65.5,0.9 51.5,0.9 L51.5,0.9 L51.5,0.9 Z" fill="#616161"></path>
+                            <path d="M87.3,15.6 L15.7,87.2 C24.9,96.3 37.5,102 51.5,102 C79.5,102 102.2,79.4 102.2,51.4 C102.2,37.4 96.5,24.8 87.3,15.6 L87.3,15.6 L87.3,15.6 Z" fill="#525252"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <text id="No-Badges-Yet…" sketch:type="MSTextLayer" font-family="Lucida Grande" font-size="9" font-weight="bold" sketch:alignment="middle" fill="#FFFFFF">
+                <tspan x="16.2998047" y="48">No</tspan>
+                <tspan x="28.9648438" y="48" font-family="Beirut"> </tspan>
+                <tspan x="30.2963867" y="48">Badges</tspan>
+                <tspan x="63.519043" y="48" font-family="Beirut"> </tspan>
+                <tspan x="64.8505859" y="48">Yet</tspan>
+                <tspan x="79.9501953" y="48" font-family="Beirut">…</tspan>
+                <tspan x="11.3098145" y="59">Keep</tspan>
+                <tspan x="34.2097168" y="59" font-family="Beirut"> </tspan>
+                <tspan x="35.5412598" y="59">on</tspan>
+                <tspan x="47.1999512" y="59" font-family="Beirut"> </tspan>
+                <tspan x="48.5314941" y="59">Mapping</tspan>
+                <tspan x="88.6931152" y="59" font-family="Beirut">!</tspan>
+            </text>
+        </g>
+    </g>
+</svg>
