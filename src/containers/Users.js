@@ -13,27 +13,25 @@ export default React.createClass({
   },
   componentDidMount: function () {
     let component = this;
-    if (process.env.NODE_ENV === 'development') {
-      fetch('http://missingmaps-api.devseed.com/users')
-      .then(function (response) {
-        if (response.status >= 400) {
-          throw new Error('Bad response');
-        }
-        return response.json();
-      })
-      .then(function (users) {
-        users = users.map(function (obj) {
-          return {name: obj.name.toLowerCase(), id: obj.id};
-        });
-        var names = R.map(R.prop('name'), users);
-        if (component.isMounted()) {
-          component.setState({
-            users: users,
-            names: names
-          });
-        }
+    fetch('http://ec2-52-87-229-14.compute-1.amazonaws.com/users')
+    .then(function (response) {
+      if (response.status >= 400) {
+        throw new Error('Bad response');
+      }
+      return response.json();
+    })
+    .then(function (users) {
+      users = users.map(function (obj) {
+        return {name: obj.name.toLowerCase(), id: obj.id};
       });
-    }
+      var names = R.map(R.prop('name'), users);
+      if (component.isMounted()) {
+        component.setState({
+          users: users,
+          names: names
+        });
+      }
+    });
   },
   onChange: function (input, resolve) {
     resolve(this.state.names.filter((suggestion) => {
@@ -48,7 +46,7 @@ export default React.createClass({
   render: function () {
     return (
       <div>
-      <Header />
+        <Header />
         <div className = "Search-Container">
           <div className = "Search-Box">
             <img src="assets/graphics/test.svg" width = "150px"></img>
@@ -57,8 +55,8 @@ export default React.createClass({
                 placeholder="Search for OSM user"
                 onChange={this.onChange}
                 onSubmit={this.onSubmit} />
-              </div>
             </div>
+          </div>
         </div>
         <Footer />
       </div>
