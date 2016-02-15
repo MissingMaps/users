@@ -11,7 +11,7 @@ li,
 ol,
 p {
   font-family: 'Hind', sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.4em;
   margin: 0;
   padding: 0;
@@ -129,168 +129,157 @@ a {
 /* weights: 300 thin, 400 regular, 700 bold, 900 black */
 /*----------------------------------------------*/
 header {
-  top: 0;
-  display: inline-block;
+  background-color: #303030;
+  top: 0px;
   width: 100%;
   height: 52px;
   color: #dbdbda;
-  background-color: #303030; }
+  display: inline-block;
+  z-index: 9999;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
   header ul {
     display: inline-block; }
   header li {
     display: inline-block;
-    margin: 0; }
+    margin: 0px; }
 
 .navbar-background {
   max-width: 1100px;
-  margin-right: auto;
-  margin-left: auto; }
+  margin-left: auto;
+  margin-right: auto; }
 
 .nav-icon {
-  float: left;
   padding-top: 8px;
+  float: left;
   padding-left: 2em; }
   @media screen and (min-width: 1100px) {
     .nav-icon {
       padding-left: 0; } }
 
 .nav-list {
-  position: relative;
-  display: inline-block;
   float: right;
-  padding-right: 1em; }
-  @media screen and (min-width: 1100px) {
-    .nav-list {
-      padding-right: 0; } }
+  position: relative;
+  display: inline-block; }
   @media screen and (max-width: 500px) {
     .nav-list {
       display: none; } }
 
 .nav-input {
+  float: right;
+  display: inline-block;
   position: relative;
   bottom: 3px;
-  display: inline-block;
-  float: right;
-  padding: 0 16px 0 40px; }
+  padding: 0px 16px 0px 40px; }
 
 .nav-item {
+  padding: 0px 10px 0px 10px;
+  color: white;
   font-family: 'Lato';
-  font-size: .9em;
-  line-height: 52px;
+  font-size: 0.9em;
+  letter-spacing: 0.935px;
   height: 52px;
-  padding: 0 10px 0 10px;
-  transition: background .02s;
-  letter-spacing: .06em;
-  color: white; }
+  line-height: 52px;
+  transition: color 0.2s;
+  color: #dbdbda;
+  cursor: pointer; }
   .nav-item:hover {
-    background-color: #4a4a4a; }
-    .nav-item:hover a {
-      /*      padding-bottom: 4px;
-      border-bottom: 1px solid $lightgrey;  
-*/ }
-  .nav-item a {
-    text-decoration: none;
-    color: #dbdbda; }
-    .nav-item a:hover {
-      color: #dbdbda; }
-    .nav-item a:visited {
-      color: #dbdbda; }
+    color: #696966; }
 
 .nav-links {
   float: center; }
 
 .inner {
   max-width: 1100px;
-  margin-right: auto;
   margin-left: auto;
-  padding-right: 2em;
-  padding-left: 2em; }
+  margin-right: auto;
+  padding-left: 2em;
+  padding-right: 2em; }
 
 .nav-dropdown {
   position: relative;
   display: inline-block; }
 
 .dropdown-content {
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  overflow: hidden;
-  width: 150px;
-  height: 0;
-  transition: opacity .1s;
+  transition: opacity 0.3s;
   opacity: 0;
-  background-color: #4a4a4a;
-  -webkit-box-shadow: 1px 1px 1px #898989, -1px 1px 1px #898989;
-  -moz-box-shadow: 1px 1px 1px #898989, -1px 1px 1px #898989;
-  box-shadow: 1px 1px 1px #898989, -1px 1px 1px #898989; }
-  .dropdown-content :hover {
-    background-color: #636363; }
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 150px;
+  z-index: 1;
+  right: 0; }
+  .dropdown-content :hover a {
+    color: #696966;
+    padding-left: 10px; }
   .dropdown-content .nav-item {
-    border-top: 1px solid #565656; }
+    background-color: #303030;
+    border-bottom: 1px solid #565656;
+    padding-left: 16px; }
 
 .nav-dropdown:hover .dropdown-content {
-  height: auto;
-  opacity: 1; }
+  opacity: 1;
+  height: auto; }
 
 .resp-navbar {
-  line-height: 52px;
-  position: relative;
   display: none;
   float: right;
-  width: 100px;
   height: 52px;
+  line-height: 52px;
   padding-left: 1em;
+  width: 100px;
   cursor: pointer; }
-  .resp-navbar:hover {
-    background-color: #4a4a4a; }
   .resp-navbar p {
+    color: #dbdbda;
     font-family: 'Lato';
     font-size: 1em;
-    margin-top: 15px;
-    letter-spacing: .06em;
-    color: #dbdbda; }
-  .resp-navbar p:before {
-    display: block;
-    float: left;
-    width: 16px;
-    height: 16px;
-    margin: 3px 6px 0 0;
-    content: '';
-    background: url("../graphics/menubox.svg"); }
+    letter-spacing: 0.06em;
+    margin-top: 15px; }
+    .resp-navbar p:before {
+      content: "";
+      background: url("/assets/graphics/menubox.svg");
+      display: block;
+      width: 16px;
+      height: 16px;
+      float: left;
+      margin: 3px 0px 0 14px;
+      font-weight: 400; }
+  .resp-navbar:hover {
+    background-color: #4a4a4a;
+    color: white; }
   @media screen and (max-width: 500px) {
     .resp-navbar {
       display: block; } }
 
 .resp-dropdown-content {
-  position: absolute;
-  z-index: 1;
-  top: 52px;
-  right: 0;
-  right: 0;
-  overflow: hidden;
-  width: 200px;
-  height: 0;
-  transition: opacity .1s;
+  transition: opacity 0.1s;
   opacity: 0;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
   background-color: #4a4a4a;
-  -webkit-box-shadow: 1px 1px 1px #898989, -1px 1px 1px #898989;
-  -moz-box-shadow: 1px 1px 1px #898989, -1px 1px 1px #898989;
-  box-shadow: 1px 1px 1px #898989, -1px 1px 1px #898989; }
+  width: 100%;
+  z-index: 9999;
+  top: 52px;
+  left: 0px; }
+  .resp-dropdown-content a {
+    display: block; }
   .resp-dropdown-content :hover {
-    background-color: #636363; }
+    background-color: #383838; }
   .resp-dropdown-content .nav-item {
-    border-top: 1px solid #565656; }
+    border-top: 1px solid #565656;
+    width: 100%; }
 
 .resp-nav-dropdown {
-  position: relative;
-  display: inline-block; }
+  display: inline-block;
+  text-align: center; }
   @media screen and (min-width: 500px) {
     .resp-nav-dropdown {
       display: none; } }
 
 .resp-nav-dropdown:hover .resp-dropdown-content {
-  height: auto;
-  opacity: 1; }
+  opacity: 1;
+  height: auto; }
 
 /*----------------------------------------------*/
 /*Interactive Buttons*/
@@ -1144,7 +1133,7 @@ table {
 .Search-Box {
   position: absolute;
   width: 100%;
-  padding-top: 4.5em; }
+  padding-top: 6.5em; }
   .Search-Box input {
     box-sizing: none;
     font-family: 'lato';
