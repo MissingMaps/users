@@ -61118,7 +61118,7 @@ exports.default = function () {
 				{ className: "nav-icon" },
 				_react2.default.createElement(
 					"a",
-					{ href: "/" },
+					{ href: "http://devseed.com/missingmaps/" },
 					_react2.default.createElement("img", { src: "/assets/graphics/MissingMapsLogo-White.svg", width: "94px" })
 				)
 			),
@@ -61130,7 +61130,7 @@ exports.default = function () {
 					null,
 					_react2.default.createElement(
 						"a",
-						{ href: "" },
+						{ href: "http://devseed.com/missingmaps/contribute/" },
 						_react2.default.createElement(
 							"li",
 							{ className: "nav-item" },
@@ -61139,7 +61139,7 @@ exports.default = function () {
 					),
 					_react2.default.createElement(
 						"a",
-						{ href: "" },
+						{ href: "http://devseed.com/missingmaps/events/" },
 						_react2.default.createElement(
 							"li",
 							{ className: "nav-item" },
@@ -61148,7 +61148,7 @@ exports.default = function () {
 					),
 					_react2.default.createElement(
 						"a",
-						{ href: "" },
+						{ href: "http://devseed.com/missingmaps/about/" },
 						_react2.default.createElement(
 							"li",
 							{ className: "nav-item" },
@@ -61164,7 +61164,7 @@ exports.default = function () {
 							{ className: "dropdown-content" },
 							_react2.default.createElement(
 								"a",
-								{ href: "" },
+								{ href: "http://missingmaps-users-demo.devseed.com/" },
 								_react2.default.createElement(
 									"div",
 									{ className: "nav-item" },
@@ -61173,7 +61173,7 @@ exports.default = function () {
 							),
 							_react2.default.createElement(
 								"a",
-								{ href: "" },
+								{ href: "http://missingmaps-leaderboards-demo.devseed.com/" },
 								_react2.default.createElement(
 									"div",
 									{ className: "nav-item" },
@@ -61198,7 +61198,7 @@ exports.default = function () {
 				{ className: "resp-dropdown-content" },
 				_react2.default.createElement(
 					"a",
-					{ href: "" },
+					{ href: "http://devseed.com/missingmaps/contribute/" },
 					_react2.default.createElement(
 						"li",
 						{ className: "nav-item" },
@@ -61207,7 +61207,7 @@ exports.default = function () {
 				),
 				_react2.default.createElement(
 					"a",
-					{ href: "" },
+					{ href: "http://devseed.com/missingmaps/events/" },
 					_react2.default.createElement(
 						"li",
 						{ className: "nav-item" },
@@ -61216,7 +61216,7 @@ exports.default = function () {
 				),
 				_react2.default.createElement(
 					"a",
-					{ href: "" },
+					{ href: "http://devseed.com/missingmaps/about/" },
 					_react2.default.createElement(
 						"li",
 						{ className: "nav-item" },
@@ -61225,7 +61225,7 @@ exports.default = function () {
 				),
 				_react2.default.createElement(
 					"a",
-					{ href: "" },
+					{ href: "http://missingmaps-users-demo.devseed.com" },
 					_react2.default.createElement(
 						"li",
 						{ className: "nav-item" },
@@ -61234,7 +61234,7 @@ exports.default = function () {
 				),
 				_react2.default.createElement(
 					"a",
-					{ href: "" },
+					{ href: "http://missingmaps-leaderboards-demo.devseed.com" },
 					_react2.default.createElement(
 						"li",
 						{ className: "nav-item" },
@@ -61262,10 +61262,6 @@ Object.defineProperty(exports, "__esModule", {
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
-
-var _ramda = require('ramda');
-
-var _ramda2 = _interopRequireDefault(_ramda);
 
 var _badge_cruncher = require('../badge_logic/badge_cruncher.js');
 
@@ -61306,15 +61302,19 @@ exports.default = function (props) {
         'Up your badge game by continuing to contribute.'
       ),
       _react2.default.createElement(
-        'div',
-        { className: 'button invert-btn-grn' },
-        'Contribute Now'
+        'a',
+        { href: 'http://tasks.hotosm.org', target: '_blank' },
+        _react2.default.createElement(
+          'div',
+          { className: 'button invert-btn-grn' },
+          'Contribute Now'
+        )
       )
     )
   );
 };
 
-},{"../badge_logic/badge_cruncher.js":234,"../components/BadgeInProgress.js":239,"ramda":60,"react":225}],245:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":234,"../components/BadgeInProgress.js":239,"react":225}],245:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
