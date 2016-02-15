@@ -987,6 +987,12 @@ input[type='text'] {
       max-width: 98%;
       top: 0px; } }
 
+.badgeroll-center-push {
+  padding-left: 70px; }
+  @media screen and (max-width: 950px) {
+    .badgeroll-center-push {
+      padding-left: 0px; } }
+
 .card {
   width: 100%;
   height: inherit;

@@ -1193,6 +1193,13 @@ input[type='text'] {
   }
 }
 
+.badgeroll-center-push{
+  padding-left: 70px;
+  @media screen and (max-width: 950px){
+    padding-left: 0px;
+  }
+}
+
 .card {
   width: 100%;
   height: inherit;
