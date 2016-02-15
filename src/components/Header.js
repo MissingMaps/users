@@ -5,7 +5,7 @@ export default function () {
     <header> 
       <div className="navbar-background">
         <div className="nav-icon">
-          <a href="http://devseed.com/missingmaps/">
+          <a href="http://missingmaps-demo.devseed.com/">
             <img src="assets/graphics/MissingMapsLogo-White.svg" width="94px"></img>
           </a>
         </div>
