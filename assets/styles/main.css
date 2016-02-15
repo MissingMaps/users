@@ -926,10 +926,11 @@ input[type='text'] {
 .box {
   position: relative;
   width: 100%;
-  max-width: 1100px;
+  max-width: 980px;
   margin-right: auto;
   margin-left: auto;
-  padding-top: 40px; }
+  padding-top: 40px;
+  padding-left: 10px; }
 
 #Recent-Container {
   display: inline-block;
