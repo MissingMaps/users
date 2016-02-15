@@ -1710,10 +1710,12 @@ table {
   // padding-left: 50px;
 }
 
-.footer-container {
-  padding: .6em 0 .5em 0;
+.footer-mm{
+  height: 50px;
+  width: 100%;
+  line-height: 50px;
   color: $lightgrey;
-  background-color: $darkgrey;
+  background-color: $darkestgrey;
 }
 
 .Stats-Item {
