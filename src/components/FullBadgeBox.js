@@ -121,9 +121,11 @@ export default (props) => {
               <div className = "Card-title">
                 EARNED BADGES
               </div>
-              <ul className = "Badge-Roll">
-                {list}
-              </ul>
+              <div className = "badgeroll-center-push">
+                <ul className = "Badge-Roll">
+                  {list}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -135,9 +137,11 @@ export default (props) => {
               <div className = "Card-title">
                 BADGE PROGRESS
               </div>
-              <ul className = "Badge-Roll">
-                {progressList}
-              </ul>
+              <div className = "badgeroll-center-push">
+                <ul className = "Badge-Roll">
+                  {progressList}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

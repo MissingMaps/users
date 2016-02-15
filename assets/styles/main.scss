@@ -1124,10 +1124,11 @@ input[type='text'] {
 .box {
   position: relative;
   width: 100%;
-  max-width: 1100px;
+  max-width: 980px;
   margin-right: auto;
   margin-left: auto;
   padding-top: 40px;
+  padding-left: 10px;
 }
 
 #Recent-Container {
@@ -1189,6 +1190,13 @@ input[type='text'] {
   @media screen and (max-width: 733px) {
     max-width: 98%;
     top: 0px;
+  }
+}
+
+.badgeroll-center-push{
+  padding-left: 70px;
+  @media screen and (max-width: 950px){
+    padding-left: 0px;
   }
 }
 
