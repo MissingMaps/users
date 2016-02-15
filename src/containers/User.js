@@ -12,8 +12,7 @@ export default React.createClass({
   },
   componentDidMount: function () {
     let component = this;
-    if (process.env.NODE_ENV === 'development') {
-      fetch(`http://missingmaps-api.devseed.com/users/${this.props.params.id}`)
+    fetch(`http://ec2-52-87-229-14.compute-1.amazonaws.com/users/${this.props.params.id}`)
       .then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response');
@@ -27,7 +26,6 @@ export default React.createClass({
           });
         }
       });
-    }
   },
   render: function () {
     return (
