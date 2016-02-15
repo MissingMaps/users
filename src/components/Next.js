@@ -1,5 +1,4 @@
 import React from 'react';
-import R from 'ramda';
 import {getBadgeProgress} from '../badge_logic/badge_cruncher.js';
 import BadgeInProgress from '../components/BadgeInProgress.js';
 
@@ -16,7 +15,11 @@ export default (props) => {
         </div>
         <div className="block-contribute">
           <p className="side-text">Up your badge game by continuing to contribute.</p>
-          <div className = "button invert-btn-grn">Contribute Now</div>
+          <a href="http://tasks.hotosm.org" target="_blank">
+            <div className="button invert-btn-grn">
+              Contribute Now
+            </div>
+          </a>
         </div>
       </div>
   );

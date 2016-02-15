@@ -369,7 +369,7 @@ input[type='text'] {
   .invert-btn-grn:hover {
     background-color: #c5e2a1; }
   .invert-btn-grn:active {
-    background-color: #c5e2a1; }
+    background-color: transparent; }
   .invert-btn-grn:focus {
     background-color: #c5e2a1; }
   .invert-btn-grn a {
