@@ -369,7 +369,7 @@ input[type='text'] {
   .invert-btn-grn:hover {
     background-color: #c5e2a1; }
   .invert-btn-grn:active {
-    background-color: #c5e2a1; }
+    background-color: transparent; }
   .invert-btn-grn:focus {
     background-color: #c5e2a1; }
   .invert-btn-grn a {
@@ -1415,10 +1415,12 @@ table {
   float: left;
   padding-top: 20px; }
 
-.footer-container {
-  padding: .6em 0 .5em 0;
+.footer-mm {
+  height: 50px;
+  width: 100%;
+  line-height: 50px;
   color: #dbdbda;
-  background-color: #606161; }
+  background-color: #303030; }
 
 .Stats-Item {
   display: inline-block;
