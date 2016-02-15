@@ -19,7 +19,11 @@ export default (props) => {
         </div>
         <div className="block-contribute">
           <p className="side-text">Up your badge game by continuing to contribute.</p>
-          <a className="button invert-btn-grn" href="http://tasks.hotosm.org" target="_blank">Contribute Now</a>
+          <a href="http://tasks.hotosm.org" target="_blank">
+            <div className="button invert-btn-grn">
+              Contribute Now
+            </div>
+          </a>
         </div>
       </div>
   );
