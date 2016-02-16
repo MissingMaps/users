@@ -125,9 +125,10 @@ h1 {
 
 a {
   text-decoration: none;
-  color: $darkgrey;
+  color: darken($mmGreen, 10);
+  transition: color .2s;
   &:hover {
-    color: lighten(darkgrey, 5);
+    color: lighten($mmGreen, 10);
   }
   &:focus {
     color: lighten(darkgrey, 5);
@@ -392,7 +393,7 @@ input[type='text'] {
   font-size: .8em;
   font-weight: 300;
   display: inline-block;
-  margin: 10px 8px 6px 0;
+  margin: 0px 8px 6px 0;
   padding: 8px 14px 6px 14px;
   cursor: pointer;
   transition: active .25s;
@@ -522,7 +523,7 @@ input[type='text'] {
   height: 90px;
   margin: 0 auto 1em auto;
   background-color: lighten($darkestgrey, 5);
-  padding-top: 30px;
+  padding-top: 60px;
 }
 
 #Subhead-Content {
@@ -543,7 +544,7 @@ input[type='text'] {
     color: lighten($darkgrey, 10);
   }
   @media screen and (max-width: 753px) {
-    width: 60%;
+    width: 64%;
   }
   @media screen and (max-width: 500px) {
     font-size: 1.4em;
@@ -584,7 +585,6 @@ input[type='text'] {
   padding-top: 61px;
   display: inline-block;
   float: right;
-
   a {
     font-weight: 700;
     border-radius: 5px 5px 0 0;
@@ -593,6 +593,7 @@ input[type='text'] {
     transition: background-color .1s;
     border-bottom: 0;
     background-color: #a6a6a6;
+    color: $darkgrey;
     &:hover {
       color: #999;
       background-color: #ddd;
@@ -629,10 +630,24 @@ input[type='text'] {
 .white {
   position: absolute;
   width: 100%;
-  height: 121px;
+  height: 151px;
   background-color: lighten($darkestgrey, 5);
 }
 
+.Subhead-Top{
+  position: absolute;
+  top: 16px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.Subhead-Back{
+  float: left;
+}
+
+.Subhead-Share{
+  float:right;
+}
 /*----------------------------------------------*/
 /*              Overview Styles   */
 /*                 Containers      */
@@ -1651,6 +1666,7 @@ table {
   background-color: #ddd;
   &:hover {
     background-color: #ccc;
+    color: lighten($darkgrey, 20);
   };
 }
 

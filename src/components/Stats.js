@@ -61,6 +61,8 @@ export default React.createClass({
       Number(user.total_waterway_count_add) +
       Number(user.total_poi_count_add);
 
+    var hashtag = "http://missingmaps-leaderboards-demo.devseed.com/#/"+user.hashtags[hashtag];
+
     return (
       <div id = "Stats-Container">
           <div className = "Split split-contributes">
@@ -73,9 +75,10 @@ export default React.createClass({
                     <th>Edits</th>
                   </tr>
                   {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                    var hashtaglink = "http://missingmaps-leaderboards-demo.devseed.com/#/"+hashtag;
                     return (
                       <tr key={hashtag}>
-                        <td key={hashtag}>#{hashtag}</td>
+                        <td key={hashtag}><a href={hashtaglink} target="_blank">#{hashtag}</a></td>
                         <td><span className="emphasizedText">{user.hashtags[hashtag]}</span></td>
                       </tr>
                       );
