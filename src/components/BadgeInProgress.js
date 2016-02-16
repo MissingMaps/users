@@ -15,7 +15,6 @@ export default React.createClass({
   mouseOver: function () {
     this.setState({hidden: false});
   },
-
   mouseOut: function () {
     this.setState({hidden: true});
   },
@@ -26,15 +25,16 @@ export default React.createClass({
     var breakB = 90;
     if (percentage < 50) {
       breakB = 90 + percentage * 3.6;
-      return {A: breakA, B: breakB};
+      return {A: breakA, B: breakB, dependantGrad: '#dbdbda'};
     }
     breakA = -90 + (percentage - 50) * 3.6;
     breakB = 270;
-    return {A: breakA, B: breakB};
+    return {A: breakA, B: breakB, dependantGrad: '#fef387'};
   },
   render: function () {
     var progressStyle = 'linear-gradient(' + this.state.progressBreaks.A +
-                        'deg, #dbdbda 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),' +
+                        'deg, ' + this.state.progressBreaks.dependantGrad +
+                        ' 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)),' +
                         'linear-gradient(' + this.state.progressBreaks.B +
                         'deg, #fef387 50%, #dbdbda 50%, #dbdbda)';
     var popup = '';
