@@ -53,10 +53,6 @@ export default (props) => {
           </div>
         </div>
       </div>
-      <div className = "sub-section">
-        <h3 className = "descriptor">Historical Comparison</h3>
-        <span className = "emphasizedText">{lastChangesetComparison}%</span> increase against your average.
-      </div>
     </div>
   );
 };
