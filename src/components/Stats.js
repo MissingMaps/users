@@ -124,17 +124,17 @@ export default React.createClass({
                 </div>
               </div>
               <div className = "Stats-Item">
-                <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
-                <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
-                  <p>Point of Interest</p>
-                </div>
-              </div>
-              <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Building.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{Number(user.total_building_count_add)}</span></p>
                   <p>Buildings</p>
+                </div>
+              </div>
+              <div className = "Stats-Item">
+                <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
+                <div className="Stat-Info">
+                  <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
+                  <p>Point of Interest</p>
                 </div>
               </div>
               <div className = "Stats-Item">
