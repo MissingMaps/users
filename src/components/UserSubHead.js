@@ -103,7 +103,7 @@ export default React.createClass({
       return 'Novice Mapper';
     }
     if (badgeCount > 8 && badgeCount < 16) {
-      return 'Journeyman Mapper';
+      return 'Pro Mapper';
     }
     if (badgeCount > 16 && badgeCount < 30) {
       return 'Super Mapper';
