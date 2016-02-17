@@ -10,7 +10,8 @@ export default React.createClass({
   getInitialState: function () {
     return {
       map: {},
-      position: [15, 0]
+      position: [15, 0],
+      kmStatsStyle: {clear: 'none'}
     };
   },
   componentDidMount: function () {
@@ -45,6 +46,13 @@ export default React.createClass({
       L.marker(R.reverse(c.geometry.coordinates), {icon: icon}).addTo(map);
     }
 
+    // force km stats to clear left if too large for container
+    var roadCountLength = Number(this.props.data.total_road_count_add).toFixed().length;
+    var waterCountLength = Number(this.props.data.total_waterway_count_add).toFixed().length;
+    if (roadCountLength > 3 || waterCountLength > 3) {
+      this.setState({kmStatsStyle: {clear: 'left'}});
+    }
+
     this.setState({
       map: map
     });
@@ -61,7 +69,13 @@ export default React.createClass({
       Number(user.total_waterway_count_add) +
       Number(user.total_poi_count_add);
 
-    var hashtag = "http://missingmaps-leaderboards-demo.devseed.com/#/"+user.hashtags[hashtag];
+    var hashtag = 'http://missingmaps-leaderboards-demo.devseed.com/#/' + user.hashtags[hashtag];
+
+    // Round km calculation depending on length
+    var total_road_km = Number(user.total_road_km_add).toFixed(1);
+    total_road_km = (total_road_km.length > 4) ? Math.round(total_road_km) : total_road_km;
+    var total_waterway_km = Number(user.total_waterway_km_add).toFixed(1);
+    total_waterway_km = (total_waterway_km.length > 4) ? Math.round(total_waterway_km) : total_waterway_km;
 
     return (
       <div id = "Stats-Container">
@@ -75,7 +89,7 @@ export default React.createClass({
                     <th>Changesets</th>
                   </tr>
                   {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
-                    var hashtaglink = "http://missingmaps-leaderboards-demo.devseed.com/#/"+hashtag;
+                    var hashtaglink = 'http://missingmaps-leaderboards-demo.devseed.com/#/' + hashtag;
                     return (
                       <tr key={hashtag}>
                         <td key={hashtag}><a href={hashtaglink} target="_blank">#{hashtag}</a></td>
@@ -110,6 +124,13 @@ export default React.createClass({
                 </div>
               </div>
               <div className = "Stats-Item">
+                <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
+                <div className="Stat-Info">
+                  <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
+                  <p>Point of Interest</p>
+                </div>
+              </div>
+              <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Building.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{Number(user.total_building_count_add)}</span></p>
@@ -119,41 +140,36 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Road.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p>
                     <span className="emphasizedNumber">
                       {Number(user.total_road_count_add)}
                     </span>
-                    <span className="emphasizedNumber small">
-                      {' (' + Number(user.total_road_km_add).toFixed(1) + 'km)'}
+                    <span
+                      className="emphasizedNumber small"
+                      style={this.state.kmStatsStyle}
+                    >
+                      {' ' + total_road_km + 'km'}
                     </span>
-                  </p>
                   <p>Roads</p>
                 </div>
               </div>
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Water.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p>
-                    <span className="emphasizedNumber">
+                    <span
+                      className="emphasizedNumber">
                       {Number(user.total_waterway_count_add)}
                     </span>
-                    <span className="emphasizedNumber small">
-                      {' (' + Number(user.total_waterway_km_add).toFixed(1) + 'km)'}
+                    <span
+                      className="emphasizedNumber small"
+                      style={this.state.kmStatsStyle}
+                    >
+                      {' ' + total_waterway_km + 'km'}
                     </span>
-                  </p>
                   <p>Waterways</p>
-                </div>
-              </div>
-              <div className = "Stats-Item">
-                <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
-                <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
-                  <p>Point of Interest</p>
                 </div>
               </div>
             </div>
           </div>
-
         <div className ="Stat-Component-Container">
           <ContributionBox timestamps={user.edit_times} />
           <div className = "descriptor">

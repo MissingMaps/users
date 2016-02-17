@@ -1398,12 +1398,14 @@ table {
   margin-bottom: 10px; }
 
 .emphasizedNumber {
+  float: left;
   font-size: 2em;
   font-weight: 700;
   line-height: 20px;
   margin-top: 2px;
   color: #22bdc1; }
   .emphasizedNumber.small {
+    margin-left: 3px;
     font-size: 1em; }
   @media screen and (max-width: 320px) {
     .emphasizedNumber {
@@ -1465,6 +1467,8 @@ table {
   margin-top: 3px;
   text-align: left;
   vertical-align: top; }
+  .Stat-Info p {
+    clear: left; }
   @media screen and (max-width: 320px) {
     .Stat-Info {
       margin-top: 0; } }

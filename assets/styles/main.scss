@@ -1683,12 +1683,14 @@ table {
 }
 
 .emphasizedNumber {
+  float: left;
   font-size: 2em;
   font-weight: 700;
   line-height: 20px;
   margin-top: 2px;
   color: $DataColor;
   &.small {
+    margin-left: 3px;
     font-size: 1em;
   }
   @media screen and (max-width: 320px) {
@@ -1769,6 +1771,9 @@ table {
   margin-top: 3px;
   text-align: left;
   vertical-align: top;
+  p {
+    clear: left;
+  }
   @media screen and (max-width: 320px) {
       margin-top: 0;
     }
