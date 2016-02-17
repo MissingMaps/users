@@ -103,7 +103,7 @@ export default React.createClass({
       return 'Novice Mapper';
     }
     if (badgeCount > 8 && badgeCount < 16) {
-      return 'Journeyman Mapper';
+      return 'Pro Mapper';
     }
     if (badgeCount > 16 && badgeCount < 30) {
       return 'Super Mapper';
@@ -111,16 +111,30 @@ export default React.createClass({
     return 'Map Addict';
   },
   render: function () {
+    var osmlink = "http://www.openstreetmap.org/user/"+this.state.userName;
+
     return (
       <div>
         <div id = "Subhead-Container">
+          <div className = "Subhead-Top">
+            <div className = "Subhead-Back">
+              <a href="">&#8592; Back to search</a>
+            </div>
+            <div className = "Subhead-Share">
+            <a href="http://tasks.hotosm.org" target="_blank">
+              <div className="button invert-btn-blue">
+                Share
+              </div>
+            </a>
+            </div>
+          </div>
           <div id = "Subhead-Content">
             <div className = "ProfilePicture"
               style = {{backgroundImage: 'url(' + this.state.userPic + ')'}}>
             </div>
             <div className = "Username titleheader">
               {this.state.userName}
-              <p>{this.state.userTagline}</p>
+              <p>{this.state.userTagline} &nbsp; | &nbsp; <a href={osmlink} target = "_blank">OSM Profile</a> </p>
             </div>
             <div className = "Subhead-Nav">
               <IndexLink to={`/${this.state.userId}`} activeClassName="activeLink">Overview</IndexLink>
