@@ -1444,9 +1444,6 @@ table {
   width: 29%;
   height: 50px;
   padding: 10px; }
-  @media screen and (max-width: 1140px) {
-    .Stats-Item {
-      width: 25%; } }
   @media screen and (max-width: 595px) {
     .Stats-Item {
       width: 28%; } }

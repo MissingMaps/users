@@ -1742,10 +1742,6 @@ table {
   height: 50px;
   padding: 10px;
 
-  @media screen and (max-width: 1140px) {
-    width: 25%;
-  }
-
   @media screen and (max-width: 595px) {
     width: 28%
   }
