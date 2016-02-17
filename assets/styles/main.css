@@ -422,7 +422,7 @@ input[type='text'] {
     color: #797b7b; }
   @media screen and (max-width: 753px) {
     .Username {
-      width: 60%; } }
+      width: 62%; } }
   @media screen and (max-width: 500px) {
     .Username {
       font-size: 1.4em;
@@ -1575,7 +1575,8 @@ table {
   margin-top: 30px; }
 
 .side-text {
-  font-size: .8em; }
+  font-size: .8em;
+  margin-bottom: 10px; }
 
 /*----------------------------------------------*/
 /*              Heatmap Styles      */

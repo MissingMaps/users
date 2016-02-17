@@ -544,7 +544,7 @@ input[type='text'] {
     color: lighten($darkgrey, 10);
   }
   @media screen and (max-width: 753px) {
-    width: 60%;
+    width: 62%;
   }
   @media screen and (max-width: 500px) {
     font-size: 1.4em;
@@ -1902,6 +1902,7 @@ table {
 
 .side-text {
   font-size: .8em;
+  margin-bottom: 10px;
 }
 
 
