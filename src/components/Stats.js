@@ -61,6 +61,8 @@ export default React.createClass({
       Number(user.total_waterway_count_add) +
       Number(user.total_poi_count_add);
 
+    var hashtag = "http://missingmaps-leaderboards-demo.devseed.com/#/"+user.hashtags[hashtag];
+
     return (
       <div id = "Stats-Container">
           <div className = "Split split-contributes">
@@ -73,9 +75,10 @@ export default React.createClass({
                     <th>Changesets</th>
                   </tr>
                   {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                    var hashtaglink = "http://missingmaps-leaderboards-demo.devseed.com/#/"+hashtag;
                     return (
                       <tr key={hashtag}>
-                        <td key={hashtag}>#{hashtag}</td>
+                        <td key={hashtag}><a href={hashtaglink} target="_blank">#{hashtag}</a></td>
                         <td><span className="emphasizedText">{user.hashtags[hashtag]}</span></td>
                       </tr>
                       );
@@ -93,28 +96,28 @@ export default React.createClass({
             </div>
             <div className = "Card-Content Split-Content">
               <div className = "Stats-Item">
-                <img src="assets/graphics/circle.svg" width="50px"></img>
+                <img src="assets/graphics/staticons/Edit.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{total}</span></p>
                   <p>Total Edits</p>
                 </div>
               </div>
               <div className = "Stats-Item">
-                <img src="assets/graphics/circle.svg" width="50px"></img>
+                <img src="assets/graphics/staticons/Changeset.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{changesetCount}</span></p>
                   <p>Changesets</p>
                 </div>
               </div>
               <div className = "Stats-Item">
-                <img src="assets/graphics/circle.svg" width="50px"></img>
+                <img src="assets/graphics/staticons/Building.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{Number(user.total_building_count_add)}</span></p>
                   <p>Buildings</p>
                 </div>
               </div>
               <div className = "Stats-Item">
-                <img src="assets/graphics/circle.svg" width="50px"></img>
+                <img src="assets/graphics/staticons/Road.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p>
                     <span className="emphasizedNumber">
@@ -128,7 +131,7 @@ export default React.createClass({
                 </div>
               </div>
               <div className = "Stats-Item">
-                <img src="assets/graphics/circle.svg" width="50px"></img>
+                <img src="assets/graphics/staticons/Water.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p>
                     <span className="emphasizedNumber">
@@ -142,7 +145,7 @@ export default React.createClass({
                 </div>
               </div>
               <div className = "Stats-Item">
-                <img src="assets/graphics/circle.svg" width="50px"></img>
+                <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
                   <p>Point of Interest</p>
