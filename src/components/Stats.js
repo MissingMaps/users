@@ -70,7 +70,7 @@ export default React.createClass({
                 <tbody>
                   <tr>
                     <th>Project Hashtag</th>
-                    <th>Edits</th>
+                    <th>Changesets</th>
                   </tr>
                   {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
                     return (
