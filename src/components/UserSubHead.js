@@ -99,20 +99,19 @@ export default React.createClass({
     if (badgeCount < 1) {
       return 'Beginner Mapper';
     }
-    if (badgeCount > 1 && badgeCount < 8) {
+    if (badgeCount >= 1 && badgeCount < 8) {
       return 'Novice Mapper';
     }
-    if (badgeCount > 8 && badgeCount < 16) {
+    if (badgeCount >= 8 && badgeCount < 16) {
       return 'Pro Mapper';
     }
-    if (badgeCount > 16 && badgeCount < 30) {
+    if (badgeCount >= 16 && badgeCount < 30) {
       return 'Super Mapper';
     }
     return 'Map Addict';
   },
   render: function () {
-    var osmlink = "http://www.openstreetmap.org/user/"+this.state.userName;
-
+    var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
     return (
       <div>
         <div id = "Subhead-Container">

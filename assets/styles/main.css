@@ -422,7 +422,7 @@ input[type='text'] {
     color: #797b7b; }
   @media screen and (max-width: 753px) {
     .Username {
-      width: 60%; } }
+      width: 62%; } }
   @media screen and (max-width: 500px) {
     .Username {
       font-size: 1.4em;
@@ -1371,10 +1371,10 @@ table {
 
 .See-More-Badges {
   font-size: 4.5em;
-  line-height: 92px;
+  line-height: 89px;
   display: inline-block;
-  width: 80px;
-  height: 80px;
+  width: 74px;
+  height: 74px;
   transition: background-color .1s;
   text-align: center;
   vertical-align: top;
@@ -1398,12 +1398,14 @@ table {
   margin-bottom: 10px; }
 
 .emphasizedNumber {
+  float: left;
   font-size: 2em;
   font-weight: 700;
   line-height: 20px;
   margin-top: 2px;
   color: #22bdc1; }
   .emphasizedNumber.small {
+    margin-left: 3px;
     font-size: 1em; }
   @media screen and (max-width: 320px) {
     .emphasizedNumber {
@@ -1442,9 +1444,6 @@ table {
   width: 29%;
   height: 50px;
   padding: 10px; }
-  @media screen and (max-width: 1140px) {
-    .Stats-Item {
-      width: 25%; } }
   @media screen and (max-width: 595px) {
     .Stats-Item {
       width: 28%; } }
@@ -1465,6 +1464,8 @@ table {
   margin-top: 3px;
   text-align: left;
   vertical-align: top; }
+  .Stat-Info p {
+    clear: left; }
   @media screen and (max-width: 320px) {
     .Stat-Info {
       margin-top: 0; } }
@@ -1574,7 +1575,8 @@ table {
   margin-top: 30px; }
 
 .side-text {
-  font-size: .8em; }
+  font-size: .8em;
+  margin-bottom: 10px; }
 
 /*----------------------------------------------*/
 /*              Heatmap Styles      */
