@@ -299,6 +299,42 @@ input[type='text'] {
   input[type='text']:focus {
     background-color: white; }
 
+button {
+  font-family: 'Lato';
+  font-size: .8em;
+  font-weight: 300;
+  display: inline-block;
+  margin: 0px 8px 6px 0;
+  padding: 8px 14px 6px 14px;
+  cursor: pointer;
+  box-sizing: none;
+  outline: none;
+  transition: active .25s;
+  transition-timing-function: linear;
+  transition-duration: .12s;
+  transition-property: background;
+  text-decoration: none;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #23bcc1;
+  border: 1px solid #23bcc1;
+  background-color: transparent;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px; }
+  button:hover {
+    background-color: rgba(35, 188, 193, 0.2); }
+  button:active {
+    background-color: rgba(35, 188, 193, 0.2); }
+  button:focus {
+    background-color: rgba(35, 188, 193, 0.2); }
+  button a {
+    color: #23bcc1; }
+    button a:hover {
+      color: white; }
+    button a:visited {
+      color: #23bcc1; }
+
 .button {
   font-family: 'Lato';
   font-size: .8em;
@@ -319,12 +355,18 @@ input[type='text'] {
   -moz-border-radius: 4px;
   border-radius: 4px;
   background-color: #22bdc1; }
+  .button:hover {
+    background-color: rgba(35, 188, 193, 0.2); }
+  .button:active {
+    background-color: rgba(35, 188, 193, 0.2); }
+  .button:focus {
+    background-color: rgba(35, 188, 193, 0.2); }
   .button a {
-    color: white; }
+    color: #23bcc1; }
     .button a:hover {
       color: white; }
     .button a:visited {
-      color: white; }
+      color: #23bcc1; }
 
 .btn-blue {
   color: white;

@@ -133,11 +133,9 @@ export default React.createClass({
               <a href="">&#8592; Back to search</a>
             </div>
             <div className = "Subhead-Share">
-              <div className="button invert-btn-blue">
                 <TwitterButton message = {message}>
                   Share
                 </TwitterButton>
-              </div>
             </div>
           </div>
           <div id = "Subhead-Content">
