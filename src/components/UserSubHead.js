@@ -5,6 +5,7 @@ import binaryXHR from 'binary-xhr';
 import fetch from 'isomorphic-fetch';
 import {Link, IndexLink} from 'react-router';
 import { TwitterButton } from 'react-social';
+import {sortBadgeHashtags} from '../badge_logic/badge_cruncher.js';
 
 export default React.createClass({
   getInitialState: function () {
@@ -12,7 +13,8 @@ export default React.createClass({
       userName: '',
       userId: 0,
       userPic: '',
-      userTagline: ''
+      userTagline: '',
+      badges: ''
     };
   },
   arrayBufferToBase64: function (buffer) {
@@ -88,10 +90,18 @@ export default React.createClass({
     if (nextProps) {
       var userId = nextProps.user.id;
       var userTagline = this.userTagline(nextProps.user.badges.length);
+      var latestBadge = sortBadgeHashtags(nextProps.user);
+
+      console.log(latestBadge[0].name);
+
+      var latestBadgeName = latestBadge[0].name;
+
       this.setState({
         userName: nextProps.user.name,
         userId: userId,
-        userTagline: userTagline
+        userTagline: userTagline,
+        userBadge: latestBadgeName,
+        userBadgeGraphic: "http://pbs.twimg.com/media/CbyUf-kUAAM1qtS.jpg"
       });
       this.setUserPic(userId);
     }
@@ -112,6 +122,8 @@ export default React.createClass({
     return 'Map Addict';
   },
   render: function () {
+    let url = "www.google.com";
+    let message = this.state.userBadgeGraphic + " I just earned the " + this.state.userBadge + " badge!";
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
     return (
       <div>
@@ -122,8 +134,8 @@ export default React.createClass({
             </div>
             <div className = "Subhead-Share">
               <div className="button invert-btn-blue">
-                <TwitterButton>
-                Share
+                <TwitterButton message = {message}>
+                  Share
                 </TwitterButton>
               </div>
             </div>
