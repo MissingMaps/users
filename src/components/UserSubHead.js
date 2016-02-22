@@ -132,9 +132,9 @@ export default React.createClass({
     if( this.state.badgeCheck == true ){
       var badgeName = this.state.userBadge;
       var badgeLevel = this.state.badgeLevel;
-      var twittermsg = " I've earned the " + badgeName + " badge (lv." + badgeLevel + ") on MissingMaps!";
+      var twittermsg = this.state.userName +" earned the " + badgeName + " badge (lv." + badgeLevel + ") on MissingMaps!";
     }else{
-      var twittermsg = "I've contributed to MissingMaps! Checkout my progress at ";
+      var twittermsg = this.state.userName +" contributed to MissingMaps! Checkout my progress at ";
     };
     let message =   {twittermsg}.twittermsg;
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
