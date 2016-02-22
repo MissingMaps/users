@@ -136,7 +136,6 @@ export default React.createClass({
     }else{
       var twittermsg = "I've contributed to MissingMaps! Checkout my progress at ";
     };
-    console.log( {twittermsg}.twittermsg );
     let message =   {twittermsg}.twittermsg;
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
     return (
