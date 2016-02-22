@@ -4,6 +4,7 @@ import md5 from 'spark-md5';
 import binaryXHR from 'binary-xhr';
 import fetch from 'isomorphic-fetch';
 import {Link, IndexLink} from 'react-router';
+import { TwitterButton } from 'react-social';
 
 export default React.createClass({
   getInitialState: function () {
@@ -120,11 +121,11 @@ export default React.createClass({
               <a href="">&#8592; Back to search</a>
             </div>
             <div className = "Subhead-Share">
-            <a href="http://tasks.hotosm.org" target="_blank">
               <div className="button invert-btn-blue">
+                <TwitterButton>
                 Share
+                </TwitterButton>
               </div>
-            </a>
             </div>
           </div>
           <div id = "Subhead-Content">
