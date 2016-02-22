@@ -91,6 +91,7 @@ export default React.createClass({
       var userId = nextProps.user.id;
       var userTagline = this.userTagline(nextProps.user.badges.length);
       var latestBadge = sortBadgeHashtags(nextProps.user);
+      var userName = nextProps.user.name.charAt(0).toUpperCase() + nextProps.user.name.slice(1)
 
       if ( latestBadge.length == 0){
         var badgeChecker = false;
@@ -103,7 +104,7 @@ export default React.createClass({
       };
 
       this.setState({
-        userName: nextProps.user.name,
+        userName: userName,
         userId: userId,
         userTagline: userTagline,
         userBadge: latestBadgeName,
@@ -134,7 +135,7 @@ export default React.createClass({
       var badgeLevel = this.state.badgeLevel;
       var twittermsg = this.state.userName +" earned the " + badgeName + " badge (lv." + badgeLevel + ") on MissingMaps!";
     }else{
-      var twittermsg = this.state.userName +" contributed to MissingMaps! Checkout my progress at ";
+      var twittermsg = this.state.userName +" contributed to MissingMaps! Checkout the progress at ";
     };
     let message =   {twittermsg}.twittermsg;
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
