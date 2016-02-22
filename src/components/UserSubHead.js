@@ -92,16 +92,17 @@ export default React.createClass({
       var userTagline = this.userTagline(nextProps.user.badges.length);
       var latestBadge = sortBadgeHashtags(nextProps.user);
 
-      console.log(latestBadge[0].name);
+      console.log(latestBadge[0].level);
 
       var latestBadgeName = latestBadge[0].name;
+      var latestBadgeLevel = latestBadge[0].level;
 
       this.setState({
         userName: nextProps.user.name,
         userId: userId,
         userTagline: userTagline,
         userBadge: latestBadgeName,
-        userBadgeGraphic: "http://pbs.twimg.com/media/CbyUf-kUAAM1qtS.jpg"
+        badgeLevel: latestBadgeLevel 
       });
       this.setUserPic(userId);
     }
@@ -123,7 +124,7 @@ export default React.createClass({
   },
   render: function () {
     let url = "www.google.com";
-    let message = this.state.userBadgeGraphic + " I just earned the " + this.state.userBadge + " badge!";
+    let message =  " I've earned the " + this.state.userBadge + " badge (lv." +this.state.badgeLevel + ") on MissingMaps!";
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
     return (
       <div>
@@ -134,7 +135,7 @@ export default React.createClass({
             </div>
             <div className = "Subhead-Share">
                 <TwitterButton message = {message}>
-                  Share
+                  <img src="assets/graphics/twitter.svg" width= "18px"></img>Share
                 </TwitterButton>
             </div>
           </div>

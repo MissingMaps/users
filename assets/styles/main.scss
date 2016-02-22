@@ -394,7 +394,7 @@ button{
   font-weight: 300;
   display: inline-block;
   margin: 0px 8px 6px 0;
-  padding: 8px 14px 6px 14px;
+  padding: 8px 14px 6px 9px;
   cursor: pointer;
   box-sizing: none;
   outline: none;
@@ -408,6 +408,9 @@ button{
   color: $mmTeal;
   border: 1px solid $mmTeal;
   background-color: rgba(0,0,0,0);
+  width: 92px;
+  height: 34px;
+  position: relative;
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
           border-radius: 4px;
@@ -428,6 +431,17 @@ button{
     &:visited {
       color: $mmTeal;
     }
+  }
+  img{
+    position: absolute;
+    left:8px;
+    top: 6px;
+    margin: 2px 10px 0 0;
+  }
+  span{
+    position: absolute;
+    top: 8px;
+    right: 10px;
   }
 }
 
