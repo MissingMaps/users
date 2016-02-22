@@ -92,17 +92,23 @@ export default React.createClass({
       var userTagline = this.userTagline(nextProps.user.badges.length);
       var latestBadge = sortBadgeHashtags(nextProps.user);
 
-      console.log(latestBadge[0].level);
-
-      var latestBadgeName = latestBadge[0].name;
-      var latestBadgeLevel = latestBadge[0].level;
+      if ( latestBadge.length == 0){
+        var badgeChecker = false;
+        var latestBadgeName = "";
+        var latestBadgeLevel = "";        
+      }else{
+        var latestBadgeName = latestBadge[0].name;
+        var latestBadgeLevel = latestBadge[0].level;
+        var badgeChecker = true;
+      };
 
       this.setState({
         userName: nextProps.user.name,
         userId: userId,
         userTagline: userTagline,
         userBadge: latestBadgeName,
-        badgeLevel: latestBadgeLevel 
+        badgeLevel: latestBadgeLevel,
+        badgeCheck: badgeChecker
       });
       this.setUserPic(userId);
     }
@@ -123,8 +129,15 @@ export default React.createClass({
     return 'Map Addict';
   },
   render: function () {
-    let url = "www.google.com";
-    let message =  " I've earned the " + this.state.userBadge + " badge (lv." +this.state.badgeLevel + ") on MissingMaps!";
+    if( this.state.badgeCheck == true ){
+      var badgeName = this.state.userBadge;
+      var badgeLevel = this.state.badgeLevel;
+      var twittermsg = " I've earned the " + badgeName + " badge (lv." + badgeLevel + ") on MissingMaps!";
+    }else{
+      var twittermsg = "I've contributed to MissingMaps! Checkout my progress at ";
+    };
+    console.log( {twittermsg}.twittermsg );
+    let message =   {twittermsg}.twittermsg;
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
     return (
       <div>
