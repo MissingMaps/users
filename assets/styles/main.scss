@@ -449,7 +449,7 @@ input[type='text'] {
   font-weight: 300;
   display: inline-block;
   margin: 0px 8px 6px 0;
-  padding: 8px 14px 6px 14px;
+  padding: 6px 14px 6px 14px;
   cursor: pointer;
   transition: active .25s;
   transition-timing-function: linear;
@@ -539,6 +539,8 @@ input[type='text'] {
   color: darken($mmGreen, 10);
   border: 1px solid darken($mmGreen, 10);
   background-color: rgba(0,0,0,0);
+  position: relative;
+  padding-right: 30px;
   &:hover {
     background-color: lighten($mmGreen, 24);
   }
@@ -556,6 +558,12 @@ input[type='text'] {
     &:visited {
       color: darken($mmGreen, 10);
     }
+  }
+  img{
+    width: 13px;
+    position: absolute;
+    right: 9px;
+    top: 11px;
   }
 }
 
