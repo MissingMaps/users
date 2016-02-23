@@ -21,7 +21,7 @@ export default (props) => {
           <p className="side-text">Up your badge game by continuing to contribute.</p>
           <a href="http://tasks.hotosm.org" target="_blank">
             <div className="button invert-btn-grn">
-              Contribute Now
+              Contribute Now<img src="assets/graphics/Arrow.svg"></img>
             </div>
           </a>
         </div>

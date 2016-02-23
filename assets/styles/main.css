@@ -353,7 +353,7 @@ input[type='text'] {
   font-weight: 300;
   display: inline-block;
   margin: 0px 8px 6px 0;
-  padding: 8px 14px 6px 14px;
+  padding: 6px 14px 6px 14px;
   cursor: pointer;
   transition: active .25s;
   transition-timing-function: linear;
@@ -420,7 +420,9 @@ input[type='text'] {
 .invert-btn-grn {
   color: #71a333;
   border: 1px solid #71a333;
-  background-color: transparent; }
+  background-color: transparent;
+  position: relative;
+  padding-right: 30px; }
   .invert-btn-grn:hover {
     background-color: #c5e2a1; }
   .invert-btn-grn:active {
@@ -433,6 +435,11 @@ input[type='text'] {
       color: white; }
     .invert-btn-grn a:visited {
       color: #71a333; }
+  .invert-btn-grn img {
+    width: 13px;
+    position: absolute;
+    right: 9px;
+    top: 10px; }
 
 ::-webkit-input-placeholder {
   color: #adadad; }
