@@ -299,7 +299,8 @@ input[type='text'] {
   input[type='text']:focus {
     background-color: white; }
 
-button {
+.Subhead-Share {
+  float: right;
   font-family: 'Lato';
   font-size: .8em;
   font-weight: 300;
@@ -319,33 +320,32 @@ button {
   color: #23bcc1;
   border: 1px solid #23bcc1;
   background-color: transparent;
-  width: 92px;
-  height: 34px;
+  width: 66px;
+  height: 16px;
   position: relative;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px; }
-  button:hover {
-    background-color: rgba(35, 188, 193, 0.2); }
-  button:active {
-    background-color: rgba(35, 188, 193, 0.2); }
-  button:focus {
-    background-color: rgba(35, 188, 193, 0.2); }
-  button a {
-    color: #23bcc1; }
-    button a:hover {
-      color: white; }
-    button a:visited {
-      color: #23bcc1; }
-  button img {
+  .Subhead-Share:hover {
+    background-color: rgba(35, 188, 193, 0.2);
+    color: #3bd6dc; }
+  .Subhead-Share:active {
+    background-color: rgba(35, 188, 193, 0.2);
+    color: #3bd6dc; }
+  .Subhead-Share:focus {
+    background-color: rgba(35, 188, 193, 0.2);
+    color: #3bd6dc; }
+  .Subhead-Share img {
     position: absolute;
     left: 8px;
     top: 6px;
     margin: 2px 10px 0 0; }
-  button span {
+  .Subhead-Share span {
     position: absolute;
-    top: 8px;
+    top: 4px;
     right: 10px; }
+    .Subhead-Share span:hover {
+      color: #3bd6dc; }
 
 .button {
   font-family: 'Lato';
@@ -564,9 +564,6 @@ button {
 
 .Subhead-Back {
   float: left; }
-
-.Subhead-Share {
-  float: right; }
 
 /*----------------------------------------------*/
 /*              Overview Styles   */

@@ -134,7 +134,7 @@ export default React.createClass({
       var badgeLevel = this.state.badgeLevel;
       twittermsg = this.state.userName + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on MissingMaps!';
     } else {
-      twittermsg = this.state.userName + ' contributed to MissingMaps! Checkout the progress at ';
+      twittermsg = this.state.userName + ' contributed to MissingMaps! Checkout their progress at ';
     }
     let message = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(twittermsg + ' ' + window.location);
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
