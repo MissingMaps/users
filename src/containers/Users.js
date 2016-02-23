@@ -50,6 +50,9 @@ export default React.createClass({
         <div className = "Search-Container">
           <div className = "Search-Box">
             <img src="assets/graphics/test.svg" width = "150px"></img>
+            <div className = "Intro-Content">
+              <p>Type in your OSM username to see how you've contributed to MissingMaps projects & see the badge rewards you've earned!</p>
+            </div>
             <div className = "Search-Content">
               <SearchBar
                 placeholder="Search for OSM user"
