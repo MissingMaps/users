@@ -299,6 +299,54 @@ input[type='text'] {
   input[type='text']:focus {
     background-color: white; }
 
+.Subhead-Share {
+  float: right;
+  font-family: 'Lato';
+  font-size: .8em;
+  font-weight: 300;
+  display: inline-block;
+  margin: 0px 8px 6px 0;
+  padding: 8px 14px 6px 9px;
+  cursor: pointer;
+  box-sizing: none;
+  outline: none;
+  transition: active .25s;
+  transition-timing-function: linear;
+  transition-duration: .12s;
+  transition-property: background;
+  text-decoration: none;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #23bcc1;
+  border: 1px solid #23bcc1;
+  background-color: transparent;
+  width: 66px;
+  height: 16px;
+  position: relative;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px; }
+  .Subhead-Share:hover {
+    background-color: rgba(35, 188, 193, 0.2);
+    color: #3bd6dc; }
+  .Subhead-Share:active {
+    background-color: rgba(35, 188, 193, 0.2);
+    color: #3bd6dc; }
+  .Subhead-Share:focus {
+    background-color: rgba(35, 188, 193, 0.2);
+    color: #3bd6dc; }
+  .Subhead-Share img {
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    margin: 2px 10px 0 0; }
+  .Subhead-Share span {
+    position: absolute;
+    top: 4px;
+    right: 10px; }
+    .Subhead-Share span:hover {
+      color: #3bd6dc; }
+
 .button {
   font-family: 'Lato';
   font-size: .8em;
@@ -319,12 +367,18 @@ input[type='text'] {
   -moz-border-radius: 4px;
   border-radius: 4px;
   background-color: #22bdc1; }
+  .button:hover {
+    background-color: rgba(35, 188, 193, 0.2); }
+  .button:active {
+    background-color: rgba(35, 188, 193, 0.2); }
+  .button:focus {
+    background-color: rgba(35, 188, 193, 0.2); }
   .button a {
-    color: white; }
+    color: #23bcc1; }
     .button a:hover {
       color: white; }
     .button a:visited {
-      color: white; }
+      color: #23bcc1; }
 
 .btn-blue {
   color: white;
@@ -510,9 +564,6 @@ input[type='text'] {
 
 .Subhead-Back {
   float: left; }
-
-.Subhead-Share {
-  float: right; }
 
 /*----------------------------------------------*/
 /*              Overview Styles   */
@@ -1142,7 +1193,7 @@ table {
   position: relative;
   width: 100%;
   height: 90%;
-  min-height: 580px;
+  min-height: 600px;
   text-align: center;
   background-color: #eee; }
 

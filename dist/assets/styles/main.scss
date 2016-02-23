@@ -388,6 +388,49 @@ input[type='text'] {
   }
 }
 
+button{
+  font-family: 'Lato';
+  font-size: .8em;
+  font-weight: 300;
+  display: inline-block;
+  margin: 0px 8px 6px 0;
+  padding: 8px 14px 6px 14px;
+  cursor: pointer;
+  box-sizing: none;
+  outline: none;
+  transition: active .25s;
+  transition-timing-function: linear;
+  transition-duration: .12s;
+  transition-property: background;
+  text-decoration: none;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: $mmTeal;
+  border: 1px solid $mmTeal;
+  background-color: rgba(0,0,0,0);
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  &:hover {
+    background-color: rgba(35, 188, 193, .2);
+  }
+  &:active {
+    background-color: rgba(35, 188, 193, .2);
+  }
+  &:focus {
+    background-color: rgba(35, 188, 193, .2);
+  }
+  a {
+    color: $mmTeal;
+    &:hover {
+      color: white;
+    }
+    &:visited {
+      color: $mmTeal;
+    }
+  }
+}
+
 .button {
   font-family: 'Lato';
   font-size: .8em;
@@ -408,13 +451,22 @@ input[type='text'] {
      -moz-border-radius: 4px;
           border-radius: 4px;
   background-color: $ButtonColor;
+  &:hover {
+    background-color: rgba(35, 188, 193, .2);
+  }
+  &:active {
+    background-color: rgba(35, 188, 193, .2);
+  }
+  &:focus {
+    background-color: rgba(35, 188, 193, .2);
+  }
   a {
-    color: white;
+    color: $mmTeal;
     &:hover {
       color: white;
     }
     &:visited {
-      color: white;
+      color: $mmTeal;
     }
   }
 }

@@ -5,7 +5,6 @@ export default React.createClass({
   getInitialState: function () {
     var stats = this.props.user || [];
 
-    var roadCount = Math.floor(stats.total_road_count_add);
     var buildCount = Math.floor(stats.total_building_count_add);
     var waterCount = Math.floor(stats.total_waterway_count_add);
     var poiCount = Math.floor(stats.total_poi_count_add);
@@ -14,7 +13,7 @@ export default React.createClass({
 
     var noDist = false;
     var noCount = false;
-    if (roadCount === 0 && buildCount === 0 &&
+    if (buildCount === 0 &&
       waterCount === 0 && poiCount === 0) {
       noCount = true;
       noDist = true;
@@ -33,12 +32,6 @@ export default React.createClass({
       tooltipTemplate = 'No Edits';
     } else {
       chartDataCount = [
-        {
-          value: roadCount,
-          color: '#faf3b6',
-          highlight: '#dcd599',
-          label: 'Roads'
-        },
         {
           value: waterCount,
           color: '#a8dde1',
