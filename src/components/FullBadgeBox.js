@@ -32,7 +32,7 @@ function mapBadgeToTask (badge, x) {
     'The Wright Stuff': (x) => `Build ${x} more buildings.`,
     'Consistency': (x) => `Map ${x} more consecutive days.`,
     'Field Mapper': (x) => `Upload ${x} more GPS traces through OSM`,
-    'Awesome JOSM': (x) => `Use JSOM to map an area ${x} more times`,
+    'Awesome JOSM': (x) => `Use JOSM to map an area ${x} more times`,
     'Mapathoner': (x) => `Participate in ${x} more mapthons`,
     'On Point': (x) => `Add ${x} more nodes.`,
     'White Water Rafting': (x) => `Add ${x} more km of waterways.`,
