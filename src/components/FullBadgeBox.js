@@ -81,6 +81,34 @@ export default (props) => {
     );
   });
 
+  if( list.length == 0){
+    var badgeCheck = "";
+  }else{
+    var badgeCheck = BadgeContainer();
+  }
+
+  function BadgeContainer(){
+    return(
+      <div id = "Badge-Container">
+        <div className = "Badge-Box-Content BadgeChecker">
+          <div className = "badgeroll-frame">
+            <div className = "badgeroll-center">
+              <div className = "Card-title">
+                EARNED BADGES
+              </div>
+              {badgeCheck}
+              <div className = "badgeroll-center-push">
+                <ul className = "Badge-Roll">
+                  {list}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   var progressBadges = Object.keys(props.progress.all).map(function (val) {
     var badge = props.progress.all[val];
     return {
@@ -114,22 +142,7 @@ export default (props) => {
 
   return (
     <div>
-      <div id = "Badge-Container">
-        <div className = "Badge-Box-Content">
-          <div className = "badgeroll-frame">
-            <div className = "badgeroll-center">
-              <div className = "Card-title">
-                EARNED BADGES
-              </div>
-              <div className = "badgeroll-center-push">
-                <ul className = "Badge-Roll">
-                  {list}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {badgeCheck}
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content">
           <div className = "badgeroll-frame">

@@ -62,8 +62,7 @@ export default React.createClass({
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
-    var total = Number(user.total_road_count_add) +
-      Number(user.total_road_count_mod) +
+    var total = 
       Number(user.total_building_count_add) +
       Number(user.total_building_count_mod) +
       Number(user.total_waterway_count_add) +
@@ -140,13 +139,8 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Road.svg" width="50px"></img>
                 <div className="Stat-Info">
-                    <span className="emphasizedNumber">
-                      {Number(user.total_road_count_add)}
-                    </span>
-                    <span
-                      className="emphasizedNumber small"
-                      style={this.state.kmStatsStyle}
-                    >
+                    <span className="emphasizedNumber small"
+                      style={this.state.kmStatsStyle}>
                       {' ' + total_road_km + 'km'}
                     </span>
                   <p>Roads</p>
@@ -155,10 +149,6 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Water.svg" width="50px"></img>
                 <div className="Stat-Info">
-                    <span
-                      className="emphasizedNumber">
-                      {Number(user.total_waterway_count_add)}
-                    </span>
                     <span
                       className="emphasizedNumber small"
                       style={this.state.kmStatsStyle}
