@@ -59,6 +59,9 @@ export default React.createClass({
   },
   render: function () {
     var user = this.props.data;
+
+    console.log(this.props.data);
+
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
@@ -173,9 +176,24 @@ export default React.createClass({
                     <th></th>
                   </tr>
                   {R.take(11, countries).map(function (country) {
+                    var countryName = country[0];
+                    console.log(countryName);
+
+                    if(country[0] == "Democratic Republic of the Congo"){
+                      countryName = "DR Congo";
+                    }else if(country[0] == "United States of America"){
+                      countryName = "USA";
+                    }else if(country[0] == "French Southern and Antarctic Lands"){
+                      countryName = "ATF";
+                    }else if(country[0] == "United Republic of Tanzania"){
+                      countryName = "Tanzania";
+                    }else if(country[0] == "Central African Republic"){
+                      countryName = "CAR"
+                    };
+
                     return (
                       <tr key={country[0]}>
-                        <td key={country[0]}>{country[0]}</td>
+                        <td key={country[0]}>{countryName}</td>
                         <td><span className="emphasizedText">{country[1]}</span></td>
                       </tr>
                       );
