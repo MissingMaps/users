@@ -4,7 +4,6 @@ import md5 from 'spark-md5';
 import binaryXHR from 'binary-xhr';
 import fetch from 'isomorphic-fetch';
 import {Link, IndexLink} from 'react-router';
-import { TwitterButton } from 'react-social';
 import {sortBadgeHashtags} from '../badge_logic/badge_cruncher.js';
 
 export default React.createClass({
@@ -91,17 +90,16 @@ export default React.createClass({
       var userId = nextProps.user.id;
       var userTagline = this.userTagline(nextProps.user.badges.length);
       var latestBadge = sortBadgeHashtags(nextProps.user);
-      var userName = nextProps.user.name.charAt(0).toUpperCase() + nextProps.user.name.slice(1)
+      var userName = nextProps.user.name.charAt(0).toUpperCase() + nextProps.user.name.slice(1);
+      var badgeChecker = false;
+      var latestBadgeName = '';
+      var latestBadgeLevel = '';
 
-      if ( latestBadge.length == 0){
-        var badgeChecker = false;
-        var latestBadgeName = "";
-        var latestBadgeLevel = "";        
-      }else{
-        var latestBadgeName = latestBadge[0].name;
-        var latestBadgeLevel = latestBadge[0].level;
-        var badgeChecker = true;
-      };
+      if (latestBadge.length !== 0) {
+        latestBadgeName = latestBadge[0].name;
+        latestBadgeLevel = latestBadge[0].level;
+        badgeChecker = true;
+      }
 
       this.setState({
         userName: userName,
@@ -130,14 +128,15 @@ export default React.createClass({
     return 'Map Addict';
   },
   render: function () {
-    if( this.state.badgeCheck == true ){
+    var twittermsg = '';
+    if (this.state.badgeCheck) {
       var badgeName = this.state.userBadge;
       var badgeLevel = this.state.badgeLevel;
-      var twittermsg = this.state.userName +" earned the " + badgeName + " badge (lv." + badgeLevel + ") on MissingMaps!";
-    }else{
-      var twittermsg = this.state.userName +" contributed to MissingMaps! Checkout the progress at ";
-    };
-    let message =   {twittermsg}.twittermsg;
+      twittermsg = this.state.userName + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on MissingMaps!';
+    } else {
+      twittermsg = this.state.userName + ' contributed to MissingMaps! Checkout the progress at ';
+    }
+    let message = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(twittermsg + ' ' + window.location);
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
     return (
       <div>
@@ -146,11 +145,12 @@ export default React.createClass({
             <div className = "Subhead-Back">
               <a href="">&#8592; Back to search</a>
             </div>
-            <div className = "Subhead-Share">
-                <TwitterButton message = {message}>
+
+            <a className="Subhead-Share"
+              style={{'cursor': 'pointer'}}
+              href={message} target='_blank'>
                   <img src="assets/graphics/twitter.svg" width= "18px"></img>Share
-                </TwitterButton>
-            </div>
+            </a>
           </div>
           <div id = "Subhead-Content">
             <div className = "ProfilePicture"
