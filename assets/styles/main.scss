@@ -1529,7 +1529,7 @@ table {
     };
     strong {
       font-weight: normal;
-      color: $darkestgrey;
+      color: lighten($darkestgrey, 50);
     }
     span {
       font-weight: 500;
