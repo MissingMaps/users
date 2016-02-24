@@ -170,7 +170,7 @@ export default React.createClass({
               <table className = "table-curve">
                 <tbody>
                   <tr>
-                    <th>Countries most mapped</th>
+                    <th><span>Countries most mapped</span></th>
                     <th></th>
                   </tr>
                   {R.take(11, countries).map(function (country) {
