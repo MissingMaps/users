@@ -3,7 +3,7 @@ var R = require('ramda');
 module.exports = function (dates) {
   var badges = {
     daysTotal: {
-      name: 'Year-long Mapper',
+      name: 'Year-Long Mapper',
       id: 15,
       tiers: {1: 25, 2: 50, 3: 100}
     }
@@ -44,6 +44,7 @@ module.exports = function (dates) {
     var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
     userBadges[key] = {
       name: badge.name,
+      category: badge.id,
       badgeLevel: badgeLevel,
       nextBadgeLevel: nextBadgeLevel,
       points: {

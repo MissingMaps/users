@@ -3,14 +3,14 @@ import dateSequentialCheck from './date_check_sequential';
 import dateTotalCheck from './date_check_total';
 import R from 'ramda';
 
-// // Note- waterway KMs, GPS trace KMs, and building mods are
-// // captured but are not in the official spec.
-// // Countries, tasks, task edits, and JOSM are in the spec
-// // but are not implemented here.
+// Note- waterway KMs, GPS trace KMs, and building mods are
+// captured but are not in the official spec.
+// Tasks and task edits are in the spec but are not implemented here.
+// Note: road count and road count mods were also removed.
 module.exports.getBadgeProgress = function getBadgeProgress (user) {
   var sumBadges = sumCheck({
-    roads: Number(user.total_road_count_add),
-    roadMods: Number(user.total_road_count_mod),
+    // roads: Number(user.total_road_count_add),
+    // roadMods: Number(user.total_road_count_mod),
     buildings: Number(user.total_building_count_add),
     // buildingMods: user.total_building_count_mod,
     waterways: Number(user.total_waterway_count_add),
@@ -20,10 +20,10 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     roadKmMods: Number(user.total_road_km_mod),
     // waterwayKms: user.total_waterway_km_add,
     // gpsTraceKmAdd: user.total_gpstrace_km_add,
-    // countries: user.,
+    countries: user.country_count,
     // tasks: user.,
     // taskEdits: user.,
-    // josm: user.,
+    josm: user.total_josm_edit_count,
     hashtags: Object.keys(user.hashtags).length
   });
 
@@ -34,17 +34,19 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     return sumBadges[a].points.percentage - sumBadges[b].points.percentage;
   });
 
-  var mostAttainableBadge = sumBadges[sortedSumBadges.slice(-1)[0]];
-  mostAttainableBadge.name = sumBadges[R.last(sortedSumBadges)].name;
+  var mostObtainableNames = sortedSumBadges.slice(-3);
+  var mostObtainable = sumBadges[mostObtainableNames[2]];
+  var secondMostObtainable = sumBadges[mostObtainableNames[1]];
+  var thirdMostObtainable = sumBadges[mostObtainableNames[0]];
 
   return {
     all: R.mergeAll([sumBadges, consistencyBadge, historyBadge]),
-    mostAttainable: mostAttainableBadge
+    mostAttainable: [mostObtainable, secondMostObtainable, thirdMostObtainable]
   };
 };
 
 module.exports.sortBadgeHashtags = function sortBadgeHashtags (user) {
   return user.badges.sort(function (a, b) {
-    return new Date(a.created_at) - new Date(b.created_at);
+    return new Date(b.created_at) - new Date(a.created_at);
   });
 };

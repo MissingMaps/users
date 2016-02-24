@@ -82,6 +82,7 @@ module.exports = function (dates) {
     var percentage = (currentPoints - lastPoints) / (nextPoints - lastPoints) * 100;
     userBadges[key] = {
       name: badge.name,
+      category: badge.id,
       badgeLevel: badgeLevel,
       nextBadgeLevel: nextBadgeLevel,
       points: {

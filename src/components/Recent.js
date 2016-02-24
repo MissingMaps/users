@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 export default (props) => {
-  if (!props.data) { return <div>Loading...</div>; }
+  if (!props.data) { return <div>Loading...<div></div></div>; }
 
   var data = props.data;
   var total = Number(data.total_road_count_add) +
@@ -13,60 +13,46 @@ export default (props) => {
     Number(data.total_poi_count_add);
 
   var latest = data.latest;
-  var latestTime = moment(new Date(latest.created_at))
-    .format('MMM Do YY[,] h:mm:ss a');
-
-  var last_edit_total = Number(latest.road_count_add) +
+  var latestTotal = Number(latest.road_count_add) +
     Number(latest.road_count_mod) +
     Number(latest.building_count_add) +
     Number(latest.building_count_mod) +
     Number(latest.waterway_count_add) +
     Number(latest.poi_count_add);
 
-  var country = data.latest.countries[0].name;
-  var hashtag = data.latest.hashtags[0].hashtag;
+  var changesetCount = data.changeset_count;
+
+  var averageEdits = total / changesetCount;
+  var lastChangesetComparison = (latestTotal / (averageEdits) * 100).toFixed(2);
+
+  var last_edit_time = latest.created_at;
+  var last_edit_day = moment(last_edit_time).format('dddd');
+  var last_edit_minutes = moment(last_edit_time).format('h:mm');
+  var is_plural = '';
+
+  test_plural(latestTotal);
+
+  function test_plural (num) {
+    if (num === 1) {
+      is_plural = '';
+    } else {
+      is_plural = 's';
+    }
+  }
 
   return (
-    <div id = "Recent-Container">
-      <div className = "Card">
-        <div className = "Card-title">Recent Contributions</div>
-        <div className = "Card-Content">
-          <div className = "Card-Left">
-            <div className = "Card-Textbox">
-              <div className = "Card-Section-Title">
-                Total Edits
-              </div>
-              <h3>{total}</h3>
-            </div>
-            <div className = "Card-Textbox">
-              <div className = "Card-Section-Title">
-                Last Edit
-              </div>
-              <p>{last_edit_total} contributions</p>
-              <p>Last at {latestTime}</p>
-              <p>To #{hashtag}</p>
-              <p>In {country}</p>
-            </div>
-          </div>
-          <div className = "Card-Right">
-            <div className = "Card-Textbox">
-              <div className = "Card-Section-Title">
-                Last Badge Earned
-              </div>
-              <div className = "Card-Badge>">
-                <img src="assets/graphics/test2.svg" width = "100px"></img>
-              </div>
-              <div className = "Card-Badge-Name">
-                {
-                  (data.badges.length > 0)
-                    ? data.badges[0].name
-                    : <div>No badges! Go map!</div>
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className = "Split split-stats">
+      <div className = "sub-section">
+        <h3 className = "descriptor">Latest Edit</h3>
+        <div className = "Recent-Edit-Box">
+          <span className = "EmphasizedNumber">{latestTotal}</span>
+          <div className = "Recent-Edit-Sidebar">
+            <p>edit{is_plural} made</p>
+            <p>{last_edit_day} at {last_edit_minutes}</p>
+            <p>#{data.latest.hashtags[0].hashtag}</p>
           </div>
         </div>
+      </div>
+    </div>
   );
 };
