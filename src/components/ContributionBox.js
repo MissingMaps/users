@@ -75,6 +75,8 @@ export default React.createClass({
       domainGutter: 10,
       cellpadding: 3,
       cellradius: 5,
+      itemName: 'edit',
+      tooltip: true,
       afterLoadData: parser
     });
   },
