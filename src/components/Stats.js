@@ -178,17 +178,17 @@ export default React.createClass({
                   {R.take(11, countries).map(function (country) {
                     var countryName = country[0];
 
-                    if(country[0] == "Democratic Republic of the Congo"){
-                      countryName = "DR Congo";
-                    }else if(country[0] == "United States of America"){
-                      countryName = "USA";
-                    }else if(country[0] == "French Southern and Antarctic Lands"){
-                      countryName = "ATF";
-                    }else if(country[0] == "United Republic of Tanzania"){
-                      countryName = "Tanzania";
-                    }else if(country[0] == "Central African Republic"){
-                      countryName = "CAR"
-                    };
+                    if (country[0] === 'Democratic Republic of the Congo') {
+                      countryName = 'DR Congo';
+                    } else if (country[0] === 'United States of America') {
+                      countryName = 'USA';
+                    } else if (country[0] === 'French Southern and Antarctic Lands') {
+                      countryName = 'ATF';
+                    } else if (country[0] === 'United Republic of Tanzania') {
+                      countryName = 'Tanzania';
+                    } else if (country[0] === 'Central African Republic') {
+                      countryName = 'CAR';
+                    }
 
                     return (
                       <tr key={country[0]}>
