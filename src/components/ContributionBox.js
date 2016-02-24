@@ -7,7 +7,7 @@ export default React.createClass({
     // smaller of (horizontal resolution + 30) / 100 and 12.
     var chartSize = {};
     if (window.innerWidth >= 1100) {
-      chartSize = {tallerDiv: true, cellSize: 13.9, range: 12};
+      chartSize = {tallerDiv: true, cellSize: 12.8, range: 12};
     } else {
       var months = ~~((window.innerWidth + 100) / 100);
       if (months > 12) months = 12;
@@ -20,7 +20,6 @@ export default React.createClass({
       domain: 'month',
       range: chartSize.range,
       subDomain: 'day',
-      rowLimit: 7,
       domainLabelFormat: '%B',
       cellSize: chartSize.cellSize,
       displayLegend: false,
@@ -34,8 +33,8 @@ export default React.createClass({
 
     // Set the number of calendar months to display at the
     // smaller of (horizontal resolution + 30) / 100 and 12.
-    if (containerWidth >= 985) {
-      this.setState({tallerDiv: true, cellSize: 13.9, range: 12});
+    if (containerWidth >= 1085) {
+      this.setState({tallerDiv: true, cellSize: 12.8, range: 12});
     } else {
       var months = ~~((this.state.windowWidth * 1.2 - 25) / 100);
       if (months > 12) months = 12;
@@ -67,23 +66,25 @@ export default React.createClass({
       domain: this.state.domain,
       range: this.state.range,
       subDomain: this.state.subDomain,
-      rowLimit: this.state.rowLimit,
       domainLabelFormat: this.state.domainLabelFormat,
       cellSize: this.state.cellSize,
       displayLegend: this.state.displayLegend,
       start: new Date(data[0]),
       data: data,
       dataType: 'json',
+      domainGutter: 10,
+      cellpadding: 3,
+      cellradius: 5,
       afterLoadData: parser
     });
   },
   render: function () {
     return (
       <div>
-        <div className = "Card-Section-Title Move-over">
-          CONTRIBUTION TIMELINE
-        </div>
         <div className = "Contribute-Timeline-Container">
+          <div className = "descriptor">
+            CONTRIBUTION TIMELINE
+          </div>
           <div className = {this.state.tallerDiv ? 'Contribute-Timeline-Content tall' : 'Contribute-Timeline-Content'}>
           <div id="cal-heatmap"></div>
           </div>

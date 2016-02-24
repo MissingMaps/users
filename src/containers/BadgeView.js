@@ -1,6 +1,6 @@
 import React from 'react';
 import BadgeView from '../components/FullBadgeBox.js';
-import {getBadgeProgress} from '../badge_logic/badge_cruncher';
+import {getBadgeProgress} from '../badge_logic/badge_cruncher.js';
 
 export default React.createClass({
   getInitialState: function () {
