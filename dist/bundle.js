@@ -60286,7 +60286,7 @@ module.exports.getBadgeProgress = function getBadgeProgress(user) {
 
 module.exports.sortBadgeHashtags = function sortBadgeHashtags(user) {
   return user.badges.sort(function (a, b) {
-    return new Date(a.created_at) - new Date(b.created_at);
+    return new Date(b.created_at) - new Date(a.created_at);
   });
 };
 
@@ -60904,7 +60904,7 @@ function mapBadgeToTask(badge, x) {
       return 'Upload ' + x + ' more GPS traces through OSM';
     },
     'Awesome JOSM': function AwesomeJOSM(x) {
-      return 'Use JSOM to map an area ' + x + ' more times';
+      return 'Use JOSM to map an area ' + x + ' more times';
     },
     'Mapathoner': function Mapathoner(x) {
       return 'Participate in ' + x + ' more mapthons';
@@ -61310,7 +61310,8 @@ exports.default = function (props) {
         _react2.default.createElement(
           'div',
           { className: 'button invert-btn-grn' },
-          'Contribute Now'
+          'Contribute Now',
+          _react2.default.createElement('img', { src: 'assets/graphics/Arrow.svg' })
         )
       )
     )
@@ -61665,6 +61666,7 @@ exports.default = _react2.default.createClass({
   },
   render: function render() {
     var user = this.props.data;
+
     var countries = _ramda2.default.reverse(_ramda2.default.sortBy(_ramda2.default.prop(1), _ramda2.default.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
@@ -61923,13 +61925,27 @@ exports.default = _react2.default.createClass({
                 _react2.default.createElement('th', null)
               ),
               _ramda2.default.take(11, countries).map(function (country) {
+                var countryName = country[0];
+
+                if (country[0] == "Democratic Republic of the Congo") {
+                  countryName = "DR Congo";
+                } else if (country[0] == "United States of America") {
+                  countryName = "USA";
+                } else if (country[0] == "French Southern and Antarctic Lands") {
+                  countryName = "ATF";
+                } else if (country[0] == "United Republic of Tanzania") {
+                  countryName = "Tanzania";
+                } else if (country[0] == "Central African Republic") {
+                  countryName = "CAR";
+                };
+
                 return _react2.default.createElement(
                   'tr',
                   { key: country[0] },
                   _react2.default.createElement(
                     'td',
                     { key: country[0] },
-                    country[0]
+                    countryName
                   ),
                   _react2.default.createElement(
                     'td',
@@ -62077,7 +62093,8 @@ exports.default = _react2.default.createClass({
       var userId = nextProps.user.id;
       var userTagline = this.userTagline(nextProps.user.badges.length);
       var latestBadge = (0, _badge_cruncher.sortBadgeHashtags)(nextProps.user);
-      var userName = nextProps.user.name.charAt(0).toUpperCase() + nextProps.user.name.slice(1);
+      var userName = nextProps.user.name;
+      var userNameCap = nextProps.user.name.charAt(0).toUpperCase() + nextProps.user.name.slice(1);
       var badgeChecker = false;
       var latestBadgeName = '';
       var latestBadgeLevel = '';
@@ -62090,6 +62107,7 @@ exports.default = _react2.default.createClass({
 
       this.setState({
         userName: userName,
+        userNameCap: userNameCap,
         userId: userId,
         userTagline: userTagline,
         userBadge: latestBadgeName,
@@ -62119,9 +62137,9 @@ exports.default = _react2.default.createClass({
     if (this.state.badgeCheck) {
       var badgeName = this.state.userBadge;
       var badgeLevel = this.state.badgeLevel;
-      twittermsg = this.state.userName + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on MissingMaps!';
+      twittermsg = this.state.userNameCap + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on MissingMaps!';
     } else {
-      twittermsg = this.state.userName + ' contributed to MissingMaps! Checkout their progress at ';
+      twittermsg = this.state.userNameCap + ' contributed to MissingMaps! Checkout their progress at ';
     }
     var message = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(twittermsg + ' ' + window.location);
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
@@ -62472,6 +62490,15 @@ exports.default = _react2.default.createClass({
           'div',
           { className: 'Search-Box' },
           _react2.default.createElement('img', { src: 'assets/graphics/test.svg', width: '150px' }),
+          _react2.default.createElement(
+            'div',
+            { className: 'Intro-Content' },
+            _react2.default.createElement(
+              'p',
+              null,
+              'Type in your OSM username to see how you\'ve contributed to MissingMaps projects & see the badge rewards you\'ve earned!'
+            )
+          ),
           _react2.default.createElement(
             'div',
             { className: 'Search-Content' },

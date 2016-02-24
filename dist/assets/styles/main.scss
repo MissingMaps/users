@@ -449,7 +449,7 @@ input[type='text'] {
   font-weight: 300;
   display: inline-block;
   margin: 0px 8px 6px 0;
-  padding: 8px 14px 6px 14px;
+  padding: 6px 14px 6px 14px;
   cursor: pointer;
   transition: active .25s;
   transition-timing-function: linear;
@@ -539,6 +539,8 @@ input[type='text'] {
   color: darken($mmGreen, 10);
   border: 1px solid darken($mmGreen, 10);
   background-color: rgba(0,0,0,0);
+  position: relative;
+  padding-right: 30px;
   &:hover {
     background-color: lighten($mmGreen, 24);
   }
@@ -556,6 +558,12 @@ input[type='text'] {
     &:visited {
       color: darken($mmGreen, 10);
     }
+  }
+  img{
+    width: 13px;
+    position: absolute;
+    right: 9px;
+    top: 11px;
   }
 }
 
@@ -1438,7 +1446,7 @@ table {
   position: relative;
   width: 100%;
   height: 90%;
-  min-height: 600px;
+  min-height: 660px;
   text-align: center;
   background-color: #eee;
 }
@@ -1529,7 +1537,7 @@ table {
     };
     strong {
       font-weight: normal;
-      color: $darkestgrey;
+      color: lighten($darkestgrey, 50);
     }
     span {
       font-weight: 500;
@@ -2116,4 +2124,11 @@ Remove comment to apply this style to date with value equal to 0
   border-style: solid;
   border-color: transparent;
   border-top-color: #222;
+}
+
+.Intro-Content{
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 1em;
 }
