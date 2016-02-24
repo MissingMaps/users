@@ -1171,7 +1171,11 @@ tr {
   border-bottom: 1px solid #c6c7c7; }
 
 tr:first-child {
-  font-weight: 600; }
+  font-weight: 600;
+  height: 30px; }
+  tr:first-child span {
+    position: absolute;
+    top: 0; }
 
 .Number-Stat {
   font-weight: 800;
@@ -1180,7 +1184,8 @@ tr:first-child {
 
 table {
   width: 300px;
-  margin-top: 1em; }
+  margin-top: 1em;
+  position: relative; }
 
 ::-webkit-input-placeholder {
   color: #adadad; }
