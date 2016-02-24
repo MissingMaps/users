@@ -63,7 +63,9 @@ export default React.createClass({
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
-    var total = 
+    var total =
+      Number(user.total_road_count_add) +
+      Number(user.total_road_count_mod) +
       Number(user.total_building_count_add) +
       Number(user.total_building_count_mod) +
       Number(user.total_waterway_count_add) +
@@ -176,17 +178,17 @@ export default React.createClass({
                   {R.take(11, countries).map(function (country) {
                     var countryName = country[0];
 
-                    if(country[0] == "Democratic Republic of the Congo"){
-                      countryName = "DR Congo";
-                    }else if(country[0] == "United States of America"){
-                      countryName = "USA";
-                    }else if(country[0] == "French Southern and Antarctic Lands"){
-                      countryName = "ATF";
-                    }else if(country[0] == "United Republic of Tanzania"){
-                      countryName = "Tanzania";
-                    }else if(country[0] == "Central African Republic"){
-                      countryName = "CAR"
-                    };
+                    if (country[0] === 'Democratic Republic of the Congo') {
+                      countryName = 'DR Congo';
+                    } else if (country[0] === 'United States of America') {
+                      countryName = 'USA';
+                    } else if (country[0] === 'French Southern and Antarctic Lands') {
+                      countryName = 'ATF';
+                    } else if (country[0] === 'United Republic of Tanzania') {
+                      countryName = 'Tanzania';
+                    } else if (country[0] === 'Central African Republic') {
+                      countryName = 'CAR';
+                    }
 
                     return (
                       <tr key={country[0]}>
