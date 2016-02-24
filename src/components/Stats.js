@@ -60,8 +60,6 @@ export default React.createClass({
   render: function () {
     var user = this.props.data;
 
-    console.log(this.props.data);
-
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
@@ -177,7 +175,6 @@ export default React.createClass({
                   </tr>
                   {R.take(11, countries).map(function (country) {
                     var countryName = country[0];
-                    console.log(countryName);
 
                     if(country[0] == "Democratic Republic of the Congo"){
                       countryName = "DR Congo";
