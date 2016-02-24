@@ -1411,6 +1411,11 @@ tr {
 
 tr:first-child {
   font-weight: 600;
+  height: 30px;
+  span{
+    position: absolute;
+    top:0;
+  }
 }
 
 .Number-Stat {
@@ -1422,6 +1427,7 @@ tr:first-child {
 table {
   width: 300px;
   margin-top: 1em;
+  position: relative;
 }
 
 ::-webkit-input-placeholder {
