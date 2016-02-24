@@ -1,5 +1,5 @@
 {
-  "name": "osm-gamification-users",
+  "name": "users",
   "version": "0.0.1",
   "description": "User page",
   "main": "index.js",
