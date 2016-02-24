@@ -63,7 +63,9 @@ export default React.createClass({
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
-    var total = 
+    var total =
+      Number(user.total_road_count_add) +
+      Number(user.total_road_count_mod) +
       Number(user.total_building_count_add) +
       Number(user.total_building_count_mod) +
       Number(user.total_waterway_count_add) +

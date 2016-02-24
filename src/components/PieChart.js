@@ -6,7 +6,9 @@ export default React.createClass({
     var stats = this.props.user || [];
 
     var roadCount = Math.floor(stats.total_road_count_add);
+    roadCount += Math.floor(stats.total_road_count_mod);
     var buildCount = Math.floor(stats.total_building_count_add);
+    buildCount += Math.floor(stats.total_building_count_mod);
     var waterCount = Math.floor(stats.total_waterway_count_add);
     var poiCount = Math.floor(stats.total_poi_count_add);
 
