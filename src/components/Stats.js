@@ -69,7 +69,7 @@ export default React.createClass({
       Number(user.total_waterway_count_add) +
       Number(user.total_poi_count_add);
 
-    var hashtag = 'http://missingmaps-leaderboards-demo.devseed.com/#/' + user.hashtags[hashtag];
+    var hashtag = 'http://missingmaps.org/leaderboards/#/' + user.hashtags[hashtag];
 
     // Round km calculation depending on length
     var total_road_km = Number(user.total_road_km_add).toFixed(1);
@@ -89,7 +89,7 @@ export default React.createClass({
                     <th>Changesets</th>
                   </tr>
                   {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
-                    var hashtaglink = 'http://missingmaps-leaderboards-demo.devseed.com/#/' + hashtag;
+                    var hashtaglink = 'http://missingmaps.org/leaderboards/#/' + hashtag;
                     return (
                       <tr key={hashtag}>
                         <td key={hashtag}><a href={hashtaglink} target="_blank">#{hashtag}</a></td>
