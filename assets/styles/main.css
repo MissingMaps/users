@@ -1200,7 +1200,7 @@ table {
   position: relative;
   width: 100%;
   height: 90%;
-  min-height: 600px;
+  min-height: 660px;
   text-align: center;
   background-color: #eee; }
 
@@ -1753,3 +1753,9 @@ Remove comment to apply this style to date with value equal to 0
   border-style: solid;
   border-color: transparent;
   border-top-color: #222; }
+
+.Intro-Content {
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 1em; }

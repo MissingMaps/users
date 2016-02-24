@@ -47,6 +47,6 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
 
 module.exports.sortBadgeHashtags = function sortBadgeHashtags (user) {
   return user.badges.sort(function (a, b) {
-    return new Date(a.created_at) - new Date(b.created_at);
+    return new Date(b.created_at) - new Date(a.created_at);
   });
 };
