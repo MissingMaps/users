@@ -86,7 +86,7 @@ export default React.createClass({
                       <a href= "http://www.missingmaps.org/users/#/">&larr; Search for another user</a>
                     </p>
                     <p>
-                      We also provide instructions if you'd like to learn how to contribute to OpenStreetMaps & MissingMaps!
+                      We also provide instructions if you would like to learn how to contribute to OpenStreetMaps & MissingMaps!
                     </p>
                     <a href="http://www.missingmaps.org/contribute/">
                     <div className = "button btn-grn">
