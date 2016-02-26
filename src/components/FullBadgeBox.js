@@ -66,7 +66,9 @@ export default (props) => {
     return (
       <li key={stripWS(badge.name)}>
         <div className = "badge-home">
+        <div className = "badge-contain">
          <BadgeCompleted badge={badge}/>
+        </div>
           <div className = "badge-Details">
             <div className = "sub-head">
               {badge.name}
