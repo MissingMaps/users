@@ -758,6 +758,9 @@ input[type='text'] {
     width: auto;
     height: auto; } }
 
+.badge-contain {
+  position: relative; }
+
 .badge-Details {
   float: left;
   width: 50%;
