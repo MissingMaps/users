@@ -3598,7 +3598,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 },{}],6:[function(require,module,exports){
 !function() {
   var d3 = {
-    version: "3.5.14"
+    version: "3.5.16"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -3818,20 +3818,20 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
     while (i < n) pairs[i] = [ p0 = p1, p1 = array[++i] ];
     return pairs;
   };
-  d3.zip = function() {
-    if (!(n = arguments.length)) return [];
-    for (var i = -1, m = d3.min(arguments, d3_zipLength), zips = new Array(m); ++i < m; ) {
-      for (var j = -1, n, zip = zips[i] = new Array(n); ++j < n; ) {
-        zip[j] = arguments[j][i];
+  d3.transpose = function(matrix) {
+    if (!(n = matrix.length)) return [];
+    for (var i = -1, m = d3.min(matrix, d3_transposeLength), transpose = new Array(m); ++i < m; ) {
+      for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n; ) {
+        row[j] = matrix[j][i];
       }
     }
-    return zips;
+    return transpose;
   };
-  function d3_zipLength(d) {
+  function d3_transposeLength(d) {
     return d.length;
   }
-  d3.transpose = function(matrix) {
-    return d3.zip.apply(d3, matrix);
+  d3.zip = function() {
+    return d3.transpose(arguments);
   };
   d3.keys = function(map) {
     var keys = [];
@@ -4218,9 +4218,10 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
       return d3_selectAll(selector, this);
     };
   }
+  var d3_nsXhtml = "http://www.w3.org/1999/xhtml";
   var d3_nsPrefix = {
     svg: "http://www.w3.org/2000/svg",
-    xhtml: "http://www.w3.org/1999/xhtml",
+    xhtml: d3_nsXhtml,
     xlink: "http://www.w3.org/1999/xlink",
     xml: "http://www.w3.org/XML/1998/namespace",
     xmlns: "http://www.w3.org/2000/xmlns/"
@@ -4403,7 +4404,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
   function d3_selection_creator(name) {
     function create() {
       var document = this.ownerDocument, namespace = this.namespaceURI;
-      return namespace && namespace !== document.documentElement.namespaceURI ? document.createElementNS(namespace, name) : document.createElement(name);
+      return namespace === d3_nsXhtml && document.documentElement.namespaceURI === d3_nsXhtml ? document.createElement(name) : document.createElementNS(namespace, name);
     }
     function createNS() {
       return this.ownerDocument.createElementNS(name.space, name.local);
@@ -4802,7 +4803,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
     }
     function dragstart(id, position, subject, move, end) {
       return function() {
-        var that = this, target = d3.event.target, parent = that.parentNode, dispatch = event.of(that, arguments), dragged = 0, dragId = id(), dragName = ".drag" + (dragId == null ? "" : "-" + dragId), dragOffset, dragSubject = d3.select(subject(target)).on(move + dragName, moved).on(end + dragName, ended), dragRestore = d3_event_dragSuppress(target), position0 = position(parent, dragId);
+        var that = this, target = d3.event.target.correspondingElement || d3.event.target, parent = that.parentNode, dispatch = event.of(that, arguments), dragged = 0, dragId = id(), dragName = ".drag" + (dragId == null ? "" : "-" + dragId), dragOffset, dragSubject = d3.select(subject(target)).on(move + dragName, moved).on(end + dragName, ended), dragRestore = d3_event_dragSuppress(target), position0 = position(parent, dragId);
         if (origin) {
           dragOffset = origin.apply(that, arguments);
           dragOffset = [ dragOffset.x - position0[0], dragOffset.y - position0[1] ];
@@ -13285,7 +13286,7 @@ function shim (obj) {
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
- * @version   3.0.2
+ * @version   3.1.2
  */
 
 (function() {
@@ -13313,7 +13314,6 @@ function shim (obj) {
 
     var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
     var lib$es6$promise$asap$$len = 0;
-    var lib$es6$promise$asap$$toString = {}.toString;
     var lib$es6$promise$asap$$vertxNext;
     var lib$es6$promise$asap$$customSchedulerFn;
 
@@ -13432,6 +13432,42 @@ function shim (obj) {
     } else {
       lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
     }
+    function lib$es6$promise$then$$then(onFulfillment, onRejection) {
+      var parent = this;
+      var state = parent._state;
+
+      if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
+        return this;
+      }
+
+      var child = new this.constructor(lib$es6$promise$$internal$$noop);
+      var result = parent._result;
+
+      if (state) {
+        var callback = arguments[state - 1];
+        lib$es6$promise$asap$$asap(function(){
+          lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
+        });
+      } else {
+        lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+      }
+
+      return child;
+    }
+    var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
+    function lib$es6$promise$promise$resolve$$resolve(object) {
+      /*jshint validthis:true */
+      var Constructor = this;
+
+      if (object && typeof object === 'object' && object.constructor === Constructor) {
+        return object;
+      }
+
+      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+      lib$es6$promise$$internal$$resolve(promise, object);
+      return promise;
+    }
+    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
 
     function lib$es6$promise$$internal$$noop() {}
 
@@ -13505,12 +13541,12 @@ function shim (obj) {
       }
     }
 
-    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable) {
-      if (maybeThenable.constructor === promise.constructor) {
+    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
+      if (maybeThenable.constructor === promise.constructor &&
+          then === lib$es6$promise$then$$default &&
+          constructor.resolve === lib$es6$promise$promise$resolve$$default) {
         lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
       } else {
-        var then = lib$es6$promise$$internal$$getThen(maybeThenable);
-
         if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
           lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
         } else if (then === undefined) {
@@ -13527,7 +13563,7 @@ function shim (obj) {
       if (promise === value) {
         lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
       } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
-        lib$es6$promise$$internal$$handleMaybeThenable(promise, value);
+        lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
       } else {
         lib$es6$promise$$internal$$fulfill(promise, value);
       }
@@ -13662,104 +13698,6 @@ function shim (obj) {
       }
     }
 
-    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
-      var enumerator = this;
-
-      enumerator._instanceConstructor = Constructor;
-      enumerator.promise = new Constructor(lib$es6$promise$$internal$$noop);
-
-      if (enumerator._validateInput(input)) {
-        enumerator._input     = input;
-        enumerator.length     = input.length;
-        enumerator._remaining = input.length;
-
-        enumerator._init();
-
-        if (enumerator.length === 0) {
-          lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
-        } else {
-          enumerator.length = enumerator.length || 0;
-          enumerator._enumerate();
-          if (enumerator._remaining === 0) {
-            lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
-          }
-        }
-      } else {
-        lib$es6$promise$$internal$$reject(enumerator.promise, enumerator._validationError());
-      }
-    }
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validateInput = function(input) {
-      return lib$es6$promise$utils$$isArray(input);
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
-      return new Error('Array Methods must be provided an Array');
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._init = function() {
-      this._result = new Array(this.length);
-    };
-
-    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
-      var enumerator = this;
-
-      var length  = enumerator.length;
-      var promise = enumerator.promise;
-      var input   = enumerator._input;
-
-      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-        enumerator._eachEntry(input[i], i);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
-      var enumerator = this;
-      var c = enumerator._instanceConstructor;
-
-      if (lib$es6$promise$utils$$isMaybeThenable(entry)) {
-        if (entry.constructor === c && entry._state !== lib$es6$promise$$internal$$PENDING) {
-          entry._onerror = null;
-          enumerator._settledAt(entry._state, i, entry._result);
-        } else {
-          enumerator._willSettleAt(c.resolve(entry), i);
-        }
-      } else {
-        enumerator._remaining--;
-        enumerator._result[i] = entry;
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
-      var enumerator = this;
-      var promise = enumerator.promise;
-
-      if (promise._state === lib$es6$promise$$internal$$PENDING) {
-        enumerator._remaining--;
-
-        if (state === lib$es6$promise$$internal$$REJECTED) {
-          lib$es6$promise$$internal$$reject(promise, value);
-        } else {
-          enumerator._result[i] = value;
-        }
-      }
-
-      if (enumerator._remaining === 0) {
-        lib$es6$promise$$internal$$fulfill(promise, enumerator._result);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
-      var enumerator = this;
-
-      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
-        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
-      }, function(reason) {
-        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
-      });
-    };
     function lib$es6$promise$promise$all$$all(entries) {
       return new lib$es6$promise$enumerator$$default(this, entries).promise;
     }
@@ -13792,19 +13730,6 @@ function shim (obj) {
       return promise;
     }
     var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
-    function lib$es6$promise$promise$resolve$$resolve(object) {
-      /*jshint validthis:true */
-      var Constructor = this;
-
-      if (object && typeof object === 'object' && object.constructor === Constructor) {
-        return object;
-      }
-
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-      lib$es6$promise$$internal$$resolve(promise, object);
-      return promise;
-    }
-    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
     function lib$es6$promise$promise$reject$$reject(reason) {
       /*jshint validthis:true */
       var Constructor = this;
@@ -13935,15 +13860,8 @@ function shim (obj) {
       this._subscribers = [];
 
       if (lib$es6$promise$$internal$$noop !== resolver) {
-        if (!lib$es6$promise$utils$$isFunction(resolver)) {
-          lib$es6$promise$promise$$needsResolver();
-        }
-
-        if (!(this instanceof lib$es6$promise$promise$$Promise)) {
-          lib$es6$promise$promise$$needsNew();
-        }
-
-        lib$es6$promise$$internal$$initializePromise(this, resolver);
+        typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
+        this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
       }
     }
 
@@ -14151,28 +14069,7 @@ function shim (obj) {
       Useful for tooling.
       @return {Promise}
     */
-      then: function(onFulfillment, onRejection) {
-        var parent = this;
-        var state = parent._state;
-
-        if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
-          return this;
-        }
-
-        var child = new this.constructor(lib$es6$promise$$internal$$noop);
-        var result = parent._result;
-
-        if (state) {
-          var callback = arguments[state - 1];
-          lib$es6$promise$asap$$asap(function(){
-            lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
-          });
-        } else {
-          lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
-        }
-
-        return child;
-      },
+      then: lib$es6$promise$then$$default,
 
     /**
       `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
@@ -14204,6 +14101,97 @@ function shim (obj) {
       'catch': function(onRejection) {
         return this.then(null, onRejection);
       }
+    };
+    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
+    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
+      this._instanceConstructor = Constructor;
+      this.promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+      if (Array.isArray(input)) {
+        this._input     = input;
+        this.length     = input.length;
+        this._remaining = input.length;
+
+        this._result = new Array(this.length);
+
+        if (this.length === 0) {
+          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+        } else {
+          this.length = this.length || 0;
+          this._enumerate();
+          if (this._remaining === 0) {
+            lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+          }
+        }
+      } else {
+        lib$es6$promise$$internal$$reject(this.promise, this._validationError());
+      }
+    }
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
+      return new Error('Array Methods must be provided an Array');
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
+      var length  = this.length;
+      var input   = this._input;
+
+      for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+        this._eachEntry(input[i], i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+      var c = this._instanceConstructor;
+      var resolve = c.resolve;
+
+      if (resolve === lib$es6$promise$promise$resolve$$default) {
+        var then = lib$es6$promise$$internal$$getThen(entry);
+
+        if (then === lib$es6$promise$then$$default &&
+            entry._state !== lib$es6$promise$$internal$$PENDING) {
+          this._settledAt(entry._state, i, entry._result);
+        } else if (typeof then !== 'function') {
+          this._remaining--;
+          this._result[i] = entry;
+        } else if (c === lib$es6$promise$promise$$default) {
+          var promise = new c(lib$es6$promise$$internal$$noop);
+          lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
+          this._willSettleAt(promise, i);
+        } else {
+          this._willSettleAt(new c(function(resolve) { resolve(entry); }), i);
+        }
+      } else {
+        this._willSettleAt(resolve(entry), i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+      var promise = this.promise;
+
+      if (promise._state === lib$es6$promise$$internal$$PENDING) {
+        this._remaining--;
+
+        if (state === lib$es6$promise$$internal$$REJECTED) {
+          lib$es6$promise$$internal$$reject(promise, value);
+        } else {
+          this._result[i] = value;
+        }
+      }
+
+      if (this._remaining === 0) {
+        lib$es6$promise$$internal$$fulfill(promise, this._result);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+      var enumerator = this;
+
+      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
+        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
+      }, function(reason) {
+        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
+      });
     };
     function lib$es6$promise$polyfill$$polyfill() {
       var local;
@@ -26168,7 +26156,7 @@ L.Map.include({
 }(window, document));
 },{}],57:[function(require,module,exports){
 //! moment.js
-//! version : 2.11.2
+//! version : 2.12.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -26192,7 +26180,7 @@ L.Map.include({
     }
 
     function isArray(input) {
-        return Object.prototype.toString.call(input) === '[object Array]';
+        return input instanceof Array || Object.prototype.toString.call(input) === '[object Array]';
     }
 
     function isDate(input) {
@@ -26398,7 +26386,82 @@ L.Map.include({
         return diffs + lengthDiff;
     }
 
-    function Locale() {
+    function warn(msg) {
+        if (utils_hooks__hooks.suppressDeprecationWarnings === false &&
+                (typeof console !==  'undefined') && console.warn) {
+            console.warn('Deprecation warning: ' + msg);
+        }
+    }
+
+    function deprecate(msg, fn) {
+        var firstTime = true;
+
+        return extend(function () {
+            if (firstTime) {
+                warn(msg + '\nArguments: ' + Array.prototype.slice.call(arguments).join(', ') + '\n' + (new Error()).stack);
+                firstTime = false;
+            }
+            return fn.apply(this, arguments);
+        }, fn);
+    }
+
+    var deprecations = {};
+
+    function deprecateSimple(name, msg) {
+        if (!deprecations[name]) {
+            warn(msg);
+            deprecations[name] = true;
+        }
+    }
+
+    utils_hooks__hooks.suppressDeprecationWarnings = false;
+
+    function isFunction(input) {
+        return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
+    }
+
+    function isObject(input) {
+        return Object.prototype.toString.call(input) === '[object Object]';
+    }
+
+    function locale_set__set (config) {
+        var prop, i;
+        for (i in config) {
+            prop = config[i];
+            if (isFunction(prop)) {
+                this[i] = prop;
+            } else {
+                this['_' + i] = prop;
+            }
+        }
+        this._config = config;
+        // Lenient ordinal parsing accepts just a number in addition to
+        // number + (possibly) stuff coming from _ordinalParseLenient.
+        this._ordinalParseLenient = new RegExp(this._ordinalParse.source + '|' + (/\d{1,2}/).source);
+    }
+
+    function mergeConfigs(parentConfig, childConfig) {
+        var res = extend({}, parentConfig), prop;
+        for (prop in childConfig) {
+            if (hasOwnProp(childConfig, prop)) {
+                if (isObject(parentConfig[prop]) && isObject(childConfig[prop])) {
+                    res[prop] = {};
+                    extend(res[prop], parentConfig[prop]);
+                    extend(res[prop], childConfig[prop]);
+                } else if (childConfig[prop] != null) {
+                    res[prop] = childConfig[prop];
+                } else {
+                    delete res[prop];
+                }
+            }
+        }
+        return res;
+    }
+
+    function Locale(config) {
+        if (config != null) {
+            this.set(config);
+        }
     }
 
     // internal storage for locale config files
@@ -26474,11 +26537,25 @@ L.Map.include({
         return globalLocale._abbr;
     }
 
-    function defineLocale (name, values) {
-        if (values !== null) {
-            values.abbr = name;
-            locales[name] = locales[name] || new Locale();
-            locales[name].set(values);
+    function defineLocale (name, config) {
+        if (config !== null) {
+            config.abbr = name;
+            if (locales[name] != null) {
+                deprecateSimple('defineLocaleOverride',
+                        'use moment.updateLocale(localeName, config) to change ' +
+                        'an existing locale. moment.defineLocale(localeName, ' +
+                        'config) should only be used for creating a new locale');
+                config = mergeConfigs(locales[name]._config, config);
+            } else if (config.parentLocale != null) {
+                if (locales[config.parentLocale] != null) {
+                    config = mergeConfigs(locales[config.parentLocale]._config, config);
+                } else {
+                    // treat as if there is no base config
+                    deprecateSimple('parentLocaleUndefined',
+                            'specified parentLocale is not defined yet');
+                }
+            }
+            locales[name] = new Locale(config);
 
             // backwards compat for now: also set the locale
             locale_locales__getSetGlobalLocale(name);
@@ -26489,6 +26566,31 @@ L.Map.include({
             delete locales[name];
             return null;
         }
+    }
+
+    function updateLocale(name, config) {
+        if (config != null) {
+            var locale;
+            if (locales[name] != null) {
+                config = mergeConfigs(locales[name]._config, config);
+            }
+            locale = new Locale(config);
+            locale.parentLocale = locales[name];
+            locales[name] = locale;
+
+            // backwards compat for now: also set the locale
+            locale_locales__getSetGlobalLocale(name);
+        } else {
+            // pass null for config to unupdate, useful for tests
+            if (locales[name] != null) {
+                if (locales[name].parentLocale != null) {
+                    locales[name] = locales[name].parentLocale;
+                } else if (locales[name] != null) {
+                    delete locales[name];
+                }
+            }
+        }
+        return locales[name];
     }
 
     // returns locale data
@@ -26513,6 +26615,10 @@ L.Map.include({
         }
 
         return chooseLocale(key);
+    }
+
+    function locale_locales__listLocales() {
+        return Object.keys(locales);
     }
 
     var aliases = {};
@@ -26541,10 +26647,6 @@ L.Map.include({
         }
 
         return normalizedInput;
-    }
-
-    function isFunction(input) {
-        return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
     }
 
     function makeGetSet (unit, keepTime) {
@@ -26880,12 +26982,15 @@ L.Map.include({
             return mom;
         }
 
-        // TODO: Move this out of here!
         if (typeof value === 'string') {
-            value = mom.localeData().monthsParse(value);
-            // TODO: Another silent failure?
-            if (typeof value !== 'number') {
-                return mom;
+            if (/^\d+$/.test(value)) {
+                value = toInt(value);
+            } else {
+                value = mom.localeData().monthsParse(value);
+                // TODO: Another silent failure?
+                if (typeof value !== 'number') {
+                    return mom;
+                }
             }
         }
 
@@ -27003,36 +27108,6 @@ L.Map.include({
 
         return m;
     }
-
-    function warn(msg) {
-        if (utils_hooks__hooks.suppressDeprecationWarnings === false &&
-                (typeof console !==  'undefined') && console.warn) {
-            console.warn('Deprecation warning: ' + msg);
-        }
-    }
-
-    function deprecate(msg, fn) {
-        var firstTime = true;
-
-        return extend(function () {
-            if (firstTime) {
-                warn(msg + '\nArguments: ' + Array.prototype.slice.call(arguments).join(', ') + '\n' + (new Error()).stack);
-                firstTime = false;
-            }
-            return fn.apply(this, arguments);
-        }, fn);
-    }
-
-    var deprecations = {};
-
-    function deprecateSimple(name, msg) {
-        if (!deprecations[name]) {
-            warn(msg);
-            deprecations[name] = true;
-        }
-    }
-
-    utils_hooks__hooks.suppressDeprecationWarnings = false;
 
     // iso 8601 regex
     // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
@@ -27679,7 +27754,7 @@ L.Map.include({
     }
 
     var prototypeMin = deprecate(
-         'moment().min is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548',
+         'moment().min is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548',
          function () {
              var other = local__createLocal.apply(null, arguments);
              if (this.isValid() && other.isValid()) {
@@ -27691,7 +27766,7 @@ L.Map.include({
      );
 
     var prototypeMax = deprecate(
-        'moment().max is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548',
+        'moment().max is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548',
         function () {
             var other = local__createLocal.apply(null, arguments);
             if (this.isValid() && other.isValid()) {
@@ -27989,7 +28064,8 @@ L.Map.include({
 
     // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
     // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
-    var isoRegex = /^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/;
+    // and further modified to allow for strings containing both week and day
+    var isoRegex = /^(-)?P(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)W)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?$/;
 
     function create__createDuration (input, key) {
         var duration = input,
@@ -28027,11 +28103,11 @@ L.Map.include({
             duration = {
                 y : parseIso(match[2], sign),
                 M : parseIso(match[3], sign),
-                d : parseIso(match[4], sign),
-                h : parseIso(match[5], sign),
-                m : parseIso(match[6], sign),
-                s : parseIso(match[7], sign),
-                w : parseIso(match[8], sign)
+                w : parseIso(match[4], sign),
+                d : parseIso(match[5], sign),
+                h : parseIso(match[6], sign),
+                m : parseIso(match[7], sign),
+                s : parseIso(match[8], sign)
             };
         } else if (duration == null) {// checks for null or undefined
             duration = {};
@@ -28095,6 +28171,14 @@ L.Map.include({
         return res;
     }
 
+    function absRound (number) {
+        if (number < 0) {
+            return Math.round(-1 * number) * -1;
+        } else {
+            return Math.round(number);
+        }
+    }
+
     // TODO: remove 'name' arg after deprecation is removed
     function createAdder(direction, name) {
         return function (val, period) {
@@ -28114,8 +28198,8 @@ L.Map.include({
 
     function add_subtract__addSubtract (mom, duration, isAdding, updateOffset) {
         var milliseconds = duration._milliseconds,
-            days = duration._days,
-            months = duration._months;
+            days = absRound(duration._days),
+            months = absRound(duration._months);
 
         if (!mom.isValid()) {
             // No op
@@ -28441,8 +28525,8 @@ L.Map.include({
     }
 
     function toJSON () {
-        // JSON.stringify(new Date(NaN)) === 'null'
-        return this.isValid() ? this.toISOString() : 'null';
+        // new Date(NaN).toJSON() === null
+        return this.isValid() ? this.toISOString() : null;
     }
 
     function moment_valid__isValid () {
@@ -28552,7 +28636,6 @@ L.Map.include({
         var dayOfYearData = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy),
             date = createUTCDate(dayOfYearData.year, 0, dayOfYearData.dayOfYear);
 
-        // console.log("got", weekYear, week, weekday, "set", date.toISOString());
         this.year(date.getUTCFullYear());
         this.month(date.getUTCMonth());
         this.date(date.getUTCDate());
@@ -29262,21 +29345,6 @@ L.Map.include({
         return isFunction(format) ? format(output) : format.replace(/%s/i, output);
     }
 
-    function locale_set__set (config) {
-        var prop, i;
-        for (i in config) {
-            prop = config[i];
-            if (isFunction(prop)) {
-                this[i] = prop;
-            } else {
-                this['_' + i] = prop;
-            }
-        }
-        // Lenient ordinal parsing accepts just a number in addition to
-        // number + (possibly) stuff coming from _ordinalParseLenient.
-        this._ordinalParseLenient = new RegExp(this._ordinalParse.source + '|' + (/\d{1,2}/).source);
-    }
-
     var prototype__proto = Locale.prototype;
 
     prototype__proto._calendar       = defaultCalendar;
@@ -29740,7 +29808,7 @@ L.Map.include({
     // Side effect imports
 
 
-    utils_hooks__hooks.version = '2.11.2';
+    utils_hooks__hooks.version = '2.12.0';
 
     setHookCallback(local__createLocal);
 
@@ -29763,6 +29831,8 @@ L.Map.include({
     utils_hooks__hooks.monthsShort           = lists__listMonthsShort;
     utils_hooks__hooks.weekdaysMin           = lists__listWeekdaysMin;
     utils_hooks__hooks.defineLocale          = defineLocale;
+    utils_hooks__hooks.updateLocale          = updateLocale;
+    utils_hooks__hooks.locales               = locale_locales__listLocales;
     utils_hooks__hooks.weekdaysShort         = lists__listWeekdaysShort;
     utils_hooks__hooks.normalizeUnits        = normalizeUnits;
     utils_hooks__hooks.relativeTimeThreshold = duration_humanize__getSetRelativeTimeThreshold;
@@ -29923,7 +29993,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.sort().map(function (val2) {
+			return val.slice().sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -60793,6 +60863,8 @@ exports.default = _react2.default.createClass({
       domainGutter: 10,
       cellpadding: 3,
       cellradius: 5,
+      itemName: 'edit',
+      tooltip: true,
       afterLoadData: parser
     });
   },
@@ -60913,13 +60985,13 @@ function mapBadgeToTask(badge, x) {
       return 'Map ' + x + ' more consecutive days.';
     },
     'Field Mapper': function FieldMapper(x) {
-      return 'Upload ' + x + ' more GPS traces through OSM';
+      return 'Upload ' + x + ' more GPS traces through OSM.';
     },
     'Awesome JOSM': function AwesomeJOSM(x) {
-      return 'Use JOSM to map an area ' + x + ' more times';
+      return 'Use JOSM to map an area ' + x + ' more times.';
     },
     'Mapathoner': function Mapathoner(x) {
-      return 'Participate in ' + x + ' more mapthons';
+      return 'Participate in ' + x + ' more mapthons.';
     },
     'On Point': function OnPoint(x) {
       return 'Add ' + x + ' more nodes.';
@@ -60974,7 +61046,11 @@ exports.default = function (props) {
       _react2.default.createElement(
         'div',
         { className: 'badge-home' },
-        _react2.default.createElement(_BadgeCompleted2.default, { badge: badge }),
+        _react2.default.createElement(
+          'div',
+          { className: 'badge-contain' },
+          _react2.default.createElement(_BadgeCompleted2.default, { badge: badge })
+        ),
         _react2.default.createElement(
           'div',
           { className: 'badge-Details' },
@@ -61128,7 +61204,7 @@ exports.default = function () {
         { className: "nav-icon" },
         _react2.default.createElement(
           "a",
-          { href: "http://missingmaps-demo.devseed.com/" },
+          { href: "http://missingmaps.org/" },
           _react2.default.createElement("img", { src: "./assets/graphics/MissingMapsLogo-White.svg", width: "94px" })
         )
       ),
@@ -61140,7 +61216,7 @@ exports.default = function () {
           null,
           _react2.default.createElement(
             "a",
-            { href: "http://missingmaps-demo.devseed.com/contribute/" },
+            { href: "http://missingmaps.org/contribute/" },
             _react2.default.createElement(
               "li",
               { className: "nav-item" },
@@ -61149,7 +61225,7 @@ exports.default = function () {
           ),
           _react2.default.createElement(
             "a",
-            { href: "http://missingmaps-demo.devseed.com/events/" },
+            { href: "http://missingmaps.org/events/" },
             _react2.default.createElement(
               "li",
               { className: "nav-item" },
@@ -61158,7 +61234,7 @@ exports.default = function () {
           ),
           _react2.default.createElement(
             "a",
-            { href: "http://missingmaps-demo.devseed.com/about/" },
+            { href: "http://missingmaps.org/about/" },
             _react2.default.createElement(
               "li",
               { className: "nav-item" },
@@ -61174,7 +61250,7 @@ exports.default = function () {
               { className: "dropdown-content" },
               _react2.default.createElement(
                 "a",
-                { href: "http://missingmaps-users-demo.devseed.com/" },
+                { href: "http://missingmaps.org/users" },
                 _react2.default.createElement(
                   "div",
                   { className: "nav-item" },
@@ -61183,7 +61259,7 @@ exports.default = function () {
               ),
               _react2.default.createElement(
                 "a",
-                { href: "http://missingmaps-leaderboards-demo.devseed.com/" },
+                { href: "http://missingmaps.org/leaderboards" },
                 _react2.default.createElement(
                   "div",
                   { className: "nav-item" },
@@ -61208,7 +61284,7 @@ exports.default = function () {
         { className: "resp-dropdown-content" },
         _react2.default.createElement(
           "a",
-          { href: "http://missingmaps-demo.devseed.com/contribute/" },
+          { href: "http://missingmaps.org/contribute/" },
           _react2.default.createElement(
             "li",
             { className: "nav-item" },
@@ -61217,7 +61293,7 @@ exports.default = function () {
         ),
         _react2.default.createElement(
           "a",
-          { href: "http://missingmaps-demo.devseed.com/events/" },
+          { href: "http://missingmaps.org/events/" },
           _react2.default.createElement(
             "li",
             { className: "nav-item" },
@@ -61226,7 +61302,7 @@ exports.default = function () {
         ),
         _react2.default.createElement(
           "a",
-          { href: "http://missingmaps-demo.devseed.com/about/" },
+          { href: "http://missingmaps.org/about/" },
           _react2.default.createElement(
             "li",
             { className: "nav-item" },
@@ -61235,7 +61311,7 @@ exports.default = function () {
         ),
         _react2.default.createElement(
           "a",
-          { href: "http://missingmaps-users-demo.devseed.com" },
+          { href: "http://missingmaps.org/users" },
           _react2.default.createElement(
             "li",
             { className: "nav-item" },
@@ -61244,7 +61320,7 @@ exports.default = function () {
         ),
         _react2.default.createElement(
           "a",
-          { href: "http://missingmaps-leaderboards-demo.devseed.com" },
+          { href: "http://missingmaps.org/leaderboards" },
           _react2.default.createElement(
             "li",
             { className: "nav-item" },
@@ -61351,19 +61427,15 @@ exports.default = _react2.default.createClass({
   getInitialState: function getInitialState() {
     var stats = this.props.user || [];
 
+    var roadCount = Math.floor(stats.total_road_count_add);
+    roadCount += Math.floor(stats.total_road_count_mod);
     var buildCount = Math.floor(stats.total_building_count_add);
+    buildCount += Math.floor(stats.total_building_count_mod);
     var waterCount = Math.floor(stats.total_waterway_count_add);
     var poiCount = Math.floor(stats.total_poi_count_add);
-    var roadKm = Number(stats.total_road_km_add).toFixed(2);
-    var waterKm = Number(stats.total_waterway_km_add).toFixed(2);
 
-    var noDist = false;
     var noCount = false;
-    if (buildCount === 0 && waterCount === 0 && poiCount === 0) {
-      noCount = true;
-      noDist = true;
-    }
-    if (roadKm === 0 && waterKm === 0) noDist = true;
+    if (roadCount === 0 && buildCount === 0 && waterCount === 0 && poiCount === 0) noCount = true;
 
     var chartDataCount = [];
     var tooltipTemplate = '<%if (label){%><%=label%>: <%}%><%= value %>';
@@ -61377,6 +61449,11 @@ exports.default = _react2.default.createClass({
       tooltipTemplate = 'No Edits';
     } else {
       chartDataCount = [{
+        value: roadCount,
+        color: '#faf3b6',
+        highlight: '#dcd599',
+        label: 'Roads'
+      }, {
         value: waterCount,
         color: '#a8dde1',
         highlight: '#8abcc0',
@@ -61393,27 +61470,6 @@ exports.default = _react2.default.createClass({
         label: 'POIs'
       }];
     }
-    var chartDataDist = [{
-      value: roadKm,
-      color: '#faf3b6',
-      highlight: '#dcd599',
-      label: 'Roads'
-    }, {
-      value: waterKm,
-      color: '#a8dde1',
-      highlight: '8abcc0',
-      label: 'Waterways'
-    }, {
-      value: 0,
-      color: '#fbd1b3',
-      highlight: '#dcb296',
-      label: 'Buildings'
-    }, {
-      value: 0,
-      color: '#d3e7b9',
-      highlight: '#b5c89b',
-      label: 'POIs'
-    }];
     return {
       chartOptions: {
         animationSteps: 50,
@@ -61422,22 +61478,9 @@ exports.default = _react2.default.createClass({
       },
       chartData: chartDataCount,
       chartDataCount: chartDataCount,
-      chartDataDist: chartDataDist,
-      noCount: noCount,
-      noDist: noDist
+      noCount: noCount
     };
   },
-  loadDist: function loadDist() {
-    this.setState({
-      chartData: this.state.chartDataDist
-    });
-  },
-  loadCounts: function loadCounts() {
-    this.setState({
-      chartData: this.state.chartDataCount
-    });
-  },
-
   render: function render() {
     return _react2.default.createElement(
       'div',
@@ -61682,11 +61725,12 @@ exports.default = _react2.default.createClass({
     var countries = _ramda2.default.reverse(_ramda2.default.sortBy(_ramda2.default.prop(1), _ramda2.default.toPairs(user.country_list)));
     var changesetCount = user.changeset_count;
 
-    var total = Number(user.total_building_count_add) + Number(user.total_building_count_mod) + Number(user.total_waterway_count_add) + Number(user.total_poi_count_add);
+    var total = Number(user.total_road_count_add) + Number(user.total_road_count_mod) + Number(user.total_building_count_add) + Number(user.total_building_count_mod) + Number(user.total_waterway_count_add) + Number(user.total_poi_count_add);
 
-    var hashtag = 'http://missingmaps-leaderboards-demo.devseed.com/#/' + user.hashtags[hashtag];
+    var hashtag = 'http://missingmaps.org/leaderboards/#/' + user.hashtags[hashtag];
 
     // Round km calculation depending on length
+    var total_buildings = Number(user.total_building_count_add) + Number(user.total_building_count_mod);
     var total_road_km = Number(user.total_road_km_add).toFixed(1);
     total_road_km = total_road_km.length > 4 ? Math.round(total_road_km) : total_road_km;
     var total_waterway_km = Number(user.total_waterway_km_add).toFixed(1);
@@ -61727,7 +61771,7 @@ exports.default = _react2.default.createClass({
                 )
               ),
               _ramda2.default.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
-                var hashtaglink = 'http://missingmaps-leaderboards-demo.devseed.com/#/' + hashtag;
+                var hashtaglink = 'http://missingmaps.org/leaderboards/#/' + hashtag;
                 return _react2.default.createElement(
                   'tr',
                   { key: hashtag },
@@ -61831,7 +61875,7 @@ exports.default = _react2.default.createClass({
                 _react2.default.createElement(
                   'span',
                   { className: 'emphasizedNumber' },
-                  Number(user.total_building_count_add)
+                  total_buildings
                 )
               ),
               _react2.default.createElement(
@@ -61943,17 +61987,17 @@ exports.default = _react2.default.createClass({
               _ramda2.default.take(11, countries).map(function (country) {
                 var countryName = country[0];
 
-                if (country[0] == "Democratic Republic of the Congo") {
-                  countryName = "DR Congo";
-                } else if (country[0] == "United States of America") {
-                  countryName = "USA";
-                } else if (country[0] == "French Southern and Antarctic Lands") {
-                  countryName = "ATF";
-                } else if (country[0] == "United Republic of Tanzania") {
-                  countryName = "Tanzania";
-                } else if (country[0] == "Central African Republic") {
-                  countryName = "CAR";
-                };
+                if (country[0] === 'Democratic Republic of the Congo') {
+                  countryName = 'DR Congo';
+                } else if (country[0] === 'United States of America') {
+                  countryName = 'USA';
+                } else if (country[0] === 'French Southern and Antarctic Lands') {
+                  countryName = 'ATF';
+                } else if (country[0] === 'United Republic of Tanzania') {
+                  countryName = 'Tanzania';
+                } else if (country[0] === 'Central African Republic') {
+                  countryName = 'CAR';
+                }
 
                 return _react2.default.createElement(
                   'tr',
@@ -62153,9 +62197,9 @@ exports.default = _react2.default.createClass({
     if (this.state.badgeCheck) {
       var badgeName = this.state.userBadge;
       var badgeLevel = this.state.badgeLevel;
-      twittermsg = this.state.userNameCap + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on MissingMaps!';
+      twittermsg = this.state.userNameCap + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on #MissingMaps';
     } else {
-      twittermsg = this.state.userNameCap + ' contributed to MissingMaps! Checkout their progress at ';
+      twittermsg = this.state.userNameCap + ' contributed to #MissingMaps! Checkout their progress at ';
     }
     var message = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(twittermsg + ' ' + window.location);
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
@@ -62362,6 +62406,8 @@ var _UserSubHead = require('../components/UserSubHead');
 
 var _UserSubHead2 = _interopRequireDefault(_UserSubHead);
 
+var _reactRouter = require('react-router');
+
 var _Header = require('../components/Header.js');
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -62373,6 +62419,14 @@ var _Footer2 = _interopRequireDefault(_Footer);
 var _isomorphicFetch = require('isomorphic-fetch');
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
+var _reactSearchBar = require('react-search-bar');
+
+var _reactSearchBar2 = _interopRequireDefault(_reactSearchBar);
+
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -62386,21 +62440,39 @@ exports.default = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     var component = this;
-    (0, _isomorphicFetch2.default)('http://missingmaps-api.devseed.com/users/' + this.props.params.id).then(function (response) {
+    var fetch_thisid = Number(this.props.params.id);
+    (0, _isomorphicFetch2.default)('http://osmstats.redcross.org/users').then(function (response) {
       if (response.status >= 400) {
-        throw new Error('Bad response');
+        throw new Error('Bad response Users Fetch');
       }
       return response.json();
-    }).then(function (db) {
-      if (component.isMounted()) {
+    }).then(function (data) {
+      var usercheck = data.filter(function (element) {
+        return element.id === fetch_thisid;
+      });
+
+      if (usercheck.length > 0) {
+        (0, _isomorphicFetch2.default)('http://osmstats.redcross.org/users/' + fetch_thisid).then(function (response) {
+          if (response.status >= 400) {
+            throw new Error('Bad response User Fetch');
+          }
+          return response.json();
+        }).then(function (db) {
+          if (component.isMounted()) {
+            component.setState({
+              user: db
+            });
+          }
+        });
+      } else {
         component.setState({
-          user: db
+          user: -1
         });
       }
     });
   },
   render: function render() {
-    return _react2.default.createElement(
+    var UserExists = _react2.default.createElement(
       'div',
       null,
       _react2.default.createElement(_Header2.default, null),
@@ -62423,10 +62495,69 @@ exports.default = _react2.default.createClass({
       ),
       _react2.default.createElement(_Footer2.default, null)
     );
+    if (this.state.user === -1) {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(_Header2.default, null),
+        _react2.default.createElement(
+          'div',
+          { id: 'User-Container' },
+          _react2.default.createElement(
+            'div',
+            { id: 'No-User' },
+            _react2.default.createElement(
+              'div',
+              { className: 'Search-Container' },
+              _react2.default.createElement(
+                'div',
+                { className: 'Search-Box' },
+                _react2.default.createElement('img', { src: 'assets/graphics/test.svg', width: '150px' }),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'Intro-Content' },
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    'This database began on February 2016, so we haven\'t picked up any edits by this user yet. If you\'ve just made a contribution, it may take a few minutes to show up. Go do some mapping, then come back and try again!'
+                  ),
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    _react2.default.createElement(
+                      _reactRouter.Link,
+                      { to: '/' },
+                      '← Search for another user'
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    'We also provide instructions if you would like to learn how to contribute to OpenStreetMaps & MissingMaps!'
+                  ),
+                  _react2.default.createElement(
+                    'a',
+                    { href: 'http://www.missingmaps.org/contribute/' },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'button btn-grn' },
+                      'Contribute'
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+        _react2.default.createElement(_Footer2.default, null)
+      );
+    } else {
+      return UserExists;
+    }
   }
 });
 
-},{"../components/Footer.js":241,"../components/Header.js":243,"../components/UserSubHead":249,"isomorphic-fetch":55,"react":225}],253:[function(require,module,exports){
+},{"../components/Footer.js":241,"../components/Header.js":243,"../components/UserSubHead":249,"isomorphic-fetch":55,"ramda":60,"react":225,"react-router":89,"react-search-bar":94}],253:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -62466,7 +62597,7 @@ exports.default = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     var component = this;
-    fetch('http://missingmaps-api.devseed.com/users').then(function (response) {
+    fetch('http://osmstats.redcross.org/users').then(function (response) {
       if (response.status >= 400) {
         throw new Error('Bad response');
       }
@@ -62491,7 +62622,11 @@ exports.default = _react2.default.createClass({
   },
   onSubmit: function onSubmit(input) {
     var user = _ramda2.default.find(_ramda2.default.propEq('name', input.toLowerCase()))(this.state.users);
-    this.props.history.push('/' + user.id);
+    if (user) {
+      this.props.history.push('/' + user.id);
+    } else {
+      this.props.history.push('/' + 1);
+    }
   },
 
   render: function render() {
