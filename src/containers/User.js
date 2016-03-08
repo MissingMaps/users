@@ -16,7 +16,7 @@ export default React.createClass({
   componentDidMount: function () {
     let component = this;
     var fetch_thisid = Number(this.props.params.id);
-    fetch(`http://missingmaps-api.devseed.com/users`)
+    fetch(`http://osmstats.redcross.org/users`)
       .then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response Users Fetch');
@@ -29,7 +29,7 @@ export default React.createClass({
         });
 
         if (usercheck.length > 0) {
-          fetch(`http://missingmaps-api.devseed.com/users/${fetch_thisid}`)
+          fetch(`http://osmstats.redcross.org/users/${fetch_thisid}`)
           .then(function (response) {
             if (response.status >= 400) {
               throw new Error('Bad response User Fetch');
