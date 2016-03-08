@@ -758,6 +758,9 @@ input[type='text'] {
     width: auto;
     height: auto; } }
 
+.badge-contain {
+  position: relative; }
+
 .badge-Details {
   float: left;
   width: 50%;
@@ -1764,3 +1767,5 @@ Remove comment to apply this style to date with value equal to 0
   margin-left: auto;
   margin-right: auto;
   padding-bottom: 1em; }
+  .Intro-Content p {
+    margin-bottom: 1.5em; }
