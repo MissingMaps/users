@@ -33,7 +33,7 @@ function mapBadgeToTask (badge, x) {
     'Consistency': (x) => `Map ${x} more consecutive days.`,
     'Field Mapper': (x) => `Upload ${x} more GPS traces through OSM.`,
     'Awesome JOSM': (x) => `Use JOSM to map an area ${x} more times.`,
-    'Mapathoner': (x) => `Participate in ${x} more mapathons.`,
+    'Mapathoner': (x) => `Participate in ${x} more mapthons.`,
     'On Point': (x) => `Add ${x} more nodes.`,
     'White Water Rafting': (x) => `Add ${x} more km of waterways.`,
     'World Renown': (x) => `Map in ${x} more different countries.`,
