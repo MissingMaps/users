@@ -87,7 +87,7 @@ export default React.createClass({
                       <Link to='/'>&larr; Search for another user</Link>
                     </p>
                     <p>
-                      We also provide instructions if you would like to learn how to contribute to OpenStreetMaps & MissingMaps!
+                      We also provide instructions if you would like to learn how to contribute to OpenStreetMap & MissingMaps!
                     </p>
                     <a href="http://www.missingmaps.org/contribute/">
                     <div className = "button btn-grn">
