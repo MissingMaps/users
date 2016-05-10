@@ -10,8 +10,6 @@ export default (props) => {
     return <div></div>;
   }
 
-  console.log(progress.mostAttainable);
-
   return (
       <div className = "Split split-smbadges">
         <div className = "descriptor">Upcoming Badges</div>

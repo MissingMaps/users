@@ -257,10 +257,6 @@ header{
   float:center;
 }
 
-.nav-events{
-  width: 180px;
-}
-
 .inner{
   max-width: $MaxWidth;
   margin-left: auto;
@@ -300,6 +296,10 @@ header{
 .nav-dropdown:hover .dropdown-content {
     opacity: 1;
     height: auto;
+}
+
+.nav-events{
+  width: 180px;
 }
 
 .resp-navbar{
