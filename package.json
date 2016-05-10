@@ -47,7 +47,7 @@
     "budo": "^7.1.0",
     "envify": "^3.4.0",
     "express": "^4.13.3",
-    "node-sass": "3.4.2",
+    "node-sass": "3.7.0",
     "clean-css": "3.4.9",
     "nodemon": "1.8.1"
   },
