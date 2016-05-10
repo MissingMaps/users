@@ -1818,7 +1818,7 @@ table {
 
 .Stats-Item {
   display: inline-block;
-  width: 29%;
+  width: 27%;
   height: 50px;
   padding: 10px;
 
@@ -1849,6 +1849,7 @@ table {
   vertical-align: top;
   p {
     clear: left;
+    font-size: 0.8em;
   }
   @media screen and (max-width: 320px) {
       margin-top: 0;
