@@ -123,6 +123,7 @@ export default (props) => {
       points: badge.points
     };
   });
+
   var progressList = progressBadges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>

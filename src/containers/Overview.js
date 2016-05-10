@@ -17,6 +17,7 @@ export default React.createClass({
     });
   },
   render: function () {
+    console.log(this.state.user)
     if (Object.keys(this.state.user).length === 0) {
       return <div>Loading...</div>;
     } else {

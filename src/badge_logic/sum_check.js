@@ -87,6 +87,7 @@ module.exports = function (data) {
     var badge = badges[key];
 
     var badgeLevel = checkBadgeLevel(userTotal, badge);
+
     if (badgeLevel < 3) {
       var nextBadgeLevel = badgeLevel + 1;
       var currentPoints = Number(userTotal);
