@@ -58,20 +58,20 @@ function inherits (c, p, proto) {
 //new Child
 
 },{}],3:[function(require,module,exports){
-/*! cal-heatmap v3.5.4 (Mon Aug 24 2015 10:02:32)
+/*! cal-heatmap v3.6.0 (Sun Apr 24 2016 19:19:51)
  *  ---------------------------------------------
  *  Cal-Heatmap is a javascript module to create calendar heatmap to visualize time series data
  *  https://github.com/wa0x6e/cal-heatmap
  *  Licensed under the MIT license
  *  Copyright 2014 Wan Qi Chen
  */
-function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].constructor===Object?mergeRecursive(a[c],b[c]):b[c]}catch(d){a[c]=b[c]}return a}function arrayEquals(a,b){"use strict";if(!b||!a)return!1;if(a.length!==b.length)return!1;for(var c=0;c<a.length;c++)if(a[c]instanceof Array&&b[c]instanceof Array){if(!arrayEquals(a[c],b[c]))return!1}else if(a[c]!==b[c])return!1;return!0}var d3="function"==typeof require?require("d3"):window.d3,CalHeatMap=function(){"use strict";function a(){d.verticalDomainLabel="top"===d.options.label.position||"bottom"===d.options.label.position,d.domainVerticalLabelHeight=null===d.options.label.height?Math.max(25,2*d.options.cellSize):d.options.label.height,d.domainHorizontalLabelWidth=0,""===d.options.domainLabelFormat&&null===d.options.label.height&&(d.domainVerticalLabelHeight=0),d.verticalDomainLabel||(d.domainVerticalLabelHeight=0,d.domainHorizontalLabelWidth=d.options.label.width),d.paint(),d.options.nextSelector!==!1&&d3.select(d.options.nextSelector).on("click."+d.options.itemNamespace,function(){return d3.event.preventDefault(),d.loadNextDomain(1)}),d.options.previousSelector!==!1&&d3.select(d.options.previousSelector).on("click."+d.options.itemNamespace,function(){return d3.event.preventDefault(),d.loadPreviousDomain(1)}),d.Legend.redraw(d.graphDim.width-d.options.domainGutter-d.options.cellPadding),d.afterLoad();var a=d.getDomainKeys();d.options.loadOnInit?d.getDatas(d.options.data,new Date(a[0]),d.getSubDomain(a[a.length-1]).pop(),function(){d.fill(),d.onComplete()}):d.onComplete(),d.checkIfMinDomainIsReached(a[0]),d.checkIfMaxDomainIsReached(d.getNextDomain().getTime())}function b(a,b){var c=d.options.cellSize*d._domainType[d.options.subDomain].column(a)+d.options.cellPadding*d._domainType[d.options.subDomain].column(a);return 2===arguments.length&&b===!0?c+=d.domainHorizontalLabelWidth+d.options.domainGutter+d.options.domainMargin[1]+d.options.domainMargin[3]:c}function c(a,b){var c=d.options.cellSize*d._domainType[d.options.subDomain].row(a)+d.options.cellPadding*d._domainType[d.options.subDomain].row(a);return 2===arguments.length&&b===!0&&(c+=d.options.domainGutter+d.domainVerticalLabelHeight+d.options.domainMargin[0]+d.options.domainMargin[2]),c}var d=this;this.allowedDataType=["json","csv","tsv","txt"],this.options={itemSelector:"#cal-heatmap",paintOnLoad:!0,range:12,cellSize:10,cellPadding:2,cellRadius:0,domainGutter:2,domainMargin:[0,0,0,0],domain:"hour",subDomain:"min",colLimit:null,rowLimit:null,weekStartOnMonday:!0,start:new Date,minDate:null,maxDate:null,data:"",dataType:this.allowedDataType[0],dataPostPayload:null,considerMissingDataAsZero:!1,loadOnInit:!0,verticalOrientation:!1,domainDynamicDimension:!0,label:{position:"bottom",align:"center",offset:{x:0,y:0},rotate:null,width:100,height:null},legend:[10,20,30,40],displayLegend:!0,legendCellSize:10,legendCellPadding:2,legendMargin:[0,0,0,0],legendVerticalPosition:"bottom",legendHorizontalPosition:"left",legendOrientation:"horizontal",legendColors:null,highlight:[],itemName:["item","items"],domainLabelFormat:null,subDomainTitleFormat:{empty:"{date}",filled:"{count} {name} {connector} {date}"},subDomainDateFormat:null,subDomainTextFormat:null,legendTitleFormat:{lower:"less than {min} {name}",inner:"between {down} and {up} {name}",upper:"more than {max} {name}"},animationDuration:500,nextSelector:!1,previousSelector:!1,itemNamespace:"cal-heatmap",tooltip:!1,onClick:null,afterLoad:null,afterLoadNextDomain:null,afterLoadPreviousDomain:null,onComplete:null,afterLoadData:function(a){return a},onMaxDomainReached:null,onMinDomainReached:null},this._domainType={min:{name:"minute",level:10,maxItemNumber:60,defaultRowNumber:10,defaultColumnNumber:6,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){return Math.floor(a.getMinutes()/d._domainType.min.row(a))},y:function(a){return a.getMinutes()%d._domainType.min.row(a)}},format:{date:"%H:%M, %A %B %-e, %Y",legend:"",connector:"at"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours(),a.getMinutes()).getTime()}},hour:{name:"hour",level:20,maxItemNumber:function(a){switch(d.options.domain){case"day":return 24;case"week":return 168;case"month":return 24*(d.options.domainDynamicDimension?d.getDayCountInMonth(a):31)}},defaultRowNumber:6,defaultColumnNumber:function(a){switch(d.options.domain){case"day":return 4;case"week":return 28;case"month":return d.options.domainDynamicDimension?d.getDayCountInMonth(a):31}},row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){return"month"===d.options.domain?d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getHours()+24*(a.getDate()-1))/d._domainType.hour.row(a)):Math.floor(a.getHours()/d._domainType.hour.row(a))+4*(a.getDate()-1):"week"===d.options.domain?d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getHours()+24*d.getWeekDay(a))/d._domainType.hour.row(a)):Math.floor(a.getHours()/d._domainType.hour.row(a))+4*d.getWeekDay(a):Math.floor(a.getHours()/d._domainType.hour.row(a))},y:function(a){var b=a.getHours();if(d.options.colLimit>0||d.options.rowLimit>0)switch(d.options.domain){case"month":b+=24*(a.getDate()-1);break;case"week":b+=24*d.getWeekDay(a)}return Math.floor(b%d._domainType.hour.row(a))}},format:{date:"%Hh, %A %B %-e, %Y",legend:"%H:00",connector:"at"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()).getTime()}},day:{name:"day",level:30,maxItemNumber:function(a){switch(d.options.domain){case"week":return 7;case"month":return d.options.domainDynamicDimension?d.getDayCountInMonth(a):31;case"year":return d.options.domainDynamicDimension?d.getDayCountInYear(a):366}},defaultColumnNumber:function(a){switch(a=new Date(a),d.options.domain){case"week":return 1;case"month":return d.options.domainDynamicDimension&&!d.options.verticalOrientation?d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()+1,0))-d.getWeekNumber(a)+1:6;case"year":return d.options.domainDynamicDimension?d.getWeekNumber(new Date(a.getFullYear(),11,31))-d.getWeekNumber(new Date(a.getFullYear(),0))+1:54}},defaultRowNumber:7,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){switch(d.options.domain){case"week":return Math.floor(d.getWeekDay(a)/d._domainType.day.row(a));case"month":return d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getDate()-1)/d._domainType.day.row(a)):d.getWeekNumber(a)-d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));case"year":return d.options.colLimit>0||d.options.rowLimit>0?Math.floor((d.getDayOfYear(a)-1)/d._domainType.day.row(a)):d.getWeekNumber(a)}},y:function(a){var b=d.getWeekDay(a);if(d.options.colLimit>0||d.options.rowLimit>0)switch(d.options.domain){case"year":b=d.getDayOfYear(a)-1;break;case"week":b=d.getWeekDay(a);break;case"month":b=a.getDate()-1}return Math.floor(b%d._domainType.day.row(a))}},format:{date:"%A %B %-e, %Y",legend:"%e %b",connector:"on"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate()).getTime()}},week:{name:"week",level:40,maxItemNumber:54,defaultColumnNumber:function(a){switch(a=new Date(a),d.options.domain){case"year":return d._domainType.week.maxItemNumber;case"month":return d.options.domainDynamicDimension?d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()+1,0))-d.getWeekNumber(a):5}},defaultRowNumber:1,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){switch(d.options.domain){case"year":return Math.floor(d.getWeekNumber(a)/d._domainType.week.row(a));case"month":return Math.floor(d.getMonthWeekNumber(a)/d._domainType.week.row(a))}},y:function(a){return d.getWeekNumber(a)%d._domainType.week.row(a)}},format:{date:"%B Week #%W",legend:"%B Week #%W",connector:"in"},extractUnit:function(a){var b=new Date(a.getFullYear(),a.getMonth(),a.getDate()),c=b.getDay()-1;return 0>c&&(c=6),b.setDate(b.getDate()-c),b.getTime()}},month:{name:"month",level:50,maxItemNumber:12,defaultColumnNumber:12,defaultRowNumber:1,row:function(){return d.getSubDomainRowNumber()},column:function(){return d.getSubDomainColumnNumber()},position:{x:function(a){return Math.floor(a.getMonth()/d._domainType.month.row(a))},y:function(a){return a.getMonth()%d._domainType.month.row(a)}},format:{date:"%B %Y",legend:"%B",connector:"in"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth()).getTime()}},year:{name:"year",level:60,row:function(){return d.options.rowLimit||1},column:function(){return d.options.colLimit||1},position:{x:function(){return 1},y:function(){return 1}},format:{date:"%Y",legend:"%Y",connector:"in"},extractUnit:function(a){return new Date(a.getFullYear()).getTime()}}};for(var e in this._domainType)if(this._domainType.hasOwnProperty(e)){var f=this._domainType[e];this._domainType["x_"+e]={name:"x_"+e,level:f.type,maxItemNumber:f.maxItemNumber,defaultRowNumber:f.defaultRowNumber,defaultColumnNumber:f.defaultColumnNumber,row:f.column,column:f.row,position:{x:f.position.y,y:f.position.x},format:f.format,extractUnit:f.extractUnit}}this.lastInsertedSvg=null,this._completed=!1,this._domains=d3.map(),this.graphDim={width:0,height:0},this.legendDim={width:0,height:0},this.NAVIGATE_LEFT=1,this.NAVIGATE_RIGHT=2,this.RESET_ALL_ON_UPDATE=0,this.RESET_SINGLE_ON_UPDATE=1,this.APPEND_ON_UPDATE=2,this.DEFAULT_LEGEND_MARGIN=10,this.root=null,this.tooltip=null,this._maxDomainReached=!1,this._minDomainReached=!1,this.domainPosition=new DomainPosition,this.Legend=null,this.legendScale=null,this.DSTDomain=[],this._init=function(){return d.getDomain(d.options.start).map(function(a){return a.getTime()}).map(function(a){d._domains.set(a,d.getSubDomain(a).map(function(a){return{t:d._domainType[d.options.subDomain].extractUnit(a),v:null}}))}),d.root=d3.select(d.options.itemSelector).append("svg").attr("class","cal-heatmap-container"),d.tooltip=d3.select(d.options.itemSelector).attr("style",function(){var a=d3.select(d.options.itemSelector).attr("style");return(null!==a?a:"")+"position:relative;"}).append("div").attr("class","ch-tooltip"),d.root.attr("x",0).attr("y",0).append("svg").attr("class","graph"),d.Legend=new Legend(d),d.options.paintOnLoad&&a(),!0},this.paint=function(a){function e(b,c,e,f){var g=0;switch(a){case!1:return g=c[e],c[e]+=f,d.domainPosition.setPosition(b,g),g;case d.NAVIGATE_RIGHT:return d.domainPosition.setPosition(b,c[e]),i=f,j=d.domainPosition.getPositionFromIndex(1),d.domainPosition.shiftRightBy(j),c[e];case d.NAVIGATE_LEFT:return g=-f,i=-g,j=c[e]-d.domainPosition.getLast(),d.domainPosition.setPosition(b,g),d.domainPosition.shiftLeftBy(i),g}}function f(a){switch(g.label.rotate){case"right":a.attr("transform",function(a){var c="rotate(90), ";switch(g.label.position){case"right":c+="translate(-"+b(a)+" , -"+b(a)+")";break;case"left":c+="translate(0, -"+d.domainHorizontalLabelWidth+")"}return c});break;case"left":a.attr("transform",function(a){var c="rotate(270), ";switch(g.label.position){case"right":c+="translate(-"+(b(a)+d.domainHorizontalLabelWidth)+" , "+b(a)+")";break;case"left":c+="translate(-"+d.domainHorizontalLabelWidth+" , "+d.domainHorizontalLabelWidth+")"}return c})}}var g=d.options;0===arguments.length&&(a=!1);var h=d.root.select(".graph").selectAll(".graph-domain").data(function(){var b=d.getDomainKeys();return a===d.NAVIGATE_LEFT?b.reverse():b},function(a){return a}),i=0,j=0,k=h.enter().append("svg").attr("width",function(a){return b(a,!0)}).attr("height",function(a){return c(a,!0)}).attr("x",function(a){return g.verticalOrientation?(d.graphDim.width=Math.max(d.graphDim.width,b(a,!0)),0):e(a,d.graphDim,"width",b(a,!0))}).attr("y",function(a){return g.verticalOrientation?e(a,d.graphDim,"height",c(a,!0)):(d.graphDim.height=Math.max(d.graphDim.height,c(a,!0)),0)}).attr("class",function(a){var b="graph-domain",c=new Date(a);switch(g.domain){case"hour":b+=" h_"+c.getHours();case"day":b+=" d_"+c.getDate()+" dy_"+c.getDay();case"week":b+=" w_"+d.getWeekNumber(c);case"month":b+=" m_"+(c.getMonth()+1);case"year":b+=" y_"+c.getFullYear()}return b});d.lastInsertedSvg=k,k.append("rect").attr("width",function(a){return b(a,!0)-g.domainGutter-g.cellPadding}).attr("height",function(a){return c(a,!0)-g.domainGutter-g.cellPadding}).attr("class","domain-background");var l=k.append("svg").attr("x",function(){return"left"===g.label.position?d.domainHorizontalLabelWidth+g.domainMargin[3]:g.domainMargin[3]}).attr("y",function(){return"top"===g.label.position?d.domainVerticalLabelHeight+g.domainMargin[0]:g.domainMargin[0]}).attr("class","graph-subdomain-group"),m=l.selectAll("g").data(function(a){return d._domains.get(a)}).enter().append("g");m.append("rect").attr("class",function(a){return"graph-rect"+d.getHighlightClassName(a.t)+(null!==g.onClick?" hover_cursor":"")}).attr("width",g.cellSize).attr("height",g.cellSize).attr("x",function(a){return d.positionSubDomainX(a.t)}).attr("y",function(a){return d.positionSubDomainY(a.t)}).on("click",function(a){return null!==g.onClick?d.onClick(new Date(a.t),a.v):void 0}).call(function(a){g.cellRadius>0&&a.attr("rx",g.cellRadius).attr("ry",g.cellRadius),null!==d.legendScale&&null!==g.legendColors&&g.legendColors.hasOwnProperty("base")&&a.attr("fill",g.legendColors.base),g.tooltip&&(a.on("mouseover",function(a){var b=this.parentNode.parentNode;d.tooltip.html(d.getSubDomainTitle(a)).attr("style","display: block;");var c=d.positionSubDomainX(a.t)-d.tooltip[0][0].offsetWidth/2+g.cellSize/2,e=d.positionSubDomainY(a.t)-d.tooltip[0][0].offsetHeight-g.cellSize/2;c+=parseInt(b.getAttribute("x"),10),e+=parseInt(b.getAttribute("y"),10),c+=parseInt(d.root.select(".graph").attr("x"),10),e+=parseInt(d.root.select(".graph").attr("y"),10),c+=parseInt(b.parentNode.getAttribute("x"),10),e+=parseInt(b.parentNode.getAttribute("y"),10),d.tooltip.attr("style","display: block; left: "+c+"px; top: "+e+"px;")}),a.on("mouseout",function(){d.tooltip.attr("style","display:none").html("")}))}),g.tooltip||m.append("title").text(function(a){return d.formatDate(new Date(a.t),g.subDomainDateFormat)}),""!==g.domainLabelFormat&&k.append("text").attr("class","graph-label").attr("y",function(a){var b=g.domainMargin[0];switch(g.label.position){case"top":b+=d.domainVerticalLabelHeight/2;break;case"bottom":b+=c(a)+d.domainVerticalLabelHeight/2}return b+g.label.offset.y*("right"===g.label.rotate&&"right"===g.label.position||"left"===g.label.rotate&&"left"===g.label.position?-1:1)}).attr("x",function(a){var c=g.domainMargin[3];switch(g.label.position){case"right":c+=b(a);break;case"bottom":case"top":c+=b(a)/2}return"right"===g.label.align?c+d.domainHorizontalLabelWidth-g.label.offset.x*("right"===g.label.rotate?-1:1):c+g.label.offset.x}).attr("text-anchor",function(){switch(g.label.align){case"start":case"left":return"start";case"end":case"right":return"end";default:return"middle"}}).attr("dominant-baseline",function(){return d.verticalDomainLabel?"middle":"top"}).text(function(a){return d.formatDate(new Date(a),g.domainLabelFormat)}).call(f),null!==g.subDomainTextFormat&&m.append("text").attr("class",function(a){return"subdomain-text"+d.getHighlightClassName(a.t)}).attr("x",function(a){return d.positionSubDomainX(a.t)+g.cellSize/2}).attr("y",function(a){return d.positionSubDomainY(a.t)+g.cellSize/2}).attr("text-anchor","middle").attr("dominant-baseline","central").text(function(a){return d.formatDate(new Date(a.t),g.subDomainTextFormat)}),a!==!1&&h.transition().duration(g.animationDuration).attr("x",function(a){return g.verticalOrientation?0:d.domainPosition.getPosition(a)}).attr("y",function(a){return g.verticalOrientation?d.domainPosition.getPosition(a):0});var n=d.graphDim.width,o=d.graphDim.height;g.verticalOrientation?d.graphDim.height+=i-j:d.graphDim.width+=i-j,h.exit().transition().duration(g.animationDuration).attr("x",function(c){if(g.verticalOrientation)return 0;switch(a){case d.NAVIGATE_LEFT:return Math.min(d.graphDim.width,n);case d.NAVIGATE_RIGHT:return-b(c,!0)}}).attr("y",function(b){if(!g.verticalOrientation)return 0;switch(a){case d.NAVIGATE_LEFT:return Math.min(d.graphDim.height,o);case d.NAVIGATE_RIGHT:return-c(b,!0)}}).remove(),d.resize()}};CalHeatMap.prototype={init:function(a){"use strict";function b(a,b,c){if((b&&a===!1||a instanceof Element||"string"==typeof a)&&""!==a)return!0;throw new Error("The "+c+" is not valid")}function c(a){switch(a){case"year":return"month";case"month":return"day";case"week":return"day";case"day":return"hour";default:return"min"}}function d(){if(!k._domainType.hasOwnProperty(l.domain)||"min"===l.domain||"x_"===l.domain.substring(0,2))throw new Error("The domain '"+l.domain+"' is not valid");if(!k._domainType.hasOwnProperty(l.subDomain)||"year"===l.subDomain)throw new Error("The subDomain '"+l.subDomain+"' is not valid");if(k._domainType[l.domain].level<=k._domainType[l.subDomain].level)throw new Error("'"+l.subDomain+"' is not a valid subDomain to '"+l.domain+"'");return!0}function e(){if(!a.hasOwnProperty("label")||a.hasOwnProperty("label")&&!a.label.hasOwnProperty("align")){switch(l.label.position){case"left":l.label.align="right";break;case"right":l.label.align="left";break;default:l.label.align="center"}"left"===l.label.rotate?l.label.align="right":"right"===l.label.rotate&&(l.label.align="left")}(!a.hasOwnProperty("label")||a.hasOwnProperty("label")&&!a.label.hasOwnProperty("offset"))&&("left"===l.label.position||"right"===l.label.position)&&(l.label.offset={x:10,y:15})}function f(){switch(l.legendVerticalPosition){case"top":l.legendMargin[2]=k.DEFAULT_LEGEND_MARGIN;break;case"bottom":l.legendMargin[0]=k.DEFAULT_LEGEND_MARGIN;break;case"middle":case"center":l.legendMargin["right"===l.legendHorizontalPosition?3:1]=k.DEFAULT_LEGEND_MARGIN}}function g(a){switch("number"==typeof a&&(a=[a]),Array.isArray(a)||(console.log("Margin only takes an integer or an array of integers"),a=[0]),a.length){case 1:return[a[0],a[0],a[0],a[0]];case 2:return[a[0],a[1],a[0],a[1]];case 3:return[a[0],a[1],a[2],a[1]];case 4:return a;default:return a.slice(0,4)}}function h(a){return"string"==typeof a?[a,a+(""!==a?"s":"")]:Array.isArray(a)?1===a.length?[a[0],a[0]+"s"]:a.length>2?a.slice(0,2):a:["item","items"]}function i(a){return a>0?a:null}function j(a){return a>0&&l.colLimit>0?(console.log("colLimit and rowLimit are mutually exclusive, rowLimit will be ignored"),null):a>0?a:null}var k=this,l=k.options=mergeRecursive(k.options,a);if(d(),b(l.itemSelector,!1,"itemSelector"),-1===k.allowedDataType.indexOf(l.dataType))throw new Error("The data type '"+l.dataType+"' is not valid data type");if(null===d3.select(l.itemSelector)[0][0])throw new Error("The node '"+l.itemSelector+"' specified in itemSelector does not exists");try{b(l.nextSelector,!0,"nextSelector"),b(l.previousSelector,!0,"previousSelector")}catch(m){return console.log(m.message),!1}a.hasOwnProperty("subDomain")||(this.options.subDomain=c(a.domain)),("string"!=typeof l.itemNamespace||""===l.itemNamespace)&&(console.log("itemNamespace can not be empty, falling back to cal-heatmap"),l.itemNamespace="cal-heatmap");var n=["data","onComplete","onClick","afterLoad","afterLoadData","afterLoadPreviousDomain","afterLoadNextDomain"];for(var o in n)a.hasOwnProperty(n[o])&&(l[n[o]]=a[n[o]]);return l.subDomainDateFormat="string"==typeof l.subDomainDateFormat||"function"==typeof l.subDomainDateFormat?l.subDomainDateFormat:this._domainType[l.subDomain].format.date,l.domainLabelFormat="string"==typeof l.domainLabelFormat||"function"==typeof l.domainLabelFormat?l.domainLabelFormat:this._domainType[l.domain].format.legend,l.subDomainTextFormat="string"==typeof l.subDomainTextFormat&&""!==l.subDomainTextFormat||"function"==typeof l.subDomainTextFormat?l.subDomainTextFormat:null,l.domainMargin=g(l.domainMargin),l.legendMargin=g(l.legendMargin),l.highlight=k.expandDateSetting(l.highlight),l.itemName=h(l.itemName),l.colLimit=i(l.colLimit),l.rowLimit=j(l.rowLimit),a.hasOwnProperty("legendMargin")||f(),e(),this._init()},expandDateSetting:function(a){"use strict";return Array.isArray(a)||(a=[a]),a.map(function(a){return"now"===a?new Date:a instanceof Date?a:!1}).filter(function(a){return a!==!1})},fill:function(a){"use strict";function b(a){return null===d.legendScale?!1:void a.attr("fill",function(a){return null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&!e.considerMissingDataAsZero&&e.legendColors.hasOwnProperty("base")?e.legendColors.base:null!==e.legendColors&&e.legendColors.hasOwnProperty("empty")&&(0===a.v||null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&e.considerMissingDataAsZero)?e.legendColors.empty:a.v<0&&e.legend[0]>0&&null!==e.legendColors&&e.legendColors.hasOwnProperty("overflow")?e.legendColors.overflow:d.legendScale(Math.min(a.v,e.legend[e.legend.length-1]))})}function c(a){"function"==typeof e.subDomainTextFormat&&a.text(function(a){return e.subDomainTextFormat(a.t,a.v)})}var d=this,e=d.options;0===arguments.length&&(a=d.root.selectAll(".graph-domain"));var f=a.selectAll("svg").selectAll("g").data(function(a){return d._domains.get(a)});f.transition().duration(e.animationDuration).select("rect").attr("class",function(a){var b=d.getHighlightClassName(a.t).trim().split(" "),c=d.dateIsLessThan(a.t,new Date);return(null===d.legendScale||null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&!e.considerMissingDataAsZero&&!e.legendColors.hasOwnProperty("base"))&&b.push("graph-rect"),c||-1!==b.indexOf("now")||b.push("future"),null!==a.v?b.push(d.Legend.getClass(a.v,null===d.legendScale)):e.considerMissingDataAsZero&&c&&b.push(d.Legend.getClass(0,null===d.legendScale)),null!==e.onClick&&b.push("hover_cursor"),b.join(" ")}).call(b),f.transition().duration(e.animationDuration).select("title").text(function(a){return d.getSubDomainTitle(a)}),f.transition().duration(e.animationDuration).select("text").attr("class",function(a){return"subdomain-text"+d.getHighlightClassName(a.t)}).call(c)},triggerEvent:function(a,b,c){"use strict";return 3===arguments.length&&c||null===this.options[a]?!0:"function"==typeof this.options[a]?("function"==typeof b&&(b=b()),this.options[a].apply(this,b)):(console.log("Provided callback for "+a+" is not a function."),!1)},onClick:function(a,b){"use strict";return this.triggerEvent("onClick",[a,b])},afterLoad:function(){"use strict";return this.triggerEvent("afterLoad")},onComplete:function(){"use strict";var a=this.triggerEvent("onComplete",[],this._completed);return this._completed=!0,a},afterLoadPreviousDomain:function(a){"use strict";var b=this;return this.triggerEvent("afterLoadPreviousDomain",function(){var c=b.getSubDomain(a);return[c.shift(),c.pop()]})},afterLoadNextDomain:function(a){"use strict";var b=this;return this.triggerEvent("afterLoadNextDomain",function(){var c=b.getSubDomain(a);return[c.shift(),c.pop()]})},onMinDomainReached:function(a){"use strict";return this._minDomainReached=a,this.triggerEvent("onMinDomainReached",[a])},onMaxDomainReached:function(a){"use strict";return this._maxDomainReached=a,this.triggerEvent("onMaxDomainReached",[a])},checkIfMinDomainIsReached:function(a,b){"use strict";this.minDomainIsReached(a)&&this.onMinDomainReached(!0),2===arguments.length&&this._maxDomainReached&&!this.maxDomainIsReached(b)&&this.onMaxDomainReached(!1)},checkIfMaxDomainIsReached:function(a,b){"use strict";this.maxDomainIsReached(a)&&this.onMaxDomainReached(!0),2===arguments.length&&this._minDomainReached&&!this.minDomainIsReached(b)&&this.onMinDomainReached(!1)},formatNumber:d3.format(",g"),formatDate:function(a,b){"use strict";if(arguments.length<2&&(b="title"),"function"==typeof b)return b(a);var c=d3.time.format(b);return c(a)},getSubDomainTitle:function(a){"use strict";if(null!==a.v||this.options.considerMissingDataAsZero){var b=a.v;return null===b&&this.options.considerMissingDataAsZero&&(b=0),this.options.subDomainTitleFormat.filled.format({count:this.formatNumber(b),name:this.options.itemName[1!==b?1:0],connector:this._domainType[this.options.subDomain].format.connector,date:this.formatDate(new Date(a.t),this.options.subDomainDateFormat)})}return this.options.subDomainTitleFormat.empty.format({date:this.formatDate(new Date(a.t),this.options.subDomainDateFormat)})},loadNextDomain:function(a){"use strict";if(this._maxDomainReached||0===a)return!1;var b=this.loadNewDomains(this.NAVIGATE_RIGHT,this.getDomain(this.getNextDomain(),a));return this.afterLoadNextDomain(b.end),this.checkIfMaxDomainIsReached(this.getNextDomain().getTime(),b.start),!0},loadPreviousDomain:function(a){"use strict";if(this._minDomainReached||0===a)return!1;var b=this.loadNewDomains(this.NAVIGATE_LEFT,this.getDomain(this.getDomainKeys()[0],-a).reverse());return this.afterLoadPreviousDomain(b.start),this.checkIfMinDomainIsReached(b.start,b.end),!0},loadNewDomains:function(a,b){"use strict";function c(a){return{t:d._domainType[d.options.subDomain].extractUnit(a),v:null}}for(var d=this,e=a===this.NAVIGATE_LEFT,f=-1,g=b.length,h=this.getDomainKeys();++f<g;){if(e&&this.minDomainIsReached(b[f])){b=b.slice(0,f+1);break}if(!e&&this.maxDomainIsReached(b[f])){b=b.slice(0,f);break}}for(b=b.slice(-this.options.range),f=0,g=b.length;g>f;f++)this._domains.set(b[f].getTime(),this.getSubDomain(b[f]).map(c)),this._domains.remove(e?h.pop():h.shift());return h=this.getDomainKeys(),e&&(b=b.reverse()),this.paint(a),this.getDatas(this.options.data,b[0],this.getSubDomain(b[b.length-1]).pop(),function(){d.fill(d.lastInsertedSvg)}),{start:b[e?0:1],end:h[h.length-1]}},maxDomainIsReached:function(a){"use strict";return null!==this.options.maxDate&&this.options.maxDate.getTime()<a},minDomainIsReached:function(a){"use strict";return null!==this.options.minDate&&this.options.minDate.getTime()>=a},getDomainKeys:function(){"use strict";return this._domains.keys().map(function(a){return parseInt(a,10)}).sort(function(a,b){return a-b})},positionSubDomainX:function(a){"use strict";var b=this._domainType[this.options.subDomain].position.x(new Date(a));return b*this.options.cellSize+b*this.options.cellPadding},positionSubDomainY:function(a){"use strict";var b=this._domainType[this.options.subDomain].position.y(new Date(a));return b*this.options.cellSize+b*this.options.cellPadding},getSubDomainColumnNumber:function(a){"use strict";if(this.options.rowLimit>0){var b=this._domainType[this.options.subDomain].maxItemNumber;return"function"==typeof b&&(b=b(a)),Math.ceil(b/this.options.rowLimit)}var c=this._domainType[this.options.subDomain].defaultColumnNumber;return"function"==typeof c&&(c=c(a)),this.options.colLimit||c},getSubDomainRowNumber:function(a){"use strict";if(this.options.colLimit>0){var b=this._domainType[this.options.subDomain].maxItemNumber;return"function"==typeof b&&(b=b(a)),Math.ceil(b/this.options.colLimit)}var c=this._domainType[this.options.subDomain].defaultRowNumber;return"function"==typeof c&&(c=c(a)),this.options.rowLimit||c},getHighlightClassName:function(a){"use strict";if(a=new Date(a),this.options.highlight.length>0)for(var b in this.options.highlight)if(this.options.highlight[b]instanceof Date&&this.dateIsEqual(this.options.highlight[b],a))return" highlight"+(this.isNow(this.options.highlight[b])?" now":"");return""},isNow:function(a){"use strict";return this.dateIsEqual(a,new Date)},dateIsEqual:function(a,b){"use strict";switch(this.options.subDomain){case"x_min":case"min":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()&&a.getHours()===b.getHours()&&a.getMinutes()===b.getMinutes();case"x_hour":case"hour":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()&&a.getHours()===b.getHours();case"x_day":case"day":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();case"x_week":case"week":return a.getFullYear()===b.getFullYear()&&this.getWeekNumber(a)===this.getWeekNumber(b);case"x_month":case"month":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth();default:return!1}},dateIsLessThan:function(a,b){"use strict";function c(a,b){switch(b){case"x_min":case"min":return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours(),a.getMinutes()).getTime();case"x_hour":case"hour":return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()).getTime();case"x_day":case"day":return new Date(a.getFullYear(),a.getMonth(),a.getDate()).getTime();case"x_week":case"week":case"x_month":case"month":return new Date(a.getFullYear(),a.getMonth()).getTime();default:return a.getTime()}}return a instanceof Date||(a=new Date(a)),b instanceof Date||(b=new Date(b)),c(a,this.options.subDomain)<c(b,this.options.subDomain)},getDayOfYear:d3.time.format("%j"),getWeekNumber:function(a){"use strict";var b=d3.time.format(this.options.weekStartOnMonday===!0?"%W":"%U");return b(a)},getMonthWeekNumber:function(a){"use strict";"number"==typeof a&&(a=new Date(a));var b=this.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));return this.getWeekNumber(a)-b-1},getWeekNumberInYear:function(a){"use strict";"number"==typeof a&&(a=new Date(a))},getDayCountInMonth:function(a){"use strict";return this.getEndOfMonth(a).getDate()},getDayCountInYear:function(a){"use strict";return"number"==typeof a&&(a=new Date(a)),1===new Date(a.getFullYear(),1,29).getMonth()?366:365},getWeekDay:function(a){"use strict";return this.options.weekStartOnMonday===!1?a.getDay():0===a.getDay()?6:a.getDay()-1},getEndOfMonth:function(a){"use strict";return"number"==typeof a&&(a=new Date(a)),new Date(a.getFullYear(),a.getMonth()+1,0)},jumpDate:function(a,b,c){"use strict";var d=new Date(a);switch(c){case"hour":d.setHours(d.getHours()+b);break;case"day":d.setHours(d.getHours()+24*b);break;case"week":d.setHours(d.getHours()+24*b*7);break;case"month":d.setMonth(d.getMonth()+b);break;case"year":d.setFullYear(d.getFullYear()+b)}return new Date(d)},getMinuteDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()),d=null;return d=b instanceof Date?new Date(b.getFullYear(),b.getMonth(),b.getDate(),b.getHours()):new Date(+c+1e3*b*60),d3.time.minutes(Math.min(c,d),Math.max(c,d))},getHourDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()),d=null;b instanceof Date?d=new Date(b.getFullYear(),b.getMonth(),b.getDate(),b.getHours()):(d=new Date(c),d.setHours(d.getHours()+b));var e=d3.time.hours(Math.min(c,d),Math.max(c,d)),f=0,g=e.length;for(f=0;g>f;f++)if(f>0&&e[f].getHours()===e[f-1].getHours()){this.DSTDomain.push(e[f].getTime()),e.splice(f,1);break}return"number"==typeof b&&e.length>Math.abs(b)&&e.splice(e.length-1,1),e},getDayDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate()),d=null;return b instanceof Date?d=new Date(b.getFullYear(),b.getMonth(),b.getDate()):(d=new Date(c),d=new Date(d.setDate(d.getDate()+parseInt(b,10)))),d3.time.days(Math.min(c,d),Math.max(c,d))},getWeekDomain:function(a,b){"use strict";var c;this.options.weekStartOnMonday===!1?c=new Date(a.getFullYear(),a.getMonth(),a.getDate()-a.getDay()):1===a.getDay()?c=new Date(a.getFullYear(),a.getMonth(),a.getDate()):0===a.getDay()?(c=new Date(a.getFullYear(),a.getMonth(),a.getDate()),c.setDate(c.getDate()-6)):c=new Date(a.getFullYear(),a.getMonth(),a.getDate()-a.getDay()+1);var d=new Date(c),e=b;return"object"!=typeof b&&(e=new Date(d.setDate(d.getDate()+7*b))),this.options.weekStartOnMonday===!0?d3.time.mondays(Math.min(c,e),Math.max(c,e)):d3.time.sundays(Math.min(c,e),Math.max(c,e))},getMonthDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth()),d=null;return b instanceof Date?d=new Date(b.getFullYear(),b.getMonth()):(d=new Date(c),d=d.setMonth(d.getMonth()+b)),d3.time.months(Math.min(c,d),Math.max(c,d))},getYearDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),0),d=null;return d=b instanceof Date?new Date(b.getFullYear(),0):new Date(a.getFullYear()+b,0),d3.time.years(Math.min(c,d),Math.max(c,d))
-},getDomain:function(a,b){"use strict";switch("number"==typeof a&&(a=new Date(a)),arguments.length<2&&(b=this.options.range),this.options.domain){case"hour":var c=this.getHourDomain(a,b);return"number"==typeof b&&c.length<b&&(b>0?c.push(this.getHourDomain(c[c.length-1],2)[1]):c.shift(this.getHourDomain(c[0],-2)[0])),c;case"day":return this.getDayDomain(a,b);case"week":return this.getWeekDomain(a,b);case"month":return this.getMonthDomain(a,b);case"year":return this.getYearDomain(a,b)}},getSubDomain:function(a){"use strict";"number"==typeof a&&(a=new Date(a));var b=this,c=function(a,c){switch(c){case"year":return b.getDayCountInYear(a);case"month":return b.getDayCountInMonth(a);case"week":return 7}},d=function(a,b){switch(b){case"hour":return 60;case"day":return 1440;case"week":return 10080}},e=function(a,c){switch(c){case"day":return 24;case"week":return 168;case"month":return 24*b.getDayCountInMonth(a)}},f=function(a,c){if("month"===c){var d=new Date(a.getFullYear(),a.getMonth()+1,0),e=b.getWeekNumber(d),f=b.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));return f>e&&(f=0,e++),e-f+1}return"year"===c?b.getWeekNumber(new Date(a.getFullYear(),11,31)):void 0};switch(this.options.subDomain){case"x_min":case"min":return this.getMinuteDomain(a,d(a,this.options.domain));case"x_hour":case"hour":return this.getHourDomain(a,e(a,this.options.domain));case"x_day":case"day":return this.getDayDomain(a,c(a,this.options.domain));case"x_week":case"week":return this.getWeekDomain(a,f(a,this.options.domain));case"x_month":case"month":return this.getMonthDomain(a,12)}},getNextDomain:function(a){"use strict";return 0===arguments.length&&(a=1),this.getDomain(this.jumpDate(this.getDomainKeys().pop(),a,this.options.domain),1)[0]},getPreviousDomain:function(a){"use strict";return 0===arguments.length&&(a=1),this.getDomain(this.jumpDate(this.getDomainKeys().shift(),-a,this.options.domain),1)[0]},getDatas:function(a,b,c,d,e,f){"use strict";var g=this;arguments.length<5&&(e=!0),arguments.length<6&&(f=this.APPEND_ON_UPDATE);var h=function(a){e!==!1?"function"==typeof e?a=e(a):"function"==typeof g.options.afterLoadData?a=g.options.afterLoadData(a):console.log("Provided callback for afterLoadData is not a function."):("csv"===g.options.dataType||"tsv"===g.options.dataType)&&(a=this.interpretCSV(a)),g.parseDatas(a,f,b,c),"function"==typeof d&&d()};switch(typeof a){case"string":if(""===a)return h({}),!0;var i=this.parseURI(a,b,c),j="GET";null!==g.options.dataPostPayload&&(j="POST");var k=null;switch(null!==g.options.dataPostPayload&&(k=this.parseURI(g.options.dataPostPayload,b,c)),this.options.dataType){case"json":d3.json(i,h).send(j,k);break;case"csv":d3.csv(i,h).send(j,k);break;case"tsv":d3.tsv(i,h).send(j,k);break;case"txt":d3.text(i,"text/plain",h).send(j,k)}return!1;case"object":if(a===Object(a))return h(a),!1;default:return h({}),!0}},parseDatas:function(a,b,c,d){"use strict";b===this.RESET_ALL_ON_UPDATE&&this._domains.forEach(function(a,b){b.forEach(function(a,b,c){c[b].v=null})});var e={},f=function(a){return a.t};for(var g in a){var h=new Date(1e3*g),i=this.getDomain(h)[0].getTime();if(this.DSTDomain.indexOf(i)>=0&&this._domains.has(i-36e5)&&(i-=36e5),!isNaN(g)&&a.hasOwnProperty(g)&&this._domains.has(i)&&i>=+c&&+d>i){var j=this._domains.get(i);e.hasOwnProperty(i)||(e[i]=j.map(f));var k=e[i].indexOf(this._domainType[this.options.subDomain].extractUnit(h));b===this.RESET_SINGLE_ON_UPDATE?j[k].v=a[g]:isNaN(j[k].v)?j[k].v=a[g]:j[k].v+=a[g]}}},parseURI:function(a,b,c){"use strict";return a=a.replace(/\{\{t:start\}\}/g,b.getTime()/1e3),a=a.replace(/\{\{t:end\}\}/g,c.getTime()/1e3),a=a.replace(/\{\{d:start\}\}/g,b.toISOString()),a=a.replace(/\{\{d:end\}\}/g,c.toISOString())},interpretCSV:function(a){"use strict";var b,c,d={},e=Object.keys(a[0]);for(b=0,c=a.length;c>b;b++)d[a[b][e[0]]]=+a[b][e[1]];return d},resize:function(){"use strict";var a=this,b=a.options,c=b.displayLegend?a.Legend.getDim("width")+b.legendMargin[1]+b.legendMargin[3]:0,d=b.displayLegend?a.Legend.getDim("height")+b.legendMargin[0]+b.legendMargin[2]:0,e=a.graphDim.width-b.domainGutter-b.cellPadding,f=a.graphDim.height-b.domainGutter-b.cellPadding;this.root.transition().duration(b.animationDuration).attr("width",function(){return"middle"===b.legendVerticalPosition||"center"===b.legendVerticalPosition?e+c:Math.max(e,c)}).attr("height",function(){return"middle"===b.legendVerticalPosition||"center"===b.legendVerticalPosition?Math.max(f,d):f+d}),this.root.select(".graph").transition().duration(b.animationDuration).attr("y",function(){return"top"===b.legendVerticalPosition?d:0}).attr("x",function(){return"middle"!==b.legendVerticalPosition&&"center"!==b.legendVerticalPosition||"left"!==b.legendHorizontalPosition?0:c})},next:function(a){"use strict";return 0===arguments.length&&(a=1),this.loadNextDomain(a)},previous:function(a){"use strict";return 0===arguments.length&&(a=1),this.loadPreviousDomain(a)},jumpTo:function(a,b){"use strict";arguments.length<2&&(b=!1);var c=this.getDomainKeys(),d=c[0],e=c[c.length-1];return d>a?this.loadPreviousDomain(this.getDomain(d,a).length):b?this.loadNextDomain(this.getDomain(d,a).length):a>e?this.loadNextDomain(this.getDomain(e,a).length):!1},rewind:function(){"use strict";this.jumpTo(this.options.start,!0)},update:function(a,b,c){"use strict";arguments.length<2&&(b=!0),arguments.length<3&&(c=this.RESET_ALL_ON_UPDATE);var d=this.getDomainKeys(),e=this;this.getDatas(a,new Date(d[0]),this.getSubDomain(d[d.length-1]).pop(),function(){e.fill()},b,c)},setLegend:function(){"use strict";var a=this.options.legend.slice(0);arguments.length>=1&&Array.isArray(arguments[0])&&(this.options.legend=arguments[0]),arguments.length>=2&&(this.options.legendColors=Array.isArray(arguments[1])&&arguments[1].length>=2?[arguments[1][0],arguments[1][1]]:arguments[1]),(arguments.length>0&&!arrayEquals(a,this.options.legend)||arguments.length>=2)&&(this.Legend.buildColors(),this.fill()),this.Legend.redraw(this.graphDim.width-this.options.domainGutter-this.options.cellPadding)},removeLegend:function(){"use strict";return this.options.displayLegend?(this.options.displayLegend=!1,this.Legend.remove(),!0):!1},showLegend:function(){"use strict";return this.options.displayLegend?!1:(this.options.displayLegend=!0,this.Legend.redraw(this.graphDim.width-this.options.domainGutter-this.options.cellPadding),!0)},highlight:function(a){"use strict";return(this.options.highlight=this.expandDateSetting(a)).length>0?(this.fill(),!0):!1},destroy:function(a){"use strict";return this.root.transition().duration(this.options.animationDuration).attr("width",0).attr("height",0).remove().each("end",function(){"function"==typeof a?a():"undefined"!=typeof a&&console.log("Provided callback for destroy() is not a function.")}),null},getSVG:function(){"use strict";for(var a={".cal-heatmap-container":{},".graph":{},".graph-rect":{},"rect.highlight":{},"rect.now":{},"text.highlight":{},"text.now":{},".domain-background":{},".graph-label":{},".subdomain-text":{},".q0":{},".qi":{}},b=1,c=this.options.legend.length+1;c>=b;b++)a[".q"+b]={};var d=this.root,e=["stroke","stroke-width","stroke-opacity","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-miterlimit","fill","fill-opacity","fill-rule","marker","marker-start","marker-mid","marker-end","alignement-baseline","baseline-shift","dominant-baseline","glyph-orientation-horizontal","glyph-orientation-vertical","kerning","text-anchor","shape-rendering","text-transform","font-family","font","font-size","font-weight"],f=function(b,c,d){-1!==e.indexOf(c)&&(a[b][c]=d)},g=function(a){return d.select(a)[0][0]};for(var h in a)if(a.hasOwnProperty(h)){var i=g(h);if(null!==i)if("getComputedStyle"in window){var j=getComputedStyle(i,null);if(0!==j.length)for(var k=0;k<j.length;k++)f(h,j.item(k),j.getPropertyValue(j.item(k)));else for(var l in j)j.hasOwnProperty(l)&&f(h,l,j[l])}else if("currentStyle"in i){var m=i.currentStyle;for(var n in m)f(h,n,m[n])}}var o='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style type="text/css"><![CDATA[ ';for(var p in a){o+=p+" {\n";for(var q in a[p])o+="	"+q+":"+a[p][q]+";\n";o+="}\n"}return o+="]]></style>",o+=(new XMLSerializer).serializeToString(this.root[0][0]),o+="</svg>"}};var DomainPosition=function(){"use strict";this.positions=d3.map()};DomainPosition.prototype.getPosition=function(a){"use strict";return this.positions.get(a)},DomainPosition.prototype.getPositionFromIndex=function(a){"use strict";var b=this.getKeys();return this.positions.get(b[a])},DomainPosition.prototype.getLast=function(){"use strict";var a=this.getKeys();return this.positions.get(a[a.length-1])},DomainPosition.prototype.setPosition=function(a,b){"use strict";this.positions.set(a,b)},DomainPosition.prototype.shiftRightBy=function(a){"use strict";this.positions.forEach(function(b,c){this.set(b,c-a)});var b=this.getKeys();this.positions.remove(b[0])},DomainPosition.prototype.shiftLeftBy=function(a){"use strict";this.positions.forEach(function(b,c){this.set(b,c+a)});var b=this.getKeys();this.positions.remove(b[b.length-1])},DomainPosition.prototype.getKeys=function(){"use strict";return this.positions.keys().sort(function(a,b){return parseInt(a,10)-parseInt(b,10)})};var Legend=function(a){"use strict";this.calendar=a,this.computeDim(),null!==a.options.legendColors&&this.buildColors()};Legend.prototype.computeDim=function(){"use strict";var a=this.calendar.options;this.dim={width:a.legendCellSize*(a.legend.length+1)+a.legendCellPadding*a.legend.length,height:a.legendCellSize}},Legend.prototype.remove=function(){"use strict";this.calendar.root.select(".graph-legend").remove(),this.calendar.resize()},Legend.prototype.redraw=function(a){"use strict";function b(a){a.attr("width",i.legendCellSize).attr("height",i.legendCellSize).attr("x",function(a,b){return b*(i.legendCellSize+i.legendCellPadding)})}function c(){switch(i.legendHorizontalPosition){case"right":return"center"===i.legendVerticalPosition||"middle"===i.legendVerticalPosition?a+i.legendMargin[3]:a-f.getDim("width")-i.legendMargin[1];case"middle":case"center":return Math.round(a/2-f.getDim("width")/2);default:return i.legendMargin[3]}}function d(){return"bottom"===i.legendVerticalPosition?g.graphDim.height+i.legendMargin[0]-i.domainGutter-i.cellPadding:i.legendMargin[0]}if(!this.calendar.options.displayLegend)return!1;var e,f=this,g=this.calendar,h=g.root,i=g.options;this.computeDim();var j=i.legend.slice(0);j.push(j[j.length-1]+1);var k=g.root.select(".graph-legend");null!==k[0][0]?(h=k,e=h.select("g").selectAll("rect").data(j)):(h="top"===i.legendVerticalPosition?h.insert("svg",".graph"):h.append("svg"),h.attr("x",c()).attr("y",d()),e=h.attr("class","graph-legend").attr("height",f.getDim("height")).attr("width",f.getDim("width")).append("g").selectAll().data(j)),e.enter().append("rect").call(b).attr("class",function(a){return g.Legend.getClass(a,null===g.legendScale)}).attr("fill-opacity",0).call(function(a){null!==g.legendScale&&null!==i.legendColors&&i.legendColors.hasOwnProperty("base")&&a.attr("fill",i.legendColors.base)}).append("title"),e.exit().transition().duration(i.animationDuration).attr("fill-opacity",0).remove(),e.transition().delay(function(a,b){return i.animationDuration*b/10}).call(b).attr("fill-opacity",1).call(function(a){a.attr("fill",function(a,b){return null===g.legendScale?"":g.legendScale(0===b?a-1:i.legend[b-1])}),a.attr("class",function(a){return g.Legend.getClass(a,null===g.legendScale)})}),e.select("title").text(function(a,b){return 0===b?i.legendTitleFormat.lower.format({min:i.legend[b],name:i.itemName[1]}):b===j.length-1?i.legendTitleFormat.upper.format({max:i.legend[b-1],name:i.itemName[1]}):i.legendTitleFormat.inner.format({down:i.legend[b-1],up:i.legend[b],name:i.itemName[1]})}),h.transition().duration(i.animationDuration).attr("x",c()).attr("y",d()).attr("width",f.getDim("width")).attr("height",f.getDim("height")),h.select("g").transition().duration(i.animationDuration).attr("transform",function(){return"vertical"===i.legendOrientation?"rotate(90 "+i.legendCellSize/2+" "+i.legendCellSize/2+")":""}),g.resize()},Legend.prototype.getDim=function(a){"use strict";var b="horizontal"===this.calendar.options.legendOrientation;switch(a){case"width":return this.dim[b?"width":"height"];case"height":return this.dim[b?"height":"width"]}},Legend.prototype.buildColors=function(){"use strict";var a=this.calendar.options;if(null===a.legendColors)return this.calendar.legendScale=null,!1;var b=[];if(Array.isArray(a.legendColors))b=a.legendColors;else{if(!a.legendColors.hasOwnProperty("min")||!a.legendColors.hasOwnProperty("max"))return a.legendColors=null,!1;b=[a.legendColors.min,a.legendColors.max]}var c=a.legend.slice(0);c[0]>0?c.unshift(0):c[0]<0&&c.unshift(c[0]-(c[c.length-1]-c[0])/c.length);var d=d3.scale.linear().range(b).interpolate(d3.interpolateHcl).domain([d3.min(c),d3.max(c)]),e=c.map(function(a){return d(a)});return this.calendar.legendScale=d3.scale.threshold().domain(a.legend).range(e),!0},Legend.prototype.getClass=function(a,b){"use strict";if(null===a||isNaN(a))return"";for(var c=[this.calendar.options.legend.length+1],d=0,e=this.calendar.options.legend.length-1;e>=d;d++){if(this.calendar.options.legend[0]>0&&0>a){c=["1","i"];break}if(a<=this.calendar.options.legend[d]){c=[d+1];break}}return 0===a&&c.push(0),c.unshift(""),(c.join(" r")+(b?c.join(" q"):"")).trim()},String.prototype.format=function(){"use strict";var a=this;for(var b in arguments[0])if(arguments[0].hasOwnProperty(b)){var c=new RegExp("\\{"+b+"\\}","gi");a=a.replace(c,arguments[0][b])}return a},"function"==typeof define&&define.amd?define(["d3"],function(){"use strict";return CalHeatMap}):"object"==typeof module&&module.exports?module.exports=CalHeatMap:window.CalHeatMap=CalHeatMap;
+function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].constructor===Object?mergeRecursive(a[c],b[c]):b[c]}catch(d){a[c]=b[c]}return a}function arrayEquals(a,b){"use strict";if(!b||!a)return!1;if(a.length!==b.length)return!1;for(var c=0;c<a.length;c++)if(a[c]instanceof Array&&b[c]instanceof Array){if(!arrayEquals(a[c],b[c]))return!1}else if(a[c]!==b[c])return!1;return!0}var d3="function"==typeof require?require("d3"):window.d3,CalHeatMap=function(){"use strict";function a(){d.verticalDomainLabel="top"===d.options.label.position||"bottom"===d.options.label.position,d.domainVerticalLabelHeight=null===d.options.label.height?Math.max(25,2*d.options.cellSize):d.options.label.height,d.domainHorizontalLabelWidth=0,""===d.options.domainLabelFormat&&null===d.options.label.height&&(d.domainVerticalLabelHeight=0),d.verticalDomainLabel||(d.domainVerticalLabelHeight=0,d.domainHorizontalLabelWidth=d.options.label.width),d.paint(),d.options.nextSelector!==!1&&d3.select(d.options.nextSelector).on("click."+d.options.itemNamespace,function(){return d3.event.preventDefault(),d.loadNextDomain(1)}),d.options.previousSelector!==!1&&d3.select(d.options.previousSelector).on("click."+d.options.itemNamespace,function(){return d3.event.preventDefault(),d.loadPreviousDomain(1)}),d.Legend.redraw(d.graphDim.width-d.options.domainGutter-d.options.cellPadding),d.afterLoad();var a=d.getDomainKeys();d.options.loadOnInit?d.getDatas(d.options.data,new Date(a[0]),d.getSubDomain(a[a.length-1]).pop(),function(){d.fill(),d.onComplete()}):d.onComplete(),d.checkIfMinDomainIsReached(a[0]),d.checkIfMaxDomainIsReached(d.getNextDomain().getTime())}function b(a,b){var c=d.options.cellSize*d._domainType[d.options.subDomain].column(a)+d.options.cellPadding*d._domainType[d.options.subDomain].column(a);return 2===arguments.length&&b===!0?c+=d.domainHorizontalLabelWidth+d.options.domainGutter+d.options.domainMargin[1]+d.options.domainMargin[3]:c}function c(a,b){var c=d.options.cellSize*d._domainType[d.options.subDomain].row(a)+d.options.cellPadding*d._domainType[d.options.subDomain].row(a);return 2===arguments.length&&b===!0&&(c+=d.options.domainGutter+d.domainVerticalLabelHeight+d.options.domainMargin[0]+d.options.domainMargin[2]),c}var d=this;this.allowedDataType=["json","csv","tsv","txt"],this.options={itemSelector:"#cal-heatmap",paintOnLoad:!0,range:12,cellSize:10,cellPadding:2,cellRadius:0,domainGutter:2,domainMargin:[0,0,0,0],domain:"hour",subDomain:"min",colLimit:null,rowLimit:null,weekStartOnMonday:!0,start:new Date,minDate:null,maxDate:null,data:"",dataType:this.allowedDataType[0],dataPostPayload:null,considerMissingDataAsZero:!1,loadOnInit:!0,verticalOrientation:!1,domainDynamicDimension:!0,label:{position:"bottom",align:"center",offset:{x:0,y:0},rotate:null,width:100,height:null},legend:[10,20,30,40],displayLegend:!0,legendCellSize:10,legendCellPadding:2,legendMargin:[0,0,0,0],legendVerticalPosition:"bottom",legendHorizontalPosition:"left",legendOrientation:"horizontal",legendColors:null,highlight:[],itemName:["item","items"],domainLabelFormat:null,subDomainTitleFormat:{empty:"{date}",filled:"{count} {name} {connector} {date}"},subDomainDateFormat:null,subDomainTextFormat:null,legendTitleFormat:{lower:"less than {min} {name}",inner:"between {down} and {up} {name}",upper:"more than {max} {name}"},animationDuration:500,nextSelector:!1,previousSelector:!1,itemNamespace:"cal-heatmap",tooltip:!1,onClick:null,afterLoad:null,afterLoadNextDomain:null,afterLoadPreviousDomain:null,onComplete:null,afterLoadData:function(a){return a},onMaxDomainReached:null,onMinDomainReached:null},this._domainType={min:{name:"minute",level:10,maxItemNumber:60,defaultRowNumber:10,defaultColumnNumber:6,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){return Math.floor(a.getMinutes()/d._domainType.min.row(a))},y:function(a){return a.getMinutes()%d._domainType.min.row(a)}},format:{date:"%H:%M, %A %B %-e, %Y",legend:"",connector:"at"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours(),a.getMinutes()).getTime()}},hour:{name:"hour",level:20,maxItemNumber:function(a){switch(d.options.domain){case"day":return 24;case"week":return 168;case"month":return 24*(d.options.domainDynamicDimension?d.getDayCountInMonth(a):31)}},defaultRowNumber:6,defaultColumnNumber:function(a){switch(d.options.domain){case"day":return 4;case"week":return 28;case"month":return d.options.domainDynamicDimension?d.getDayCountInMonth(a):31}},row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){return"month"===d.options.domain?d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getHours()+24*(a.getDate()-1))/d._domainType.hour.row(a)):Math.floor(a.getHours()/d._domainType.hour.row(a))+4*(a.getDate()-1):"week"===d.options.domain?d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getHours()+24*d.getWeekDay(a))/d._domainType.hour.row(a)):Math.floor(a.getHours()/d._domainType.hour.row(a))+4*d.getWeekDay(a):Math.floor(a.getHours()/d._domainType.hour.row(a))},y:function(a){var b=a.getHours();if(d.options.colLimit>0||d.options.rowLimit>0)switch(d.options.domain){case"month":b+=24*(a.getDate()-1);break;case"week":b+=24*d.getWeekDay(a)}return Math.floor(b%d._domainType.hour.row(a))}},format:{date:"%Hh, %A %B %-e, %Y",legend:"%H:00",connector:"at"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()).getTime()}},day:{name:"day",level:30,maxItemNumber:function(a){switch(d.options.domain){case"week":return 7;case"month":return d.options.domainDynamicDimension?d.getDayCountInMonth(a):31;case"year":return d.options.domainDynamicDimension?d.getDayCountInYear(a):366}},defaultColumnNumber:function(a){switch(a=new Date(a),d.options.domain){case"week":return 1;case"month":return d.options.domainDynamicDimension&&!d.options.verticalOrientation?d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()+1,0))-d.getWeekNumber(a)+1:6;case"year":return d.options.domainDynamicDimension?d.getWeekNumber(new Date(a.getFullYear(),11,31))-d.getWeekNumber(new Date(a.getFullYear(),0))+1:54}},defaultRowNumber:7,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){switch(d.options.domain){case"week":return Math.floor(d.getWeekDay(a)/d._domainType.day.row(a));case"month":return d.options.colLimit>0||d.options.rowLimit>0?Math.floor((a.getDate()-1)/d._domainType.day.row(a)):d.getWeekNumber(a)-d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));case"year":return d.options.colLimit>0||d.options.rowLimit>0?Math.floor((d.getDayOfYear(a)-1)/d._domainType.day.row(a)):d.getWeekNumber(a)}},y:function(a){var b=d.getWeekDay(a);if(d.options.colLimit>0||d.options.rowLimit>0)switch(d.options.domain){case"year":b=d.getDayOfYear(a)-1;break;case"week":b=d.getWeekDay(a);break;case"month":b=a.getDate()-1}return Math.floor(b%d._domainType.day.row(a))}},format:{date:"%A %B %-e, %Y",legend:"%e %b",connector:"on"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth(),a.getDate()).getTime()}},week:{name:"week",level:40,maxItemNumber:54,defaultColumnNumber:function(a){switch(a=new Date(a),d.options.domain){case"year":return d._domainType.week.maxItemNumber;case"month":return d.options.domainDynamicDimension?d.getWeekNumber(new Date(a.getFullYear(),a.getMonth()+1,0))-d.getWeekNumber(a):5}},defaultRowNumber:1,row:function(a){return d.getSubDomainRowNumber(a)},column:function(a){return d.getSubDomainColumnNumber(a)},position:{x:function(a){switch(d.options.domain){case"year":return Math.floor(d.getWeekNumber(a)/d._domainType.week.row(a));case"month":return Math.floor(d.getMonthWeekNumber(a)/d._domainType.week.row(a))}},y:function(a){return d.getWeekNumber(a)%d._domainType.week.row(a)}},format:{date:"%B Week #%W",legend:"%B Week #%W",connector:"in"},extractUnit:function(a){var b=new Date(a.getFullYear(),a.getMonth(),a.getDate()),c=b.getDay()-1;return 0>c&&(c=6),b.setDate(b.getDate()-c),b.getTime()}},month:{name:"month",level:50,maxItemNumber:12,defaultColumnNumber:12,defaultRowNumber:1,row:function(){return d.getSubDomainRowNumber()},column:function(){return d.getSubDomainColumnNumber()},position:{x:function(a){return Math.floor(a.getMonth()/d._domainType.month.row(a))},y:function(a){return a.getMonth()%d._domainType.month.row(a)}},format:{date:"%B %Y",legend:"%B",connector:"in"},extractUnit:function(a){return new Date(a.getFullYear(),a.getMonth()).getTime()}},year:{name:"year",level:60,row:function(){return d.options.rowLimit||1},column:function(){return d.options.colLimit||1},position:{x:function(){return 1},y:function(){return 1}},format:{date:"%Y",legend:"%Y",connector:"in"},extractUnit:function(a){return new Date(a.getFullYear()).getTime()}}};for(var e in this._domainType)if(this._domainType.hasOwnProperty(e)){var f=this._domainType[e];this._domainType["x_"+e]={name:"x_"+e,level:f.type,maxItemNumber:f.maxItemNumber,defaultRowNumber:f.defaultRowNumber,defaultColumnNumber:f.defaultColumnNumber,row:f.column,column:f.row,position:{x:f.position.y,y:f.position.x},format:f.format,extractUnit:f.extractUnit}}this.lastInsertedSvg=null,this._completed=!1,this._domains=d3.map(),this.graphDim={width:0,height:0},this.legendDim={width:0,height:0},this.NAVIGATE_LEFT=1,this.NAVIGATE_RIGHT=2,this.RESET_ALL_ON_UPDATE=0,this.RESET_SINGLE_ON_UPDATE=1,this.APPEND_ON_UPDATE=2,this.DEFAULT_LEGEND_MARGIN=10,this.root=null,this.tooltip=null,this._maxDomainReached=!1,this._minDomainReached=!1,this.domainPosition=new DomainPosition,this.Legend=null,this.legendScale=null,this.DSTDomain=[],this._init=function(){return d.getDomain(d.options.start).map(function(a){return a.getTime()}).map(function(a){d._domains.set(a,d.getSubDomain(a).map(function(a){return{t:d._domainType[d.options.subDomain].extractUnit(a),v:null}}))}),d.root=d3.select(d.options.itemSelector).append("svg").attr("class","cal-heatmap-container"),d.tooltip=d3.select(d.options.itemSelector).attr("style",function(){var a=d3.select(d.options.itemSelector).attr("style");return(null!==a?a:"")+"position:relative;"}).append("div").attr("class","ch-tooltip"),d.root.attr("x",0).attr("y",0).append("svg").attr("class","graph"),d.Legend=new Legend(d),d.options.paintOnLoad&&a(),!0},this.paint=function(a){function e(b,c,e,f){var g=0;switch(a){case!1:return g=c[e],c[e]+=f,d.domainPosition.setPosition(b,g),g;case d.NAVIGATE_RIGHT:return d.domainPosition.setPosition(b,c[e]),i=f,j=d.domainPosition.getPositionFromIndex(1),d.domainPosition.shiftRightBy(j),c[e];case d.NAVIGATE_LEFT:return g=-f,i=-g,j=c[e]-d.domainPosition.getLast(),d.domainPosition.setPosition(b,g),d.domainPosition.shiftLeftBy(i),g}}function f(a){switch(g.label.rotate){case"right":a.attr("transform",function(a){var c="rotate(90), ";switch(g.label.position){case"right":c+="translate(-"+b(a)+" , -"+b(a)+")";break;case"left":c+="translate(0, -"+d.domainHorizontalLabelWidth+")"}return c});break;case"left":a.attr("transform",function(a){var c="rotate(270), ";switch(g.label.position){case"right":c+="translate(-"+(b(a)+d.domainHorizontalLabelWidth)+" , "+b(a)+")";break;case"left":c+="translate(-"+d.domainHorizontalLabelWidth+" , "+d.domainHorizontalLabelWidth+")"}return c})}}var g=d.options;0===arguments.length&&(a=!1);var h=d.root.select(".graph").selectAll(".graph-domain").data(function(){var b=d.getDomainKeys();return a===d.NAVIGATE_LEFT?b.reverse():b},function(a){return a}),i=0,j=0,k=h.enter().append("svg").attr("width",function(a){return b(a,!0)}).attr("height",function(a){return c(a,!0)}).attr("x",function(a){return g.verticalOrientation?(d.graphDim.width=Math.max(d.graphDim.width,b(a,!0)),0):e(a,d.graphDim,"width",b(a,!0))}).attr("y",function(a){return g.verticalOrientation?e(a,d.graphDim,"height",c(a,!0)):(d.graphDim.height=Math.max(d.graphDim.height,c(a,!0)),0)}).attr("class",function(a){var b="graph-domain",c=new Date(a);switch(g.domain){case"hour":b+=" h_"+c.getHours();case"day":b+=" d_"+c.getDate()+" dy_"+c.getDay();case"week":b+=" w_"+d.getWeekNumber(c);case"month":b+=" m_"+(c.getMonth()+1);case"year":b+=" y_"+c.getFullYear()}return b});d.lastInsertedSvg=k,k.append("rect").attr("width",function(a){return b(a,!0)-g.domainGutter-g.cellPadding}).attr("height",function(a){return c(a,!0)-g.domainGutter-g.cellPadding}).attr("class","domain-background");var l=k.append("svg").attr("x",function(){return"left"===g.label.position?d.domainHorizontalLabelWidth+g.domainMargin[3]:g.domainMargin[3]}).attr("y",function(){return"top"===g.label.position?d.domainVerticalLabelHeight+g.domainMargin[0]:g.domainMargin[0]}).attr("class","graph-subdomain-group"),m=l.selectAll("g").data(function(a){return d._domains.get(a)}).enter().append("g");m.append("rect").attr("class",function(a){return"graph-rect"+d.getHighlightClassName(a.t)+(null!==g.onClick?" hover_cursor":"")}).attr("width",g.cellSize).attr("height",g.cellSize).attr("x",function(a){return d.positionSubDomainX(a.t)}).attr("y",function(a){return d.positionSubDomainY(a.t)}).on("click",function(a){return null!==g.onClick?d.onClick(new Date(a.t),a.v):void 0}).call(function(a){g.cellRadius>0&&a.attr("rx",g.cellRadius).attr("ry",g.cellRadius),null!==d.legendScale&&null!==g.legendColors&&g.legendColors.hasOwnProperty("base")&&a.attr("fill",g.legendColors.base),g.tooltip&&(a.on("mouseover",function(a){var b=this.parentNode.parentNode;d.tooltip.html(d.getSubDomainTitle(a)).attr("style","display: block;");var c=d.positionSubDomainX(a.t)-d.tooltip[0][0].offsetWidth/2+g.cellSize/2,e=d.positionSubDomainY(a.t)-d.tooltip[0][0].offsetHeight-g.cellSize/2;c+=parseInt(b.getAttribute("x"),10),e+=parseInt(b.getAttribute("y"),10),c+=parseInt(d.root.select(".graph").attr("x"),10),e+=parseInt(d.root.select(".graph").attr("y"),10),c+=parseInt(b.parentNode.getAttribute("x"),10),e+=parseInt(b.parentNode.getAttribute("y"),10),d.tooltip.attr("style","display: block; left: "+c+"px; top: "+e+"px;")}),a.on("mouseout",function(){d.tooltip.attr("style","display:none").html("")}))}),g.tooltip||m.append("title").text(function(a){return d.formatDate(new Date(a.t),g.subDomainDateFormat)}),""!==g.domainLabelFormat&&k.append("text").attr("class","graph-label").attr("y",function(a){var b=g.domainMargin[0];switch(g.label.position){case"top":b+=d.domainVerticalLabelHeight/2;break;case"bottom":b+=c(a)+d.domainVerticalLabelHeight/2}return b+g.label.offset.y*("right"===g.label.rotate&&"right"===g.label.position||"left"===g.label.rotate&&"left"===g.label.position?-1:1)}).attr("x",function(a){var c=g.domainMargin[3];switch(g.label.position){case"right":c+=b(a);break;case"bottom":case"top":c+=b(a)/2}return"right"===g.label.align?c+d.domainHorizontalLabelWidth-g.label.offset.x*("right"===g.label.rotate?-1:1):c+g.label.offset.x}).attr("text-anchor",function(){switch(g.label.align){case"start":case"left":return"start";case"end":case"right":return"end";default:return"middle"}}).attr("dominant-baseline",function(){return d.verticalDomainLabel?"middle":"top"}).text(function(a){return d.formatDate(new Date(a),g.domainLabelFormat)}).call(f),null!==g.subDomainTextFormat&&m.append("text").attr("class",function(a){return"subdomain-text"+d.getHighlightClassName(a.t)}).attr("x",function(a){return d.positionSubDomainX(a.t)+g.cellSize/2}).attr("y",function(a){return d.positionSubDomainY(a.t)+g.cellSize/2}).attr("text-anchor","middle").attr("dominant-baseline","central").text(function(a){return d.formatDate(new Date(a.t),g.subDomainTextFormat)}),a!==!1&&h.transition().duration(g.animationDuration).attr("x",function(a){return g.verticalOrientation?0:d.domainPosition.getPosition(a)}).attr("y",function(a){return g.verticalOrientation?d.domainPosition.getPosition(a):0});var n=d.graphDim.width,o=d.graphDim.height;g.verticalOrientation?d.graphDim.height+=i-j:d.graphDim.width+=i-j,h.exit().transition().duration(g.animationDuration).attr("x",function(c){if(g.verticalOrientation)return 0;switch(a){case d.NAVIGATE_LEFT:return Math.min(d.graphDim.width,n);case d.NAVIGATE_RIGHT:return-b(c,!0)}}).attr("y",function(b){if(!g.verticalOrientation)return 0;switch(a){case d.NAVIGATE_LEFT:return Math.min(d.graphDim.height,o);case d.NAVIGATE_RIGHT:return-c(b,!0)}}).remove(),d.resize()}};CalHeatMap.prototype={init:function(a){"use strict";function b(a,b,c){if((b&&a===!1||a instanceof Element||"string"==typeof a)&&""!==a)return!0;throw new Error("The "+c+" is not valid")}function c(a){switch(a){case"year":return"month";case"month":return"day";case"week":return"day";case"day":return"hour";default:return"min"}}function d(){if(!k._domainType.hasOwnProperty(l.domain)||"min"===l.domain||"x_"===l.domain.substring(0,2))throw new Error("The domain '"+l.domain+"' is not valid");if(!k._domainType.hasOwnProperty(l.subDomain)||"year"===l.subDomain)throw new Error("The subDomain '"+l.subDomain+"' is not valid");if(k._domainType[l.domain].level<=k._domainType[l.subDomain].level)throw new Error("'"+l.subDomain+"' is not a valid subDomain to '"+l.domain+"'");return!0}function e(){if(!a.hasOwnProperty("label")||a.hasOwnProperty("label")&&!a.label.hasOwnProperty("align")){switch(l.label.position){case"left":l.label.align="right";break;case"right":l.label.align="left";break;default:l.label.align="center"}"left"===l.label.rotate?l.label.align="right":"right"===l.label.rotate&&(l.label.align="left")}(!a.hasOwnProperty("label")||a.hasOwnProperty("label")&&!a.label.hasOwnProperty("offset"))&&("left"===l.label.position||"right"===l.label.position)&&(l.label.offset={x:10,y:15})}function f(){switch(l.legendVerticalPosition){case"top":l.legendMargin[2]=k.DEFAULT_LEGEND_MARGIN;break;case"bottom":l.legendMargin[0]=k.DEFAULT_LEGEND_MARGIN;break;case"middle":case"center":l.legendMargin["right"===l.legendHorizontalPosition?3:1]=k.DEFAULT_LEGEND_MARGIN}}function g(a){switch("number"==typeof a&&(a=[a]),Array.isArray(a)||(console.log("Margin only takes an integer or an array of integers"),a=[0]),a.length){case 1:return[a[0],a[0],a[0],a[0]];case 2:return[a[0],a[1],a[0],a[1]];case 3:return[a[0],a[1],a[2],a[1]];case 4:return a;default:return a.slice(0,4)}}function h(a){return"string"==typeof a?[a,a+(""!==a?"s":"")]:Array.isArray(a)?1===a.length?[a[0],a[0]+"s"]:a.length>2?a.slice(0,2):a:["item","items"]}function i(a){return a>0?a:null}function j(a){return a>0&&l.colLimit>0?(console.log("colLimit and rowLimit are mutually exclusive, rowLimit will be ignored"),null):a>0?a:null}var k=this,l=k.options=mergeRecursive(k.options,a);if(d(),b(l.itemSelector,!1,"itemSelector"),-1===k.allowedDataType.indexOf(l.dataType))throw new Error("The data type '"+l.dataType+"' is not valid data type");if(null===d3.select(l.itemSelector)[0][0])throw new Error("The node '"+l.itemSelector+"' specified in itemSelector does not exists");try{b(l.nextSelector,!0,"nextSelector"),b(l.previousSelector,!0,"previousSelector")}catch(m){return console.log(m.message),!1}a.hasOwnProperty("subDomain")||(this.options.subDomain=c(a.domain)),("string"!=typeof l.itemNamespace||""===l.itemNamespace)&&(console.log("itemNamespace can not be empty, falling back to cal-heatmap"),l.itemNamespace="cal-heatmap");var n=["data","onComplete","onClick","afterLoad","afterLoadData","afterLoadPreviousDomain","afterLoadNextDomain"];for(var o in n)a.hasOwnProperty(n[o])&&(l[n[o]]=a[n[o]]);return l.subDomainDateFormat="string"==typeof l.subDomainDateFormat||"function"==typeof l.subDomainDateFormat?l.subDomainDateFormat:this._domainType[l.subDomain].format.date,l.domainLabelFormat="string"==typeof l.domainLabelFormat||"function"==typeof l.domainLabelFormat?l.domainLabelFormat:this._domainType[l.domain].format.legend,l.subDomainTextFormat="string"==typeof l.subDomainTextFormat&&""!==l.subDomainTextFormat||"function"==typeof l.subDomainTextFormat?l.subDomainTextFormat:null,l.domainMargin=g(l.domainMargin),l.legendMargin=g(l.legendMargin),l.highlight=k.expandDateSetting(l.highlight),l.itemName=h(l.itemName),l.colLimit=i(l.colLimit),l.rowLimit=j(l.rowLimit),a.hasOwnProperty("legendMargin")||f(),e(),this._init()},expandDateSetting:function(a){"use strict";return Array.isArray(a)||(a=[a]),a.map(function(a){return"now"===a?new Date:a instanceof Date?a:!1}).filter(function(a){return a!==!1})},fill:function(a){"use strict";function b(a){return null===d.legendScale?!1:void a.attr("fill",function(a){return null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&!e.considerMissingDataAsZero&&e.legendColors.hasOwnProperty("base")?e.legendColors.base:null!==e.legendColors&&e.legendColors.hasOwnProperty("empty")&&(0===a.v||null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&e.considerMissingDataAsZero)?e.legendColors.empty:a.v<0&&e.legend[0]>0&&null!==e.legendColors&&e.legendColors.hasOwnProperty("overflow")?e.legendColors.overflow:d.legendScale(Math.min(a.v,e.legend[e.legend.length-1]))})}function c(a){"function"==typeof e.subDomainTextFormat&&a.text(function(a){return e.subDomainTextFormat(a.t,a.v)})}var d=this,e=d.options;0===arguments.length&&(a=d.root.selectAll(".graph-domain"));var f=a.selectAll("svg").selectAll("g").data(function(a){return d._domains.get(a)});f.transition().duration(e.animationDuration).select("rect").attr("class",function(a){var b=d.getHighlightClassName(a.t).trim().split(" "),c=d.dateIsLessThan(a.t,new Date),f=d.dateIsEqual(a.t,new Date);return(null===d.legendScale||null===a.v&&e.hasOwnProperty("considerMissingDataAsZero")&&!e.considerMissingDataAsZero&&!e.legendColors.hasOwnProperty("base"))&&b.push("graph-rect"),f?b.push("now"):c||b.push("future"),null!==a.v?b.push(d.Legend.getClass(a.v,null===d.legendScale)):e.considerMissingDataAsZero&&c&&b.push(d.Legend.getClass(0,null===d.legendScale)),null!==e.onClick&&b.push("hover_cursor"),b.join(" ")}).call(b),f.transition().duration(e.animationDuration).select("title").text(function(a){return d.getSubDomainTitle(a)}),f.transition().duration(e.animationDuration).select("text").attr("class",function(a){return"subdomain-text"+d.getHighlightClassName(a.t)}).call(c)},triggerEvent:function(a,b,c){"use strict";return 3===arguments.length&&c||null===this.options[a]?!0:"function"==typeof this.options[a]?("function"==typeof b&&(b=b()),this.options[a].apply(this,b)):(console.log("Provided callback for "+a+" is not a function."),!1)},onClick:function(a,b){"use strict";return this.triggerEvent("onClick",[a,b])},afterLoad:function(){"use strict";return this.triggerEvent("afterLoad")},onComplete:function(){"use strict";var a=this.triggerEvent("onComplete",[],this._completed);return this._completed=!0,a},afterLoadPreviousDomain:function(a){"use strict";var b=this;return this.triggerEvent("afterLoadPreviousDomain",function(){var c=b.getSubDomain(a);return[c.shift(),c.pop()]})},afterLoadNextDomain:function(a){"use strict";var b=this;return this.triggerEvent("afterLoadNextDomain",function(){var c=b.getSubDomain(a);return[c.shift(),c.pop()]})},onMinDomainReached:function(a){"use strict";return this._minDomainReached=a,this.triggerEvent("onMinDomainReached",[a])},onMaxDomainReached:function(a){"use strict";return this._maxDomainReached=a,this.triggerEvent("onMaxDomainReached",[a])},checkIfMinDomainIsReached:function(a,b){"use strict";this.minDomainIsReached(a)&&this.onMinDomainReached(!0),2===arguments.length&&this._maxDomainReached&&!this.maxDomainIsReached(b)&&this.onMaxDomainReached(!1)},checkIfMaxDomainIsReached:function(a,b){"use strict";this.maxDomainIsReached(a)&&this.onMaxDomainReached(!0),2===arguments.length&&this._minDomainReached&&!this.minDomainIsReached(b)&&this.onMinDomainReached(!1)},formatNumber:d3.format(",g"),formatDate:function(a,b){"use strict";if(arguments.length<2&&(b="title"),"function"==typeof b)return b(a);var c=d3.time.format(b);return c(a)},getSubDomainTitle:function(a){"use strict";if(null!==a.v||this.options.considerMissingDataAsZero){var b=a.v;return null===b&&this.options.considerMissingDataAsZero&&(b=0),this.options.subDomainTitleFormat.filled.format({count:this.formatNumber(b),name:this.options.itemName[1!==b?1:0],connector:this._domainType[this.options.subDomain].format.connector,date:this.formatDate(new Date(a.t),this.options.subDomainDateFormat)})}return this.options.subDomainTitleFormat.empty.format({date:this.formatDate(new Date(a.t),this.options.subDomainDateFormat)})},loadNextDomain:function(a){"use strict";if(this._maxDomainReached||0===a)return!1;var b=this.loadNewDomains(this.NAVIGATE_RIGHT,this.getDomain(this.getNextDomain(),a));return this.afterLoadNextDomain(b.end),this.checkIfMaxDomainIsReached(this.getNextDomain().getTime(),b.start),!0},loadPreviousDomain:function(a){"use strict";if(this._minDomainReached||0===a)return!1;var b=this.loadNewDomains(this.NAVIGATE_LEFT,this.getDomain(this.getDomainKeys()[0],-a).reverse());return this.afterLoadPreviousDomain(b.start),this.checkIfMinDomainIsReached(b.start,b.end),!0},loadNewDomains:function(a,b){"use strict";function c(a){return{t:d._domainType[d.options.subDomain].extractUnit(a),v:null}}for(var d=this,e=a===this.NAVIGATE_LEFT,f=-1,g=b.length,h=this.getDomainKeys();++f<g;){if(e&&this.minDomainIsReached(b[f])){b=b.slice(0,f+1);break}if(!e&&this.maxDomainIsReached(b[f])){b=b.slice(0,f);break}}for(b=b.slice(-this.options.range),f=0,g=b.length;g>f;f++)this._domains.set(b[f].getTime(),this.getSubDomain(b[f]).map(c)),this._domains.remove(e?h.pop():h.shift());return h=this.getDomainKeys(),e&&(b=b.reverse()),this.paint(a),this.getDatas(this.options.data,b[0],this.getSubDomain(b[b.length-1]).pop(),function(){d.fill(d.lastInsertedSvg)}),{start:b[e?0:1],end:h[h.length-1]}},maxDomainIsReached:function(a){"use strict";return null!==this.options.maxDate&&this.options.maxDate.getTime()<a},minDomainIsReached:function(a){"use strict";return null!==this.options.minDate&&this.options.minDate.getTime()>=a},getDomainKeys:function(){"use strict";return this._domains.keys().map(function(a){return parseInt(a,10)}).sort(function(a,b){return a-b})},positionSubDomainX:function(a){"use strict";var b=this._domainType[this.options.subDomain].position.x(new Date(a));return b*this.options.cellSize+b*this.options.cellPadding},positionSubDomainY:function(a){"use strict";var b=this._domainType[this.options.subDomain].position.y(new Date(a));return b*this.options.cellSize+b*this.options.cellPadding},getSubDomainColumnNumber:function(a){"use strict";if(this.options.rowLimit>0){var b=this._domainType[this.options.subDomain].maxItemNumber;return"function"==typeof b&&(b=b(a)),Math.ceil(b/this.options.rowLimit)}var c=this._domainType[this.options.subDomain].defaultColumnNumber;return"function"==typeof c&&(c=c(a)),this.options.colLimit||c},getSubDomainRowNumber:function(a){"use strict";if(this.options.colLimit>0){var b=this._domainType[this.options.subDomain].maxItemNumber;return"function"==typeof b&&(b=b(a)),Math.ceil(b/this.options.colLimit)}var c=this._domainType[this.options.subDomain].defaultRowNumber;return"function"==typeof c&&(c=c(a)),this.options.rowLimit||c},getHighlightClassName:function(a){"use strict";if(a=new Date(a),this.options.highlight.length>0)for(var b in this.options.highlight)if(this.dateIsEqual(this.options.highlight[b],a))return this.isNow(this.options.highlight[b])?" highlight-now":" highlight";return""},isNow:function(a){"use strict";return this.dateIsEqual(a,new Date)},dateIsEqual:function(a,b){"use strict";switch(a instanceof Date||(a=new Date(a)),b instanceof Date||(b=new Date(b)),this.options.subDomain){case"x_min":case"min":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()&&a.getHours()===b.getHours()&&a.getMinutes()===b.getMinutes();case"x_hour":case"hour":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()&&a.getHours()===b.getHours();case"x_day":case"day":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();case"x_week":case"week":return a.getFullYear()===b.getFullYear()&&this.getWeekNumber(a)===this.getWeekNumber(b);case"x_month":case"month":return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth();default:return!1}},dateIsLessThan:function(a,b){"use strict";function c(a,b){switch(b){case"x_min":case"min":return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours(),a.getMinutes()).getTime();case"x_hour":case"hour":return new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()).getTime();case"x_day":case"day":return new Date(a.getFullYear(),a.getMonth(),a.getDate()).getTime();case"x_week":case"week":case"x_month":case"month":return new Date(a.getFullYear(),a.getMonth()).getTime();default:return a.getTime()}}return a instanceof Date||(a=new Date(a)),b instanceof Date||(b=new Date(b)),c(a,this.options.subDomain)<c(b,this.options.subDomain)},getDayOfYear:d3.time.format("%j"),getWeekNumber:function(a){"use strict";var b=d3.time.format(this.options.weekStartOnMonday===!0?"%W":"%U");return b(a)},getMonthWeekNumber:function(a){"use strict";"number"==typeof a&&(a=new Date(a));var b=this.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));return this.getWeekNumber(a)-b-1},getWeekNumberInYear:function(a){"use strict";"number"==typeof a&&(a=new Date(a))},getDayCountInMonth:function(a){"use strict";return this.getEndOfMonth(a).getDate()},getDayCountInYear:function(a){"use strict";return"number"==typeof a&&(a=new Date(a)),1===new Date(a.getFullYear(),1,29).getMonth()?366:365},getWeekDay:function(a){"use strict";return this.options.weekStartOnMonday===!1?a.getDay():0===a.getDay()?6:a.getDay()-1},getEndOfMonth:function(a){"use strict";return"number"==typeof a&&(a=new Date(a)),new Date(a.getFullYear(),a.getMonth()+1,0)},jumpDate:function(a,b,c){"use strict";var d=new Date(a);switch(c){case"hour":d.setHours(d.getHours()+b);break;case"day":d.setHours(d.getHours()+24*b);break;case"week":d.setHours(d.getHours()+24*b*7);break;case"month":d.setMonth(d.getMonth()+b);break;case"year":d.setFullYear(d.getFullYear()+b)}return new Date(d)},getMinuteDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()),d=null;return d=b instanceof Date?new Date(b.getFullYear(),b.getMonth(),b.getDate(),b.getHours()):new Date(+c+1e3*b*60),d3.time.minutes(Math.min(c,d),Math.max(c,d))},getHourDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate(),a.getHours()),d=null;b instanceof Date?d=new Date(b.getFullYear(),b.getMonth(),b.getDate(),b.getHours()):(d=new Date(c),d.setHours(d.getHours()+b));var e=d3.time.hours(Math.min(c,d),Math.max(c,d)),f=0,g=e.length;for(f=0;g>f;f++)if(f>0&&e[f].getHours()===e[f-1].getHours()){this.DSTDomain.push(e[f].getTime()),e.splice(f,1);break}return"number"==typeof b&&e.length>Math.abs(b)&&e.splice(e.length-1,1),e},getDayDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth(),a.getDate()),d=null;return b instanceof Date?d=new Date(b.getFullYear(),b.getMonth(),b.getDate()):(d=new Date(c),d=new Date(d.setDate(d.getDate()+parseInt(b,10)))),d3.time.days(Math.min(c,d),Math.max(c,d))},getWeekDomain:function(a,b){"use strict";var c;this.options.weekStartOnMonday===!1?c=new Date(a.getFullYear(),a.getMonth(),a.getDate()-a.getDay()):1===a.getDay()?c=new Date(a.getFullYear(),a.getMonth(),a.getDate()):0===a.getDay()?(c=new Date(a.getFullYear(),a.getMonth(),a.getDate()),c.setDate(c.getDate()-6)):c=new Date(a.getFullYear(),a.getMonth(),a.getDate()-a.getDay()+1);var d=new Date(c),e=b;return"object"!=typeof b&&(e=new Date(d.setDate(d.getDate()+7*b))),this.options.weekStartOnMonday===!0?d3.time.mondays(Math.min(c,e),Math.max(c,e)):d3.time.sundays(Math.min(c,e),Math.max(c,e))},getMonthDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),a.getMonth()),d=null;return b instanceof Date?d=new Date(b.getFullYear(),b.getMonth()):(d=new Date(c),d=d.setMonth(d.getMonth()+b)),d3.time.months(Math.min(c,d),Math.max(c,d))},getYearDomain:function(a,b){"use strict";var c=new Date(a.getFullYear(),0),d=null;
+return d=b instanceof Date?new Date(b.getFullYear(),0):new Date(a.getFullYear()+b,0),d3.time.years(Math.min(c,d),Math.max(c,d))},getDomain:function(a,b){"use strict";switch("number"==typeof a&&(a=new Date(a)),arguments.length<2&&(b=this.options.range),this.options.domain){case"hour":var c=this.getHourDomain(a,b);return"number"==typeof b&&c.length<b&&(b>0?c.push(this.getHourDomain(c[c.length-1],2)[1]):c.shift(this.getHourDomain(c[0],-2)[0])),c;case"day":return this.getDayDomain(a,b);case"week":return this.getWeekDomain(a,b);case"month":return this.getMonthDomain(a,b);case"year":return this.getYearDomain(a,b)}},getSubDomain:function(a){"use strict";"number"==typeof a&&(a=new Date(a));var b=this,c=function(a,c){switch(c){case"year":return b.getDayCountInYear(a);case"month":return b.getDayCountInMonth(a);case"week":return 7}},d=function(a,b){switch(b){case"hour":return 60;case"day":return 1440;case"week":return 10080}},e=function(a,c){switch(c){case"day":return 24;case"week":return 168;case"month":return 24*b.getDayCountInMonth(a)}},f=function(a,c){if("month"===c){var d=new Date(a.getFullYear(),a.getMonth()+1,0),e=b.getWeekNumber(d),f=b.getWeekNumber(new Date(a.getFullYear(),a.getMonth()));return f>e&&(f=0,e++),e-f+1}return"year"===c?b.getWeekNumber(new Date(a.getFullYear(),11,31)):void 0};switch(this.options.subDomain){case"x_min":case"min":return this.getMinuteDomain(a,d(a,this.options.domain));case"x_hour":case"hour":return this.getHourDomain(a,e(a,this.options.domain));case"x_day":case"day":return this.getDayDomain(a,c(a,this.options.domain));case"x_week":case"week":return this.getWeekDomain(a,f(a,this.options.domain));case"x_month":case"month":return this.getMonthDomain(a,12)}},getNextDomain:function(a){"use strict";return 0===arguments.length&&(a=1),this.getDomain(this.jumpDate(this.getDomainKeys().pop(),a,this.options.domain),1)[0]},getPreviousDomain:function(a){"use strict";return 0===arguments.length&&(a=1),this.getDomain(this.jumpDate(this.getDomainKeys().shift(),-a,this.options.domain),1)[0]},getDatas:function(a,b,c,d,e,f){"use strict";var g=this;arguments.length<5&&(e=!0),arguments.length<6&&(f=this.APPEND_ON_UPDATE);var h=function(a){e!==!1?"function"==typeof e?a=e(a):"function"==typeof g.options.afterLoadData?a=g.options.afterLoadData(a):console.log("Provided callback for afterLoadData is not a function."):("csv"===g.options.dataType||"tsv"===g.options.dataType)&&(a=this.interpretCSV(a)),g.parseDatas(a,f,b,c),"function"==typeof d&&d()};switch(typeof a){case"string":if(""===a)return h({}),!0;var i=this.parseURI(a,b,c),j="GET";null!==g.options.dataPostPayload&&(j="POST");var k=null;switch(null!==g.options.dataPostPayload&&(k=this.parseURI(g.options.dataPostPayload,b,c)),this.options.dataType){case"json":d3.json(i,h).send(j,k);break;case"csv":d3.csv(i,h).send(j,k);break;case"tsv":d3.tsv(i,h).send(j,k);break;case"txt":d3.text(i,"text/plain",h).send(j,k)}return!1;case"object":if(a===Object(a))return h(a),!1;default:return h({}),!0}},parseDatas:function(a,b,c,d){"use strict";b===this.RESET_ALL_ON_UPDATE&&this._domains.forEach(function(a,b){b.forEach(function(a,b,c){c[b].v=null})});var e={},f=function(a){return a.t};for(var g in a){var h=new Date(1e3*g),i=this.getDomain(h)[0].getTime();if(this.DSTDomain.indexOf(i)>=0&&this._domains.has(i-36e5)&&(i-=36e5),!isNaN(g)&&a.hasOwnProperty(g)&&this._domains.has(i)&&i>=+c&&+d>i){var j=this._domains.get(i);e.hasOwnProperty(i)||(e[i]=j.map(f));var k=e[i].indexOf(this._domainType[this.options.subDomain].extractUnit(h));b===this.RESET_SINGLE_ON_UPDATE?j[k].v=a[g]:isNaN(j[k].v)?j[k].v=a[g]:j[k].v+=a[g]}}},parseURI:function(a,b,c){"use strict";return a=a.replace(/\{\{t:start\}\}/g,b.getTime()/1e3),a=a.replace(/\{\{t:end\}\}/g,c.getTime()/1e3),a=a.replace(/\{\{d:start\}\}/g,b.toISOString()),a=a.replace(/\{\{d:end\}\}/g,c.toISOString())},interpretCSV:function(a){"use strict";var b,c,d={},e=Object.keys(a[0]);for(b=0,c=a.length;c>b;b++)d[a[b][e[0]]]=+a[b][e[1]];return d},resize:function(){"use strict";var a=this,b=a.options,c=b.displayLegend?a.Legend.getDim("width")+b.legendMargin[1]+b.legendMargin[3]:0,d=b.displayLegend?a.Legend.getDim("height")+b.legendMargin[0]+b.legendMargin[2]:0,e=a.graphDim.width-b.domainGutter-b.cellPadding,f=a.graphDim.height-b.domainGutter-b.cellPadding;this.root.transition().duration(b.animationDuration).attr("width",function(){return"middle"===b.legendVerticalPosition||"center"===b.legendVerticalPosition?e+c:Math.max(e,c)}).attr("height",function(){return"middle"===b.legendVerticalPosition||"center"===b.legendVerticalPosition?Math.max(f,d):f+d}),this.root.select(".graph").transition().duration(b.animationDuration).attr("y",function(){return"top"===b.legendVerticalPosition?d:0}).attr("x",function(){return"middle"!==b.legendVerticalPosition&&"center"!==b.legendVerticalPosition||"left"!==b.legendHorizontalPosition?0:c})},next:function(a){"use strict";return 0===arguments.length&&(a=1),this.loadNextDomain(a)},previous:function(a){"use strict";return 0===arguments.length&&(a=1),this.loadPreviousDomain(a)},jumpTo:function(a,b){"use strict";arguments.length<2&&(b=!1);var c=this.getDomainKeys(),d=c[0],e=c[c.length-1];return d>a?this.loadPreviousDomain(this.getDomain(d,a).length):b?this.loadNextDomain(this.getDomain(d,a).length):a>e?this.loadNextDomain(this.getDomain(e,a).length):!1},rewind:function(){"use strict";this.jumpTo(this.options.start,!0)},update:function(a,b,c){"use strict";arguments.length<2&&(b=!0),arguments.length<3&&(c=this.RESET_ALL_ON_UPDATE);var d=this.getDomainKeys(),e=this;this.getDatas(a,new Date(d[0]),this.getSubDomain(d[d.length-1]).pop(),function(){e.fill()},b,c)},setLegend:function(){"use strict";var a=this.options.legend.slice(0);arguments.length>=1&&Array.isArray(arguments[0])&&(this.options.legend=arguments[0]),arguments.length>=2&&(this.options.legendColors=Array.isArray(arguments[1])&&arguments[1].length>=2?[arguments[1][0],arguments[1][1]]:arguments[1]),(arguments.length>0&&!arrayEquals(a,this.options.legend)||arguments.length>=2)&&(this.Legend.buildColors(),this.fill()),this.Legend.redraw(this.graphDim.width-this.options.domainGutter-this.options.cellPadding)},removeLegend:function(){"use strict";return this.options.displayLegend?(this.options.displayLegend=!1,this.Legend.remove(),!0):!1},showLegend:function(){"use strict";return this.options.displayLegend?!1:(this.options.displayLegend=!0,this.Legend.redraw(this.graphDim.width-this.options.domainGutter-this.options.cellPadding),!0)},highlight:function(a){"use strict";return(this.options.highlight=this.expandDateSetting(a)).length>0?(this.fill(),!0):!1},destroy:function(a){"use strict";return this.root.transition().duration(this.options.animationDuration).attr("width",0).attr("height",0).remove().each("end",function(){"function"==typeof a?a():"undefined"!=typeof a&&console.log("Provided callback for destroy() is not a function.")}),null},getSVG:function(){"use strict";for(var a={".cal-heatmap-container":{},".graph":{},".graph-rect":{},"rect.highlight":{},"rect.now":{},"rect.highlight-now":{},"text.highlight":{},"text.now":{},"text.highlight-now":{},".domain-background":{},".graph-label":{},".subdomain-text":{},".q0":{},".qi":{}},b=1,c=this.options.legend.length+1;c>=b;b++)a[".q"+b]={};var d=this.root,e=["stroke","stroke-width","stroke-opacity","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-miterlimit","fill","fill-opacity","fill-rule","marker","marker-start","marker-mid","marker-end","alignement-baseline","baseline-shift","dominant-baseline","glyph-orientation-horizontal","glyph-orientation-vertical","kerning","text-anchor","shape-rendering","text-transform","font-family","font","font-size","font-weight"],f=function(b,c,d){-1!==e.indexOf(c)&&(a[b][c]=d)},g=function(a){return d.select(a)[0][0]};for(var h in a)if(a.hasOwnProperty(h)){var i=g(h);if(null!==i)if("getComputedStyle"in window){var j=getComputedStyle(i,null);if(0!==j.length)for(var k=0;k<j.length;k++)f(h,j.item(k),j.getPropertyValue(j.item(k)));else for(var l in j)j.hasOwnProperty(l)&&f(h,l,j[l])}else if("currentStyle"in i){var m=i.currentStyle;for(var n in m)f(h,n,m[n])}}var o='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style type="text/css"><![CDATA[ ';for(var p in a){o+=p+" {\n";for(var q in a[p])o+="	"+q+":"+a[p][q]+";\n";o+="}\n"}return o+="]]></style>",o+=(new XMLSerializer).serializeToString(this.root[0][0]),o+="</svg>"}};var DomainPosition=function(){"use strict";this.positions=d3.map()};DomainPosition.prototype.getPosition=function(a){"use strict";return this.positions.get(a)},DomainPosition.prototype.getPositionFromIndex=function(a){"use strict";var b=this.getKeys();return this.positions.get(b[a])},DomainPosition.prototype.getLast=function(){"use strict";var a=this.getKeys();return this.positions.get(a[a.length-1])},DomainPosition.prototype.setPosition=function(a,b){"use strict";this.positions.set(a,b)},DomainPosition.prototype.shiftRightBy=function(a){"use strict";this.positions.forEach(function(b,c){this.set(b,c-a)});var b=this.getKeys();this.positions.remove(b[0])},DomainPosition.prototype.shiftLeftBy=function(a){"use strict";this.positions.forEach(function(b,c){this.set(b,c+a)});var b=this.getKeys();this.positions.remove(b[b.length-1])},DomainPosition.prototype.getKeys=function(){"use strict";return this.positions.keys().sort(function(a,b){return parseInt(a,10)-parseInt(b,10)})};var Legend=function(a){"use strict";this.calendar=a,this.computeDim(),null!==a.options.legendColors&&this.buildColors()};Legend.prototype.computeDim=function(){"use strict";var a=this.calendar.options;this.dim={width:a.legendCellSize*(a.legend.length+1)+a.legendCellPadding*a.legend.length,height:a.legendCellSize}},Legend.prototype.remove=function(){"use strict";this.calendar.root.select(".graph-legend").remove(),this.calendar.resize()},Legend.prototype.redraw=function(a){"use strict";function b(a){a.attr("width",i.legendCellSize).attr("height",i.legendCellSize).attr("x",function(a,b){return b*(i.legendCellSize+i.legendCellPadding)})}function c(){switch(i.legendHorizontalPosition){case"right":return"center"===i.legendVerticalPosition||"middle"===i.legendVerticalPosition?a+i.legendMargin[3]:a-f.getDim("width")-i.legendMargin[1];case"middle":case"center":return Math.round(a/2-f.getDim("width")/2);default:return i.legendMargin[3]}}function d(){return"bottom"===i.legendVerticalPosition?g.graphDim.height+i.legendMargin[0]-i.domainGutter-i.cellPadding:i.legendMargin[0]}if(!this.calendar.options.displayLegend)return!1;var e,f=this,g=this.calendar,h=g.root,i=g.options;this.computeDim();var j=i.legend.slice(0);j.push(j[j.length-1]+1);var k=g.root.select(".graph-legend");null!==k[0][0]?(h=k,e=h.select("g").selectAll("rect").data(j)):(h="top"===i.legendVerticalPosition?h.insert("svg",".graph"):h.append("svg"),h.attr("x",c()).attr("y",d()),e=h.attr("class","graph-legend").attr("height",f.getDim("height")).attr("width",f.getDim("width")).append("g").selectAll().data(j)),e.enter().append("rect").call(b).attr("class",function(a){return g.Legend.getClass(a,null===g.legendScale)}).attr("fill-opacity",0).call(function(a){null!==g.legendScale&&null!==i.legendColors&&i.legendColors.hasOwnProperty("base")&&a.attr("fill",i.legendColors.base)}).append("title"),e.exit().transition().duration(i.animationDuration).attr("fill-opacity",0).remove(),e.transition().delay(function(a,b){return i.animationDuration*b/10}).call(b).attr("fill-opacity",1).call(function(a){a.attr("fill",function(a,b){return null===g.legendScale?"":g.legendScale(0===b?a-1:i.legend[b-1])}),a.attr("class",function(a){return g.Legend.getClass(a,null===g.legendScale)})}),e.select("title").text(function(a,b){return 0===b?i.legendTitleFormat.lower.format({min:i.legend[b],name:i.itemName[1]}):b===j.length-1?i.legendTitleFormat.upper.format({max:i.legend[b-1],name:i.itemName[1]}):i.legendTitleFormat.inner.format({down:i.legend[b-1],up:i.legend[b],name:i.itemName[1]})}),h.transition().duration(i.animationDuration).attr("x",c()).attr("y",d()).attr("width",f.getDim("width")).attr("height",f.getDim("height")),h.select("g").transition().duration(i.animationDuration).attr("transform",function(){return"vertical"===i.legendOrientation?"rotate(90 "+i.legendCellSize/2+" "+i.legendCellSize/2+")":""}),g.resize()},Legend.prototype.getDim=function(a){"use strict";var b="horizontal"===this.calendar.options.legendOrientation;switch(a){case"width":return this.dim[b?"width":"height"];case"height":return this.dim[b?"height":"width"]}},Legend.prototype.buildColors=function(){"use strict";var a=this.calendar.options;if(null===a.legendColors)return this.calendar.legendScale=null,!1;var b=[];if(Array.isArray(a.legendColors))b=a.legendColors;else{if(!a.legendColors.hasOwnProperty("min")||!a.legendColors.hasOwnProperty("max"))return a.legendColors=null,!1;b=[a.legendColors.min,a.legendColors.max]}var c=a.legend.slice(0);c[0]>0?c.unshift(0):c[0]<0&&c.unshift(c[0]-(c[c.length-1]-c[0])/c.length);var d=d3.scale.linear().range(b).interpolate(d3.interpolateHcl).domain([d3.min(c),d3.max(c)]),e=c.map(function(a){return d(a)});return this.calendar.legendScale=d3.scale.threshold().domain(a.legend).range(e),!0},Legend.prototype.getClass=function(a,b){"use strict";if(null===a||isNaN(a))return"";for(var c=[this.calendar.options.legend.length+1],d=0,e=this.calendar.options.legend.length-1;e>=d;d++){if(this.calendar.options.legend[0]>0&&0>a){c=["1","i"];break}if(a<=this.calendar.options.legend[d]){c=[d+1];break}}return 0===a&&c.push(0),c.unshift(""),(c.join(" r")+(b?c.join(" q"):"")).trim()},String.prototype.format=function(){"use strict";var a=this;for(var b in arguments[0])if(arguments[0].hasOwnProperty(b)){var c=new RegExp("\\{"+b+"\\}","gi");a=a.replace(c,arguments[0][b])}return a},"function"==typeof define&&define.amd?define(["d3"],function(){"use strict";return CalHeatMap}):"object"==typeof module&&module.exports?module.exports=CalHeatMap:window.CalHeatMap=CalHeatMap;
 },{"d3":6}],4:[function(require,module,exports){
 /*!
  * Chart.js
  * http://chartjs.org/
- * Version: 1.0.2
+ * Version: 1.1.1
  *
  * Copyright 2015 Nick Downie
  * Released under the MIT license
@@ -105,17 +105,11 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			{
 				return document.defaultView.getComputedStyle(element).getPropertyValue(dimension);
 			}
-		}
+		};
 
-		var width = this.width = computeDimension(context.canvas,'Width');
-		var height = this.height = computeDimension(context.canvas,'Height');
+		var width = this.width = computeDimension(context.canvas,'Width') || context.canvas.width;
+		var height = this.height = computeDimension(context.canvas,'Height') || context.canvas.height;
 
-		// Firefox requires this to work correctly
-		context.canvas.width  = width;
-		context.canvas.height = height;
-
-		var width = this.width = context.canvas.width;
-		var height = this.height = context.canvas.height;
 		this.aspectRatio = this.width / this.height;
 		//High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
 		helpers.retinaScale(this);
@@ -220,6 +214,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			// String - Tooltip title font colour
 			tooltipTitleFontColor: "#fff",
 
+			// String - Tooltip title template
+			tooltipTitleTemplate: "<%= label%>",
+
 			// Number - pixel width of padding around tooltip text
 			tooltipYPadding: 6,
 
@@ -239,10 +236,16 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
 
 			// String - Template string for single tooltips
-			multiTooltipTemplate: "<%= value %>",
+			multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>",
 
 			// String - Colour behind the legend colour block
 			multiTooltipKeyBackground: '#fff',
+
+			// Array - A list of colors to use as the defaults
+			segmentColorDefault: ["#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A", "#B4B482", "#B15928" ],
+
+			// Array - A list of highlight colors to use as the defaults
+			segmentHighlightColorDefaults: [ "#CEF6FF", "#47A0DC", "#DAFFB2", "#5BC854", "#FFC2C1", "#FF4244", "#FFE797", "#FFA728", "#F2DAFE", "#9265C2", "#DCDCAA", "#D98150" ],
 
 			// Function - Will fire on animation progression.
 			onAnimationProgress: function(){},
@@ -280,14 +283,18 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		clone = helpers.clone = function(obj){
 			var objClone = {};
 			each(obj,function(value,key){
-				if (obj.hasOwnProperty(key)) objClone[key] = value;
+				if (obj.hasOwnProperty(key)){
+					objClone[key] = value;
+				}
 			});
 			return objClone;
 		},
 		extend = helpers.extend = function(base){
 			each(Array.prototype.slice.call(arguments,1), function(extensionObject) {
 				each(extensionObject,function(value,key){
-					if (extensionObject.hasOwnProperty(key)) base[key] = value;
+					if (extensionObject.hasOwnProperty(key)){
+						base[key] = value;
+					}
 				});
 			});
 			return base;
@@ -370,9 +377,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		})(),
 		warn = helpers.warn = function(str){
 			//Method for warning of errors
-			if (window.console && typeof window.console.warn == "function") console.warn(str);
+			if (window.console && typeof window.console.warn === "function") console.warn(str);
 		},
-		amd = helpers.amd = (typeof define == 'function' && define.amd),
+		amd = helpers.amd = (typeof define === 'function' && define.amd),
 		//-- Math methods
 		isNumber = helpers.isNumber = function(n){
 			return !isNaN(parseFloat(n)) && isFinite(n);
@@ -398,7 +405,20 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		},
 		getDecimalPlaces = helpers.getDecimalPlaces = function(num){
 			if (num%1!==0 && isNumber(num)){
-				return num.toString().split(".")[1].length;
+				var s = num.toString();
+				if(s.indexOf("e-") < 0){
+					// no exponent, e.g. 0.01
+					return s.split(".")[1].length;
+				}
+				else if(s.indexOf(".") < 0) {
+					// no decimal point, e.g. 1e-9
+					return parseInt(s.split("e-")[1]);
+				}
+				else {
+					// exponent and decimal point, e.g. 1.23e-9
+					var parts = s.split(".")[1].split("e-");
+					return parts[0].length + parseInt(parts[1]);
+				}
 			}
 			else {
 				return 0;
@@ -457,10 +477,15 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				maxSteps = Math.floor(drawingSize/(textSize * 1.5)),
 				skipFitting = (minSteps >= maxSteps);
 
-			var maxValue = max(valuesArray),
-				minValue = min(valuesArray);
+			// Filter out null values since these would min() to zero
+			var values = [];
+			each(valuesArray, function( v ){
+				v == null || values.push( v );
+			});
+			var minValue = min(values),
+			    maxValue = max(values);
 
-			// We need some degree of seperation here to calculate the scales if all the values are the same
+			// We need some degree of separation here to calculate the scales if all the values are the same
 			// Adding/minusing 0.5 will give us a range of 1.
 			if (maxValue === minValue){
 				maxValue += 0.5;
@@ -575,7 +600,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		/* jshint ignore:end */
 		generateLabels = helpers.generateLabels = function(templateString,numberOfSteps,graphMin,stepValue){
 			var labelsArray = new Array(numberOfSteps);
-			if (labelTemplateString){
+			if (templateString){
 				each(labelsArray,function(val,index){
 					labelsArray[index] = template(templateString,{value: (graphMin + (stepValue*(index+1)))});
 				});
@@ -596,7 +621,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				return -1 * t * (t - 2);
 			},
 			easeInOutQuad: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t;
+				if ((t /= 1 / 2) < 1){
+					return 1 / 2 * t * t;
+				}
 				return -1 / 2 * ((--t) * (t - 2) - 1);
 			},
 			easeInCubic: function (t) {
@@ -606,7 +633,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				return 1 * ((t = t / 1 - 1) * t * t + 1);
 			},
 			easeInOutCubic: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t;
+				if ((t /= 1 / 2) < 1){
+					return 1 / 2 * t * t * t;
+				}
 				return 1 / 2 * ((t -= 2) * t * t + 2);
 			},
 			easeInQuart: function (t) {
@@ -616,7 +645,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				return -1 * ((t = t / 1 - 1) * t * t * t - 1);
 			},
 			easeInOutQuart: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t;
+				if ((t /= 1 / 2) < 1){
+					return 1 / 2 * t * t * t * t;
+				}
 				return -1 / 2 * ((t -= 2) * t * t * t - 2);
 			},
 			easeInQuint: function (t) {
@@ -626,7 +657,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				return 1 * ((t = t / 1 - 1) * t * t * t * t + 1);
 			},
 			easeInOutQuint: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t * t;
+				if ((t /= 1 / 2) < 1){
+					return 1 / 2 * t * t * t * t * t;
+				}
 				return 1 / 2 * ((t -= 2) * t * t * t * t + 2);
 			},
 			easeInSine: function (t) {
@@ -645,60 +678,95 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				return (t === 1) ? 1 : 1 * (-Math.pow(2, -10 * t / 1) + 1);
 			},
 			easeInOutExpo: function (t) {
-				if (t === 0) return 0;
-				if (t === 1) return 1;
-				if ((t /= 1 / 2) < 1) return 1 / 2 * Math.pow(2, 10 * (t - 1));
+				if (t === 0){
+					return 0;
+				}
+				if (t === 1){
+					return 1;
+				}
+				if ((t /= 1 / 2) < 1){
+					return 1 / 2 * Math.pow(2, 10 * (t - 1));
+				}
 				return 1 / 2 * (-Math.pow(2, -10 * --t) + 2);
 			},
 			easeInCirc: function (t) {
-				if (t >= 1) return t;
+				if (t >= 1){
+					return t;
+				}
 				return -1 * (Math.sqrt(1 - (t /= 1) * t) - 1);
 			},
 			easeOutCirc: function (t) {
 				return 1 * Math.sqrt(1 - (t = t / 1 - 1) * t);
 			},
 			easeInOutCirc: function (t) {
-				if ((t /= 1 / 2) < 1) return -1 / 2 * (Math.sqrt(1 - t * t) - 1);
+				if ((t /= 1 / 2) < 1){
+					return -1 / 2 * (Math.sqrt(1 - t * t) - 1);
+				}
 				return 1 / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1);
 			},
 			easeInElastic: function (t) {
 				var s = 1.70158;
 				var p = 0;
 				var a = 1;
-				if (t === 0) return 0;
-				if ((t /= 1) == 1) return 1;
-				if (!p) p = 1 * 0.3;
+				if (t === 0){
+					return 0;
+				}
+				if ((t /= 1) == 1){
+					return 1;
+				}
+				if (!p){
+					p = 1 * 0.3;
+				}
 				if (a < Math.abs(1)) {
 					a = 1;
 					s = p / 4;
-				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
+				} else{
+					s = p / (2 * Math.PI) * Math.asin(1 / a);
+				}
 				return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
 			},
 			easeOutElastic: function (t) {
 				var s = 1.70158;
 				var p = 0;
 				var a = 1;
-				if (t === 0) return 0;
-				if ((t /= 1) == 1) return 1;
-				if (!p) p = 1 * 0.3;
+				if (t === 0){
+					return 0;
+				}
+				if ((t /= 1) == 1){
+					return 1;
+				}
+				if (!p){
+					p = 1 * 0.3;
+				}
 				if (a < Math.abs(1)) {
 					a = 1;
 					s = p / 4;
-				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
+				} else{
+					s = p / (2 * Math.PI) * Math.asin(1 / a);
+				}
 				return a * Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) + 1;
 			},
 			easeInOutElastic: function (t) {
 				var s = 1.70158;
 				var p = 0;
 				var a = 1;
-				if (t === 0) return 0;
-				if ((t /= 1 / 2) == 2) return 1;
-				if (!p) p = 1 * (0.3 * 1.5);
+				if (t === 0){
+					return 0;
+				}
+				if ((t /= 1 / 2) == 2){
+					return 1;
+				}
+				if (!p){
+					p = 1 * (0.3 * 1.5);
+				}
 				if (a < Math.abs(1)) {
 					a = 1;
 					s = p / 4;
-				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
-				if (t < 1) return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
+				} else {
+					s = p / (2 * Math.PI) * Math.asin(1 / a);
+				}
+				if (t < 1){
+					return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));}
 				return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) * 0.5 + 1;
 			},
 			easeInBack: function (t) {
@@ -711,7 +779,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			},
 			easeInOutBack: function (t) {
 				var s = 1.70158;
-				if ((t /= 1 / 2) < 1) return 1 / 2 * (t * t * (((s *= (1.525)) + 1) * t - s));
+				if ((t /= 1 / 2) < 1){
+					return 1 / 2 * (t * t * (((s *= (1.525)) + 1) * t - s));
+				}
 				return 1 / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
 			},
 			easeInBounce: function (t) {
@@ -729,7 +799,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				}
 			},
 			easeInOutBounce: function (t) {
-				if (t < 1 / 2) return easingEffects.easeInBounce(t * 2) * 0.5;
+				if (t < 1 / 2){
+					return easingEffects.easeInBounce(t * 2) * 0.5;
+				}
 				return easingEffects.easeOutBounce(t * 2 - 1) * 0.5 + 1 * 0.5;
 			}
 		},
@@ -832,14 +904,21 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			});
 		},
 		getMaximumWidth = helpers.getMaximumWidth = function(domNode){
-			var container = domNode.parentNode;
+			var container = domNode.parentNode,
+			    padding = parseInt(getStyle(container, 'padding-left')) + parseInt(getStyle(container, 'padding-right'));
 			// TODO = check cross browser stuff with this.
-			return container.clientWidth;
+			return container ? container.clientWidth - padding : 0;
 		},
 		getMaximumHeight = helpers.getMaximumHeight = function(domNode){
-			var container = domNode.parentNode;
+			var container = domNode.parentNode,
+			    padding = parseInt(getStyle(container, 'padding-bottom')) + parseInt(getStyle(container, 'padding-top'));
 			// TODO = check cross browser stuff with this.
-			return container.clientHeight;
+			return container ? container.clientHeight - padding : 0;
+		},
+		getStyle = helpers.getStyle = function (el, property) {
+			return el.currentStyle ?
+				el.currentStyle[property] :
+				document.defaultView.getComputedStyle(el, null).getPropertyValue(property);
 		},
 		getMaximumSize = helpers.getMaximumSize = helpers.getMaximumWidth, // legacy support
 		retinaScale = helpers.retinaScale = function(chart){
@@ -914,7 +993,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		},
 		stop : function(){
 			// Stops any current animation loop occuring
-			cancelAnimFrame(this.animationFrame);
+			Chart.animationService.cancelAnimation(this);
 			return this;
 		},
 		resize : function(callback){
@@ -938,15 +1017,26 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			if (reflow){
 				this.reflow();
 			}
+			
 			if (this.options.animation && !reflow){
-				helpers.animationLoop(
-					this.draw,
-					this.options.animationSteps,
-					this.options.animationEasing,
-					this.options.onAnimationProgress,
-					this.options.onAnimationComplete,
-					this
-				);
+				var animation = new Chart.Animation();
+				animation.numSteps = this.options.animationSteps;
+				animation.easing = this.options.animationEasing;
+				
+				// render function
+				animation.render = function(chartInstance, animationObject) {
+					var easingFunction = helpers.easingEffects[animationObject.easing];
+					var stepDecimal = animationObject.currentStep / animationObject.numSteps;
+					var easeDecimal = easingFunction(stepDecimal);
+					
+					chartInstance.draw(easeDecimal, stepDecimal, animationObject.currentStep);
+				};
+				
+				// user events
+				animation.onAnimationProgress = this.options.onAnimationProgress;
+				animation.onAnimationComplete = this.options.onAnimationComplete;
+				
+				Chart.animationService.addAnimation(this, animation);
 			}
 			else{
 				this.draw();
@@ -955,9 +1045,10 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			return this;
 		},
 		generateLegend : function(){
-			return template(this.options.legendTemplate,this);
+			return helpers.template(this.options.legendTemplate, this);
 		},
 		destroy : function(){
+			this.stop();
 			this.clear();
 			unbindEvents(this, this.events);
 			var canvas = this.chart.canvas;
@@ -1085,7 +1176,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 						labels: tooltipLabels,
 						legendColors: tooltipColors,
 						legendColorBackground : this.options.multiTooltipKeyBackground,
-						title: ChartElements[0].label,
+						title: template(this.options.tooltipTitleTemplate,ChartElements[0]),
 						chart: this.chart,
 						ctx: this.chart.ctx,
 						custom: this.options.customTooltips
@@ -1269,9 +1360,18 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				y: chartY
 			});
 
+			// Normalize all angles to 0 - 2*PI (0 - 360°)
+			var pointRelativeAngle = pointRelativePosition.angle % (Math.PI * 2),
+			    startAngle = (Math.PI * 2 + this.startAngle) % (Math.PI * 2),
+			    endAngle = (Math.PI * 2 + this.endAngle) % (Math.PI * 2) || 360;
+
+			// Calculate wether the pointRelativeAngle is between the start and the end angle
+			var betweenAngles = (endAngle < startAngle) ?
+				pointRelativeAngle <= endAngle || pointRelativeAngle >= startAngle:
+				pointRelativeAngle >= startAngle && pointRelativeAngle <= endAngle;
+
 			//Check if within the range of the open/close angle
-			var betweenAngles = (pointRelativePosition.angle >= this.startAngle && pointRelativePosition.angle <= this.endAngle),
-				withinRadius = (pointRelativePosition.distance >= this.innerRadius && pointRelativePosition.distance <= this.outerRadius);
+			var withinRadius = (pointRelativePosition.distance >= this.innerRadius && pointRelativePosition.distance <= this.outerRadius);
 
 			return (betweenAngles && withinRadius);
 			//Ensure within the outside of the arc centre, but inside arc outer
@@ -1292,9 +1392,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 			ctx.beginPath();
 
-			ctx.arc(this.x, this.y, this.outerRadius, this.startAngle, this.endAngle);
+			ctx.arc(this.x, this.y, this.outerRadius < 0 ? 0 : this.outerRadius, this.startAngle, this.endAngle);
 
-			ctx.arc(this.x, this.y, this.innerRadius, this.endAngle, this.startAngle, true);
+            ctx.arc(this.x, this.y, this.innerRadius < 0 ? 0 : this.innerRadius, this.endAngle, this.startAngle, true);
 
 			ctx.closePath();
 			ctx.strokeStyle = this.strokeColor;
@@ -1353,6 +1453,16 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		}
 	});
 
+	Chart.Animation = Chart.Element.extend({
+		currentStep: null, // the current animation step
+		numSteps: 60, // default number of steps
+		easing: "", // the easing to use for this animation
+		render: null, // render function used by the animation service
+		
+		onAnimationProgress: null, // user specified callback to fire on each step of the animation 
+		onAnimationComplete: null, // user specified callback to fire when the animation finishes
+	});
+	
 	Chart.Tooltip = Chart.Element.extend({
 		draw : function(){
 
@@ -1442,7 +1552,8 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 			this.titleFont = fontString(this.titleFontSize,this.titleFontStyle,this.titleFontFamily);
 
-			this.height = (this.labels.length * this.fontSize) + ((this.labels.length-1) * (this.fontSize/2)) + (this.yPadding*2) + this.titleFontSize *1.5;
+			this.titleHeight = this.title ? this.titleFontSize * 1.5 : 0;
+			this.height = (this.labels.length * this.fontSize) + ((this.labels.length-1) * (this.fontSize/2)) + (this.yPadding*2) + this.titleHeight;
 
 			this.ctx.font = this.titleFont;
 
@@ -1478,9 +1589,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 			//If the index is zero, we're getting the title
 			if (index === 0){
-				return baseLineHeight + this.titleFontSize/2;
+				return baseLineHeight + this.titleHeight / 3;
 			} else{
-				return baseLineHeight + ((this.fontSize*1.5*afterTitleIndex) + this.fontSize/2) + this.titleFontSize * 1.5;
+				return baseLineHeight + ((this.fontSize * 1.5 * afterTitleIndex) + this.fontSize / 2) + this.titleHeight;
 			}
 
 		},
@@ -1536,7 +1647,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			for (var i=0; i<=this.steps; i++){
 				this.yLabels.push(template(this.templateString,{value:(this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces)}));
 			}
-			this.yLabelWidth = (this.display && this.showLabels) ? longestText(this.ctx,this.font,this.yLabels) : 0;
+			this.yLabelWidth = (this.display && this.showLabels) ? longestText(this.ctx,this.font,this.yLabels) + 10 : 0;
 		},
 		addXLabel : function(label){
 			this.xLabels.push(label);
@@ -1559,6 +1670,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			// Apply padding settings to the start and end point.
 			this.startPoint += this.padding;
 			this.endPoint -= this.padding;
+
+			// Cache the starting endpoint, excluding the space for x labels
+			var cachedEndPoint = this.endPoint;
 
 			// Cache the starting height, so can determine if we need to recalculate the scale yAxis
 			var cachedHeight = this.endPoint - this.startPoint,
@@ -1591,6 +1705,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 				// Only go through the xLabel loop again if the yLabel width has changed
 				if (cachedYLabelWidth < this.yLabelWidth){
+					this.endPoint = cachedEndPoint;
 					this.calculateXLabelRotation();
 				}
 			}
@@ -1609,7 +1724,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 
 			this.xScalePaddingRight = lastWidth/2 + 3;
-			this.xScalePaddingLeft = (firstWidth/2 > this.yLabelWidth + 10) ? firstWidth/2 : this.yLabelWidth + 10;
+			this.xScalePaddingLeft = (firstWidth/2 > this.yLabelWidth) ? firstWidth/2 : this.yLabelWidth;
 
 			this.xLabelRotation = 0;
 			if (this.display){
@@ -1628,7 +1743,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 					lastRotated = cosRotation * lastWidth;
 
 					// We're right aligning the text now.
-					if (firstRotated + this.fontSize / 2 > this.yLabelWidth + 8){
+					if (firstRotated + this.fontSize / 2 > this.yLabelWidth){
 						this.xScalePaddingLeft = firstRotated + this.fontSize / 2;
 					}
 					this.xScalePaddingRight = this.fontSize/2;
@@ -2010,12 +2125,38 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 					ctx.lineWidth = this.angleLineWidth;
 					ctx.strokeStyle = this.angleLineColor;
 					for (var i = this.valuesCount - 1; i >= 0; i--) {
-						if (this.angleLineWidth > 0){
-							var outerPosition = this.getPointPosition(i, this.calculateCenterOffset(this.max));
+						var centerOffset = null, outerPosition = null;
+
+						if (this.angleLineWidth > 0 && (i % this.angleLineInterval === 0)){
+							centerOffset = this.calculateCenterOffset(this.max);
+							outerPosition = this.getPointPosition(i, centerOffset);
 							ctx.beginPath();
 							ctx.moveTo(this.xCenter, this.yCenter);
 							ctx.lineTo(outerPosition.x, outerPosition.y);
 							ctx.stroke();
+							ctx.closePath();
+						}
+
+						if (this.backgroundColors && this.backgroundColors.length == this.valuesCount) {
+							if (centerOffset == null)
+								centerOffset = this.calculateCenterOffset(this.max);
+
+							if (outerPosition == null)
+								outerPosition = this.getPointPosition(i, centerOffset);
+
+							var previousOuterPosition = this.getPointPosition(i === 0 ? this.valuesCount - 1 : i - 1, centerOffset);
+							var nextOuterPosition = this.getPointPosition(i === this.valuesCount - 1 ? 0 : i + 1, centerOffset);
+
+							var previousOuterHalfway = { x: (previousOuterPosition.x + outerPosition.x) / 2, y: (previousOuterPosition.y + outerPosition.y) / 2 };
+							var nextOuterHalfway = { x: (outerPosition.x + nextOuterPosition.x) / 2, y: (outerPosition.y + nextOuterPosition.y) / 2 };
+
+							ctx.beginPath();
+							ctx.moveTo(this.xCenter, this.yCenter);
+							ctx.lineTo(previousOuterHalfway.x, previousOuterHalfway.y);
+							ctx.lineTo(outerPosition.x, outerPosition.y);
+							ctx.lineTo(nextOuterHalfway.x, nextOuterHalfway.y);
+							ctx.fillStyle = this.backgroundColors[i];
+							ctx.fill();
 							ctx.closePath();
 						}
 						// Extra 3px out for some label spacing
@@ -2054,6 +2195,93 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		}
 	});
 
+	Chart.animationService = {
+		frameDuration: 17,
+		animations: [],
+		dropFrames: 0,
+		addAnimation: function(chartInstance, animationObject) {
+			for (var index = 0; index < this.animations.length; ++ index){
+				if (this.animations[index].chartInstance === chartInstance){
+					// replacing an in progress animation
+					this.animations[index].animationObject = animationObject;
+					return;
+				}
+			}
+			
+			this.animations.push({
+				chartInstance: chartInstance,
+				animationObject: animationObject
+			});
+
+			// If there are no animations queued, manually kickstart a digest, for lack of a better word
+			if (this.animations.length == 1) {
+				helpers.requestAnimFrame.call(window, this.digestWrapper);
+			}
+		},
+		// Cancel the animation for a given chart instance
+		cancelAnimation: function(chartInstance) {
+			var index = helpers.findNextWhere(this.animations, function(animationWrapper) {
+				return animationWrapper.chartInstance === chartInstance;
+			});
+			
+			if (index)
+			{
+				this.animations.splice(index, 1);
+			}
+		},
+		// calls startDigest with the proper context
+		digestWrapper: function() {
+			Chart.animationService.startDigest.call(Chart.animationService);
+		},
+		startDigest: function() {
+
+			var startTime = Date.now();
+			var framesToDrop = 0;
+
+			if(this.dropFrames > 1){
+				framesToDrop = Math.floor(this.dropFrames);
+				this.dropFrames -= framesToDrop;
+			}
+
+			for (var i = 0; i < this.animations.length; i++) {
+
+				if (this.animations[i].animationObject.currentStep === null){
+					this.animations[i].animationObject.currentStep = 0;
+				}
+
+				this.animations[i].animationObject.currentStep += 1 + framesToDrop;
+				if(this.animations[i].animationObject.currentStep > this.animations[i].animationObject.numSteps){
+					this.animations[i].animationObject.currentStep = this.animations[i].animationObject.numSteps;
+				}
+				
+				this.animations[i].animationObject.render(this.animations[i].chartInstance, this.animations[i].animationObject);
+				
+				// Check if executed the last frame.
+				if (this.animations[i].animationObject.currentStep == this.animations[i].animationObject.numSteps){
+					// Call onAnimationComplete
+					this.animations[i].animationObject.onAnimationComplete.call(this.animations[i].chartInstance);
+					// Remove the animation.
+					this.animations.splice(i, 1);
+					// Keep the index in place to offset the splice
+					i--;
+				}
+			}
+
+			var endTime = Date.now();
+			var delay = endTime - startTime - this.frameDuration;
+			var frameDelay = delay / this.frameDuration;
+
+			if(frameDelay > 1){
+				this.dropFrames += frameDelay;
+			}
+
+			// Do we have more stuff to animate?
+			if (this.animations.length > 0){
+				helpers.requestAnimFrame.call(window, this.digestWrapper);
+			}
+		}
+	};
+
 	// Attach global event to resize each chart instance when the browser resizes
 	helpers.addEvent(window, "resize", (function(){
 		// Basic debounce of resize function so it doesn't hurt performance when resizing browser.
@@ -2074,7 +2302,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 
 	if (amd) {
-		define(function(){
+		define('Chart', [], function(){
 			return Chart;
 		});
 	} else if (typeof module === 'object' && module.exports) {
@@ -2130,7 +2358,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		barDatasetSpacing : 1,
 
 		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"<%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
 
 	};
 
@@ -2175,8 +2403,10 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 						bar.restore(['fillColor', 'strokeColor']);
 					});
 					helpers.each(activeBars, function(activeBar){
-						activeBar.fillColor = activeBar.highlightFill;
-						activeBar.strokeColor = activeBar.highlightStroke;
+						if (activeBar) {
+							activeBar.fillColor = activeBar.highlightFill;
+							activeBar.strokeColor = activeBar.highlightStroke;
+						}
 					});
 					this.showTooltip(activeBars);
 				});
@@ -2207,10 +2437,10 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 						value : dataPoint,
 						label : data.labels[index],
 						datasetLabel: dataset.label,
-						strokeColor : dataset.strokeColor,
-						fillColor : dataset.fillColor,
-						highlightFill : dataset.highlightFill || dataset.fillColor,
-						highlightStroke : dataset.highlightStroke || dataset.strokeColor
+						strokeColor : (typeof dataset.strokeColor == 'object') ? dataset.strokeColor[index] : dataset.strokeColor,
+						fillColor : (typeof dataset.fillColor == 'object') ? dataset.fillColor[index] : dataset.fillColor,
+						highlightFill : (dataset.highlightFill) ? (typeof dataset.highlightFill == 'object') ? dataset.highlightFill[index] : dataset.highlightFill : (typeof dataset.fillColor == 'object') ? dataset.fillColor[index] : dataset.fillColor,
+						highlightStroke : (dataset.highlightStroke) ? (typeof dataset.highlightStroke == 'object') ? dataset.highlightStroke[index] : dataset.highlightStroke : (typeof dataset.strokeColor == 'object') ? dataset.strokeColor[index] : dataset.strokeColor
 					}));
 				},this);
 
@@ -2332,6 +2562,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				this.datasets[datasetIndex].bars.push(new this.BarClass({
 					value : value,
 					label : label,
+					datasetLabel: this.datasets[datasetIndex].label,
 					x: this.scale.calculateBarX(this.datasets.length, datasetIndex, this.scale.valuesCount+1),
 					y: this.scale.endPoint,
 					width : this.scale.calculateBarWidth(this.datasets.length),
@@ -2427,15 +2658,14 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		animateScale : false,
 
 		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"<%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=segments[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
 
 	};
-
 
 	Chart.Type.extend({
 		//Passing in a name registers this chart in the Chart namespace
 		name: "Doughnut",
-		//Providing a defaults will also register the deafults in the chart namespace
+		//Providing a defaults will also register the defaults in the chart namespace
 		defaults : defaultConfig,
 		//Initialize is fired when the chart is initialized - Data is passed in as a parameter
 		//Config is automatically merged by the core of Chart.js, and is available at this.options
@@ -2468,6 +2698,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			this.calculateTotal(data);
 
 			helpers.each(data,function(datapoint, index){
+				if (!datapoint.color) {
+					datapoint.color = 'hsl(' + (360 * index / data.length) + ', 100%, 50%)';
+				}
 				this.addData(datapoint, index, true);
 			},this);
 
@@ -2484,7 +2717,11 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			return segmentsArray;
 		},
 		addData : function(segment, atIndex, silent){
-			var index = atIndex || this.segments.length;
+			var index = atIndex !== undefined ? atIndex : this.segments.length;
+			if ( typeof(segment.color) === "undefined" ) {
+				segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
+				segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];				
+			}
 			this.segments.splice(index, 0, new this.SegmentArc({
 				value : segment.value,
 				outerRadius : (this.options.animateScale) ? 0 : this.outerRadius,
@@ -2503,8 +2740,12 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				this.update();
 			}
 		},
-		calculateCircumference : function(value){
-			return (Math.PI*2)*(Math.abs(value) / this.total);
+		calculateCircumference : function(value) {
+			if ( this.total > 0 ) {
+				return (Math.PI*2)*(value / this.total);
+			} else {
+				return 0;
+			}
 		},
 		calculateTotal : function(data){
 			this.total = 0;
@@ -2577,6 +2818,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 	});
 
 }).call(this);
+
 (function(){
 	"use strict";
 
@@ -2629,7 +2871,10 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		datasetFill : true,
 
 		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"<%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].strokeColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>",
+
+		//Boolean - Whether to horizontally center the label and point dot inside the grid
+		offsetGridLines : false
 
 	};
 
@@ -2640,6 +2885,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		initialize:  function(data){
 			//Declare the extension of the default point, to cater for the options passed in to the constructor
 			this.PointClass = Chart.Point.extend({
+				offsetGridLines : this.options.offsetGridLines,
 				strokeWidth : this.options.pointDotStrokeWidth,
 				radius : this.options.pointDotRadius,
 				display: this.options.pointDot,
@@ -2755,6 +3001,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				width : this.chart.width,
 				ctx : this.chart.ctx,
 				textColor : this.options.scaleFontColor,
+				offsetGridLines : this.options.offsetGridLines,
 				fontSize : this.options.scaleFontSize,
 				fontStyle : this.options.scaleFontStyle,
 				fontFamily : this.options.scaleFontFamily,
@@ -2805,6 +3052,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				this.datasets[datasetIndex].points.push(new this.PointClass({
 					value : value,
 					label : label,
+					datasetLabel: this.datasets[datasetIndex].label,
 					x: this.scale.calculateX(this.scale.valuesCount+1),
 					y: this.scale.endPoint,
 					strokeColor : this.datasets[datasetIndex].pointStrokeColor,
@@ -2848,6 +3096,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				return helpers.findPreviousWhere(collection, hasValue, index) || point;
 			};
 
+			if (!this.scale) return;
 			this.scale.draw(easingDecimal);
 
 
@@ -2867,7 +3116,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				},this);
 
 
-				// Control points need to be calculated in a seperate loop, because we need to know the current x/y of the point
+				// Control points need to be calculated in a separate loop, because we need to know the current x/y of the point
 				// This would cause issues when there is no animation, because the y of the next point would be 0, so beziers would be skewed
 				if (this.options.bezierCurve){
 					helpers.each(pointsWithValues, function(point, index){
@@ -2928,7 +3177,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 					}
 				}, this);
 
-				ctx.stroke();
+				if (this.options.datasetStroke) {
+					ctx.stroke();
+				}
 
 				if (this.options.datasetFill && pointsWithValues.length > 0){
 					//Round off the line by going to the base of the chart, back to the start, then fill.
@@ -2982,7 +3233,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		//Boolean - Stroke a line around each segment in the chart
 		segmentShowStroke : true,
 
-		//String - The colour of the stroke on each segement.
+		//String - The colour of the stroke on each segment.
 		segmentStrokeColor : "#fff",
 
 		//Number - The width of the stroke value in pixels
@@ -3001,14 +3252,14 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 		animateScale : false,
 
 		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"<%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=segments[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
 	};
 
 
 	Chart.Type.extend({
 		//Passing in a name registers this chart in the Chart namespace
 		name: "PolarArea",
-		//Providing a defaults will also register the deafults in the chart namespace
+		//Providing a defaults will also register the defaults in the chart namespace
 		defaults : defaultConfig,
 		//Initialize is fired when the chart is initialized - Data is passed in as a parameter
 		//Config is automatically merged by the core of Chart.js, and is available at this.options
@@ -3202,6 +3453,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 	});
 
 }).call(this);
+
 (function(){
 	"use strict";
 
@@ -3231,6 +3483,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 			//Number - Pixel width of the angle line
 			angleLineWidth : 1,
+
+			//Number - Interval at which to draw angle lines ("every Nth point")
+			angleLineInterval: 1,
 
 			//String - Point label font declaration
 			pointLabelFontFamily : "'Arial'",
@@ -3266,7 +3521,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 			datasetFill : true,
 
 			//String - A legend template
-			legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+			legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"<%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].strokeColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
 
 		},
 
@@ -3378,12 +3633,14 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				showLabels: this.options.scaleShowLabels,
 				showLabelBackdrop: this.options.scaleShowLabelBackdrop,
 				backdropColor: this.options.scaleBackdropColor,
+				backgroundColors: this.options.scaleBackgroundColors,
 				backdropPaddingY : this.options.scaleBackdropPaddingY,
 				backdropPaddingX: this.options.scaleBackdropPaddingX,
 				lineWidth: (this.options.scaleShowLine) ? this.options.scaleLineWidth : 0,
 				lineColor: this.options.scaleLineColor,
 				angleLineColor : this.options.angleLineColor,
 				angleLineWidth : (this.options.angleShowLineOut) ? this.options.angleLineWidth : 0,
+        angleLineInterval: (this.options.angleLineInterval) ? this.options.angleLineInterval : 1,
 				// Point labels at the edge of each line
 				pointLabelFontColor : this.options.pointLabelFontColor,
 				pointLabelFontSize : this.options.pointLabelFontSize,
@@ -3449,6 +3706,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				this.datasets[datasetIndex].points.push(new this.PointClass({
 					value : value,
 					label : label,
+					datasetLabel: this.datasets[datasetIndex].label,
 					x: pointPosition.x,
 					y: pointPosition.y,
 					strokeColor : this.datasets[datasetIndex].pointStrokeColor,
@@ -3523,8 +3781,9 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 				ctx.stroke();
 
 				ctx.fillStyle = dataset.fillColor;
-				ctx.fill();
-
+				if(this.options.datasetFill){
+					ctx.fill();
+				}
 				//Now draw the points over the line
 				//A little inefficient double looping, but better than the line
 				//lagging behind the point positions
@@ -3545,6 +3804,7 @@ function mergeRecursive(a,b){"use strict";for(var c in b)try{a[c]=b[c].construct
 
 
 }).call(this);
+
 },{}],5:[function(require,module,exports){
 /*!
   Copyright (c) 2016 Jed Watson.
@@ -26156,7 +26416,7 @@ L.Map.include({
 }(window, document));
 },{}],57:[function(require,module,exports){
 //! moment.js
-//! version : 2.12.0
+//! version : 2.13.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -26233,7 +26493,9 @@ L.Map.include({
             invalidMonth    : null,
             invalidFormat   : false,
             userInvalidated : false,
-            iso             : false
+            iso             : false,
+            parsedDateParts : [],
+            meridiem        : null
         };
     }
 
@@ -26244,9 +26506,30 @@ L.Map.include({
         return m._pf;
     }
 
+    var some;
+    if (Array.prototype.some) {
+        some = Array.prototype.some;
+    } else {
+        some = function (fun) {
+            var t = Object(this);
+            var len = t.length >>> 0;
+
+            for (var i = 0; i < len; i++) {
+                if (i in t && fun.call(this, t[i], i, t)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    }
+
     function valid__isValid(m) {
         if (m._isValid == null) {
             var flags = getParsingFlags(m);
+            var parsedParts = some.call(flags.parsedDateParts, function (i) {
+                return i != null;
+            });
             m._isValid = !isNaN(m._d.getTime()) &&
                 flags.overflow < 0 &&
                 !flags.empty &&
@@ -26254,7 +26537,8 @@ L.Map.include({
                 !flags.invalidWeekday &&
                 !flags.nullInput &&
                 !flags.invalidFormat &&
-                !flags.userInvalidated;
+                !flags.userInvalidated &&
+                (!flags.meridiem || (flags.meridiem && parsedParts));
 
             if (m._strict) {
                 m._isValid = m._isValid &&
@@ -26397,6 +26681,9 @@ L.Map.include({
         var firstTime = true;
 
         return extend(function () {
+            if (utils_hooks__hooks.deprecationHandler != null) {
+                utils_hooks__hooks.deprecationHandler(null, msg);
+            }
             if (firstTime) {
                 warn(msg + '\nArguments: ' + Array.prototype.slice.call(arguments).join(', ') + '\n' + (new Error()).stack);
                 firstTime = false;
@@ -26408,6 +26695,9 @@ L.Map.include({
     var deprecations = {};
 
     function deprecateSimple(name, msg) {
+        if (utils_hooks__hooks.deprecationHandler != null) {
+            utils_hooks__hooks.deprecationHandler(name, msg);
+        }
         if (!deprecations[name]) {
             warn(msg);
             deprecations[name] = true;
@@ -26415,6 +26705,7 @@ L.Map.include({
     }
 
     utils_hooks__hooks.suppressDeprecationWarnings = false;
+    utils_hooks__hooks.deprecationHandler = null;
 
     function isFunction(input) {
         return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
@@ -26462,6 +26753,22 @@ L.Map.include({
         if (config != null) {
             this.set(config);
         }
+    }
+
+    var keys;
+
+    if (Object.keys) {
+        keys = Object.keys;
+    } else {
+        keys = function (obj) {
+            var i, res = [];
+            for (i in obj) {
+                if (hasOwnProp(obj, i)) {
+                    res.push(i);
+                }
+            }
+            return res;
+        };
     }
 
     // internal storage for locale config files
@@ -26618,7 +26925,7 @@ L.Map.include({
     }
 
     function locale_locales__listLocales() {
-        return Object.keys(locales);
+        return keys(locales);
     }
 
     var aliases = {};
@@ -26697,7 +27004,7 @@ L.Map.include({
             Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
     }
 
-    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
+    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
 
     var localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g;
 
@@ -26750,7 +27057,7 @@ L.Map.include({
         }
 
         return function (mom) {
-            var output = '';
+            var output = '', i;
             for (i = 0; i < length; i++) {
                 output += array[i] instanceof Function ? array[i].call(mom, format) : array[i];
             }
@@ -26879,6 +27186,23 @@ L.Map.include({
     var WEEK = 7;
     var WEEKDAY = 8;
 
+    var indexOf;
+
+    if (Array.prototype.indexOf) {
+        indexOf = Array.prototype.indexOf;
+    } else {
+        indexOf = function (o) {
+            // I know
+            var i;
+            for (i = 0; i < this.length; ++i) {
+                if (this[i] === o) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+    }
+
     function daysInMonth(year, month) {
         return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
     }
@@ -26941,8 +27265,53 @@ L.Map.include({
             this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
     }
 
+    function units_month__handleStrictParse(monthName, format, strict) {
+        var i, ii, mom, llc = monthName.toLocaleLowerCase();
+        if (!this._monthsParse) {
+            // this is not used
+            this._monthsParse = [];
+            this._longMonthsParse = [];
+            this._shortMonthsParse = [];
+            for (i = 0; i < 12; ++i) {
+                mom = create_utc__createUTC([2000, i]);
+                this._shortMonthsParse[i] = this.monthsShort(mom, '').toLocaleLowerCase();
+                this._longMonthsParse[i] = this.months(mom, '').toLocaleLowerCase();
+            }
+        }
+
+        if (strict) {
+            if (format === 'MMM') {
+                ii = indexOf.call(this._shortMonthsParse, llc);
+                return ii !== -1 ? ii : null;
+            } else {
+                ii = indexOf.call(this._longMonthsParse, llc);
+                return ii !== -1 ? ii : null;
+            }
+        } else {
+            if (format === 'MMM') {
+                ii = indexOf.call(this._shortMonthsParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._longMonthsParse, llc);
+                return ii !== -1 ? ii : null;
+            } else {
+                ii = indexOf.call(this._longMonthsParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._shortMonthsParse, llc);
+                return ii !== -1 ? ii : null;
+            }
+        }
+    }
+
     function localeMonthsParse (monthName, format, strict) {
         var i, mom, regex;
+
+        if (this._monthsParseExact) {
+            return units_month__handleStrictParse.call(this, monthName, format, strict);
+        }
 
         if (!this._monthsParse) {
             this._monthsParse = [];
@@ -26950,6 +27319,9 @@ L.Map.include({
             this._shortMonthsParse = [];
         }
 
+        // TODO: add sorting
+        // Sorting makes sure if one month (or abbr) is a prefix of another
+        // see sorting in computeMonthsParse
         for (i = 0; i < 12; i++) {
             // make the regex if we don't have it already
             mom = create_utc__createUTC([2000, i]);
@@ -27075,8 +27447,8 @@ L.Map.include({
 
         this._monthsRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
         this._monthsShortRegex = this._monthsRegex;
-        this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')$', 'i');
-        this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')$', 'i');
+        this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
+        this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
     }
 
     function checkOverflow (m) {
@@ -27303,7 +27675,7 @@ L.Map.include({
 
     // MOMENTS
 
-    var getSetYear = makeGetSet('FullYear', false);
+    var getSetYear = makeGetSet('FullYear', true);
 
     function getIsLeapYear () {
         return isLeapYear(this.year());
@@ -27572,6 +27944,9 @@ L.Map.include({
                 config._a[HOUR] > 0) {
             getParsingFlags(config).bigHour = undefined;
         }
+
+        getParsingFlags(config).parsedDateParts = config._a.slice(0);
+        getParsingFlags(config).meridiem = config._meridiem;
         // handle meridiem
         config._a[HOUR] = meridiemFixWrap(config._locale, config._a[HOUR], config._meridiem);
 
@@ -27712,7 +28087,7 @@ L.Map.include({
         if (input === undefined) {
             config._d = new Date(utils_hooks__hooks.now());
         } else if (isDate(input)) {
-            config._d = new Date(+input);
+            config._d = new Date(input.valueOf());
         } else if (typeof input === 'string') {
             configFromString(config);
         } else if (isArray(input)) {
@@ -27832,7 +28207,7 @@ L.Map.include({
         this._milliseconds = +milliseconds +
             seconds * 1e3 + // 1000
             minutes * 6e4 + // 1000 * 60
-            hours * 36e5; // 1000 * 60 * 60
+            hours * 1000 * 60 * 60; //using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors https://github.com/moment/moment/issues/2978
         // Because of dateAddRemove treats 24 hours as different from a
         // day when working around DST, we need to store them separately
         this._days = +days +
@@ -27902,9 +28277,9 @@ L.Map.include({
         var res, diff;
         if (model._isUTC) {
             res = model.clone();
-            diff = (isMoment(input) || isDate(input) ? +input : +local__createLocal(input)) - (+res);
+            diff = (isMoment(input) || isDate(input) ? input.valueOf() : local__createLocal(input).valueOf()) - res.valueOf();
             // Use low-level api, because this fn is low-level api.
-            res._d.setTime(+res._d + diff);
+            res._d.setTime(res._d.valueOf() + diff);
             utils_hooks__hooks.updateOffset(res, false);
             return res;
         } else {
@@ -28065,7 +28440,7 @@ L.Map.include({
     // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
     // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
     // and further modified to allow for strings containing both week and day
-    var isoRegex = /^(-)?P(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)W)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?$/;
+    var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
 
     function create__createDuration (input, key) {
         var duration = input,
@@ -28209,7 +28584,7 @@ L.Map.include({
         updateOffset = updateOffset == null ? true : updateOffset;
 
         if (milliseconds) {
-            mom._d.setTime(+mom._d + milliseconds * isAdding);
+            mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
         }
         if (days) {
             get_set__set(mom, 'Date', get_set__get(mom, 'Date') + days * isAdding);
@@ -28254,9 +28629,9 @@ L.Map.include({
         }
         units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
         if (units === 'millisecond') {
-            return +this > +localInput;
+            return this.valueOf() > localInput.valueOf();
         } else {
-            return +localInput < +this.clone().startOf(units);
+            return localInput.valueOf() < this.clone().startOf(units).valueOf();
         }
     }
 
@@ -28267,14 +28642,16 @@ L.Map.include({
         }
         units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
         if (units === 'millisecond') {
-            return +this < +localInput;
+            return this.valueOf() < localInput.valueOf();
         } else {
-            return +this.clone().endOf(units) < +localInput;
+            return this.clone().endOf(units).valueOf() < localInput.valueOf();
         }
     }
 
-    function isBetween (from, to, units) {
-        return this.isAfter(from, units) && this.isBefore(to, units);
+    function isBetween (from, to, units, inclusivity) {
+        inclusivity = inclusivity || '()';
+        return (inclusivity[0] === '(' ? this.isAfter(from, units) : !this.isBefore(from, units)) &&
+            (inclusivity[1] === ')' ? this.isBefore(to, units) : !this.isAfter(to, units));
     }
 
     function isSame (input, units) {
@@ -28285,10 +28662,10 @@ L.Map.include({
         }
         units = normalizeUnits(units || 'millisecond');
         if (units === 'millisecond') {
-            return +this === +localInput;
+            return this.valueOf() === localInput.valueOf();
         } else {
-            inputMs = +localInput;
-            return +(this.clone().startOf(units)) <= inputMs && inputMs <= +(this.clone().endOf(units));
+            inputMs = localInput.valueOf();
+            return this.clone().startOf(units).valueOf() <= inputMs && inputMs <= this.clone().endOf(units).valueOf();
         }
     }
 
@@ -28355,10 +28732,12 @@ L.Map.include({
             adjust = (b - anchor) / (anchor2 - anchor);
         }
 
-        return -(wholeMonthDiff + adjust);
+        //check for negative zero, return zero if negative zero
+        return -(wholeMonthDiff + adjust) || 0;
     }
 
     utils_hooks__hooks.defaultFormat = 'YYYY-MM-DDTHH:mm:ssZ';
+    utils_hooks__hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
 
     function toString () {
         return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
@@ -28379,7 +28758,10 @@ L.Map.include({
     }
 
     function format (inputString) {
-        var output = formatMoment(this, inputString || utils_hooks__hooks.defaultFormat);
+        if (!inputString) {
+            inputString = this.isUtc() ? utils_hooks__hooks.defaultFormatUtc : utils_hooks__hooks.defaultFormat;
+        }
+        var output = formatMoment(this, inputString);
         return this.localeData().postformat(output);
     }
 
@@ -28458,6 +28840,7 @@ L.Map.include({
         case 'week':
         case 'isoWeek':
         case 'day':
+        case 'date':
             this.hours(0);
             /* falls through */
         case 'hour':
@@ -28491,19 +28874,25 @@ L.Map.include({
         if (units === undefined || units === 'millisecond') {
             return this;
         }
+
+        // 'date' is an alias for 'day', so it should be considered as such.
+        if (units === 'date') {
+            units = 'day';
+        }
+
         return this.startOf(units).add(1, (units === 'isoWeek' ? 'week' : units)).subtract(1, 'ms');
     }
 
     function to_type__valueOf () {
-        return +this._d - ((this._offset || 0) * 60000);
+        return this._d.valueOf() - ((this._offset || 0) * 60000);
     }
 
     function unix () {
-        return Math.floor(+this / 1000);
+        return Math.floor(this.valueOf() / 1000);
     }
 
     function toDate () {
-        return this._offset ? new Date(+this) : this._d;
+        return this._offset ? new Date(this.valueOf()) : this._d;
     }
 
     function toArray () {
@@ -28772,9 +29161,15 @@ L.Map.include({
     addRegexToken('d',    match1to2);
     addRegexToken('e',    match1to2);
     addRegexToken('E',    match1to2);
-    addRegexToken('dd',   matchWord);
-    addRegexToken('ddd',  matchWord);
-    addRegexToken('dddd', matchWord);
+    addRegexToken('dd',   function (isStrict, locale) {
+        return locale.weekdaysMinRegex(isStrict);
+    });
+    addRegexToken('ddd',   function (isStrict, locale) {
+        return locale.weekdaysShortRegex(isStrict);
+    });
+    addRegexToken('dddd',   function (isStrict, locale) {
+        return locale.weekdaysRegex(isStrict);
+    });
 
     addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
         var weekday = config._locale.weekdaysParse(input, token, config._strict);
@@ -28827,8 +29222,76 @@ L.Map.include({
         return this._weekdaysMin[m.day()];
     }
 
+    function day_of_week__handleStrictParse(weekdayName, format, strict) {
+        var i, ii, mom, llc = weekdayName.toLocaleLowerCase();
+        if (!this._weekdaysParse) {
+            this._weekdaysParse = [];
+            this._shortWeekdaysParse = [];
+            this._minWeekdaysParse = [];
+
+            for (i = 0; i < 7; ++i) {
+                mom = create_utc__createUTC([2000, 1]).day(i);
+                this._minWeekdaysParse[i] = this.weekdaysMin(mom, '').toLocaleLowerCase();
+                this._shortWeekdaysParse[i] = this.weekdaysShort(mom, '').toLocaleLowerCase();
+                this._weekdaysParse[i] = this.weekdays(mom, '').toLocaleLowerCase();
+            }
+        }
+
+        if (strict) {
+            if (format === 'dddd') {
+                ii = indexOf.call(this._weekdaysParse, llc);
+                return ii !== -1 ? ii : null;
+            } else if (format === 'ddd') {
+                ii = indexOf.call(this._shortWeekdaysParse, llc);
+                return ii !== -1 ? ii : null;
+            } else {
+                ii = indexOf.call(this._minWeekdaysParse, llc);
+                return ii !== -1 ? ii : null;
+            }
+        } else {
+            if (format === 'dddd') {
+                ii = indexOf.call(this._weekdaysParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._shortWeekdaysParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._minWeekdaysParse, llc);
+                return ii !== -1 ? ii : null;
+            } else if (format === 'ddd') {
+                ii = indexOf.call(this._shortWeekdaysParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._weekdaysParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._minWeekdaysParse, llc);
+                return ii !== -1 ? ii : null;
+            } else {
+                ii = indexOf.call(this._minWeekdaysParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._weekdaysParse, llc);
+                if (ii !== -1) {
+                    return ii;
+                }
+                ii = indexOf.call(this._shortWeekdaysParse, llc);
+                return ii !== -1 ? ii : null;
+            }
+        }
+    }
+
     function localeWeekdaysParse (weekdayName, format, strict) {
         var i, mom, regex;
+
+        if (this._weekdaysParseExact) {
+            return day_of_week__handleStrictParse.call(this, weekdayName, format, strict);
+        }
 
         if (!this._weekdaysParse) {
             this._weekdaysParse = [];
@@ -28840,7 +29303,7 @@ L.Map.include({
         for (i = 0; i < 7; i++) {
             // make the regex if we don't have it already
 
-            mom = local__createLocal([2000, 1]).day(i);
+            mom = create_utc__createUTC([2000, 1]).day(i);
             if (strict && !this._fullWeekdaysParse[i]) {
                 this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
                 this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
@@ -28896,6 +29359,99 @@ L.Map.include({
         return input == null ? this.day() || 7 : this.day(this.day() % 7 ? input : input - 7);
     }
 
+    var defaultWeekdaysRegex = matchWord;
+    function weekdaysRegex (isStrict) {
+        if (this._weekdaysParseExact) {
+            if (!hasOwnProp(this, '_weekdaysRegex')) {
+                computeWeekdaysParse.call(this);
+            }
+            if (isStrict) {
+                return this._weekdaysStrictRegex;
+            } else {
+                return this._weekdaysRegex;
+            }
+        } else {
+            return this._weekdaysStrictRegex && isStrict ?
+                this._weekdaysStrictRegex : this._weekdaysRegex;
+        }
+    }
+
+    var defaultWeekdaysShortRegex = matchWord;
+    function weekdaysShortRegex (isStrict) {
+        if (this._weekdaysParseExact) {
+            if (!hasOwnProp(this, '_weekdaysRegex')) {
+                computeWeekdaysParse.call(this);
+            }
+            if (isStrict) {
+                return this._weekdaysShortStrictRegex;
+            } else {
+                return this._weekdaysShortRegex;
+            }
+        } else {
+            return this._weekdaysShortStrictRegex && isStrict ?
+                this._weekdaysShortStrictRegex : this._weekdaysShortRegex;
+        }
+    }
+
+    var defaultWeekdaysMinRegex = matchWord;
+    function weekdaysMinRegex (isStrict) {
+        if (this._weekdaysParseExact) {
+            if (!hasOwnProp(this, '_weekdaysRegex')) {
+                computeWeekdaysParse.call(this);
+            }
+            if (isStrict) {
+                return this._weekdaysMinStrictRegex;
+            } else {
+                return this._weekdaysMinRegex;
+            }
+        } else {
+            return this._weekdaysMinStrictRegex && isStrict ?
+                this._weekdaysMinStrictRegex : this._weekdaysMinRegex;
+        }
+    }
+
+
+    function computeWeekdaysParse () {
+        function cmpLenRev(a, b) {
+            return b.length - a.length;
+        }
+
+        var minPieces = [], shortPieces = [], longPieces = [], mixedPieces = [],
+            i, mom, minp, shortp, longp;
+        for (i = 0; i < 7; i++) {
+            // make the regex if we don't have it already
+            mom = create_utc__createUTC([2000, 1]).day(i);
+            minp = this.weekdaysMin(mom, '');
+            shortp = this.weekdaysShort(mom, '');
+            longp = this.weekdays(mom, '');
+            minPieces.push(minp);
+            shortPieces.push(shortp);
+            longPieces.push(longp);
+            mixedPieces.push(minp);
+            mixedPieces.push(shortp);
+            mixedPieces.push(longp);
+        }
+        // Sorting makes sure if one weekday (or abbr) is a prefix of another it
+        // will match the longer piece.
+        minPieces.sort(cmpLenRev);
+        shortPieces.sort(cmpLenRev);
+        longPieces.sort(cmpLenRev);
+        mixedPieces.sort(cmpLenRev);
+        for (i = 0; i < 7; i++) {
+            shortPieces[i] = regexEscape(shortPieces[i]);
+            longPieces[i] = regexEscape(longPieces[i]);
+            mixedPieces[i] = regexEscape(mixedPieces[i]);
+        }
+
+        this._weekdaysRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
+        this._weekdaysShortRegex = this._weekdaysRegex;
+        this._weekdaysMinRegex = this._weekdaysRegex;
+
+        this._weekdaysStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
+        this._weekdaysShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
+        this._weekdaysMinStrictRegex = new RegExp('^(' + minPieces.join('|') + ')', 'i');
+    }
+
     // FORMATTING
 
     addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
@@ -28927,8 +29483,13 @@ L.Map.include({
         return this.hours() % 12 || 12;
     }
 
+    function kFormat() {
+        return this.hours() || 24;
+    }
+
     addFormatToken('H', ['HH', 2], 0, 'hour');
     addFormatToken('h', ['hh', 2], 0, hFormat);
+    addFormatToken('k', ['kk', 2], 0, kFormat);
 
     addFormatToken('hmm', 0, 0, function () {
         return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2);
@@ -29389,6 +29950,13 @@ L.Map.include({
     prototype__proto._weekdaysShort = defaultLocaleWeekdaysShort;
     prototype__proto.weekdaysParse  =        localeWeekdaysParse;
 
+    prototype__proto._weekdaysRegex      = defaultWeekdaysRegex;
+    prototype__proto.weekdaysRegex       =        weekdaysRegex;
+    prototype__proto._weekdaysShortRegex = defaultWeekdaysShortRegex;
+    prototype__proto.weekdaysShortRegex  =        weekdaysShortRegex;
+    prototype__proto._weekdaysMinRegex   = defaultWeekdaysMinRegex;
+    prototype__proto.weekdaysMinRegex    =        weekdaysMinRegex;
+
     // Hours
     prototype__proto.isPM = localeIsPM;
     prototype__proto._meridiemParse = defaultLocaleMeridiemParse;
@@ -29400,7 +29968,7 @@ L.Map.include({
         return locale[field](utc, format);
     }
 
-    function list (format, index, field, count, setter) {
+    function listMonthsImpl (format, index, field) {
         if (typeof format === 'number') {
             index = format;
             format = undefined;
@@ -29409,35 +29977,79 @@ L.Map.include({
         format = format || '';
 
         if (index != null) {
-            return lists__get(format, index, field, setter);
+            return lists__get(format, index, field, 'month');
         }
 
         var i;
         var out = [];
-        for (i = 0; i < count; i++) {
-            out[i] = lists__get(format, i, field, setter);
+        for (i = 0; i < 12; i++) {
+            out[i] = lists__get(format, i, field, 'month');
+        }
+        return out;
+    }
+
+    // ()
+    // (5)
+    // (fmt, 5)
+    // (fmt)
+    // (true)
+    // (true, 5)
+    // (true, fmt, 5)
+    // (true, fmt)
+    function listWeekdaysImpl (localeSorted, format, index, field) {
+        if (typeof localeSorted === 'boolean') {
+            if (typeof format === 'number') {
+                index = format;
+                format = undefined;
+            }
+
+            format = format || '';
+        } else {
+            format = localeSorted;
+            index = format;
+            localeSorted = false;
+
+            if (typeof format === 'number') {
+                index = format;
+                format = undefined;
+            }
+
+            format = format || '';
+        }
+
+        var locale = locale_locales__getLocale(),
+            shift = localeSorted ? locale._week.dow : 0;
+
+        if (index != null) {
+            return lists__get(format, (index + shift) % 7, field, 'day');
+        }
+
+        var i;
+        var out = [];
+        for (i = 0; i < 7; i++) {
+            out[i] = lists__get(format, (i + shift) % 7, field, 'day');
         }
         return out;
     }
 
     function lists__listMonths (format, index) {
-        return list(format, index, 'months', 12, 'month');
+        return listMonthsImpl(format, index, 'months');
     }
 
     function lists__listMonthsShort (format, index) {
-        return list(format, index, 'monthsShort', 12, 'month');
+        return listMonthsImpl(format, index, 'monthsShort');
     }
 
-    function lists__listWeekdays (format, index) {
-        return list(format, index, 'weekdays', 7, 'day');
+    function lists__listWeekdays (localeSorted, format, index) {
+        return listWeekdaysImpl(localeSorted, format, index, 'weekdays');
     }
 
-    function lists__listWeekdaysShort (format, index) {
-        return list(format, index, 'weekdaysShort', 7, 'day');
+    function lists__listWeekdaysShort (localeSorted, format, index) {
+        return listWeekdaysImpl(localeSorted, format, index, 'weekdaysShort');
     }
 
-    function lists__listWeekdaysMin (format, index) {
-        return list(format, index, 'weekdaysMin', 7, 'day');
+    function lists__listWeekdaysMin (localeSorted, format, index) {
+        return listWeekdaysImpl(localeSorted, format, index, 'weekdaysMin');
     }
 
     locale_locales__getSetGlobalLocale('en', {
@@ -29808,7 +30420,7 @@ L.Map.include({
     // Side effect imports
 
 
-    utils_hooks__hooks.version = '2.12.0';
+    utils_hooks__hooks.version = '2.13.0';
 
     setHookCallback(local__createLocal);
 
@@ -50859,6 +51471,10 @@ var ReactEmptyComponentInjection = {
   }
 };
 
+function registerNullComponentID() {
+  ReactEmptyComponentRegistry.registerNullComponentID(this._rootNodeID);
+}
+
 var ReactEmptyComponent = function (instantiate) {
   this._currentElement = null;
   this._rootNodeID = null;
@@ -50867,7 +51483,7 @@ var ReactEmptyComponent = function (instantiate) {
 assign(ReactEmptyComponent.prototype, {
   construct: function (element) {},
   mountComponent: function (rootID, transaction, context) {
-    ReactEmptyComponentRegistry.registerNullComponentID(rootID);
+    transaction.getReactMountReady().enqueue(registerNullComponentID, this);
     this._rootNodeID = rootID;
     return ReactReconciler.mountComponent(this._renderedComponent, rootID, transaction, context);
   },
@@ -55147,7 +55763,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.7';
+module.exports = '0.14.8';
 },{}],181:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -60628,7 +61244,10 @@ module.exports = function (data) {
     var userTotal = data[key];
     var badge = badges[key];
 
+    console.log(data);
+
     var badgeLevel = checkBadgeLevel(userTotal, badge);
+
     if (badgeLevel < 3) {
       var nextBadgeLevel = badgeLevel + 1;
       var currentPoints = Number(userTotal);
@@ -60991,7 +61610,7 @@ function mapBadgeToTask(badge, x) {
       return 'Use JOSM to map an area ' + x + ' more times.';
     },
     'Mapathoner': function Mapathoner(x) {
-      return 'Participate in ' + x + ' more mapthons.';
+      return 'Participate in ' + x + ' more mapathons.';
     },
     'On Point': function OnPoint(x) {
       return 'Add ' + x + ' more nodes.';
@@ -61121,6 +61740,7 @@ exports.default = function (props) {
       points: badge.points
     };
   });
+
   var progressList = progressBadges.map(function (badge) {
     return _react2.default.createElement(
       'li',
@@ -61224,12 +61844,30 @@ exports.default = function () {
             )
           ),
           _react2.default.createElement(
-            "a",
-            { href: "http://missingmaps.org/events/" },
+            "li",
+            { className: "nav-item nav-dropdown" },
+            "EVENTS",
             _react2.default.createElement(
-              "li",
-              { className: "nav-item" },
-              "EVENTS"
+              "div",
+              { className: "dropdown-content nav-events" },
+              _react2.default.createElement(
+                "a",
+                { href: "http://missingmaps.org/events/" },
+                _react2.default.createElement(
+                  "div",
+                  { className: "nav-item" },
+                  "CURRENT EVENTS"
+                )
+              ),
+              _react2.default.createElement(
+                "a",
+                { href: "http://missingmaps.org/host" },
+                _react2.default.createElement(
+                  "div",
+                  { className: "nav-item" },
+                  "ORGANIZE AN EVENT"
+                )
+              )
             )
           ),
           _react2.default.createElement(
@@ -61239,6 +61877,15 @@ exports.default = function () {
               "li",
               { className: "nav-item" },
               "ABOUT"
+            )
+          ),
+          _react2.default.createElement(
+            "a",
+            { href: "http://missingmaps.org/blog/" },
+            _react2.default.createElement(
+              "li",
+              { className: "nav-item" },
+              "BLOG"
             )
           ),
           _react2.default.createElement(
@@ -61295,9 +61942,18 @@ exports.default = function () {
           "a",
           { href: "http://missingmaps.org/events/" },
           _react2.default.createElement(
-            "li",
+            "div",
             { className: "nav-item" },
-            "EVENTS"
+            "CURRENT EVENTS"
+          )
+        ),
+        _react2.default.createElement(
+          "a",
+          { href: "http://missingmaps.org/host" },
+          _react2.default.createElement(
+            "div",
+            { className: "nav-item" },
+            "ORGANIZE AN EVENT"
           )
         ),
         _react2.default.createElement(
@@ -61307,6 +61963,15 @@ exports.default = function () {
             "li",
             { className: "nav-item" },
             "ABOUT"
+          )
+        ),
+        _react2.default.createElement(
+          "a",
+          { href: "http://missingmaps.org/blog/" },
+          _react2.default.createElement(
+            "li",
+            { className: "nav-item" },
+            "BLOG"
           )
         ),
         _react2.default.createElement(
@@ -61365,6 +62030,7 @@ exports.default = function (props) {
   if (!props.hasOwnProperty('data')) {
     return _react2.default.createElement('div', null);
   }
+
   return _react2.default.createElement(
     'div',
     { className: 'Split split-smbadges' },
@@ -62533,7 +63199,7 @@ exports.default = _react2.default.createClass({
                   _react2.default.createElement(
                     'p',
                     null,
-                    'We also provide instructions if you would like to learn how to contribute to OpenStreetMaps & MissingMaps!'
+                    'We also provide instructions if you would like to learn how to contribute to OpenStreetMap & MissingMaps!'
                   ),
                   _react2.default.createElement(
                     'a',

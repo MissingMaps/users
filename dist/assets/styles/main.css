@@ -151,7 +151,7 @@ header {
   margin-right: auto; }
 
 .nav-icon {
-  padding-top: 8px;
+  padding-top: 6px;
   float: left;
   padding-left: 2em; }
   @media screen and (min-width: 1100px) {
@@ -162,7 +162,7 @@ header {
   float: right;
   position: relative;
   display: inline-block; }
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 560px) {
     .nav-list {
       display: none; } }
 
@@ -209,7 +209,8 @@ header {
   position: absolute;
   width: 150px;
   z-index: 1;
-  right: 0; }
+  right: 0;
+  text-align: right; }
   .dropdown-content :hover a {
     color: #696966;
     padding-left: 10px; }
@@ -221,6 +222,9 @@ header {
 .nav-dropdown:hover .dropdown-content {
   opacity: 1;
   height: auto; }
+
+.nav-events {
+  width: 180px; }
 
 .resp-navbar {
   display: none;
@@ -248,7 +252,7 @@ header {
   .resp-navbar:hover {
     background-color: #4a4a4a;
     color: white; }
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 560px) {
     .resp-navbar {
       display: block; } }
 
@@ -274,7 +278,7 @@ header {
 .resp-nav-dropdown {
   display: inline-block;
   text-align: center; }
-  @media screen and (min-width: 500px) {
+  @media screen and (min-width: 560px) {
     .resp-nav-dropdown {
       display: none; } }
 
@@ -1507,7 +1511,7 @@ table {
 
 .Stats-Item {
   display: inline-block;
-  width: 29%;
+  width: 27%;
   height: 50px;
   padding: 10px; }
   @media screen and (max-width: 595px) {
@@ -1531,7 +1535,8 @@ table {
   text-align: left;
   vertical-align: top; }
   .Stat-Info p {
-    clear: left; }
+    clear: left;
+    font-size: 0.8em; }
   @media screen and (max-width: 320px) {
     .Stat-Info {
       margin-top: 0; } }
@@ -1765,7 +1770,6 @@ Remove comment to apply this style to date with value equal to 0
 .Intro-Content {
   width: 500px;
   margin-left: auto;
-  margin-right: auto;
-  padding-bottom: 1em; }
+  margin-right: auto; }
   .Intro-Content p {
     margin-bottom: 1.5em; }

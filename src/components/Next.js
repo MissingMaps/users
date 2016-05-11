@@ -9,6 +9,7 @@ export default (props) => {
   if (!props.hasOwnProperty('data')) {
     return <div></div>;
   }
+
   return (
       <div className = "Split split-smbadges">
         <div className = "descriptor">Upcoming Badges</div>
