@@ -40,10 +40,10 @@ export default React.createClass({
   },
   onSubmit: function (input) {
     var user = R.find(R.propEq('name', input.toLowerCase()))(this.state.users);
-    if(user){
-      this.props.history.push('/' + user.id);      
-    }else{
-      this.props.history.push('/' + 1)
+    if (user) {
+      this.props.history.push('/' + user.id);
+    } else {
+      this.props.history.push('/' + 1);
     }
   },
 
@@ -70,4 +70,3 @@ export default React.createClass({
     );
   }
 });
-

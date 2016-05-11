@@ -4,8 +4,6 @@ import {Link} from 'react-router';
 import Header from '../components/Header.js';
 import Footer from '../components/Footer.js';
 import fetch from 'isomorphic-fetch';
-import SearchBar from 'react-search-bar';
-import R from 'ramda';
 
 export default React.createClass({
   getInitialState: function () {

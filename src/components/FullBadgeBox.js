@@ -83,14 +83,13 @@ export default (props) => {
     );
   });
 
-  if( list.length == 0){
-    var badgeCheck = "";
-  }else{
-    var badgeCheck = BadgeContainer();
+  var badgeCheck = '';
+  if (list.length !== 0) {
+    badgeCheck = BadgeContainer();
   }
 
-  function BadgeContainer(){
-    return(
+  function BadgeContainer () {
+    return (
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content BadgeChecker">
           <div className = "badgeroll-frame">
