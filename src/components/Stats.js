@@ -74,7 +74,7 @@ export default React.createClass({
     var hashtag = 'http://missingmaps.org/leaderboards/#/' + user.hashtags[hashtag];
 
     // Round km calculation depending on length
-    var total_buildings = Number(user.total_building_count_add)+ Number(user.total_building_count_mod);
+    var total_buildings = Number(user.total_building_count_add) + Number(user.total_building_count_mod);
     var total_road_km = Number(user.total_road_km_add).toFixed(1);
     total_road_km = (total_road_km.length > 4) ? Math.round(total_road_km) : total_road_km;
     var total_waterway_km = Number(user.total_waterway_km_add).toFixed(1);
@@ -213,4 +213,3 @@ export default React.createClass({
     );
   }
 });
-
