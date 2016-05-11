@@ -2,16 +2,6 @@ module.exports = function (data) {
   var badges = {
     // note: road counts and road mod counts were removed
 
-    // roads: {
-    //   name: 'Road Builder',
-    //   id: 1,
-    //   tiers: {1: 100, 2: 500, 3: 1000}
-    // },
-    // roadMods: {
-    //   name: 'Road Maintainer',
-    //   id: 2,
-    //   tiers: {1: 100, 2: 500, 3: 1000}
-    // },
     pois: {
       name: 'On Point',
       id: 3,

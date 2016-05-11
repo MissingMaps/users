@@ -5,12 +5,6 @@ export default (props) => {
   if (!props.data) { return <div>Loading...<div></div></div>; }
 
   var data = props.data;
-  var total = Number(data.total_road_count_add) +
-    Number(data.total_road_count_mod) +
-    Number(data.total_building_count_add) +
-    Number(data.total_building_count_mod) +
-    Number(data.total_waterway_count_add) +
-    Number(data.total_poi_count_add);
 
   var latest = data.latest;
   var latestTotal = Number(latest.road_count_add) +
@@ -19,11 +13,6 @@ export default (props) => {
     Number(latest.building_count_mod) +
     Number(latest.waterway_count_add) +
     Number(latest.poi_count_add);
-
-  var changesetCount = data.changeset_count;
-
-  var averageEdits = total / changesetCount;
-  var lastChangesetComparison = (latestTotal / (averageEdits) * 100).toFixed(2);
 
   var last_edit_time = latest.created_at;
   var last_edit_day = moment(last_edit_time).format('dddd');

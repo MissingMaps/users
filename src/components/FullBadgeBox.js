@@ -62,6 +62,18 @@ export default (props) => {
     R.reverse,
     R.sortBy(R.prop('level'))
   )(props.badges);
+
+  // Front-end fix for Mapathoner badge
+  const mapathonerBadge = props.progress.all.hashtags;
+  if (mapathonerBadge.badgeLevel > 0) {
+    badges.push({
+      category: mapathonerBadge.category,
+      id: 36 + mapathonerBadge.badgeLevel,
+      level: mapathonerBadge.badgeLevel,
+      name: mapathonerBadge.name
+    });
+  }
+
   var list = badges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>
@@ -83,14 +95,13 @@ export default (props) => {
     );
   });
 
-  if( list.length == 0){
-    var badgeCheck = "";
-  }else{
-    var badgeCheck = BadgeContainer();
+  var badgeCheck = '';
+  if (list.length !== 0) {
+    badgeCheck = BadgeContainer();
   }
 
-  function BadgeContainer(){
-    return(
+  function BadgeContainer () {
+    return (
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content BadgeChecker">
           <div className = "badgeroll-frame">
