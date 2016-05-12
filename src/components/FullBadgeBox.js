@@ -65,7 +65,7 @@ export default (props) => {
 
   // Front-end fix for Mapathoner badge
   const mapathonerBadge = props.progress.all.hashtags;
-  if (mapathonerBadge.badgeLevel > 0) {
+  if (mapathonerBadge && mapathonerBadge.badgeLevel > 0) {
     badges.push({
       category: mapathonerBadge.category,
       id: 36 + mapathonerBadge.badgeLevel,
