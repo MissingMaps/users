@@ -62,6 +62,18 @@ export default (props) => {
     R.reverse,
     R.sortBy(R.prop('level'))
   )(props.badges);
+
+  // Front-end fix for Mapathoner badge
+  const mapathonerBadge = props.progress.all.hashtags;
+  if (mapathonerBadge.badgeLevel > 0) {
+    badges.push({
+      category: mapathonerBadge.category,
+      id: 36 + mapathonerBadge.badgeLevel,
+      level: mapathonerBadge.badgeLevel,
+      name: mapathonerBadge.name
+    });
+  }
+
   var list = badges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>
