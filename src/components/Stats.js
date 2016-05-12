@@ -84,14 +84,14 @@ export default React.createClass({
       <div id = "Stats-Container">
           <div className = "Split split-contributes">
             <div className = "Card-Content Split-Content">
-              <div className = "descriptor">Projects Contributed To</div>
+              <div className = "descriptor">Recent Projects Contributed To</div>
               <table className = "table-curve">
                 <tbody>
                   <tr>
                     <th>Project Hashtag</th>
                     <th>Changesets</th>
                   </tr>
-                  {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                  {R.takeLast(4, Object.keys(user.hashtags)).map(function (hashtag) {
                     var hashtaglink = 'http://missingmaps.org/leaderboards/#/' + hashtag;
                     return (
                       <tr key={hashtag}>
