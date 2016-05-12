@@ -15,7 +15,7 @@ function mapBadgeToDescrip (badge) {
     'On Point': 'Places of interest guide where you can go. Every community needs hospitals, schools, businesses mapped to enable access. Each new level is achieved by creating new places on the map.',
     'White Water Rafting': 'Waterways, rivers, streams and more. Adding water features to the map adds regional context and valuable information in the event of flooding. Add these features to reach new levels of this badge.',
     'World Renown': 'You are famous around the globe. The more you edit in new countries, the more you can become world renown. Each new level is achieved by mapping in new countries around the world.',
-    'Year-Long Mapper': 'Map early, map often. Map as many days as you can to achieve new levels.',
+    'Year-long Mapper': 'Map early, map often. Map as many days as you can to achieve new levels.',
     'Task Champion': 'Champions finish their work. Every task in the Tasking Manager needs to be finshed. Each new level is achieved by completing additional Tasking Manager squares.',
     'Scrutinizer': 'QA creates great products. Every square in the Tasking Manager needs to be validated. Each new level is achieved by validating new squares in the Tasking Manager.',
     'Crisis Mapper': 'The Humanitarian OpenStreetMap Team (HOT) adds new tasks daily to collect data in high risk disaster areas. Map on HOT projects to reach new achievements.',
@@ -37,7 +37,7 @@ function mapBadgeToTask (badge, x) {
     'On Point': (x) => `Add ${x} more nodes.`,
     'White Water Rafting': (x) => `Add ${x} more km of waterways.`,
     'World Renown': (x) => `Map in ${x} more different countries.`,
-    'Year-Long Mapper': (x) => `Map ${x} more days in total.`,
+    'Year-long Mapper': (x) => `Map ${x} more days in total.`,
     'Task Champion': (x) => `Complete ${x} more HOTOSM tasks.`,
     'Scrutinizer': (x) => `Validate ${x} more HOTOSM tasks.`,
     'Crisis Mapper': (x) => `Map on ${x} more HOTOSM projects.`,
@@ -54,25 +54,27 @@ function stripWS (text) {
 }
 
 export default (props) => {
-  if (!props.progress.all) {
-    return <div>Loading...</div>;
-  }
-  var badges = R.compose(
-    R.uniqBy(R.prop('name')),
-    R.reverse,
-    R.sortBy(R.prop('level'))
-  )(props.badges);
+  // Display loading message while props not ready
+  if (!props.progress.all) return <div>Loading...</div>;
 
   // Front-end fix for Mapathoner badge
+  // Push Mapathoner badge to earned category when applicable
   const mapathonerBadge = props.progress.all.hashtags;
   if (mapathonerBadge.badgeLevel > 0) {
-    badges.push({
+    props.badges.push({
       category: mapathonerBadge.category,
       id: 36 + mapathonerBadge.badgeLevel,
       level: mapathonerBadge.badgeLevel,
       name: mapathonerBadge.name
     });
   }
+
+  // Remove duplicate badges, keep only the highest level earned
+  var badges = R.compose(
+    R.uniqBy(R.prop('name')),
+    R.reverse,
+    R.sortBy(R.prop('level'))
+  )(props.badges);
 
   var list = badges.map((badge) => {
     return (
@@ -96,10 +98,7 @@ export default (props) => {
   });
 
   var badgeCheck = '';
-  if (list.length !== 0) {
-    badgeCheck = BadgeContainer();
-  }
-
+  if (list.length) badgeCheck = BadgeContainer();
   function BadgeContainer () {
     return (
       <div id = "Badge-Container">
