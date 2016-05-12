@@ -35,9 +35,9 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
   });
 
   var mostObtainableNames = sortedSumBadges.slice(-3);
-  var mostObtainable = sumBadges[mostObtainableNames[2]];
-  var secondMostObtainable = sumBadges[mostObtainableNames[1]];
-  var thirdMostObtainable = sumBadges[mostObtainableNames[0]];
+  var mostObtainable = sumBadges[mostObtainableNames[mostObtainableNames.length - 1]];
+  var secondMostObtainable = sumBadges[mostObtainableNames[mostObtainableNames.length - 2]];
+  var thirdMostObtainable = sumBadges[mostObtainableNames[mostObtainableNames.length - 3]];
 
   return {
     all: R.mergeAll([sumBadges, consistencyBadge, historyBadge]),
