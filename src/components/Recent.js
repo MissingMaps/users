@@ -5,7 +5,6 @@ export default (props) => {
   if (!props.data) { return <div>Loading...<div></div></div>; }
 
   var data = props.data;
-
   var latest = data.latest;
   var latestTotal = Number(latest.road_count_add) +
     Number(latest.road_count_mod) +
