@@ -40,12 +40,12 @@ module.exports = function (data) {
     tasks: {
       name: 'Task Champion',
       id: 10,
-      tiers: {1: 5, 2: 20, 3: 50}
+      tiers: {1: 10, 2: 25, 3: 100}
     },
-    taskEdits: {
+    taskValidations: {
       name: 'Scrutinizer',
       id: 11,
-      tiers: {1: 5, 2: 20, 3: 50}
+      tiers: {1: 25, 2: 100, 3: 250}
     },
     josm: {
       name: 'Awesome JOSM',
@@ -56,6 +56,13 @@ module.exports = function (data) {
       name: 'Mapathoner',
       id: 13,
       tiers: {1: 5, 2: 20, 3: 50}
+    },
+
+    // ID #14 and 16 used by date check logic
+    taskInvalidations: {
+      name: 'High Standards',
+      id: 16,
+      tiers: {1: 25, 2: 100, 3: 250}
     }
   };
 
