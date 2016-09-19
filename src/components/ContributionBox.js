@@ -1,5 +1,5 @@
 import React from 'react';
-import CalHeatMap from 'cal-heatmap';
+import CalHeatMap from '@gitterhq/cal-heatmap';
 
 export default React.createClass({
   getInitialState: function () {

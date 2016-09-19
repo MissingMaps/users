@@ -18,9 +18,7 @@ function mapBadgeToDescrip (badge) {
     'Year-long Mapper': 'Map early, map often. Map as many days as you can to achieve new levels.',
     'Task Champion': 'Champions finish their work. Every task in the Tasking Manager needs to be finshed. Each new level is achieved by completing additional Tasking Manager squares.',
     'Scrutinizer': 'QA creates great products. Every square in the Tasking Manager needs to be validated. Each new level is achieved by validating new squares in the Tasking Manager.',
-    'Crisis Mapper': 'The Humanitarian OpenStreetMap Team (HOT) adds new tasks daily to collect data in high risk disaster areas. Map on HOT projects to reach new achievements.',
-    'Red Cross Mapper': "The Red Cross Missing Maps team is putting the world's more vulnerable people on the map. Map on Red Cross projects to reach new levels.",
-    'MSF Mapper': 'Medecins Sans Frontieres provides medical aid to countries around the world. Map on MSF projects to provide valuable data to their relief efforts and achieve new badge levels.'
+    'High Standards': 'Some maps need a bit more work to shine. Good QA demands an eye for detail and an uncompromising expectation of quality. Each new level is achieved by invalidating squares in the Tasking Manager.'
   };
   return map[badge];
 }
@@ -40,9 +38,7 @@ function mapBadgeToTask (badge, x) {
     'Year-long Mapper': (x) => `Map ${x} more days in total.`,
     'Task Champion': (x) => `Complete ${x} more HOTOSM tasks.`,
     'Scrutinizer': (x) => `Validate ${x} more HOTOSM tasks.`,
-    'Crisis Mapper': (x) => `Map on ${x} more HOTOSM projects.`,
-    'Red Cross Mapper': (x) => `Map on ${x} more Red Cross projects.`,
-    'MSF Mapper': (x) => `Map on ${x} more MSF projects.`
+    'High Standards': (x) => `Invalidate ${x} more HOTOSM tasks.`
   };
   return map[badge](x);
 }
