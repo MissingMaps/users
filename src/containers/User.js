@@ -14,7 +14,6 @@ export default React.createClass({
   componentDidMount: function () {
     let component = this;
     var fetch_thisid = this.props.params.name;
-    console.log(fetch_thisid)
     fetch(`http://osmstats.redcross.org/users`)
       .then(function (response) {
         if (response.status >= 400) {
@@ -24,7 +23,7 @@ export default React.createClass({
       })
       .then(function (data) {
         var usercheck = data.filter(function (element) {
-          return element.name.toLowerCase() === fetch_thisid;
+          return element.name.replace(/\s+/g, '-').toLowerCase() === fetch_thisid;
         });
 
         if (usercheck.length > 0) {

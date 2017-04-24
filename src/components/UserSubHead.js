@@ -140,7 +140,7 @@ export default React.createClass({
     }
     let message = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(twittermsg + ' ' + window.location);
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
-    var linkName = this.state.userName.toLowerCase();
+    var linkName = this.state.userName.replace(/\s+/g, '-').toLowerCase();
 
     return (
       <div>
