@@ -14,7 +14,7 @@ export default React.createClass({
   componentDidMount: function () {
     let component = this;
     var fetch_thisid = this.props.params.name;
-    fetch(`http://osmstats.redcross.org/users`)
+    fetch(`https://osmstats.redcross.org/users`)
       .then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response Users Fetch');
@@ -27,7 +27,7 @@ export default React.createClass({
         });
 
         if (usercheck.length > 0) {
-          fetch(`http://osmstats.redcross.org/users/${usercheck[0].id}`)
+          fetch(`https://osmstats.redcross.org/users/${usercheck[0].id}`)
           .then(function (response) {
             if (response.status >= 400) {
               throw new Error('Bad response User Fetch');
