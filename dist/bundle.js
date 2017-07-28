@@ -63107,7 +63107,7 @@ exports.default = _react2.default.createClass({
   componentDidMount: function componentDidMount() {
     var component = this;
     var fetch_thisid = Number(this.props.params.id);
-    (0, _isomorphicFetch2.default)('http://osmstats.redcross.org/users').then(function (response) {
+    (0, _isomorphicFetch2.default)('https://osmstats.redcross.org/users').then(function (response) {
       if (response.status >= 400) {
         throw new Error('Bad response Users Fetch');
       }
@@ -63118,7 +63118,7 @@ exports.default = _react2.default.createClass({
       });
 
       if (usercheck.length > 0) {
-        (0, _isomorphicFetch2.default)('http://osmstats.redcross.org/users/' + fetch_thisid).then(function (response) {
+        (0, _isomorphicFetch2.default)('https://osmstats.redcross.org/users/' + fetch_thisid).then(function (response) {
           if (response.status >= 400) {
             throw new Error('Bad response User Fetch');
           }
@@ -63263,7 +63263,7 @@ exports.default = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     var component = this;
-    fetch('http://osmstats.redcross.org/users').then(function (response) {
+    fetch('https://osmstats.redcross.org/users').then(function (response) {
       if (response.status >= 400) {
         throw new Error('Bad response');
       }
