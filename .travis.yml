@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+  - "0.12"
+
+env:
+  global:
+  - GH_REF=github.com/MissingMaps/users
+  - DEPLOY_BRANCH=master
+  - secure: "X4usNtAIX5AET9F6Mi/zmUf0FiLZ0XcvLwoqaAL//UUjYS81PkX8KtLdASMo4IS7PR0S11M2oL4j4cAFO+eke2iHXF/SGAvoshoy2tlgZz4ZFfOso8onskvtn7WMd5Vty83cgVZ6mUMiPA0z8j0J0DVZiQMMAAt0g28DnI+9iWaR8n9nJMpU5+w4/ScMQFkZlOU7LN6B/SUuER7hC7u+Bs4Twv8+J7LRyHm4f9yb1kndVJr3rZ82tbO63zYVL0/PJC9g4PZySS/uMQn8/ajS+a2A74edYINt1/iouQSHNAbmCwpM6Qe6NLlnXWQ7WI5Nc6pjlp3XU5XDVDLKSDL5h+YhIVr0XYYFY7NLC19JQVwDDa9V8lKwtdExGZ1bK6JHFS7nIdLe/9nVaYaVCXihsobcsDmGbVjF9jxxUvEcdUCyfNYKCp6l6aZ0O9HILK2HH1oAjJBJyjOr0XmeDliuBu44fGDgyCLbb2R3V6vakBvQ3mfe+hKRRza4DYCtCNcb2Ev9cX9zirxxdUEiFJrG7iOxWXzSrI5CvvzPAj58ALuiG7PEF34FQVGP8zxblpvmlNUxttWeTf3DV9p0eSUqf4nuNe9MrN4RycXQWrglM8g+ejHFgXH/6LJzFjHEZ1BSGuoEtNR1R8TL1FF6fkm4v58xEmtfSFoI0PU2bjpy0+8="
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+- chmod +x ./.build_scripts/deploy.sh
+
+script:
+- npm run build-prod
+
+after_success:
+- ./.build_scripts/deploy.sh
