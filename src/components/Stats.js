@@ -74,6 +74,7 @@ export default React.createClass({
     var hashtag = 'http://missingmaps.org/leaderboards/#/' + user.hashtags[hashtag];
 
     // Round km calculation depending on length
+    var total_buildings = Number(user.total_building_count_add) + Number(user.total_building_count_mod);
     var total_road_km = Number(user.total_road_km_add).toFixed(1);
     total_road_km = (total_road_km.length > 4) ? Math.round(total_road_km) : total_road_km;
     var total_waterway_km = Number(user.total_waterway_km_add).toFixed(1);
@@ -83,14 +84,14 @@ export default React.createClass({
       <div id = "Stats-Container">
           <div className = "Split split-contributes">
             <div className = "Card-Content Split-Content">
-              <div className = "descriptor">Projects Contributed To</div>
+              <div className = "descriptor">Recent Projects Contributed To</div>
               <table className = "table-curve">
                 <tbody>
                   <tr>
                     <th>Project Hashtag</th>
                     <th>Changesets</th>
                   </tr>
-                  {R.take(4, Object.keys(user.hashtags)).map(function (hashtag) {
+                  {R.takeLast(4, Object.keys(user.hashtags)).map(function (hashtag) {
                     var hashtaglink = 'http://missingmaps.org/leaderboards/#/' + hashtag;
                     return (
                       <tr key={hashtag}>
@@ -128,7 +129,7 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Building.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_building_count_add)}</span></p>
+                  <p><span className="emphasizedNumber">{total_buildings}</span></p>
                   <p>Buildings</p>
                 </div>
               </div>
@@ -212,4 +213,3 @@ export default React.createClass({
     );
   }
 });
-

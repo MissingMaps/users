@@ -134,12 +134,14 @@ export default React.createClass({
     if (this.state.badgeCheck) {
       var badgeName = this.state.userBadge;
       var badgeLevel = this.state.badgeLevel;
-      twittermsg = this.state.userNameCap + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on MissingMaps!';
+      twittermsg = this.state.userNameCap + ' earned the ' + badgeName + ' badge (lv.' + badgeLevel + ') on #MissingMaps';
     } else {
-      twittermsg = this.state.userNameCap + ' contributed to MissingMaps! Checkout their progress at ';
+      twittermsg = this.state.userNameCap + ' contributed to #MissingMaps! Checkout their progress at ';
     }
     let message = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(twittermsg + ' ' + window.location);
     var osmlink = 'http://www.openstreetmap.org/user/' + this.state.userName;
+    var linkName = this.state.userName.replace(/\s+/g, '-').toLowerCase();
+
     return (
       <div>
         <div id = "Subhead-Container">
@@ -162,8 +164,8 @@ export default React.createClass({
               <p>{this.state.userTagline} &nbsp; | &nbsp; <a href={osmlink} target = "_blank">OSM Profile</a> </p>
             </div>
             <div className = "Subhead-Nav">
-              <IndexLink to={`/${this.state.userId}`} activeClassName="activeLink">Overview</IndexLink>
-              <Link to={`/${this.state.userId}/badges`} activeClassName="activeLink">Badges</Link>
+              <IndexLink to={`/${linkName}`} activeClassName="activeLink">Overview</IndexLink>
+              <Link to={`/${linkName}/badges`} activeClassName="activeLink">Badges</Link>
             </div>
           </div>
         </div>

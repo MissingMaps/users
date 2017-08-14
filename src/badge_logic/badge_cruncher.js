@@ -15,14 +15,15 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
     // buildingMods: user.total_building_count_mod,
     waterways: Number(user.total_waterway_count_add),
     pois: Number(user.total_poi_count_add),
-    gpsTraces: Number(user.total_gpstrace_count_add),
+    gpsTraces: Number(user.total_gps_trace_count_add),
     roadKms: Number(user.total_road_km_add),
     roadKmMods: Number(user.total_road_km_mod),
     // waterwayKms: user.total_waterway_km_add,
     // gpsTraceKmAdd: user.total_gpstrace_km_add,
     countries: user.country_count,
-    // tasks: user.,
-    // taskEdits: user.,
+    tasks: user.total_tm_done_count,
+    taskValidations: user.total_tm_val_count,
+    taskInvalidations: user.total_tm_inval_count,
     josm: user.total_josm_edit_count,
     hashtags: Object.keys(user.hashtags).length
   });
@@ -35,9 +36,9 @@ module.exports.getBadgeProgress = function getBadgeProgress (user) {
   });
 
   var mostObtainableNames = sortedSumBadges.slice(-3);
-  var mostObtainable = sumBadges[mostObtainableNames[2]];
-  var secondMostObtainable = sumBadges[mostObtainableNames[1]];
-  var thirdMostObtainable = sumBadges[mostObtainableNames[0]];
+  var mostObtainable = sumBadges[mostObtainableNames[mostObtainableNames.length - 1]];
+  var secondMostObtainable = sumBadges[mostObtainableNames[mostObtainableNames.length - 2]];
+  var thirdMostObtainable = sumBadges[mostObtainableNames[mostObtainableNames.length - 3]];
 
   return {
     all: R.mergeAll([sumBadges, consistencyBadge, historyBadge]),

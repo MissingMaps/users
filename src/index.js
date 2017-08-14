@@ -15,9 +15,9 @@ ReactDOM.render((
   <Router history={history}>
     <Route path="/">
       <IndexRoute component={Users} />
-      <Route path=":id" component={User}>
+      <Route path=":name" component={User}>
         <IndexRoute component={Overview} />
-        <Route path="/:id/badges" component={BadgeView} />
+        <Route path="/:name/badges" component={BadgeView} />
       </Route>
     </Route>
   </Router>),

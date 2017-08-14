@@ -1,5 +1,5 @@
 import React from 'react';
-import CalHeatMap from 'cal-heatmap';
+import CalHeatMap from '@gitterhq/cal-heatmap';
 
 export default React.createClass({
   getInitialState: function () {
@@ -62,6 +62,8 @@ export default React.createClass({
       });
       return timestamps;
     };
+    var start = new Date();
+    start.setMonth(start.getMonth()-this.state.range+1);
     cal.init({
       domain: this.state.domain,
       range: this.state.range,
@@ -69,7 +71,7 @@ export default React.createClass({
       domainLabelFormat: this.state.domainLabelFormat,
       cellSize: this.state.cellSize,
       displayLegend: this.state.displayLegend,
-      start: new Date(data[0]),
+      start: start,
       data: data,
       dataType: 'json',
       domainGutter: 10,

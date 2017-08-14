@@ -15,12 +15,10 @@ function mapBadgeToDescrip (badge) {
     'On Point': 'Places of interest guide where you can go. Every community needs hospitals, schools, businesses mapped to enable access. Each new level is achieved by creating new places on the map.',
     'White Water Rafting': 'Waterways, rivers, streams and more. Adding water features to the map adds regional context and valuable information in the event of flooding. Add these features to reach new levels of this badge.',
     'World Renown': 'You are famous around the globe. The more you edit in new countries, the more you can become world renown. Each new level is achieved by mapping in new countries around the world.',
-    'Year-Long Mapper': 'Map early, map often. Map as many days as you can to achieve new levels.',
+    'Year-long Mapper': 'Map early, map often. Map as many days as you can to achieve new levels.',
     'Task Champion': 'Champions finish their work. Every task in the Tasking Manager needs to be finshed. Each new level is achieved by completing additional Tasking Manager squares.',
     'Scrutinizer': 'QA creates great products. Every square in the Tasking Manager needs to be validated. Each new level is achieved by validating new squares in the Tasking Manager.',
-    'Crisis Mapper': 'The Humanitarian OpenStreetMap Team (HOT) adds new tasks daily to collect data in high risk disaster areas. Map on HOT projects to reach new achievements.',
-    'Red Cross Mapper': "The Red Cross Missing Maps team is putting the world's more vulnerable people on the map. Map on Red Cross projects to reach new levels.",
-    'MSF Mapper': 'Medecins Sans Frontieres provides medical aid to countries around the world. Map on MSF projects to provide valuable data to their relief efforts and achieve new badge levels.'
+    'High Standards': 'Some maps need a bit more work to shine. Good QA demands an eye for detail and an uncompromising expectation of quality. Each new level is achieved by invalidating squares in the Tasking Manager.'
   };
   return map[badge];
 }
@@ -33,16 +31,14 @@ function mapBadgeToTask (badge, x) {
     'Consistency': (x) => `Map ${x} more consecutive days.`,
     'Field Mapper': (x) => `Upload ${x} more GPS traces through OSM.`,
     'Awesome JOSM': (x) => `Use JOSM to map an area ${x} more times.`,
-    'Mapathoner': (x) => `Participate in ${x} more mapthons.`,
+    'Mapathoner': (x) => `Participate in ${x} more mapathons.`,
     'On Point': (x) => `Add ${x} more nodes.`,
     'White Water Rafting': (x) => `Add ${x} more km of waterways.`,
     'World Renown': (x) => `Map in ${x} more different countries.`,
-    'Year-Long Mapper': (x) => `Map ${x} more days in total.`,
+    'Year-long Mapper': (x) => `Map ${x} more days in total.`,
     'Task Champion': (x) => `Complete ${x} more HOTOSM tasks.`,
     'Scrutinizer': (x) => `Validate ${x} more HOTOSM tasks.`,
-    'Crisis Mapper': (x) => `Map on ${x} more HOTOSM projects.`,
-    'Red Cross Mapper': (x) => `Map on ${x} more Red Cross projects.`,
-    'MSF Mapper': (x) => `Map on ${x} more MSF projects.`
+    'High Standards': (x) => `Invalidate ${x} more HOTOSM tasks.`
   };
   return map[badge](x);
 }
@@ -54,19 +50,35 @@ function stripWS (text) {
 }
 
 export default (props) => {
-  if (!props.progress.all) {
-    return <div>Loading...</div>;
+  // Display loading message while props not ready
+  if (!props.progress.all) return <div>Loading...</div>;
+
+  // Front-end fix for Mapathoner badge
+  // Push Mapathoner badge to earned category when applicable
+  const mapathonerBadge = props.progress.all.hashtags;
+  if (mapathonerBadge && mapathonerBadge.badgeLevel > 0) {
+    props.badges.push({
+      category: mapathonerBadge.category,
+      id: 36 + mapathonerBadge.badgeLevel,
+      level: mapathonerBadge.badgeLevel,
+      name: mapathonerBadge.name
+    });
   }
+
+  // Remove duplicate badges, keep only the highest level earned
   var badges = R.compose(
     R.uniqBy(R.prop('name')),
     R.reverse,
     R.sortBy(R.prop('level'))
   )(props.badges);
+
   var list = badges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>
         <div className = "badge-home">
+        <div className = "badge-contain">
          <BadgeCompleted badge={badge}/>
+        </div>
           <div className = "badge-Details">
             <div className = "sub-head">
               {badge.name}
@@ -81,14 +93,10 @@ export default (props) => {
     );
   });
 
-  if( list.length == 0){
-    var badgeCheck = "";
-  }else{
-    var badgeCheck = BadgeContainer();
-  }
-
-  function BadgeContainer(){
-    return(
+  var badgeCheck = '';
+  if (list.length) badgeCheck = BadgeContainer();
+  function BadgeContainer () {
+    return (
       <div id = "Badge-Container">
         <div className = "Badge-Box-Content BadgeChecker">
           <div className = "badgeroll-frame">
@@ -121,6 +129,7 @@ export default (props) => {
       points: badge.points
     };
   });
+
   var progressList = progressBadges.map((badge) => {
     return (
       <li key={stripWS(badge.name)}>

@@ -47,7 +47,7 @@
     "budo": "^7.1.0",
     "envify": "^3.4.0",
     "express": "^4.13.3",
-    "node-sass": "3.4.2",
+    "node-sass": "3.7.0",
     "clean-css": "3.4.9",
     "nodemon": "1.8.1"
   },
@@ -57,7 +57,7 @@
     "babel-eslint": "^4.1.6",
     "binary-xhr": "0.0.2",
     "browserify": "^12.0.1",
-    "cal-heatmap": "^3.5.4",
+    "@gitterhq/cal-heatmap": "^3.6.1",
     "chart.js": "^1.0.2",
     "classnames": "^2.2.3",
     "es6-promise": "^3.0.2",

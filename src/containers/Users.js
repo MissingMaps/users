@@ -13,7 +13,7 @@ export default React.createClass({
   },
   componentDidMount: function () {
     let component = this;
-    fetch('http://missingmaps-api.devseed.com/users')
+    fetch('https://osmstats.redcross.org/users')
     .then(function (response) {
       if (response.status >= 400) {
         throw new Error('Bad response');
@@ -40,7 +40,11 @@ export default React.createClass({
   },
   onSubmit: function (input) {
     var user = R.find(R.propEq('name', input.toLowerCase()))(this.state.users);
-    this.props.history.push('/' + user.id);
+    if (user) {
+      this.props.history.push('/' + user.name.replace(/\s+/g, '-').toLowerCase());
+    } else {
+      this.props.history.push('/' + 1);
+    }
   },
 
   render: function () {
@@ -66,4 +70,3 @@ export default React.createClass({
     );
   }
 });
-
