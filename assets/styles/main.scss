@@ -741,7 +741,7 @@ input[type='text'] {
   background-color: #eee;
 }
 
-.section-user {
+.section-user { 
   margin: 2em 0;
 }
 
@@ -1923,13 +1923,13 @@ table {
   }
 }
 
-.split-smbadges {
+.split-smbadges { 
   @media screen and (max-width: 968px) {
     float: right;
   }
 }
 
-.split-stats, .Contribute-Timeline-Container {
+.split-stats, .Contribute-Timeline-Container { 
   padding-bottom: 10px;
 }
 
@@ -1944,7 +1944,7 @@ table {
   }
 }
 
-.split-smbadges, .split-contributes, .Split-Diversity, .split-stats, .Contribute-Timeline-Container {
+.split-smbadges, .split-contributes, .Split-Diversity, .split-stats, .Contribute-Timeline-Container { 
   @media screen and (max-width: 655px) {
     margin-bottom: 35px;
     padding-bottom: 35px;
@@ -1967,7 +1967,7 @@ table {
   }
 }
 
-.sub-section {
+.sub-section { 
   margin-bottom: 45px;
   @media screen and (max-width: 733px) {
     float: left;

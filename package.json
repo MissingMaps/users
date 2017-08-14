@@ -58,6 +58,7 @@
     "babel-eslint": "^4.1.6",
     "binary-xhr": "0.0.2",
     "browserify": "^12.0.1",
+    "@gitterhq/cal-heatmap": "^3.6.1",
     "chart.js": "^1.0.2",
     "classnames": "^2.2.3",
     "es6-promise": "^3.0.2",
