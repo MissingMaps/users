@@ -29,3 +29,10 @@ node_modules
 .DS_Store
 /**/.sass-cache/
 *.css.map
+
+# swaps
+*/**/*.swp
+*/**/*.swo
+
+#pyenv files
+.python-version
