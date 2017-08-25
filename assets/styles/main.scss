@@ -272,7 +272,7 @@ header{
 
 .dropdown-content {
     transition: opacity 0.3s;
-    opacity: 0; 
+    opacity: 0;
     height: 0;
     overflow: hidden;
     position: absolute;
@@ -338,7 +338,7 @@ header{
 
 .resp-dropdown-content{
     transition: opacity 0.1s;
-    opacity: 0; 
+    opacity: 0;
     height: 0;
     overflow: hidden;
     position: absolute;
@@ -680,7 +680,7 @@ input[type='text'] {
     }
     @media screen and (max-width: 753px) {
       background-color: initial;
-      border: #fff; 
+      border: #fff;
       margin-left: 15px;
     }
     @media screen and (max-width: 375px) {
