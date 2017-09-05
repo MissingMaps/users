@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/MissingMaps/users.svg?branch=master)](https://travis-ci.org/MissingMaps/users)
+
 # Missing Maps Users Profiles
 
-This repo contains the *User Page* component of the missingmaps website that are not part of the Jekyll build and can be tested independently. 
+This repo contains the *User Page* component of the missingmaps website that are not part of the Jekyll build and can be tested independently.
 
 ## Adding New Badges
 
