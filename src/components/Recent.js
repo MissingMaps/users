@@ -33,7 +33,7 @@ export default (props) => {
       <div className = "sub-section">
         <h3 className = "descriptor">Latest Edit</h3>
         <div className = "Recent-Edit-Box">
-          <span className = "EmphasizedNumber">{latestTotal}</span>
+          <span className = "EmphasizedNumber">{latestTotal.toLocaleString()}</span>
           <div className = "Recent-Edit-Sidebar">
             <p>edit{is_plural} made</p>
             <p>{last_edit_day} at {last_edit_minutes}</p>

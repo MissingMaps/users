@@ -62,7 +62,7 @@ export default React.createClass({
     var user = this.props.data;
 
     var countries = R.reverse(R.sortBy(R.prop(1), R.toPairs(user.country_list)));
-    var changesetCount = user.changeset_count;
+    var changesetCount = Number(user.changeset_count);
 
     var total =
       Number(user.total_road_count_add) +
@@ -97,7 +97,7 @@ export default React.createClass({
                     return (
                       <tr key={hashtag}>
                         <td key={hashtag}><a href={hashtaglink} target="_blank">#{hashtag}</a></td>
-                        <td><span className="emphasizedText">{user.hashtags[hashtag]}</span></td>
+                        <td><span className="emphasizedText">{user.hashtags[hashtag].toLocaleString()}</span></td>
                       </tr>
                       );
                   })}
@@ -116,28 +116,28 @@ export default React.createClass({
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Edit.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{total}</span></p>
+                  <p><span className="emphasizedNumber">{total.toLocaleString()}</span></p>
                   <p>Total Edits</p>
                 </div>
               </div>
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Changeset.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{changesetCount}</span></p>
+                  <p><span className="emphasizedNumber">{changesetCount.toLocaleString()}</span></p>
                   <p>Changesets</p>
                 </div>
               </div>
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/Building.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{total_buildings}</span></p>
+                  <p><span className="emphasizedNumber">{total_buildings.toLocaleString()}</span></p>
                   <p>Buildings</p>
                 </div>
               </div>
               <div className = "Stats-Item">
                 <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
                 <div className="Stat-Info">
-                  <p><span className="emphasizedNumber">{Number(user.total_poi_count_add)}</span></p>
+                  <p><span className="emphasizedNumber">{Number(user.total_poi_count_add).toLocaleString()}</span></p>
                   <p>Point of Interest</p>
                 </div>
               </div>
@@ -146,7 +146,7 @@ export default React.createClass({
                 <div className="Stat-Info">
                     <span className="emphasizedNumber small"
                       style={this.state.kmStatsStyle}>
-                      {' ' + total_road_km + 'km'}
+                      {' ' + total_road_km.toLocaleString() + ' km'}
                     </span>
                   <p>Roads</p>
                 </div>
@@ -158,7 +158,7 @@ export default React.createClass({
                       className="emphasizedNumber small"
                       style={this.state.kmStatsStyle}
                     >
-                      {' ' + total_waterway_km + 'km'}
+                      {' ' + total_waterway_km.toLocaleString() + ' km'}
                     </span>
                   <p>Waterways</p>
                 </div>
@@ -195,7 +195,7 @@ export default React.createClass({
                     return (
                       <tr key={country[0]}>
                         <td key={country[0]}>{countryName}</td>
-                        <td><span className="emphasizedText">{country[1]}</span></td>
+                        <td><span className="emphasizedText">{country[1].toLocaleString()}</span></td>
                       </tr>
                       );
                   })}
