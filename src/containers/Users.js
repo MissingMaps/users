@@ -13,7 +13,7 @@ export default React.createClass({
   },
   componentDidMount: function () {
     let component = this;
-    fetch('https://osmstats.redcross.org/users')
+    fetch('https://osm-stats-api.azurewebsites.net/users')
     .then(function (response) {
       if (response.status >= 400) {
         throw new Error('Bad response');

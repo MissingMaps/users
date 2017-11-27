@@ -13,7 +13,7 @@ export default React.createClass({
   componentDidMount: function () {
     let component = this;
     var fetch_thisid = this.props.params.name;
-    fetch(`https://osmstats.redcross.org/users`)
+    fetch(`https://osm-stats-api.azurewebsites.net/users`)
       .then(function (response) {
         if (response.status >= 400) {
           throw new Error('Bad response Users Fetch');
@@ -25,7 +25,7 @@ export default React.createClass({
           return element.name.replace(/\s+/g, '-').toLowerCase() === fetch_thisid;
         });
         if (usercheck.length > 0) {
-          fetch(`https://osmstats.redcross.org/users/${usercheck[0].id}`)
+          fetch(`https://osm-stats-api.azurewebsites.net/users/${usercheck[0].id}`)
           .then(function (response) {
             if (response.status >= 400) {
               throw new Error('Bad response User Fetch');
