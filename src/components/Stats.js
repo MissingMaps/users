@@ -22,29 +22,31 @@ export default React.createClass({
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var geo_extent = this.props.data.geo_extent;
-    var coordinates = geo_extent.geometry.coordinates;
-    L.Icon.Default.imagePath = 'assets/images/';
-    var icon = L.icon({
-      iconUrl: 'assets/images/blurred-marker.png',
-      shadowUrl: 'assets/images/blurred-marker.png',
-      iconSize: [60, 60],
-      shadowSize: [10, 10],
-      iconAnchor: [30, 30],
-      shadowAnchor: [5, 5]
-    });
+    if (this.props.data.geo_extent != null) {
+      var geo_extent = this.props.data.geo_extent;
+      var coordinates = geo_extent.geometry.coordinates;
+      L.Icon.Default.imagePath = 'assets/images/';
+      var icon = L.icon({
+        iconUrl: 'assets/images/blurred-marker.png',
+        shadowUrl: 'assets/images/blurred-marker.png',
+        iconSize: [60, 60],
+        shadowSize: [10, 10],
+        iconAnchor: [30, 30],
+        shadowAnchor: [5, 5]
+      });
 
-    L.geoJson(geo_extent).addTo(map);
-    if (geo_extent.geometry.type === 'MultiPolygon') {
-      coordinates.forEach(function (feature) {
-        var poly = polygon(feature);
+      L.geoJson(geo_extent).addTo(map);
+      if (geo_extent.geometry.type === 'MultiPolygon') {
+        coordinates.forEach(function (feature) {
+          var poly = polygon(feature);
+          var c = centroid(poly);
+          L.marker(R.reverse(c.geometry.coordinates), {icon: icon}).addTo(map);
+        });
+      } else {
+        var poly = polygon(coordinates);
         var c = centroid(poly);
         L.marker(R.reverse(c.geometry.coordinates), {icon: icon}).addTo(map);
-      });
-    } else {
-      var poly = polygon(coordinates);
-      var c = centroid(poly);
-      L.marker(R.reverse(c.geometry.coordinates), {icon: icon}).addTo(map);
+      }
     }
 
     // force km stats to clear left if too large for container
