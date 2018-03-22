@@ -133,7 +133,7 @@ export default React.createClass({
                 <img src="assets/graphics/staticons/Building.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{total_buildings.toLocaleString()}</span></p>
-                  <p>Buildings</p>
+                  <p>Building Edits</p>
                 </div>
               </div>
               <div className = "Stats-Item">
