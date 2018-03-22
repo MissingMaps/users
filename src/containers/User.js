@@ -15,7 +15,7 @@ export default React.createClass({
   componentDidMount: function () {
     const { params: { name } } = this.props;
 
-    fetch(`https://osm-stats-api.azurewebsites.net/users/${name}`)
+    fetch(`https://osm-stats-production-api.azurewebsites.net/users/${name}`)
       .then(response => {
         if (response.status >= 400) {
           throw new Error('Bad response User Fetch');
@@ -40,28 +40,7 @@ export default React.createClass({
     const { children } = this.props;
     const { user } = this.state;
 
-    var UserExists = (
-      <div>
-        <Header />
-        <div className="white" />
-        <div id="User-Container">
-          <div id="Main-User-Container">
-            <UserSubHead user={user} />
-            {user != null ? (
-              children &&
-              React.cloneElement(children, {
-                user
-              })
-            ) : (
-              <div>Loading...</div>
-            )}
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-
-    if (this.state.user === -1) {
+    if (user === -1) {
       return (
         <div>
           <Header />
@@ -96,6 +75,25 @@ export default React.createClass({
       );
     }
 
-    return UserExists;
+    return (
+      <div>
+        <Header />
+        <div className="white" />
+        <div id="User-Container">
+          <div id="Main-User-Container">
+            <UserSubHead user={user} />
+            {user != null ? (
+              children &&
+              React.cloneElement(children, {
+                user
+              })
+            ) : (
+              <div>Loading...</div>
+            )}
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 });

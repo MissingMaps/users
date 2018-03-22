@@ -12,11 +12,6 @@ module.exports = function (data) {
       id: 4,
       tiers: {1: 100, 2: 500, 3: 1000}
     },
-    gpsTraces: {
-      name: 'Field Mapper',
-      id: 5,
-      tiers: {1: 10, 2: 50, 3: 100}
-    },
     roadKms: {
       name: 'On The Road Again',
       id: 6,
@@ -28,7 +23,7 @@ module.exports = function (data) {
       tiers: {1: 50, 2: 100, 3: 500}
     },
     waterways: {
-      name: 'White Water Rafting',
+      name: 'Whitewater Rafting',
       id: 8,
       tiers: {1: 50, 2: 100, 3: 500}
     },
