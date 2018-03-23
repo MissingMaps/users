@@ -48,7 +48,7 @@ export default React.createClass({
   },
   setUserPic: function (userId) {
     var component = this;
-    return fetch('http://api.openstreetmap.org/api/0.6/user/' + userId)
+    return fetch('https://api.openstreetmap.org/api/0.6/user/' + userId)
     .then(function (res) {
       if (res.status >= 200 && res.status < 300) {
         return res.text();
