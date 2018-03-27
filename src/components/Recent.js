@@ -37,7 +37,10 @@ export default props => {
           <div className="Recent-Edit-Sidebar">
             <p>tracked edit{pluralSuffix(latestTotal)} made</p>
             <p>
-              {lastEditDay} at {lastEditMinutes}
+            {latest.created_at ?
+              <span>{lastEditDay} at {lastEditMinutes}</span>
+              : <span>&nbsp;</span>
+            }
             </p>
             <p>{lastHashtags}</p>
           </div>
