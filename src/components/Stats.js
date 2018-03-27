@@ -168,7 +168,7 @@ export default React.createClass({
                 <img src="assets/graphics/staticons/POI.svg" width="50px"></img>
                 <div className="Stat-Info">
                   <p><span className="emphasizedNumber">{Number(user.total_poi_count_add).toLocaleString()}</span></p>
-                  <p>Point of Interest</p>
+                  <p>Points of Interest</p>
                 </div>
               </div>
               <div className = "Stats-Item">
