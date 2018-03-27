@@ -57,8 +57,8 @@ export default React.createClass({
     var data = this.props.timestamps;
     var parser = function (data) {
       var timestamps = {};
-      data.forEach(function (ts, i) {
-        timestamps[new Date(ts) / 1000] = i;
+      data.forEach(function (ts) {
+        timestamps[new Date(ts) / 1000] = (timestamps[new Date(ts) / 1000] || 0) + 1;
       });
       return timestamps;
     };
