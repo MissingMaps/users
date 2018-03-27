@@ -8,7 +8,7 @@ export default React.createClass({
     evt.preventDefault();
     const input = evt.target.query.value;
 
-    this.props.history.push('/' + input.replace(/\s+/g, '-').toLowerCase());
+    this.props.history.push('/' + input);
 
     return false;
   },
