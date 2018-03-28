@@ -1511,7 +1511,7 @@ table {
 
 .Stats-Item {
   display: inline-block;
-  /*width: 27%;*/
+  width: 27%;
   height: 50px;
   padding: 10px; }
   @media screen and (max-width: 595px) {
