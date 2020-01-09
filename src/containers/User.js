@@ -15,7 +15,7 @@ export default React.createClass({
   componentDidMount: function () {
     const { params: { name } } = this.props;
 
-    fetch(`https://osm-stats-production-api.azurewebsites.net/users/${name}`)
+    fetch(`https://osm-stats-prod-api.azurewebsites.net/users/${name}`)
       .then(response => {
         if (response.status >= 400) {
           throw new Error('Bad response User Fetch');
