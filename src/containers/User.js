@@ -1,24 +1,26 @@
-import fetch from 'isomorphic-fetch';
-import React from 'react';
-import { Link } from 'react-router';
+import fetch from "isomorphic-fetch";
+import React from "react";
+import { Link } from "react-router";
 
-import UserSubHead from '../components/UserSubHead';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import UserSubHead from "../components/UserSubHead";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default React.createClass({
-  getInitialState: function () {
+  getInitialState: function() {
     return {
       user: {}
     };
   },
-  componentDidMount: function () {
-    const { params: { name } } = this.props;
+  componentDidMount: function() {
+    const {
+      params: { name }
+    } = this.props;
 
-    fetch(`https://osm-stats-prod-api.azurewebsites.net/users/${name}`)
+    fetch(`https://osm-stats-production-api.azurewebsites.net/users/${name}`)
       .then(response => {
         if (response.status >= 400) {
-          throw new Error('Bad response User Fetch');
+          throw new Error("Bad response User Fetch");
         }
 
         return response.json();
@@ -36,7 +38,7 @@ export default React.createClass({
         })
       );
   },
-  render: function () {
+  render: function() {
     const { children } = this.props;
     const { user } = this.state;
 
