@@ -323,7 +323,7 @@ input[type='text'] {
   text-transform: uppercase;
   color: #23bcc1;
   border: 1px solid #23bcc1;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   width: 66px;
   height: 16px;
   position: relative;
@@ -407,7 +407,7 @@ input[type='text'] {
 .invert-btn-blue {
   color: #23bcc1;
   border: 1px solid #23bcc1;
-  background-color: transparent; }
+  background-color: rgba(0, 0, 0, 0); }
   .invert-btn-blue:hover {
     background-color: rgba(35, 188, 193, 0.2); }
   .invert-btn-blue:active {
@@ -424,13 +424,13 @@ input[type='text'] {
 .invert-btn-grn {
   color: #71a333;
   border: 1px solid #71a333;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   position: relative;
   padding-right: 30px; }
   .invert-btn-grn:hover {
     background-color: #c5e2a1; }
   .invert-btn-grn:active {
-    background-color: transparent; }
+    background-color: rgba(0, 0, 0, 0); }
   .invert-btn-grn:focus {
     background-color: #c5e2a1; }
   .invert-btn-grn a {
@@ -818,7 +818,7 @@ input[type='text'] {
   position: relative;
   float: left;
   border-radius: 50%;
-  background-image: linear-gradient(90deg, #dbdbda 50%, transparent 50%, transparent), linear-gradient(90deg, #fef387 50%, #dbdbda 50%, #dbdbda); }
+  background-image: linear-gradient(90deg, #dbdbda 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0)), linear-gradient(90deg, #fef387 50%, #dbdbda 50%, #dbdbda); }
   .Badge.progress {
     width: 150px;
     height: 150px; }
@@ -1245,7 +1245,7 @@ table {
       background-size: 15px;
       background-position: center center;
       background-repeat: no-repeat;
-      color: transparent;
+      color: rgba(0, 0, 0, 0);
       height: 30px;
       width: 30px;
       background-color: #23bcc1;
