@@ -3560,7 +3560,7 @@ module.exports = function callBoundIntrinsic(name, allowMissing) {
 	return intrinsic;
 };
 
-},{"./":5,"get-intrinsic":39}],5:[function(require,module,exports){
+},{"./":5,"get-intrinsic":40}],5:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
@@ -3609,7 +3609,7 @@ if ($defineProperty) {
 	module.exports.apply = applyBind;
 }
 
-},{"function-bind":38,"get-intrinsic":39}],6:[function(require,module,exports){
+},{"function-bind":38,"get-intrinsic":40}],6:[function(require,module,exports){
 /*!
  * Chart.js
  * http://chartjs.org/
@@ -17016,7 +17016,7 @@ function objEquiv(a, b, opts) {
 
 module.exports = deepEqual;
 
-},{"is-arguments":60,"is-date-object":61,"is-regex":62,"object-is":67,"object-keys":71,"regexp.prototype.flags":239}],9:[function(require,module,exports){
+},{"is-arguments":63,"is-date-object":64,"is-regex":65,"object-is":70,"object-keys":74,"regexp.prototype.flags":242}],9:[function(require,module,exports){
 'use strict';
 
 var keys = require('object-keys');
@@ -17030,20 +17030,9 @@ var isFunction = function (fn) {
 	return typeof fn === 'function' && toStr.call(fn) === '[object Function]';
 };
 
-var arePropertyDescriptorsSupported = function () {
-	var obj = {};
-	try {
-		origDefineProperty(obj, 'x', { enumerable: false, value: obj });
-		// eslint-disable-next-line no-unused-vars, no-restricted-syntax
-		for (var _ in obj) { // jscs:ignore disallowUnusedVariables
-			return false;
-		}
-		return obj.x === obj;
-	} catch (e) { /* this is IE 8. */
-		return false;
-	}
-};
-var supportsDescriptors = origDefineProperty && arePropertyDescriptorsSupported();
+var hasPropertyDescriptors = require('has-property-descriptors')();
+
+var supportsDescriptors = origDefineProperty && hasPropertyDescriptors;
 
 var defineProperty = function (object, name, value, predicate) {
 	if (name in object && (!isFunction(predicate) || !predicate())) {
@@ -17057,7 +17046,7 @@ var defineProperty = function (object, name, value, predicate) {
 			writable: true
 		});
 	} else {
-		object[name] = value;
+		object[name] = value; // eslint-disable-line no-param-reassign
 	}
 };
 
@@ -17076,7 +17065,7 @@ defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
 
-},{"object-keys":71}],10:[function(require,module,exports){
+},{"has-property-descriptors":41,"object-keys":74}],10:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  *
@@ -18391,6 +18380,39 @@ module.exports = Function.prototype.bind || implementation;
 },{"./implementation":37}],39:[function(require,module,exports){
 'use strict';
 
+var functionsHaveNames = function functionsHaveNames() {
+	return typeof function f() {}.name === 'string';
+};
+
+var gOPD = Object.getOwnPropertyDescriptor;
+if (gOPD) {
+	try {
+		gOPD([], 'length');
+	} catch (e) {
+		// IE 8 has a broken gOPD
+		gOPD = null;
+	}
+}
+
+functionsHaveNames.functionsHaveConfigurableNames = function functionsHaveConfigurableNames() {
+	if (!functionsHaveNames() || !gOPD) {
+		return false;
+	}
+	var desc = gOPD(function () {}, 'name');
+	return !!desc && !!desc.configurable;
+};
+
+var $bind = Function.prototype.bind;
+
+functionsHaveNames.boundFunctionsHaveNames = function boundFunctionsHaveNames() {
+	return functionsHaveNames() && typeof $bind === 'function' && function f() {}.bind().name !== '';
+};
+
+module.exports = functionsHaveNames;
+
+},{}],40:[function(require,module,exports){
+'use strict';
+
 var undefined;
 
 var $SyntaxError = SyntaxError;
@@ -18453,6 +18475,8 @@ var INTRINSICS = {
 	'%AsyncIteratorPrototype%': needsEval,
 	'%Atomics%': typeof Atomics === 'undefined' ? undefined : Atomics,
 	'%BigInt%': typeof BigInt === 'undefined' ? undefined : BigInt,
+	'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined : BigInt64Array,
+	'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined : BigUint64Array,
 	'%Boolean%': Boolean,
 	'%DataView%': typeof DataView === 'undefined' ? undefined : DataView,
 	'%Date%': Date,
@@ -18507,6 +18531,14 @@ var INTRINSICS = {
 	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined : WeakRef,
 	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet
 };
+
+try {
+	null.error; // eslint-disable-line no-unused-expressions
+} catch (e) {
+	// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+	var errorProto = getProto(getProto(e));
+	INTRINSICS['%Error.prototype%'] = errorProto;
+}
 
 var doEval = function doEval(name) {
 	var value;
@@ -18593,6 +18625,7 @@ var $concat = bind.call(Function.call, Array.prototype.concat);
 var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
 var $replace = bind.call(Function.call, String.prototype.replace);
 var $strSlice = bind.call(Function.call, String.prototype.slice);
+var $exec = bind.call(Function.call, RegExp.prototype.exec);
 
 /* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
 var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
@@ -18648,6 +18681,9 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 		throw new $TypeError('"allowMissing" argument must be a boolean');
 	}
 
+	if ($exec(/^%?[^%]*%?$/, name) === null) {
+		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+	}
 	var parts = stringToPath(name);
 	var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
 
@@ -18720,7 +18756,42 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":38,"has":42,"has-symbols":40}],40:[function(require,module,exports){
+},{"function-bind":38,"has":45,"has-symbols":42}],41:[function(require,module,exports){
+'use strict';
+
+var GetIntrinsic = require('get-intrinsic');
+
+var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
+
+var hasPropertyDescriptors = function hasPropertyDescriptors() {
+	if ($defineProperty) {
+		try {
+			$defineProperty({}, 'a', { value: 1 });
+			return true;
+		} catch (e) {
+			// IE 8 has a broken defineProperty
+			return false;
+		}
+	}
+	return false;
+};
+
+hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
+	// node v0.6 has a bug where array lengths can be Set but not Defined
+	if (!hasPropertyDescriptors()) {
+		return null;
+	}
+	try {
+		return $defineProperty([], 'length', { value: 1 }).length !== 1;
+	} catch (e) {
+		// In Firefox 4-22, defining length on an array throws an exception.
+		return true;
+	}
+};
+
+module.exports = hasPropertyDescriptors;
+
+},{"get-intrinsic":40}],42:[function(require,module,exports){
 'use strict';
 
 var origSymbol = typeof Symbol !== 'undefined' && Symbol;
@@ -18735,7 +18806,7 @@ module.exports = function hasNativeSymbols() {
 	return hasSymbolSham();
 };
 
-},{"./shams":41}],41:[function(require,module,exports){
+},{"./shams":43}],43:[function(require,module,exports){
 'use strict';
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
@@ -18779,14 +18850,23 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
+'use strict';
+
+var hasSymbols = require('has-symbols/shams');
+
+module.exports = function hasToStringTagShams() {
+	return hasSymbols() && !!Symbol.toStringTag;
+};
+
+},{"has-symbols/shams":43}],45:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
 
-},{"function-bind":38}],43:[function(require,module,exports){
+},{"function-bind":38}],46:[function(require,module,exports){
 /**
  * Indicates that navigation was caused by a call to history.push.
  */
@@ -18818,7 +18898,7 @@ exports['default'] = {
   REPLACE: REPLACE,
   POP: POP
 };
-},{}],44:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -18845,7 +18925,7 @@ function loopAsync(turns, work, callback) {
 
   next();
 }
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 (function (process){(function (){
 /*eslint-disable no-empty */
 'use strict';
@@ -18916,7 +18996,7 @@ function readState(key) {
   return null;
 }
 }).call(this)}).call(this,require('_process'))
-},{"_process":73,"warning":248}],46:[function(require,module,exports){
+},{"_process":76,"warning":251}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18997,13 +19077,13 @@ function supportsGoWithoutReloadUsingHash() {
   var ua = navigator.userAgent;
   return ua.indexOf('Firefox') === -1;
 }
-},{}],47:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 exports.canUseDOM = canUseDOM;
-},{}],48:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -19046,7 +19126,7 @@ function createDOMHistory(options) {
 exports['default'] = createDOMHistory;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./DOMUtils":46,"./ExecutionEnvironment":47,"./createHistory":50,"_process":73,"invariant":59}],49:[function(require,module,exports){
+},{"./DOMUtils":49,"./ExecutionEnvironment":50,"./createHistory":53,"_process":76,"invariant":62}],52:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -19297,7 +19377,7 @@ function createHashHistory() {
 exports['default'] = createHashHistory;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./Actions":43,"./DOMStateStorage":45,"./DOMUtils":46,"./ExecutionEnvironment":47,"./createDOMHistory":48,"./parsePath":55,"_process":73,"invariant":59,"warning":248}],50:[function(require,module,exports){
+},{"./Actions":46,"./DOMStateStorage":48,"./DOMUtils":49,"./ExecutionEnvironment":50,"./createDOMHistory":51,"./parsePath":58,"_process":76,"invariant":62,"warning":251}],53:[function(require,module,exports){
 //import warning from 'warning'
 'use strict';
 
@@ -19589,7 +19669,7 @@ function createHistory() {
 
 exports['default'] = createHistory;
 module.exports = exports['default'];
-},{"./Actions":43,"./AsyncUtils":44,"./createLocation":51,"./deprecate":53,"./parsePath":55,"./runTransitionHook":56,"deep-equal":8}],51:[function(require,module,exports){
+},{"./Actions":46,"./AsyncUtils":47,"./createLocation":54,"./deprecate":56,"./parsePath":58,"./runTransitionHook":59,"deep-equal":8}],54:[function(require,module,exports){
 //import warning from 'warning'
 'use strict';
 
@@ -19644,7 +19724,7 @@ function createLocation() {
 
 exports['default'] = createLocation;
 module.exports = exports['default'];
-},{"./Actions":43,"./parsePath":55}],52:[function(require,module,exports){
+},{"./Actions":46,"./parsePath":58}],55:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -19802,7 +19882,7 @@ function createMemoryHistory() {
 exports['default'] = createMemoryHistory;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./Actions":43,"./createHistory":50,"./parsePath":55,"_process":73,"invariant":59,"warning":248}],53:[function(require,module,exports){
+},{"./Actions":46,"./createHistory":53,"./parsePath":58,"_process":76,"invariant":62,"warning":251}],56:[function(require,module,exports){
 //import warning from 'warning'
 
 "use strict";
@@ -19818,7 +19898,7 @@ function deprecate(fn) {
 
 exports["default"] = deprecate;
 module.exports = exports["default"];
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -19832,7 +19912,7 @@ function extractPath(string) {
 
 exports["default"] = extractPath;
 module.exports = exports["default"];
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -19879,7 +19959,7 @@ function parsePath(path) {
 exports['default'] = parsePath;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./extractPath":54,"_process":73,"warning":248}],56:[function(require,module,exports){
+},{"./extractPath":57,"_process":76,"warning":251}],59:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -19906,7 +19986,7 @@ function runTransitionHook(hook, location, callback) {
 exports['default'] = runTransitionHook;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"_process":73,"warning":248}],57:[function(require,module,exports){
+},{"_process":76,"warning":251}],60:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20047,7 +20127,7 @@ function useBasename(createHistory) {
 
 exports['default'] = useBasename;
 module.exports = exports['default'];
-},{"./ExecutionEnvironment":47,"./deprecate":53,"./extractPath":54,"./parsePath":55,"./runTransitionHook":56}],58:[function(require,module,exports){
+},{"./ExecutionEnvironment":50,"./deprecate":56,"./extractPath":57,"./parsePath":58,"./runTransitionHook":59}],61:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -20222,7 +20302,7 @@ function useQueries(createHistory) {
 exports['default'] = useQueries;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./deprecate":53,"./parsePath":55,"./runTransitionHook":56,"_process":73,"query-string":74,"warning":248}],59:[function(require,module,exports){
+},{"./deprecate":56,"./parsePath":58,"./runTransitionHook":59,"_process":76,"query-string":77,"warning":251}],62:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -20273,10 +20353,10 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 
-},{}],60:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 'use strict';
 
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 var callBound = require('call-bind/callBound');
 
 var $toString = callBound('Object.prototype.toString');
@@ -20308,7 +20388,7 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{"call-bind/callBound":4}],61:[function(require,module,exports){
+},{"call-bind/callBound":4,"has-tostringtag/shams":44}],64:[function(require,module,exports){
 'use strict';
 
 var getDay = Date.prototype.getDay;
@@ -20323,7 +20403,7 @@ var tryDateObject = function tryDateGetDayCall(value) {
 
 var toStr = Object.prototype.toString;
 var dateClass = '[object Date]';
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 
 module.exports = function isDateObject(value) {
 	if (typeof value !== 'object' || value === null) {
@@ -20332,12 +20412,11 @@ module.exports = function isDateObject(value) {
 	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
 };
 
-},{}],62:[function(require,module,exports){
+},{"has-tostringtag/shams":44}],65:[function(require,module,exports){
 'use strict';
 
 var callBound = require('call-bind/callBound');
-var hasSymbols = require('has-symbols')();
-var hasToStringTag = hasSymbols && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 var has;
 var $exec;
 var isRegexMarker;
@@ -20393,7 +20472,7 @@ module.exports = hasToStringTag
 		return $toString(value) === regexClass;
 	};
 
-},{"call-bind/callBound":4,"has-symbols":40}],63:[function(require,module,exports){
+},{"call-bind/callBound":4,"has-tostringtag/shams":44}],66:[function(require,module,exports){
 // the whatwg-fetch polyfill installs the fetch() function
 // on the global object (window or self)
 //
@@ -20401,19 +20480,19 @@ module.exports = hasToStringTag
 require('whatwg-fetch');
 module.exports = self.fetch.bind(self);
 
-},{"whatwg-fetch":249}],64:[function(require,module,exports){
+},{"whatwg-fetch":252}],67:[function(require,module,exports){
 /* @preserve
- * Leaflet 1.7.1, a JS library for interactive maps. http://leafletjs.com
- * (c) 2010-2019 Vladimir Agafonkin, (c) 2010-2011 CloudMade
+ * Leaflet 1.9.3, a JS library for interactive maps. https://leafletjs.com
+ * (c) 2010-2022 Vladimir Agafonkin, (c) 2010-2011 CloudMade
  */
 
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.L = {})));
-}(this, (function (exports) { 'use strict';
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.leaflet = {}));
+})(this, (function (exports) { 'use strict';
 
-  var version = "1.7.1";
+  var version = "1.9.3";
 
   /*
    * @namespace Util
@@ -20437,7 +20516,7 @@ module.exports = self.fetch.bind(self);
 
   // @function create(proto: Object, properties?: Object): Object
   // Compatibility polyfill for [Object.create](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
-  var create = Object.create || (function () {
+  var create$2 = Object.create || (function () {
   	function F() {}
   	return function (proto) {
   		F.prototype = proto;
@@ -20469,10 +20548,10 @@ module.exports = self.fetch.bind(self);
   // @function stamp(obj: Object): Number
   // Returns the unique ID of an object, assigning it one if it doesn't have it.
   function stamp(obj) {
-  	/*eslint-disable */
-  	obj._leaflet_id = obj._leaflet_id || ++lastId;
+  	if (!('_leaflet_id' in obj)) {
+  		obj['_leaflet_id'] = ++lastId;
+  	}
   	return obj._leaflet_id;
-  	/* eslint-enable */
   }
 
   // @function throttle(fn: Function, time: Number, context: Object): Function
@@ -20525,10 +20604,13 @@ module.exports = self.fetch.bind(self);
   // Returns a function which always returns `false`.
   function falseFn() { return false; }
 
-  // @function formatNum(num: Number, digits?: Number): Number
-  // Returns the number `num` rounded to `digits` decimals, or to 6 decimals by default.
-  function formatNum(num, digits) {
-  	var pow = Math.pow(10, (digits === undefined ? 6 : digits));
+  // @function formatNum(num: Number, precision?: Number|false): Number
+  // Returns the number `num` rounded with specified `precision`.
+  // The default `precision` value is 6 decimal places.
+  // `false` can be passed to skip any processing (can be useful to avoid round-off errors).
+  function formatNum(num, precision) {
+  	if (precision === false) { return num; }
+  	var pow = Math.pow(10, precision === undefined ? 6 : precision);
   	return Math.round(num * pow) / pow;
   }
 
@@ -20548,7 +20630,7 @@ module.exports = self.fetch.bind(self);
   // Merges the given properties to the `options` of the `obj` object, returning the resulting options. See `Class options`. Has an `L.setOptions` shortcut.
   function setOptions(obj, options) {
   	if (!Object.prototype.hasOwnProperty.call(obj, 'options')) {
-  		obj.options = obj.options ? create(obj.options) : {};
+  		obj.options = obj.options ? create$2(obj.options) : {};
   	}
   	for (var i in options) {
   		obj.options[i] = options[i];
@@ -20569,7 +20651,7 @@ module.exports = self.fetch.bind(self);
   	return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
   }
 
-  var templateRe = /\{ *([\w_-]+) *\}/g;
+  var templateRe = /\{ *([\w_ -]+) *\}/g;
 
   // @function template(str: String, data: Object): String
   // Simple templating facility, accepts a template string of the form `'Hello {a}, {b}'`
@@ -20611,7 +20693,7 @@ module.exports = self.fetch.bind(self);
   // mobile devices (by setting image `src` to this string).
   var emptyImageUrl = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-  // inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+  // inspired by https://paulirish.com/2011/requestanimationframe-for-smart-animating/
 
   function getPrefixed(name) {
   	return window['webkit' + name] || window['moz' + name] || window['ms' + name];
@@ -20654,11 +20736,12 @@ module.exports = self.fetch.bind(self);
   	}
   }
 
-  var Util = ({
+  var Util = {
+    __proto__: null,
     extend: extend,
-    create: create,
+    create: create$2,
     bind: bind,
-    lastId: lastId,
+    get lastId () { return lastId; },
     stamp: stamp,
     throttle: throttle,
     wrapNum: wrapNum,
@@ -20676,7 +20759,7 @@ module.exports = self.fetch.bind(self);
     cancelFn: cancelFn,
     requestAnimFrame: requestAnimFrame,
     cancelAnimFrame: cancelAnimFrame
-  });
+  };
 
   // @class Class
   // @aka L.Class
@@ -20695,6 +20778,8 @@ module.exports = self.fetch.bind(self);
   	// Returns a Javascript function that is a class constructor (to be called with `new`).
   	var NewClass = function () {
 
+  		setOptions(this);
+
   		// call the constructor
   		if (this.initialize) {
   			this.initialize.apply(this, arguments);
@@ -20706,7 +20791,7 @@ module.exports = self.fetch.bind(self);
 
   	var parentProto = NewClass.__super__ = this.prototype;
 
-  	var proto = create(parentProto);
+  	var proto = create$2(parentProto);
   	proto.constructor = NewClass;
 
   	NewClass.prototype = proto;
@@ -20721,23 +20806,24 @@ module.exports = self.fetch.bind(self);
   	// mix static properties into the class
   	if (props.statics) {
   		extend(NewClass, props.statics);
-  		delete props.statics;
   	}
 
   	// mix includes into the prototype
   	if (props.includes) {
   		checkDeprecatedMixinEvents(props.includes);
   		extend.apply(null, [proto].concat(props.includes));
-  		delete props.includes;
-  	}
-
-  	// merge options
-  	if (proto.options) {
-  		props.options = extend(create(proto.options), props.options);
   	}
 
   	// mix given properties into the prototype
   	extend(proto, props);
+  	delete proto.statics;
+  	delete proto.includes;
+
+  	// merge options
+  	if (proto.options) {
+  		proto.options = parentProto.options ? create$2(parentProto.options) : {};
+  		extend(proto.options, props.options);
+  	}
 
   	proto._initHooks = [];
 
@@ -20764,7 +20850,12 @@ module.exports = self.fetch.bind(self);
   // @function include(properties: Object): this
   // [Includes a mixin](#class-includes) into the current class.
   Class.include = function (props) {
+  	var parentOptions = this.prototype.options;
   	extend(this.prototype, props);
+  	if (props.options) {
+  		this.prototype.options = parentOptions;
+  		this.mergeOptions(props.options);
+  	}
   	return this;
   };
 
@@ -20790,6 +20881,7 @@ module.exports = self.fetch.bind(self);
   };
 
   function checkDeprecatedMixinEvents(includes) {
+  	/* global L: true */
   	if (typeof L === 'undefined' || !L || !L.Mixin) { return; }
 
   	includes = isArray(includes) ? includes : [includes];
@@ -20871,7 +20963,7 @@ module.exports = self.fetch.bind(self);
   	 */
   	off: function (types, fn, context) {
 
-  		if (!types) {
+  		if (!arguments.length) {
   			// clear all listeners if called without arguments
   			delete this._events;
 
@@ -20883,8 +20975,13 @@ module.exports = self.fetch.bind(self);
   		} else {
   			types = splitWords(types);
 
+  			var removeAll = arguments.length === 1;
   			for (var i = 0, len = types.length; i < len; i++) {
-  				this._off(types[i], fn, context);
+  				if (removeAll) {
+  					this._off(types[i]);
+  				} else {
+  					this._off(types[i], fn, context);
+  				}
   			}
   		}
 
@@ -20892,31 +20989,30 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// attach listener (without syntactic sugar now)
-  	_on: function (type, fn, context) {
-  		this._events = this._events || {};
+  	_on: function (type, fn, context, _once) {
+  		if (typeof fn !== 'function') {
+  			console.warn('wrong listener type: ' + typeof fn);
+  			return;
+  		}
 
-  		/* get/init listeners for type */
-  		var typeListeners = this._events[type];
-  		if (!typeListeners) {
-  			typeListeners = [];
-  			this._events[type] = typeListeners;
+  		// check if fn already there
+  		if (this._listens(type, fn, context) !== false) {
+  			return;
   		}
 
   		if (context === this) {
   			// Less memory footprint.
   			context = undefined;
   		}
-  		var newListener = {fn: fn, ctx: context},
-  		    listeners = typeListeners;
 
-  		// check if fn already there
-  		for (var i = 0, len = listeners.length; i < len; i++) {
-  			if (listeners[i].fn === fn && listeners[i].ctx === context) {
-  				return;
-  			}
+  		var newListener = {fn: fn, ctx: context};
+  		if (_once) {
+  			newListener.once = true;
   		}
 
-  		listeners.push(newListener);
+  		this._events = this._events || {};
+  		this._events[type] = this._events[type] || [];
+  		this._events[type].push(newListener);
   	},
 
   	_off: function (type, fn, context) {
@@ -20924,53 +21020,50 @@ module.exports = self.fetch.bind(self);
   		    i,
   		    len;
 
-  		if (!this._events) { return; }
+  		if (!this._events) {
+  			return;
+  		}
 
   		listeners = this._events[type];
-
   		if (!listeners) {
   			return;
   		}
 
-  		if (!fn) {
-  			// Set all removed listeners to noop so they are not called if remove happens in fire
-  			for (i = 0, len = listeners.length; i < len; i++) {
-  				listeners[i].fn = falseFn;
+  		if (arguments.length === 1) { // remove all
+  			if (this._firingCount) {
+  				// Set all removed listeners to noop
+  				// so they are not called if remove happens in fire
+  				for (i = 0, len = listeners.length; i < len; i++) {
+  					listeners[i].fn = falseFn;
+  				}
   			}
   			// clear all listeners for a type if function isn't specified
   			delete this._events[type];
   			return;
   		}
 
-  		if (context === this) {
-  			context = undefined;
+  		if (typeof fn !== 'function') {
+  			console.warn('wrong listener type: ' + typeof fn);
+  			return;
   		}
 
-  		if (listeners) {
+  		// find fn and remove it
+  		var index = this._listens(type, fn, context);
+  		if (index !== false) {
+  			var listener = listeners[index];
+  			if (this._firingCount) {
+  				// set the removed listener to noop so that's not called if remove happens in fire
+  				listener.fn = falseFn;
 
-  			// find fn and remove it
-  			for (i = 0, len = listeners.length; i < len; i++) {
-  				var l = listeners[i];
-  				if (l.ctx !== context) { continue; }
-  				if (l.fn === fn) {
-
-  					// set the removed listener to noop so that's not called if remove happens in fire
-  					l.fn = falseFn;
-
-  					if (this._firingCount) {
-  						/* copy array in case events are being fired */
-  						this._events[type] = listeners = listeners.slice();
-  					}
-  					listeners.splice(i, 1);
-
-  					return;
-  				}
+  				/* copy array in case events are being fired */
+  				this._events[type] = listeners = listeners.slice();
   			}
+  			listeners.splice(index, 1);
   		}
   	},
 
   	// @method fire(type: String, data?: Object, propagate?: Boolean): this
-  	// Fires an event of the specified type. You can optionally provide an data
+  	// Fires an event of the specified type. You can optionally provide a data
   	// object — the first argument of the listener function will contain its
   	// properties. The event can optionally be propagated to event parents.
   	fire: function (type, data, propagate) {
@@ -20984,12 +21077,16 @@ module.exports = self.fetch.bind(self);
 
   		if (this._events) {
   			var listeners = this._events[type];
-
   			if (listeners) {
   				this._firingCount = (this._firingCount + 1) || 1;
   				for (var i = 0, len = listeners.length; i < len; i++) {
   					var l = listeners[i];
-  					l.fn.call(l.ctx || this, event);
+  					// off overwrites l.fn, so we need to copy fn to a var
+  					var fn = l.fn;
+  					if (l.once) {
+  						this.off(type, fn, l.ctx);
+  					}
+  					fn.call(l.ctx || this, event);
   				}
 
   				this._firingCount--;
@@ -21004,42 +21101,86 @@ module.exports = self.fetch.bind(self);
   		return this;
   	},
 
-  	// @method listens(type: String): Boolean
+  	// @method listens(type: String, propagate?: Boolean): Boolean
+  	// @method listens(type: String, fn: Function, context?: Object, propagate?: Boolean): Boolean
   	// Returns `true` if a particular event type has any listeners attached to it.
-  	listens: function (type, propagate) {
+  	// The verification can optionally be propagated, it will return `true` if parents have the listener attached to it.
+  	listens: function (type, fn, context, propagate) {
+  		if (typeof type !== 'string') {
+  			console.warn('"string" type argument expected');
+  		}
+
+  		// we don't overwrite the input `fn` value, because we need to use it for propagation
+  		var _fn = fn;
+  		if (typeof fn !== 'function') {
+  			propagate = !!fn;
+  			_fn = undefined;
+  			context = undefined;
+  		}
+
   		var listeners = this._events && this._events[type];
-  		if (listeners && listeners.length) { return true; }
+  		if (listeners && listeners.length) {
+  			if (this._listens(type, _fn, context) !== false) {
+  				return true;
+  			}
+  		}
 
   		if (propagate) {
   			// also check parents for listeners if event propagates
   			for (var id in this._eventParents) {
-  				if (this._eventParents[id].listens(type, propagate)) { return true; }
+  				if (this._eventParents[id].listens(type, fn, context, propagate)) { return true; }
   			}
   		}
   		return false;
+  	},
+
+  	// returns the index (number) or false
+  	_listens: function (type, fn, context) {
+  		if (!this._events) {
+  			return false;
+  		}
+
+  		var listeners = this._events[type] || [];
+  		if (!fn) {
+  			return !!listeners.length;
+  		}
+
+  		if (context === this) {
+  			// Less memory footprint.
+  			context = undefined;
+  		}
+
+  		for (var i = 0, len = listeners.length; i < len; i++) {
+  			if (listeners[i].fn === fn && listeners[i].ctx === context) {
+  				return i;
+  			}
+  		}
+  		return false;
+
   	},
 
   	// @method once(…): this
   	// Behaves as [`on(…)`](#evented-on), except the listener will only get fired once and then removed.
   	once: function (types, fn, context) {
 
+  		// types can be a map of types/handlers
   		if (typeof types === 'object') {
   			for (var type in types) {
-  				this.once(type, types[type], fn);
+  				// we don't process space-separated events here for performance;
+  				// it's a hot path since Layer uses the on(obj) syntax
+  				this._on(type, types[type], fn, true);
   			}
-  			return this;
+
+  		} else {
+  			// types can be a string of space-separated words
+  			types = splitWords(types);
+
+  			for (var i = 0, len = types.length; i < len; i++) {
+  				this._on(types[i], fn, context, true);
+  			}
   		}
 
-  		var handler = bind(function () {
-  			this
-  			    .off(types, fn, context)
-  			    .off(types, handler, context);
-  		}, this);
-
-  		// add a listener that's executed once and removed after that
-  		return this
-  		    .on(types, fn, context)
-  		    .on(types, handler, context);
+  		return this;
   	},
 
   	// @method addEventParent(obj: Evented): this
@@ -21355,21 +21496,36 @@ module.exports = self.fetch.bind(self);
   Bounds.prototype = {
   	// @method extend(point: Point): this
   	// Extends the bounds to contain the given point.
-  	extend: function (point) { // (Point)
-  		point = toPoint(point);
+
+  	// @alternative
+  	// @method extend(otherBounds: Bounds): this
+  	// Extend the bounds to contain the given bounds
+  	extend: function (obj) {
+  		var min2, max2;
+  		if (!obj) { return this; }
+
+  		if (obj instanceof Point || typeof obj[0] === 'number' || 'x' in obj) {
+  			min2 = max2 = toPoint(obj);
+  		} else {
+  			obj = toBounds(obj);
+  			min2 = obj.min;
+  			max2 = obj.max;
+
+  			if (!min2 || !max2) { return this; }
+  		}
 
   		// @property min: Point
   		// The top left corner of the rectangle.
   		// @property max: Point
   		// The bottom right corner of the rectangle.
   		if (!this.min && !this.max) {
-  			this.min = point.clone();
-  			this.max = point.clone();
+  			this.min = min2.clone();
+  			this.max = max2.clone();
   		} else {
-  			this.min.x = Math.min(point.x, this.min.x);
-  			this.max.x = Math.max(point.x, this.max.x);
-  			this.min.y = Math.min(point.y, this.min.y);
-  			this.max.y = Math.max(point.y, this.max.y);
+  			this.min.x = Math.min(min2.x, this.min.x);
+  			this.max.x = Math.max(max2.x, this.max.x);
+  			this.min.y = Math.min(min2.y, this.min.y);
+  			this.max.y = Math.max(max2.y, this.max.y);
   		}
   		return this;
   	},
@@ -21377,7 +21533,7 @@ module.exports = self.fetch.bind(self);
   	// @method getCenter(round?: Boolean): Point
   	// Returns the center point of the bounds.
   	getCenter: function (round) {
-  		return new Point(
+  		return toPoint(
   		        (this.min.x + this.max.x) / 2,
   		        (this.min.y + this.max.y) / 2, round);
   	},
@@ -21385,13 +21541,13 @@ module.exports = self.fetch.bind(self);
   	// @method getBottomLeft(): Point
   	// Returns the bottom-left point of the bounds.
   	getBottomLeft: function () {
-  		return new Point(this.min.x, this.max.y);
+  		return toPoint(this.min.x, this.max.y);
   	},
 
   	// @method getTopRight(): Point
   	// Returns the top-right point of the bounds.
   	getTopRight: function () { // -> Point
-  		return new Point(this.max.x, this.min.y);
+  		return toPoint(this.max.x, this.min.y);
   	},
 
   	// @method getTopLeft(): Point
@@ -21471,9 +21627,40 @@ module.exports = self.fetch.bind(self);
   		return xOverlaps && yOverlaps;
   	},
 
+  	// @method isValid(): Boolean
+  	// Returns `true` if the bounds are properly initialized.
   	isValid: function () {
   		return !!(this.min && this.max);
-  	}
+  	},
+
+
+  	// @method pad(bufferRatio: Number): Bounds
+  	// Returns bounds created by extending or retracting the current bounds by a given ratio in each direction.
+  	// For example, a ratio of 0.5 extends the bounds by 50% in each direction.
+  	// Negative values will retract the bounds.
+  	pad: function (bufferRatio) {
+  		var min = this.min,
+  		max = this.max,
+  		heightBuffer = Math.abs(min.x - max.x) * bufferRatio,
+  		widthBuffer = Math.abs(min.y - max.y) * bufferRatio;
+
+
+  		return toBounds(
+  			toPoint(min.x - heightBuffer, min.y - widthBuffer),
+  			toPoint(max.x + heightBuffer, max.y + widthBuffer));
+  	},
+
+
+  	// @method equals(otherBounds: Bounds): Boolean
+  	// Returns `true` if the rectangle is equivalent to the given bounds.
+  	equals: function (bounds) {
+  		if (!bounds) { return false; }
+
+  		bounds = toBounds(bounds);
+
+  		return this.min.equals(bounds.getTopLeft()) &&
+  			this.max.equals(bounds.getBottomRight());
+  	},
   };
 
 
@@ -21879,7 +22066,7 @@ module.exports = self.fetch.bind(self);
    * Object that defines coordinate reference systems for projecting
    * geographical points into pixel (screen) coordinates and back (and to
    * coordinates in other units for [WMS](https://en.wikipedia.org/wiki/Web_Map_Service) services). See
-   * [spatial reference system](http://en.wikipedia.org/wiki/Coordinate_reference_system).
+   * [spatial reference system](https://en.wikipedia.org/wiki/Spatial_reference_system).
    *
    * Leaflet defines the most usual CRSs by default. If you want to use a
    * CRS not defined by default, take a look at the
@@ -22022,7 +22209,7 @@ module.exports = self.fetch.bind(self);
 
   	// Mean Earth Radius, as recommended for use by
   	// the International Union of Geodesy and Geophysics,
-  	// see http://rosettacode.org/wiki/Haversine_formula
+  	// see https://rosettacode.org/wiki/Haversine_formula
   	R: 6371000,
 
   	// distance between two geographical points using spherical law of cosines approximation
@@ -22206,7 +22393,7 @@ module.exports = self.fetch.bind(self);
   		}
 
   		// closes the ring for polygons; "x" is VML syntax
-  		str += closed ? (svg ? 'z' : 'x') : '';
+  		str += closed ? (Browser.svg ? 'z' : 'x') : '';
   	}
 
   	// SVG complains about empty path strings
@@ -22228,7 +22415,7 @@ module.exports = self.fetch.bind(self);
    * ```
    */
 
-  var style$1 = document.documentElement.style;
+  var style = document.documentElement.style;
 
   // @property ie: Boolean; `true` for all Internet Explorer versions (not Edge).
   var ie = 'ActiveXObject' in window;
@@ -22244,15 +22431,15 @@ module.exports = self.fetch.bind(self);
   var webkit = userAgentContains('webkit');
 
   // @property android: Boolean
-  // `true` for any browser running on an Android platform.
+  // **Deprecated.** `true` for any browser running on an Android platform.
   var android = userAgentContains('android');
 
-  // @property android23: Boolean; `true` for browsers running on Android 2 or Android 3.
+  // @property android23: Boolean; **Deprecated.** `true` for browsers running on Android 2 or Android 3.
   var android23 = userAgentContains('android 2') || userAgentContains('android 3');
 
   /* See https://stackoverflow.com/a/17961266 for details on detecting stock Android */
   var webkitVer = parseInt(/WebKit\/([0-9]+)|$/.exec(navigator.userAgent)[1], 10); // also matches AppleWebKit
-  // @property androidStock: Boolean; `true` for the Android stock browser (i.e. not Chrome)
+  // @property androidStock: Boolean; **Deprecated.** `true` for the Android stock browser (i.e. not Chrome)
   var androidStock = android && userAgentContains('Google') && webkitVer < 537 && !('AudioNode' in window);
 
   // @property opera: Boolean; `true` for the Opera browser
@@ -22271,19 +22458,19 @@ module.exports = self.fetch.bind(self);
 
   // @property opera12: Boolean
   // `true` for the Opera browser supporting CSS transforms (version 12 or later).
-  var opera12 = 'OTransition' in style$1;
+  var opera12 = 'OTransition' in style;
 
   // @property win: Boolean; `true` when the browser is running in a Windows platform
   var win = navigator.platform.indexOf('Win') === 0;
 
   // @property ie3d: Boolean; `true` for all Internet Explorer versions supporting CSS transforms.
-  var ie3d = ie && ('transition' in style$1);
+  var ie3d = ie && ('transition' in style);
 
   // @property webkit3d: Boolean; `true` for webkit-based browsers supporting CSS transforms.
   var webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23;
 
   // @property gecko3d: Boolean; `true` for gecko-based browsers supporting CSS transforms.
-  var gecko3d = 'MozPerspective' in style$1;
+  var gecko3d = 'MozPerspective' in style;
 
   // @property any3d: Boolean
   // `true` for all browsers supporting CSS transforms.
@@ -22307,13 +22494,17 @@ module.exports = self.fetch.bind(self);
   // `true` for all browsers supporting [pointer events](https://msdn.microsoft.com/en-us/library/dn433244%28v=vs.85%29.aspx).
   var pointer = !!(window.PointerEvent || msPointer);
 
-  // @property touch: Boolean
+  // @property touchNative: Boolean
   // `true` for all browsers supporting [touch events](https://developer.mozilla.org/docs/Web/API/Touch_events).
-  // This does not necessarily mean that the browser is running in a computer with
+  // **This does not necessarily mean** that the browser is running in a computer with
   // a touchscreen, it only means that the browser is capable of understanding
   // touch events.
-  var touch = !window.L_NO_TOUCH && (pointer || 'ontouchstart' in window ||
-  		(window.DocumentTouch && document instanceof window.DocumentTouch));
+  var touchNative = 'ontouchstart' in window || !!window.TouchEvent;
+
+  // @property touch: Boolean
+  // `true` for all browsers supporting either [touch](#browser-touch) or [pointer](#browser-pointer) events.
+  // Note: pointer events will be preferred (if available), and processed for all `touch*` listeners.
+  var touch = !window.L_NO_TOUCH && (touchNative || pointer);
 
   // @property mobileOpera: Boolean; `true` for the Opera browser in a mobile device.
   var mobileOpera = mobile && opera;
@@ -22346,17 +22537,23 @@ module.exports = self.fetch.bind(self);
 
   // @property canvas: Boolean
   // `true` when the browser supports [`<canvas>`](https://developer.mozilla.org/docs/Web/API/Canvas_API).
-  var canvas = (function () {
+  var canvas$1 = (function () {
   	return !!document.createElement('canvas').getContext;
   }());
 
   // @property svg: Boolean
   // `true` when the browser supports [SVG](https://developer.mozilla.org/docs/Web/SVG).
-  var svg = !!(document.createElementNS && svgCreate('svg').createSVGRect);
+  var svg$1 = !!(document.createElementNS && svgCreate('svg').createSVGRect);
+
+  var inlineSvg = !!svg$1 && (function () {
+  	var div = document.createElement('div');
+  	div.innerHTML = '<svg/>';
+  	return (div.firstChild && div.firstChild.namespaceURI) === 'http://www.w3.org/2000/svg';
+  })();
 
   // @property vml: Boolean
   // `true` if the browser supports [VML](https://en.wikipedia.org/wiki/Vector_Markup_Language).
-  var vml = !svg && (function () {
+  var vml = !svg$1 && (function () {
   	try {
   		var div = document.createElement('div');
   		div.innerHTML = '<v:shape adj="1"/>';
@@ -22372,114 +22569,100 @@ module.exports = self.fetch.bind(self);
   }());
 
 
+  // @property mac: Boolean; `true` when the browser is running in a Mac platform
+  var mac = navigator.platform.indexOf('Mac') === 0;
+
+  // @property mac: Boolean; `true` when the browser is running in a Linux platform
+  var linux = navigator.platform.indexOf('Linux') === 0;
+
   function userAgentContains(str) {
   	return navigator.userAgent.toLowerCase().indexOf(str) >= 0;
   }
 
-  var Browser = ({
-    ie: ie,
-    ielt9: ielt9,
-    edge: edge,
-    webkit: webkit,
-    android: android,
-    android23: android23,
-    androidStock: androidStock,
-    opera: opera,
-    chrome: chrome,
-    gecko: gecko,
-    safari: safari,
-    phantom: phantom,
-    opera12: opera12,
-    win: win,
-    ie3d: ie3d,
-    webkit3d: webkit3d,
-    gecko3d: gecko3d,
-    any3d: any3d,
-    mobile: mobile,
-    mobileWebkit: mobileWebkit,
-    mobileWebkit3d: mobileWebkit3d,
-    msPointer: msPointer,
-    pointer: pointer,
-    touch: touch,
-    mobileOpera: mobileOpera,
-    mobileGecko: mobileGecko,
-    retina: retina,
-    passiveEvents: passiveEvents,
-    canvas: canvas,
-    svg: svg,
-    vml: vml
-  });
+
+  var Browser = {
+  	ie: ie,
+  	ielt9: ielt9,
+  	edge: edge,
+  	webkit: webkit,
+  	android: android,
+  	android23: android23,
+  	androidStock: androidStock,
+  	opera: opera,
+  	chrome: chrome,
+  	gecko: gecko,
+  	safari: safari,
+  	phantom: phantom,
+  	opera12: opera12,
+  	win: win,
+  	ie3d: ie3d,
+  	webkit3d: webkit3d,
+  	gecko3d: gecko3d,
+  	any3d: any3d,
+  	mobile: mobile,
+  	mobileWebkit: mobileWebkit,
+  	mobileWebkit3d: mobileWebkit3d,
+  	msPointer: msPointer,
+  	pointer: pointer,
+  	touch: touch,
+  	touchNative: touchNative,
+  	mobileOpera: mobileOpera,
+  	mobileGecko: mobileGecko,
+  	retina: retina,
+  	passiveEvents: passiveEvents,
+  	canvas: canvas$1,
+  	svg: svg$1,
+  	vml: vml,
+  	inlineSvg: inlineSvg,
+  	mac: mac,
+  	linux: linux
+  };
 
   /*
    * Extends L.DomEvent to provide touch support for Internet Explorer and Windows-based devices.
    */
 
-
-  var POINTER_DOWN =   msPointer ? 'MSPointerDown'   : 'pointerdown';
-  var POINTER_MOVE =   msPointer ? 'MSPointerMove'   : 'pointermove';
-  var POINTER_UP =     msPointer ? 'MSPointerUp'     : 'pointerup';
-  var POINTER_CANCEL = msPointer ? 'MSPointerCancel' : 'pointercancel';
-
+  var POINTER_DOWN =   Browser.msPointer ? 'MSPointerDown'   : 'pointerdown';
+  var POINTER_MOVE =   Browser.msPointer ? 'MSPointerMove'   : 'pointermove';
+  var POINTER_UP =     Browser.msPointer ? 'MSPointerUp'     : 'pointerup';
+  var POINTER_CANCEL = Browser.msPointer ? 'MSPointerCancel' : 'pointercancel';
+  var pEvent = {
+  	touchstart  : POINTER_DOWN,
+  	touchmove   : POINTER_MOVE,
+  	touchend    : POINTER_UP,
+  	touchcancel : POINTER_CANCEL
+  };
+  var handle = {
+  	touchstart  : _onPointerStart,
+  	touchmove   : _handlePointer,
+  	touchend    : _handlePointer,
+  	touchcancel : _handlePointer
+  };
   var _pointers = {};
   var _pointerDocListener = false;
 
   // Provides a touch events wrapper for (ms)pointer events.
-  // ref http://www.w3.org/TR/pointerevents/ https://www.w3.org/Bugs/Public/show_bug.cgi?id=22890
+  // ref https://www.w3.org/TR/pointerevents/ https://www.w3.org/Bugs/Public/show_bug.cgi?id=22890
 
-  function addPointerListener(obj, type, handler, id) {
+  function addPointerListener(obj, type, handler) {
   	if (type === 'touchstart') {
-  		_addPointerStart(obj, handler, id);
-
-  	} else if (type === 'touchmove') {
-  		_addPointerMove(obj, handler, id);
-
-  	} else if (type === 'touchend') {
-  		_addPointerEnd(obj, handler, id);
+  		_addPointerDocListener();
   	}
-
-  	return this;
+  	if (!handle[type]) {
+  		console.warn('wrong event specified:', type);
+  		return falseFn;
+  	}
+  	handler = handle[type].bind(this, handler);
+  	obj.addEventListener(pEvent[type], handler, false);
+  	return handler;
   }
 
-  function removePointerListener(obj, type, id) {
-  	var handler = obj['_leaflet_' + type + id];
-
-  	if (type === 'touchstart') {
-  		obj.removeEventListener(POINTER_DOWN, handler, false);
-
-  	} else if (type === 'touchmove') {
-  		obj.removeEventListener(POINTER_MOVE, handler, false);
-
-  	} else if (type === 'touchend') {
-  		obj.removeEventListener(POINTER_UP, handler, false);
-  		obj.removeEventListener(POINTER_CANCEL, handler, false);
+  function removePointerListener(obj, type, handler) {
+  	if (!pEvent[type]) {
+  		console.warn('wrong event specified:', type);
+  		return;
   	}
-
-  	return this;
-  }
-
-  function _addPointerStart(obj, handler, id) {
-  	var onDown = bind(function (e) {
-  		// IE10 specific: MsTouch needs preventDefault. See #2000
-  		if (e.MSPOINTER_TYPE_TOUCH && e.pointerType === e.MSPOINTER_TYPE_TOUCH) {
-  			preventDefault(e);
-  		}
-
-  		_handlePointer(e, handler);
-  	});
-
-  	obj['_leaflet_touchstart' + id] = onDown;
-  	obj.addEventListener(POINTER_DOWN, onDown, false);
-
-  	// need to keep track of what pointers and how many are active to provide e.touches emulation
-  	if (!_pointerDocListener) {
-  		// we listen document as any drags that end by moving the touch off the screen get fired there
-  		document.addEventListener(POINTER_DOWN, _globalPointerDown, true);
-  		document.addEventListener(POINTER_MOVE, _globalPointerMove, true);
-  		document.addEventListener(POINTER_UP, _globalPointerUp, true);
-  		document.addEventListener(POINTER_CANCEL, _globalPointerUp, true);
-
-  		_pointerDocListener = true;
-  	}
+  	obj.removeEventListener(pEvent[type], handler, false);
   }
 
   function _globalPointerDown(e) {
@@ -22496,7 +22679,22 @@ module.exports = self.fetch.bind(self);
   	delete _pointers[e.pointerId];
   }
 
-  function _handlePointer(e, handler) {
+  function _addPointerDocListener() {
+  	// need to keep track of what pointers and how many are active to provide e.touches emulation
+  	if (!_pointerDocListener) {
+  		// we listen document as any drags that end by moving the touch off the screen get fired there
+  		document.addEventListener(POINTER_DOWN, _globalPointerDown, true);
+  		document.addEventListener(POINTER_MOVE, _globalPointerMove, true);
+  		document.addEventListener(POINTER_UP, _globalPointerUp, true);
+  		document.addEventListener(POINTER_CANCEL, _globalPointerUp, true);
+
+  		_pointerDocListener = true;
+  	}
+  }
+
+  function _handlePointer(handler, e) {
+  	if (e.pointerType === (e.MSPOINTER_TYPE_MOUSE || 'mouse')) { return; }
+
   	e.touches = [];
   	for (var i in _pointers) {
   		e.touches.push(_pointers[i]);
@@ -22506,108 +22704,102 @@ module.exports = self.fetch.bind(self);
   	handler(e);
   }
 
-  function _addPointerMove(obj, handler, id) {
-  	var onMove = function (e) {
-  		// don't fire touch moves when mouse isn't down
-  		if ((e.pointerType === (e.MSPOINTER_TYPE_MOUSE || 'mouse')) && e.buttons === 0) {
-  			return;
-  		}
-
-  		_handlePointer(e, handler);
-  	};
-
-  	obj['_leaflet_touchmove' + id] = onMove;
-  	obj.addEventListener(POINTER_MOVE, onMove, false);
-  }
-
-  function _addPointerEnd(obj, handler, id) {
-  	var onUp = function (e) {
-  		_handlePointer(e, handler);
-  	};
-
-  	obj['_leaflet_touchend' + id] = onUp;
-  	obj.addEventListener(POINTER_UP, onUp, false);
-  	obj.addEventListener(POINTER_CANCEL, onUp, false);
+  function _onPointerStart(handler, e) {
+  	// IE10 specific: MsTouch needs preventDefault. See #2000
+  	if (e.MSPOINTER_TYPE_TOUCH && e.pointerType === e.MSPOINTER_TYPE_TOUCH) {
+  		preventDefault(e);
+  	}
+  	_handlePointer(handler, e);
   }
 
   /*
    * Extends the event handling code with double tap support for mobile browsers.
+   *
+   * Note: currently most browsers fire native dblclick, with only a few exceptions
+   * (see https://github.com/Leaflet/Leaflet/issues/7012#issuecomment-595087386)
    */
 
-  var _touchstart = msPointer ? 'MSPointerDown' : pointer ? 'pointerdown' : 'touchstart';
-  var _touchend = msPointer ? 'MSPointerUp' : pointer ? 'pointerup' : 'touchend';
-  var _pre = '_leaflet_';
+  function makeDblclick(event) {
+  	// in modern browsers `type` cannot be just overridden:
+  	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Getter_only
+  	var newEvent = {},
+  	    prop, i;
+  	for (i in event) {
+  		prop = event[i];
+  		newEvent[i] = prop && prop.bind ? prop.bind(event) : prop;
+  	}
+  	event = newEvent;
+  	newEvent.type = 'dblclick';
+  	newEvent.detail = 2;
+  	newEvent.isTrusted = false;
+  	newEvent._simulated = true; // for debug purposes
+  	return newEvent;
+  }
 
-  // inspired by Zepto touch code by Thomas Fuchs
-  function addDoubleTapListener(obj, handler, id) {
-  	var last, touch$$1,
-  	    doubleTap = false,
-  	    delay = 250;
+  var delay = 200;
+  function addDoubleTapListener(obj, handler) {
+  	// Most browsers handle double tap natively
+  	obj.addEventListener('dblclick', handler);
 
-  	function onTouchStart(e) {
-
-  		if (pointer) {
-  			if (!e.isPrimary) { return; }
-  			if (e.pointerType === 'mouse') { return; } // mouse fires native dblclick
-  		} else if (e.touches.length > 1) {
+  	// On some platforms the browser doesn't fire native dblclicks for touch events.
+  	// It seems that in all such cases `detail` property of `click` event is always `1`.
+  	// So here we rely on that fact to avoid excessive 'dblclick' simulation when not needed.
+  	var last = 0,
+  	    detail;
+  	function simDblclick(e) {
+  		if (e.detail !== 1) {
+  			detail = e.detail; // keep in sync to avoid false dblclick in some cases
   			return;
   		}
 
-  		var now = Date.now(),
-  		    delta = now - (last || now);
+  		if (e.pointerType === 'mouse' ||
+  			(e.sourceCapabilities && !e.sourceCapabilities.firesTouchEvents)) {
 
-  		touch$$1 = e.touches ? e.touches[0] : e;
-  		doubleTap = (delta > 0 && delta <= delay);
+  			return;
+  		}
+
+  		// When clicking on an <input>, the browser generates a click on its
+  		// <label> (and vice versa) triggering two clicks in quick succession.
+  		// This ignores clicks on elements which are a label with a 'for'
+  		// attribute (or children of such a label), but not children of
+  		// a <input>.
+  		var path = getPropagationPath(e);
+  		if (path.some(function (el) {
+  			return el instanceof HTMLLabelElement && el.attributes.for;
+  		}) &&
+  			!path.some(function (el) {
+  				return (
+  					el instanceof HTMLInputElement ||
+  					el instanceof HTMLSelectElement
+  				);
+  			})
+  		) {
+  			return;
+  		}
+
+  		var now = Date.now();
+  		if (now - last <= delay) {
+  			detail++;
+  			if (detail === 2) {
+  				handler(makeDblclick(e));
+  			}
+  		} else {
+  			detail = 1;
+  		}
   		last = now;
   	}
 
-  	function onTouchEnd(e) {
-  		if (doubleTap && !touch$$1.cancelBubble) {
-  			if (pointer) {
-  				if (e.pointerType === 'mouse') { return; }
-  				// work around .type being readonly with MSPointer* events
-  				var newTouch = {},
-  				    prop, i;
+  	obj.addEventListener('click', simDblclick);
 
-  				for (i in touch$$1) {
-  					prop = touch$$1[i];
-  					newTouch[i] = prop && prop.bind ? prop.bind(touch$$1) : prop;
-  				}
-  				touch$$1 = newTouch;
-  			}
-  			touch$$1.type = 'dblclick';
-  			touch$$1.button = 0;
-  			handler(touch$$1);
-  			last = null;
-  		}
-  	}
-
-  	obj[_pre + _touchstart + id] = onTouchStart;
-  	obj[_pre + _touchend + id] = onTouchEnd;
-  	obj[_pre + 'dblclick' + id] = handler;
-
-  	obj.addEventListener(_touchstart, onTouchStart, passiveEvents ? {passive: false} : false);
-  	obj.addEventListener(_touchend, onTouchEnd, passiveEvents ? {passive: false} : false);
-
-  	// On some platforms (notably, chrome<55 on win10 + touchscreen + mouse),
-  	// the browser doesn't fire touchend/pointerup events but does fire
-  	// native dblclicks. See #4127.
-  	// Edge 14 also fires native dblclicks, but only for pointerType mouse, see #5180.
-  	obj.addEventListener('dblclick', handler, false);
-
-  	return this;
+  	return {
+  		dblclick: handler,
+  		simDblclick: simDblclick
+  	};
   }
 
-  function removeDoubleTapListener(obj, id) {
-  	var touchstart = obj[_pre + _touchstart + id],
-  	    touchend = obj[_pre + _touchend + id],
-  	    dblclick = obj[_pre + 'dblclick' + id];
-
-  	obj.removeEventListener(_touchstart, touchstart, passiveEvents ? {passive: false} : false);
-  	obj.removeEventListener(_touchend, touchend, passiveEvents ? {passive: false} : false);
-  	obj.removeEventListener('dblclick', dblclick, false);
-
-  	return this;
+  function removeDoubleTapListener(obj, handlers) {
+  	obj.removeEventListener('dblclick', handlers.dblclick);
+  	obj.removeEventListener('click', handlers.simDblclick);
   }
 
   /*
@@ -22821,7 +23013,7 @@ module.exports = self.fetch.bind(self);
   	var pos = offset || new Point(0, 0);
 
   	el.style[TRANSFORM] =
-  		(ie3d ?
+  		(Browser.ie3d ?
   			'translate(' + pos.x + 'px,' + pos.y + 'px)' :
   			'translate3d(' + pos.x + 'px,' + pos.y + 'px,0)') +
   		(scale ? ' scale(' + scale + ')' : '');
@@ -22837,7 +23029,7 @@ module.exports = self.fetch.bind(self);
   	el._leaflet_pos = point;
   	/* eslint-enable */
 
-  	if (any3d) {
+  	if (Browser.any3d) {
   		setTransform(el, point);
   	} else {
   		el.style.left = point.x + 'px';
@@ -22955,7 +23147,8 @@ module.exports = self.fetch.bind(self);
   	};
   }
 
-  var DomUtil = ({
+  var DomUtil = {
+    __proto__: null,
     TRANSFORM: TRANSFORM,
     TRANSITION: TRANSITION,
     TRANSITION_END: TRANSITION_END,
@@ -22976,15 +23169,15 @@ module.exports = self.fetch.bind(self);
     setTransform: setTransform,
     setPosition: setPosition,
     getPosition: getPosition,
-    disableTextSelection: disableTextSelection,
-    enableTextSelection: enableTextSelection,
+    get disableTextSelection () { return disableTextSelection; },
+    get enableTextSelection () { return enableTextSelection; },
     disableImageDrag: disableImageDrag,
     enableImageDrag: enableImageDrag,
     preventOutline: preventOutline,
     restoreOutline: restoreOutline,
     getSizedParentNode: getSizedParentNode,
     getScale: getScale
-  });
+  };
 
   /*
    * @namespace DomEvent
@@ -23004,7 +23197,7 @@ module.exports = self.fetch.bind(self);
   // Adds a set of type/listener pairs, e.g. `{click: onClick, mousemove: onMouseMove}`
   function on(obj, types, fn, context) {
 
-  	if (typeof types === 'object') {
+  	if (types && typeof types === 'object') {
   		for (var type in types) {
   			addOne(obj, type, types[type], fn);
   		}
@@ -23029,32 +23222,48 @@ module.exports = self.fetch.bind(self);
   // @alternative
   // @function off(el: HTMLElement, eventMap: Object, context?: Object): this
   // Removes a set of type/listener pairs, e.g. `{click: onClick, mousemove: onMouseMove}`
+
+  // @alternative
+  // @function off(el: HTMLElement, types: String): this
+  // Removes all previously added listeners of given types.
+
+  // @alternative
+  // @function off(el: HTMLElement): this
+  // Removes all previously added listeners from given HTMLElement
   function off(obj, types, fn, context) {
 
-  	if (typeof types === 'object') {
+  	if (arguments.length === 1) {
+  		batchRemove(obj);
+  		delete obj[eventsKey];
+
+  	} else if (types && typeof types === 'object') {
   		for (var type in types) {
   			removeOne(obj, type, types[type], fn);
   		}
-  	} else if (types) {
+
+  	} else {
   		types = splitWords(types);
 
-  		for (var i = 0, len = types.length; i < len; i++) {
-  			removeOne(obj, types[i], fn, context);
+  		if (arguments.length === 2) {
+  			batchRemove(obj, function (type) {
+  				return indexOf(types, type) !== -1;
+  			});
+  		} else {
+  			for (var i = 0, len = types.length; i < len; i++) {
+  				removeOne(obj, types[i], fn, context);
+  			}
   		}
-  	} else {
-  		for (var j in obj[eventsKey]) {
-  			removeOne(obj, j, obj[eventsKey][j]);
-  		}
-  		delete obj[eventsKey];
   	}
 
   	return this;
   }
 
-  function browserFiresNativeDblClick() {
-  	// See https://github.com/w3c/pointerevents/issues/171
-  	if (pointer) {
-  		return !(edge || safari);
+  function batchRemove(obj, filterFn) {
+  	for (var id in obj[eventsKey]) {
+  		var type = id.split(/\d/)[0];
+  		if (!filterFn || filterFn(type)) {
+  			removeOne(obj, type, null, null, id);
+  		}
   	}
   }
 
@@ -23075,17 +23284,17 @@ module.exports = self.fetch.bind(self);
 
   	var originalHandler = handler;
 
-  	if (pointer && type.indexOf('touch') === 0) {
+  	if (!Browser.touchNative && Browser.pointer && type.indexOf('touch') === 0) {
   		// Needs DomEvent.Pointer.js
-  		addPointerListener(obj, type, handler, id);
+  		handler = addPointerListener(obj, type, handler);
 
-  	} else if (touch && (type === 'dblclick') && !browserFiresNativeDblClick()) {
-  		addDoubleTapListener(obj, handler, id);
+  	} else if (Browser.touch && (type === 'dblclick')) {
+  		handler = addDoubleTapListener(obj, handler);
 
   	} else if ('addEventListener' in obj) {
 
   		if (type === 'touchstart' || type === 'touchmove' || type === 'wheel' ||  type === 'mousewheel') {
-  			obj.addEventListener(mouseSubst[type] || type, handler, passiveEvents ? {passive: false} : false);
+  			obj.addEventListener(mouseSubst[type] || type, handler, Browser.passiveEvents ? {passive: false} : false);
 
   		} else if (type === 'mouseenter' || type === 'mouseleave') {
   			handler = function (e) {
@@ -23100,7 +23309,7 @@ module.exports = self.fetch.bind(self);
   			obj.addEventListener(type, originalHandler, false);
   		}
 
-  	} else if ('attachEvent' in obj) {
+  	} else {
   		obj.attachEvent('on' + type, handler);
   	}
 
@@ -23108,24 +23317,23 @@ module.exports = self.fetch.bind(self);
   	obj[eventsKey][id] = handler;
   }
 
-  function removeOne(obj, type, fn, context) {
-
-  	var id = type + stamp(fn) + (context ? '_' + stamp(context) : ''),
-  	    handler = obj[eventsKey] && obj[eventsKey][id];
+  function removeOne(obj, type, fn, context, id) {
+  	id = id || type + stamp(fn) + (context ? '_' + stamp(context) : '');
+  	var handler = obj[eventsKey] && obj[eventsKey][id];
 
   	if (!handler) { return this; }
 
-  	if (pointer && type.indexOf('touch') === 0) {
-  		removePointerListener(obj, type, id);
+  	if (!Browser.touchNative && Browser.pointer && type.indexOf('touch') === 0) {
+  		removePointerListener(obj, type, handler);
 
-  	} else if (touch && (type === 'dblclick') && !browserFiresNativeDblClick()) {
-  		removeDoubleTapListener(obj, id);
+  	} else if (Browser.touch && (type === 'dblclick')) {
+  		removeDoubleTapListener(obj, handler);
 
   	} else if ('removeEventListener' in obj) {
 
   		obj.removeEventListener(mouseSubst[type] || type, handler, false);
 
-  	} else if ('detachEvent' in obj) {
+  	} else {
   		obj.detachEvent('on' + type, handler);
   	}
 
@@ -23148,7 +23356,6 @@ module.exports = self.fetch.bind(self);
   	} else {
   		e.cancelBubble = true;
   	}
-  	skipped(e);
 
   	return this;
   }
@@ -23161,11 +23368,11 @@ module.exports = self.fetch.bind(self);
   }
 
   // @function disableClickPropagation(el: HTMLElement): this
-  // Adds `stopPropagation` to the element's `'click'`, `'doubleclick'`,
+  // Adds `stopPropagation` to the element's `'click'`, `'dblclick'`, `'contextmenu'`,
   // `'mousedown'` and `'touchstart'` events (plus browser variants).
   function disableClickPropagation(el) {
-  	on(el, 'mousedown touchstart dblclick', stopPropagation);
-  	addOne(el, 'click', fakeStop);
+  	on(el, 'mousedown touchstart dblclick contextmenu', stopPropagation);
+  	el['_leaflet_disable_click'] = true;
   	return this;
   }
 
@@ -23191,6 +23398,26 @@ module.exports = self.fetch.bind(self);
   	return this;
   }
 
+  // @function getPropagationPath(ev: DOMEvent): Array
+  // Compatibility polyfill for [`Event.composedPath()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/composedPath).
+  // Returns an array containing the `HTMLElement`s that the given DOM event
+  // should propagate to (if not stopped).
+  function getPropagationPath(ev) {
+  	if (ev.composedPath) {
+  		return ev.composedPath();
+  	}
+
+  	var path = [];
+  	var el = ev.target;
+
+  	while (el) {
+  		path.push(el);
+  		el = el.parentNode;
+  	}
+  	return path;
+  }
+
+
   // @function getMousePosition(ev: DOMEvent, container?: HTMLElement): Point
   // Gets normalized mouse position from a DOM event relative to the
   // `container` (border excluded) or to the whole page if not specified.
@@ -23210,19 +23437,22 @@ module.exports = self.fetch.bind(self);
   	);
   }
 
-  // Chrome on Win scrolls double the pixels as in other platforms (see #4538),
-  // and Firefox scrolls device pixels, not CSS pixels
-  var wheelPxFactor =
-  	(win && chrome) ? 2 * window.devicePixelRatio :
-  	gecko ? window.devicePixelRatio : 1;
 
+  //  except , Safari and
+  // We need double the scroll pixels (see #7403 and #4538) for all Browsers
+  // except OSX (Mac) -> 3x, Chrome running on Linux 1x
+
+  var wheelPxFactor =
+  	(Browser.linux && Browser.chrome) ? window.devicePixelRatio :
+  	Browser.mac ? window.devicePixelRatio * 3 :
+  	window.devicePixelRatio > 0 ? 2 * window.devicePixelRatio : 1;
   // @function getWheelDelta(ev: DOMEvent): Number
   // Gets normalized wheel delta from a wheel DOM event, in vertical
   // pixels scrolled (negative if scrolling down).
   // Events from pointing devices without precise scrolling are mapped to
   // a best guess of 60 pixels.
   function getWheelDelta(e) {
-  	return (edge) ? e.wheelDeltaY / 2 : // Don't trust window-geometry-based delta
+  	return (Browser.edge) ? e.wheelDeltaY / 2 : // Don't trust window-geometry-based delta
   	       (e.deltaY && e.deltaMode === 0) ? -e.deltaY / wheelPxFactor : // Pixels
   	       (e.deltaY && e.deltaMode === 1) ? -e.deltaY * 20 : // Lines
   	       (e.deltaY && e.deltaMode === 2) ? -e.deltaY * 60 : // Pages
@@ -23231,20 +23461,6 @@ module.exports = self.fetch.bind(self);
   	       (e.detail && Math.abs(e.detail) < 32765) ? -e.detail * 20 : // Legacy Moz lines
   	       e.detail ? e.detail / -32765 * 60 : // Legacy Moz pages
   	       0;
-  }
-
-  var skipEvents = {};
-
-  function fakeStop(e) {
-  	// fakes stopPropagation by setting a special event flag, checked/reset with skipped(e)
-  	skipEvents[e.type] = true;
-  }
-
-  function skipped(e) {
-  	var events = skipEvents[e.type];
-  	// reset when checking, as it's only used in map container and propagates outside of the map
-  	skipEvents[e.type] = false;
-  	return events;
   }
 
   // check if element really left/entered the event target (for mouseenter/mouseleave)
@@ -23264,7 +23480,8 @@ module.exports = self.fetch.bind(self);
   	return (related !== el);
   }
 
-  var DomEvent = ({
+  var DomEvent = {
+    __proto__: null,
     on: on,
     off: off,
     stopPropagation: stopPropagation,
@@ -23272,14 +23489,13 @@ module.exports = self.fetch.bind(self);
     disableClickPropagation: disableClickPropagation,
     preventDefault: preventDefault,
     stop: stop,
+    getPropagationPath: getPropagationPath,
     getMousePosition: getMousePosition,
     getWheelDelta: getWheelDelta,
-    fakeStop: fakeStop,
-    skipped: skipped,
     isExternalTarget: isExternalTarget,
     addListener: on,
     removeListener: off
-  });
+  };
 
   /*
    * @class PosAnimation
@@ -23289,8 +23505,21 @@ module.exports = self.fetch.bind(self);
    *
    * @example
    * ```js
-   * var fx = new L.PosAnimation();
-   * fx.run(el, [300, 500], 0.5);
+   * var myPositionMarker = L.marker([48.864716, 2.294694]).addTo(map);
+   *
+   * myPositionMarker.on("click", function() {
+   * 	var pos = map.latLngToLayerPoint(myPositionMarker.getLatLng());
+   * 	pos.y -= 25;
+   * 	var fx = new L.PosAnimation();
+   *
+   * 	fx.once('end',function() {
+   * 		pos.y += 25;
+   * 		fx.run(myPositionMarker._icon, pos, 0.8);
+   * 	});
+   *
+   * 	fx.run(myPositionMarker._icon, pos, 0.3);
+   * });
+   *
    * ```
    *
    * @constructor L.PosAnimation()
@@ -23303,7 +23532,7 @@ module.exports = self.fetch.bind(self);
   	// @method run(el: HTMLElement, newPos: Point, duration?: Number, easeLinearity?: Number)
   	// Run an animation of a given element to a new position, optionally setting
   	// duration in seconds (`0.25` by default) and easing linearity factor (3rd
-  	// argument of the [cubic bezier curve](http://cubic-bezier.com/#0,0,.5,1),
+  	// argument of the [cubic bezier curve](https://cubic-bezier.com/#0,0,.5,1),
   	// `0.5` by default).
   	run: function (el, newPos, duration, easeLinearity) {
   		this.stop();
@@ -23523,7 +23752,7 @@ module.exports = self.fetch.bind(self);
   		this.callInitHooks();
 
   		// don't animate on browsers without hardware-accelerated transitions or old Android/Opera
-  		this._zoomAnimated = TRANSITION && any3d && !mobileOpera &&
+  		this._zoomAnimated = TRANSITION && Browser.any3d && !Browser.mobileOpera &&
   				this.options.zoomAnimation;
 
   		// zoom transitions run with the same duration for all layers, so if one of transitionend events
@@ -23570,7 +23799,7 @@ module.exports = self.fetch.bind(self);
   		}
 
   		// animation didn't start, just reset the map view
-  		this._resetView(center, zoom);
+  		this._resetView(center, zoom, options.pan && options.pan.noMoveStart);
 
   		return this;
   	},
@@ -23588,14 +23817,14 @@ module.exports = self.fetch.bind(self);
   	// @method zoomIn(delta?: Number, options?: Zoom options): this
   	// Increases the zoom of the map by `delta` ([`zoomDelta`](#map-zoomdelta) by default).
   	zoomIn: function (delta, options) {
-  		delta = delta || (any3d ? this.options.zoomDelta : 1);
+  		delta = delta || (Browser.any3d ? this.options.zoomDelta : 1);
   		return this.setZoom(this._zoom + delta, options);
   	},
 
   	// @method zoomOut(delta?: Number, options?: Zoom options): this
   	// Decreases the zoom of the map by `delta` ([`zoomDelta`](#map-zoomdelta) by default).
   	zoomOut: function (delta, options) {
-  		delta = delta || (any3d ? this.options.zoomDelta : 1);
+  		delta = delta || (Browser.any3d ? this.options.zoomDelta : 1);
   		return this.setZoom(this._zoom - delta, options);
   	},
 
@@ -23725,7 +23954,7 @@ module.exports = self.fetch.bind(self);
   	flyTo: function (targetCenter, targetZoom, options) {
 
   		options = options || {};
-  		if (options.animate === false || !any3d) {
+  		if (options.animate === false || !Browser.any3d) {
   			return this.setView(targetCenter, targetZoom, options);
   		}
 
@@ -23813,11 +24042,13 @@ module.exports = self.fetch.bind(self);
   	setMaxBounds: function (bounds) {
   		bounds = toLatLngBounds(bounds);
 
+  		if (this.listens('moveend', this._panInsideMaxBounds)) {
+  			this.off('moveend', this._panInsideMaxBounds);
+  		}
+
   		if (!bounds.isValid()) {
   			this.options.maxBounds = null;
-  			return this.off('moveend', this._panInsideMaxBounds);
-  		} else if (this.options.maxBounds) {
-  			this.off('moveend', this._panInsideMaxBounds);
+  			return this;
   		}
 
   		this.options.maxBounds = bounds;
@@ -23878,10 +24109,9 @@ module.exports = self.fetch.bind(self);
   		return this;
   	},
 
-  	// @method panInside(latlng: LatLng, options?: options): this
+  	// @method panInside(latlng: LatLng, options?: padding options): this
   	// Pans the map the minimum amount to make the `latlng` visible. Use
-  	// `padding`, `paddingTopLeft` and `paddingTopRight` options to fit
-  	// the display to more restricted bounds, like [`fitBounds`](#map-fitbounds).
+  	// padding options to fit the display to more restricted bounds.
   	// If `latlng` is already within the (optionally padded) display bounds,
   	// the map will not be panned.
   	panInside: function (latlng, options) {
@@ -23889,35 +24119,19 @@ module.exports = self.fetch.bind(self);
 
   		var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]),
   		    paddingBR = toPoint(options.paddingBottomRight || options.padding || [0, 0]),
-  		    center = this.getCenter(),
-  		    pixelCenter = this.project(center),
+  		    pixelCenter = this.project(this.getCenter()),
   		    pixelPoint = this.project(latlng),
   		    pixelBounds = this.getPixelBounds(),
-  		    halfPixelBounds = pixelBounds.getSize().divideBy(2),
-  		    paddedBounds = toBounds([pixelBounds.min.add(paddingTL), pixelBounds.max.subtract(paddingBR)]);
+  		    paddedBounds = toBounds([pixelBounds.min.add(paddingTL), pixelBounds.max.subtract(paddingBR)]),
+  		    paddedSize = paddedBounds.getSize();
 
   		if (!paddedBounds.contains(pixelPoint)) {
   			this._enforcingBounds = true;
-  			var diff = pixelCenter.subtract(pixelPoint),
-  			    newCenter = toPoint(pixelPoint.x + diff.x, pixelPoint.y + diff.y);
-
-  			if (pixelPoint.x < paddedBounds.min.x || pixelPoint.x > paddedBounds.max.x) {
-  				newCenter.x = pixelCenter.x - diff.x;
-  				if (diff.x > 0) {
-  					newCenter.x += halfPixelBounds.x - paddingTL.x;
-  				} else {
-  					newCenter.x -= halfPixelBounds.x - paddingBR.x;
-  				}
-  			}
-  			if (pixelPoint.y < paddedBounds.min.y || pixelPoint.y > paddedBounds.max.y) {
-  				newCenter.y = pixelCenter.y - diff.y;
-  				if (diff.y > 0) {
-  					newCenter.y += halfPixelBounds.y - paddingTL.y;
-  				} else {
-  					newCenter.y -= halfPixelBounds.y - paddingBR.y;
-  				}
-  			}
-  			this.panTo(this.unproject(newCenter), options);
+  			var centerOffset = pixelPoint.subtract(paddedBounds.getCenter());
+  			var offset = paddedBounds.extend(pixelPoint).getSize().subtract(paddedSize);
+  			pixelCenter.x += centerOffset.x < 0 ? -offset.x : offset.x;
+  			pixelCenter.y += centerOffset.y < 0 ? -offset.y : offset.y;
+  			this.panTo(this.unproject(pixelCenter), options);
   			this._enforcingBounds = false;
   		}
   		return this;
@@ -24048,6 +24262,8 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_handleGeolocationError: function (error) {
+  		if (!this._container._leaflet_id) { return; }
+
   		var c = error.code,
   		    message = error.message ||
   		            (c === 1 ? 'permission denied' :
@@ -24067,6 +24283,8 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_handleGeolocationResponse: function (pos) {
+  		if (!this._container._leaflet_id) { return; }
+
   		var lat = pos.coords.latitude,
   		    lng = pos.coords.longitude,
   		    latlng = new LatLng(lat, lng),
@@ -24119,7 +24337,7 @@ module.exports = self.fetch.bind(self);
   	remove: function () {
 
   		this._initEvents(true);
-  		this.off('moveend', this._panInsideMaxBounds);
+  		if (this.options.maxBounds) { this.off('moveend', this._panInsideMaxBounds); }
 
   		if (this._containerId !== this._container._leaflet_id) {
   			throw new Error('Map container is being reused by another instance');
@@ -24200,7 +24418,7 @@ module.exports = self.fetch.bind(self);
   		this._checkIfLoaded();
 
   		if (this._lastCenter && !this._moved()) {
-  			return this._lastCenter;
+  			return this._lastCenter.clone();
   		}
   		return this.layerPointToLatLng(this._getCenterLayerPoint());
   	},
@@ -24251,7 +24469,7 @@ module.exports = self.fetch.bind(self);
   		    se = bounds.getSouthEast(),
   		    size = this.getSize().subtract(padding),
   		    boundsSize = toBounds(this.project(se, zoom), this.project(nw, zoom)).getSize(),
-  		    snap = any3d ? this.options.zoomSnap : 1,
+  		    snap = Browser.any3d ? this.options.zoomSnap : 1,
   		    scalex = size.x / boundsSize.x,
   		    scaley = size.y / boundsSize.y,
   		    scale = inside ? Math.max(scalex, scaley) : Math.min(scalex, scaley);
@@ -24479,18 +24697,18 @@ module.exports = self.fetch.bind(self);
   	_initLayout: function () {
   		var container = this._container;
 
-  		this._fadeAnimated = this.options.fadeAnimation && any3d;
+  		this._fadeAnimated = this.options.fadeAnimation && Browser.any3d;
 
   		addClass(container, 'leaflet-container' +
-  			(touch ? ' leaflet-touch' : '') +
-  			(retina ? ' leaflet-retina' : '') +
-  			(ielt9 ? ' leaflet-oldie' : '') +
-  			(safari ? ' leaflet-safari' : '') +
+  			(Browser.touch ? ' leaflet-touch' : '') +
+  			(Browser.retina ? ' leaflet-retina' : '') +
+  			(Browser.ielt9 ? ' leaflet-oldie' : '') +
+  			(Browser.safari ? ' leaflet-safari' : '') +
   			(this._fadeAnimated ? ' leaflet-fade-anim' : ''));
 
   		var position = getStyle(container, 'position');
 
-  		if (position !== 'absolute' && position !== 'relative' && position !== 'fixed') {
+  		if (position !== 'absolute' && position !== 'relative' && position !== 'fixed' && position !== 'sticky') {
   			container.style.position = 'relative';
   		}
 
@@ -24524,11 +24742,11 @@ module.exports = self.fetch.bind(self);
   		// Pane for `GridLayer`s and `TileLayer`s
   		this.createPane('tilePane');
   		// @pane overlayPane: HTMLElement = 400
-  		// Pane for overlay shadows (e.g. `Marker` shadows)
-  		this.createPane('shadowPane');
-  		// @pane shadowPane: HTMLElement = 500
   		// Pane for vectors (`Path`s, like `Polyline`s and `Polygon`s), `ImageOverlay`s and `VideoOverlay`s
   		this.createPane('overlayPane');
+  		// @pane shadowPane: HTMLElement = 500
+  		// Pane for overlay shadows (e.g. `Marker` shadows)
+  		this.createPane('shadowPane');
   		// @pane markerPane: HTMLElement = 600
   		// Pane for `Icon`s of `Marker`s
   		this.createPane('markerPane');
@@ -24549,7 +24767,7 @@ module.exports = self.fetch.bind(self);
   	// private methods that modify map state
 
   	// @section Map state change events
-  	_resetView: function (center, zoom) {
+  	_resetView: function (center, zoom, noMoveStart) {
   		setPosition(this._mapPane, new Point(0, 0));
 
   		var loading = !this._loaded;
@@ -24560,7 +24778,7 @@ module.exports = self.fetch.bind(self);
 
   		var zoomChanged = this._zoom !== zoom;
   		this
-  			._moveStart(zoomChanged, false)
+  			._moveStart(zoomChanged, noMoveStart)
   			._move(center, zoom)
   			._moveEnd(zoomChanged);
 
@@ -24591,7 +24809,7 @@ module.exports = self.fetch.bind(self);
   		return this;
   	},
 
-  	_move: function (center, zoom, data) {
+  	_move: function (center, zoom, data, supressEvent) {
   		if (zoom === undefined) {
   			zoom = this._zoom;
   		}
@@ -24601,29 +24819,34 @@ module.exports = self.fetch.bind(self);
   		this._lastCenter = center;
   		this._pixelOrigin = this._getNewPixelOrigin(center);
 
-  		// @event zoom: Event
-  		// Fired repeatedly during any change in zoom level, including zoom
-  		// and fly animations.
-  		if (zoomChanged || (data && data.pinch)) {	// Always fire 'zoom' if pinching because #3530
+  		if (!supressEvent) {
+  			// @event zoom: Event
+  			// Fired repeatedly during any change in zoom level,
+  			// including zoom and fly animations.
+  			if (zoomChanged || (data && data.pinch)) {	// Always fire 'zoom' if pinching because #3530
+  				this.fire('zoom', data);
+  			}
+
+  			// @event move: Event
+  			// Fired repeatedly during any movement of the map,
+  			// including pan and fly animations.
+  			this.fire('move', data);
+  		} else if (data && data.pinch) {	// Always fire 'zoom' if pinching because #3530
   			this.fire('zoom', data);
   		}
-
-  		// @event move: Event
-  		// Fired repeatedly during any movement of the map, including pan and
-  		// fly animations.
-  		return this.fire('move', data);
+  		return this;
   	},
 
   	_moveEnd: function (zoomChanged) {
   		// @event zoomend: Event
-  		// Fired when the map has changed, after any animations.
+  		// Fired when the map zoom changed, after any animations.
   		if (zoomChanged) {
   			this.fire('zoomend');
   		}
 
   		// @event moveend: Event
-  		// Fired when the center of the map stops changing (e.g. user stopped
-  		// dragging the map).
+  		// Fired when the center of the map stops changing
+  		// (e.g. user stopped dragging the map or after non-centered zoom).
   		return this.fire('moveend');
   	},
 
@@ -24658,11 +24881,11 @@ module.exports = self.fetch.bind(self);
   	// DOM event handling
 
   	// @section Interaction events
-  	_initEvents: function (remove$$1) {
+  	_initEvents: function (remove) {
   		this._targets = {};
   		this._targets[stamp(this._container)] = this;
 
-  		var onOff = remove$$1 ? off : on;
+  		var onOff = remove ? off : on;
 
   		// @event click: MouseEvent
   		// Fired when the user clicks (or taps) the map.
@@ -24698,8 +24921,8 @@ module.exports = self.fetch.bind(self);
   			onOff(window, 'resize', this._onResize, this);
   		}
 
-  		if (any3d && this.options.transform3DLimit) {
-  			(remove$$1 ? this.off : this.on).call(this, 'moveend', this._onMoveEnd);
+  		if (Browser.any3d && this.options.transform3DLimit) {
+  			(remove ? this.off : this.on).call(this, 'moveend', this._onMoveEnd);
   		}
   	},
 
@@ -24718,7 +24941,7 @@ module.exports = self.fetch.bind(self);
   		var pos = this._getMapPanePos();
   		if (Math.max(Math.abs(pos.x), Math.abs(pos.y)) >= this.options.transform3DLimit) {
   			// https://bugzilla.mozilla.org/show_bug.cgi?id=1203873 but Webkit also have
-  			// a pixel offset on very high values, see: http://jsfiddle.net/dg6r5hhb/
+  			// a pixel offset on very high values, see: https://jsfiddle.net/dg6r5hhb/
   			this._resetView(this.getCenter(), this.getZoom());
   		}
   	},
@@ -24732,7 +24955,7 @@ module.exports = self.fetch.bind(self);
 
   		while (src) {
   			target = this._targets[stamp(src)];
-  			if (target && (type === 'click' || type === 'preclick') && !e._simulated && this._draggableMoved(target)) {
+  			if (target && (type === 'click' || type === 'preclick') && this._draggableMoved(target)) {
   				// Prevent firing click after you just dragged an object.
   				dragging = true;
   				break;
@@ -24745,20 +24968,30 @@ module.exports = self.fetch.bind(self);
   			if (src === this._container) { break; }
   			src = src.parentNode;
   		}
-  		if (!targets.length && !dragging && !isHover && isExternalTarget(src, e)) {
+  		if (!targets.length && !dragging && !isHover && this.listens(type, true)) {
   			targets = [this];
   		}
   		return targets;
   	},
 
+  	_isClickDisabled: function (el) {
+  		while (el && el !== this._container) {
+  			if (el['_leaflet_disable_click']) { return true; }
+  			el = el.parentNode;
+  		}
+  	},
+
   	_handleDOMEvent: function (e) {
-  		if (!this._loaded || skipped(e)) { return; }
+  		var el = (e.target || e.srcElement);
+  		if (!this._loaded || el['_leaflet_disable_events'] || e.type === 'click' && this._isClickDisabled(el)) {
+  			return;
+  		}
 
   		var type = e.type;
 
-  		if (type === 'mousedown' || type === 'keypress' || type === 'keyup' || type === 'keydown') {
+  		if (type === 'mousedown') {
   			// prevents outline when clicking on keyboard-focusable element
-  			preventOutline(e.target || e.srcElement);
+  			preventOutline(el);
   		}
 
   		this._fireDOMEvent(e, type);
@@ -24766,7 +24999,7 @@ module.exports = self.fetch.bind(self);
 
   	_mouseEvents: ['click', 'dblclick', 'mouseover', 'mouseout', 'contextmenu'],
 
-  	_fireDOMEvent: function (e, type, targets) {
+  	_fireDOMEvent: function (e, type, canvasTargets) {
 
   		if (e.type === 'click') {
   			// Fire a synthetic 'preclick' event which propagates up (mainly for closing popups).
@@ -24776,21 +25009,29 @@ module.exports = self.fetch.bind(self);
   			// handlers start running).
   			var synth = extend({}, e);
   			synth.type = 'preclick';
-  			this._fireDOMEvent(synth, synth.type, targets);
+  			this._fireDOMEvent(synth, synth.type, canvasTargets);
   		}
 
-  		if (e._stopped) { return; }
-
   		// Find the layer the event is propagating from and its parents.
-  		targets = (targets || []).concat(this._findEventTargets(e, type));
+  		var targets = this._findEventTargets(e, type);
+
+  		if (canvasTargets) {
+  			var filtered = []; // pick only targets with listeners
+  			for (var i = 0; i < canvasTargets.length; i++) {
+  				if (canvasTargets[i].listens(type, true)) {
+  					filtered.push(canvasTargets[i]);
+  				}
+  			}
+  			targets = filtered.concat(targets);
+  		}
 
   		if (!targets.length) { return; }
 
-  		var target = targets[0];
-  		if (type === 'contextmenu' && target.listens(type, true)) {
+  		if (type === 'contextmenu') {
   			preventDefault(e);
   		}
 
+  		var target = targets[0];
   		var data = {
   			originalEvent: e
   		};
@@ -24803,7 +25044,7 @@ module.exports = self.fetch.bind(self);
   			data.latlng = isMarker ? target.getLatLng() : this.layerPointToLatLng(data.layerPoint);
   		}
 
-  		for (var i = 0; i < targets.length; i++) {
+  		for (i = 0; i < targets.length; i++) {
   			targets[i].fire(type, data, true);
   			if (data.originalEvent._stopped ||
   				(targets[i].options.bubblingMouseEvents === false && indexOf(this._mouseEvents, type) !== -1)) { return; }
@@ -24898,7 +25139,7 @@ module.exports = self.fetch.bind(self);
   		// If offset is less than a pixel, ignore.
   		// This prevents unstable projections from getting into
   		// an infinite loop of tiny offsets.
-  		if (offset.round().equals([0, 0])) {
+  		if (Math.abs(offset.x) <= 1 && Math.abs(offset.y) <= 1) {
   			return center;
   		}
 
@@ -24939,7 +25180,7 @@ module.exports = self.fetch.bind(self);
   	_limitZoom: function (zoom) {
   		var min = this.getMinZoom(),
   		    max = this.getMaxZoom(),
-  		    snap = any3d ? this.options.zoomSnap : 1;
+  		    snap = Browser.any3d ? this.options.zoomSnap : 1;
   		if (snap) {
   			zoom = Math.round(zoom / snap) * snap;
   		}
@@ -25059,6 +25300,12 @@ module.exports = self.fetch.bind(self);
   			noUpdate: noUpdate
   		});
 
+  		if (!this._tempFireZoomEvent) {
+  			this._tempFireZoomEvent = this._zoom !== this._animateToZoom;
+  		}
+
+  		this._move(this._animateToCenter, this._animateToZoom, undefined, true);
+
   		// Work around webkit not firing 'transitionend', see https://github.com/Leaflet/Leaflet/issues/3689, 2693
   		setTimeout(bind(this._onZoomTransitionEnd, this), 250);
   	},
@@ -25072,12 +25319,16 @@ module.exports = self.fetch.bind(self);
 
   		this._animatingZoom = false;
 
-  		this._move(this._animateToCenter, this._animateToZoom);
+  		this._move(this._animateToCenter, this._animateToZoom, undefined, true);
 
-  		// This anim frame should prevent an obscure iOS webkit tile loading race condition.
-  		requestAnimFrame(function () {
-  			this._moveEnd(true);
-  		}, this);
+  		if (this._tempFireZoomEvent) {
+  			this.fire('zoom');
+  		}
+  		delete this._tempFireZoomEvent;
+
+  		this.fire('move');
+
+  		this._moveEnd(true);
   	}
   });
 
@@ -25106,7 +25357,7 @@ module.exports = self.fetch.bind(self);
 
   var Control = Class.extend({
   	// @section
-  	// @aka Control options
+  	// @aka Control Options
   	options: {
   		// @option position: String = 'topright'
   		// The position of the control (one of the map corners). Possible values are `'topleft'`,
@@ -25269,7 +25520,7 @@ module.exports = self.fetch.bind(self);
    * @aka L.Control.Layers
    * @inherits Control
    *
-   * The layers control gives users the ability to switch between different base layers and switch overlays on/off (check out the [detailed example](http://leafletjs.com/examples/layers-control/)). Extends `Control`.
+   * The layers control gives users the ability to switch between different base layers and switch overlays on/off (check out the [detailed example](https://leafletjs.com/examples/layers-control/)). Extends `Control`.
    *
    * @example
    *
@@ -25308,7 +25559,7 @@ module.exports = self.fetch.bind(self);
   	// @aka Control.Layers options
   	options: {
   		// @option collapsed: Boolean = true
-  		// If `true`, the control will be collapsed into an icon and expanded on mouse hover or touch.
+  		// If `true`, the control will be collapsed into an icon and expanded on mouse hover, touch, or keyboard activation.
   		collapsed: true,
   		position: 'topright',
 
@@ -25446,24 +25697,29 @@ module.exports = self.fetch.bind(self);
   		if (collapsed) {
   			this._map.on('click', this.collapse, this);
 
-  			if (!android) {
-  				on(container, {
-  					mouseenter: this.expand,
-  					mouseleave: this.collapse
-  				}, this);
-  			}
+  			on(container, {
+  				mouseenter: this._expandSafely,
+  				mouseleave: this.collapse
+  			}, this);
   		}
 
   		var link = this._layersLink = create$1('a', className + '-toggle', container);
   		link.href = '#';
   		link.title = 'Layers';
+  		link.setAttribute('role', 'button');
 
-  		if (touch) {
-  			on(link, 'click', stop);
-  			on(link, 'click', this.expand, this);
-  		} else {
-  			on(link, 'focus', this.expand, this);
-  		}
+  		on(link, {
+  			keydown: function (e) {
+  				if (e.keyCode === 13) {
+  					this._expandSafely();
+  				}
+  			},
+  			// Certain screen readers intercept the key event and instead send a click event
+  			click: function (e) {
+  				preventDefault(e);
+  				this._expandSafely();
+  			}
+  		}, this);
 
   		if (!collapsed) {
   			this.expand();
@@ -25563,7 +25819,7 @@ module.exports = self.fetch.bind(self);
   		}
   	},
 
-  	// IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see http://bit.ly/PqYLBe)
+  	// IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see https://stackoverflow.com/a/119079)
   	_createRadioElement: function (name, checked) {
 
   		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' +
@@ -25599,7 +25855,7 @@ module.exports = self.fetch.bind(self);
 
   		// Helps from preventing layer control flicker when checkboxes are disabled
   		// https://github.com/Leaflet/Leaflet/issues/2771
-  		var holder = document.createElement('div');
+  		var holder = document.createElement('span');
 
   		label.appendChild(holder);
   		holder.appendChild(input);
@@ -25670,14 +25926,13 @@ module.exports = self.fetch.bind(self);
   		return this;
   	},
 
-  	_expand: function () {
-  		// Backward compatibility, remove me in 1.1.
-  		return this.expand();
-  	},
-
-  	_collapse: function () {
-  		// Backward compatibility, remove me in 1.1.
-  		return this.collapse();
+  	_expandSafely: function () {
+  		var section = this._section;
+  		on(section, 'click', preventDefault);
+  		this.expand();
+  		setTimeout(function () {
+  			off(section, 'click', preventDefault);
+  		});
   	}
 
   });
@@ -25703,17 +25958,17 @@ module.exports = self.fetch.bind(self);
   	options: {
   		position: 'topleft',
 
-  		// @option zoomInText: String = '+'
+  		// @option zoomInText: String = '<span aria-hidden="true">+</span>'
   		// The text set on the 'zoom in' button.
-  		zoomInText: '+',
+  		zoomInText: '<span aria-hidden="true">+</span>',
 
   		// @option zoomInTitle: String = 'Zoom in'
   		// The title set on the 'zoom in' button.
   		zoomInTitle: 'Zoom in',
 
-  		// @option zoomOutText: String = '&#x2212;'
+  		// @option zoomOutText: String = '<span aria-hidden="true">&#x2212;</span>'
   		// The text set on the 'zoom out' button.
-  		zoomOutText: '&#x2212;',
+  		zoomOutText: '<span aria-hidden="true">&#x2212;</span>',
 
   		// @option zoomOutTitle: String = 'Zoom out'
   		// The title set on the 'zoom out' button.
@@ -25790,12 +26045,16 @@ module.exports = self.fetch.bind(self);
 
   		removeClass(this._zoomInButton, className);
   		removeClass(this._zoomOutButton, className);
+  		this._zoomInButton.setAttribute('aria-disabled', 'false');
+  		this._zoomOutButton.setAttribute('aria-disabled', 'false');
 
   		if (this._disabled || map._zoom === map.getMinZoom()) {
   			addClass(this._zoomOutButton, className);
+  			this._zoomOutButton.setAttribute('aria-disabled', 'true');
   		}
   		if (this._disabled || map._zoom === map.getMaxZoom()) {
   			addClass(this._zoomInButton, className);
+  			this._zoomInButton.setAttribute('aria-disabled', 'true');
   		}
   	}
   });
@@ -25955,6 +26214,9 @@ module.exports = self.fetch.bind(self);
   	return new Scale(options);
   };
 
+  var ukrainianFlag = '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"/><path fill="#FFD500" d="M0 4h12v3H0z"/><path fill="#E0BC00" d="M0 7h12v1H0z"/></svg>';
+
+
   /*
    * @class Control.Attribution
    * @aka L.Control.Attribution
@@ -25969,9 +26231,9 @@ module.exports = self.fetch.bind(self);
   	options: {
   		position: 'bottomright',
 
-  		// @option prefix: String = 'Leaflet'
+  		// @option prefix: String|false = 'Leaflet'
   		// The HTML text shown before the attributions. Pass `false` to disable.
-  		prefix: '<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>'
+  		prefix: '<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">' + (Browser.inlineSvg ? ukrainianFlag + ' ' : '') + 'Leaflet</a>'
   	},
 
   	initialize: function (options) {
@@ -25994,11 +26256,26 @@ module.exports = self.fetch.bind(self);
 
   		this._update();
 
+  		map.on('layeradd', this._addAttribution, this);
+
   		return this._container;
   	},
 
-  	// @method setPrefix(prefix: String): this
-  	// Sets the text before the attributions.
+  	onRemove: function (map) {
+  		map.off('layeradd', this._addAttribution, this);
+  	},
+
+  	_addAttribution: function (ev) {
+  		if (ev.layer.getAttribution) {
+  			this.addAttribution(ev.layer.getAttribution());
+  			ev.layer.once('remove', function () {
+  				this.removeAttribution(ev.layer.getAttribution());
+  			}, this);
+  		}
+  	},
+
+  	// @method setPrefix(prefix: String|false): this
+  	// The HTML text shown before the attributions. Pass `false` to disable.
   	setPrefix: function (prefix) {
   		this.options.prefix = prefix;
   		this._update();
@@ -26006,7 +26283,7 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// @method addAttribution(text: String): this
-  	// Adds an attribution text (e.g. `'Vector data &copy; Mapbox'`).
+  	// Adds an attribution text (e.g. `'&copy; OpenStreetMap contributors'`).
   	addAttribution: function (text) {
   		if (!text) { return this; }
 
@@ -26053,7 +26330,7 @@ module.exports = self.fetch.bind(self);
   			prefixAndAttribs.push(attribs.join(', '));
   		}
 
-  		this._container.innerHTML = prefixAndAttribs.join(' | ');
+  		this._container.innerHTML = prefixAndAttribs.join(' <span aria-hidden="true">|</span> ');
   	}
   });
 
@@ -26162,20 +26439,7 @@ module.exports = self.fetch.bind(self);
    * ```
    */
 
-  var START = touch ? 'touchstart mousedown' : 'mousedown';
-  var END = {
-  	mousedown: 'mouseup',
-  	touchstart: 'touchend',
-  	pointerdown: 'touchend',
-  	MSPointerDown: 'touchend'
-  };
-  var MOVE = {
-  	mousedown: 'mousemove',
-  	touchstart: 'touchmove',
-  	pointerdown: 'touchmove',
-  	MSPointerDown: 'touchmove'
-  };
-
+  var START = Browser.touch ? 'touchstart mousedown' : 'mousedown';
 
   var Draggable = Evented.extend({
 
@@ -26190,12 +26454,12 @@ module.exports = self.fetch.bind(self);
 
   	// @constructor L.Draggable(el: HTMLElement, dragHandle?: HTMLElement, preventOutline?: Boolean, options?: Draggable options)
   	// Creates a `Draggable` object for moving `el` when you start dragging the `dragHandle` element (equals `el` itself by default).
-  	initialize: function (element, dragStartTarget, preventOutline$$1, options) {
+  	initialize: function (element, dragStartTarget, preventOutline, options) {
   		setOptions(this, options);
 
   		this._element = element;
   		this._dragStartTarget = dragStartTarget || element;
-  		this._preventOutline = preventOutline$$1;
+  		this._preventOutline = preventOutline;
   	},
 
   	// @method enable()
@@ -26216,7 +26480,7 @@ module.exports = self.fetch.bind(self);
   		// If we're currently dragging this draggable,
   		// disabling it counts as first ending the drag.
   		if (Draggable._dragging === this) {
-  			this.finishDrag();
+  			this.finishDrag(true);
   		}
 
   		off(this._dragStartTarget, START, this._onDown, this);
@@ -26226,16 +26490,21 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_onDown: function (e) {
-  		// Ignore simulated events, since we handle both touch and
-  		// mouse explicitly; otherwise we risk getting duplicates of
-  		// touch events, see #4315.
-  		// Also ignore the event if disabled; this happens in IE11
+  		// Ignore the event if disabled; this happens in IE11
   		// under some circumstances, see #3666.
-  		if (e._simulated || !this._enabled) { return; }
+  		if (!this._enabled) { return; }
 
   		this._moved = false;
 
   		if (hasClass(this._element, 'leaflet-zoom-anim')) { return; }
+
+  		if (e.touches && e.touches.length !== 1) {
+  			// Finish dragging to avoid conflict with touchZoom
+  			if (Draggable._dragging === this) {
+  				this.finishDrag();
+  			}
+  			return;
+  		}
 
   		if (Draggable._dragging || e.shiftKey || ((e.which !== 1) && (e.button !== 1) && !e.touches)) { return; }
   		Draggable._dragging = this;  // Prevent dragging multiple objects at once.
@@ -26257,21 +26526,20 @@ module.exports = self.fetch.bind(self);
   		    sizedParent = getSizedParentNode(this._element);
 
   		this._startPoint = new Point(first.clientX, first.clientY);
+  		this._startPos = getPosition(this._element);
 
   		// Cache the scale, so that we can continuously compensate for it during drag (_onMove).
   		this._parentScale = getScale(sizedParent);
 
-  		on(document, MOVE[e.type], this._onMove, this);
-  		on(document, END[e.type], this._onUp, this);
+  		var mouseevent = e.type === 'mousedown';
+  		on(document, mouseevent ? 'mousemove' : 'touchmove', this._onMove, this);
+  		on(document, mouseevent ? 'mouseup' : 'touchend touchcancel', this._onUp, this);
   	},
 
   	_onMove: function (e) {
-  		// Ignore simulated events, since we handle both touch and
-  		// mouse explicitly; otherwise we risk getting duplicates of
-  		// touch events, see #4315.
-  		// Also ignore the event if disabled; this happens in IE11
+  		// Ignore the event if disabled; this happens in IE11
   		// under some circumstances, see #3666.
-  		if (e._simulated || !this._enabled) { return; }
+  		if (!this._enabled) { return; }
 
   		if (e.touches && e.touches.length > 1) {
   			this._moved = true;
@@ -26298,7 +26566,6 @@ module.exports = self.fetch.bind(self);
   			this.fire('dragstart');
 
   			this._moved = true;
-  			this._startPos = getPosition(this._element).subtract(offset);
 
   			addClass(document.body, 'leaflet-dragging');
 
@@ -26314,9 +26581,8 @@ module.exports = self.fetch.bind(self);
   		this._newPos = this._startPos.add(offset);
   		this._moving = true;
 
-  		cancelAnimFrame(this._animRequest);
   		this._lastEvent = e;
-  		this._animRequest = requestAnimFrame(this._updatePosition, this, true);
+  		this._updatePosition();
   	},
 
   	_updatePosition: function () {
@@ -26333,17 +26599,14 @@ module.exports = self.fetch.bind(self);
   		this.fire('drag', e);
   	},
 
-  	_onUp: function (e) {
-  		// Ignore simulated events, since we handle both touch and
-  		// mouse explicitly; otherwise we risk getting duplicates of
-  		// touch events, see #4315.
-  		// Also ignore the event if disabled; this happens in IE11
+  	_onUp: function () {
+  		// Ignore the event if disabled; this happens in IE11
   		// under some circumstances, see #3666.
-  		if (e._simulated || !this._enabled) { return; }
+  		if (!this._enabled) { return; }
   		this.finishDrag();
   	},
 
-  	finishDrag: function () {
+  	finishDrag: function (noInertia) {
   		removeClass(document.body, 'leaflet-dragging');
 
   		if (this._lastTarget) {
@@ -26351,21 +26614,18 @@ module.exports = self.fetch.bind(self);
   			this._lastTarget = null;
   		}
 
-  		for (var i in MOVE) {
-  			off(document, MOVE[i], this._onMove, this);
-  			off(document, END[i], this._onUp, this);
-  		}
+  		off(document, 'mousemove touchmove', this._onMove, this);
+  		off(document, 'mouseup touchend touchcancel', this._onUp, this);
 
   		enableImageDrag();
   		enableTextSelection();
 
   		if (this._moved && this._moving) {
-  			// ensure drag is not fired after dragend
-  			cancelAnimFrame(this._animRequest);
 
   			// @event dragend: DragEndEvent
   			// Fired when the drag ends.
   			this.fire('dragend', {
+  				noInertia: noInertia,
   				distance: this._newPos.distanceTo(this._startPos)
   			});
   		}
@@ -26388,11 +26648,11 @@ module.exports = self.fetch.bind(self);
   // @function simplify(points: Point[], tolerance: Number): Point[]
   // Dramatically reduces the number of points in a polyline while retaining
   // its shape and returns a new array of simplified points, using the
-  // [Douglas-Peucker algorithm](http://en.wikipedia.org/wiki/Douglas-Peucker_algorithm).
+  // [Ramer-Douglas-Peucker algorithm](https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm).
   // Used for a huge performance boost when processing/displaying Leaflet polylines for
   // each zoom level and also reducing visual noise. tolerance affects the amount of
   // simplification (lesser value means higher quality but slower and with more points).
-  // Also released as a separated micro-library [Simplify.js](http://mourner.github.com/simplify-js/).
+  // Also released as a separated micro-library [Simplify.js](https://mourner.github.io/simplify-js/).
   function simplify(points, tolerance) {
   	if (!tolerance || !points.length) {
   		return points.slice();
@@ -26421,7 +26681,7 @@ module.exports = self.fetch.bind(self);
   	return _sqClosestPointOnSegment(p, p1, p2);
   }
 
-  // Douglas-Peucker simplification, see http://en.wikipedia.org/wiki/Douglas-Peucker_algorithm
+  // Ramer-Douglas-Peucker simplification, see https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm
   function _simplifyDP(points, sqTolerance) {
 
   	var len = points.length,
@@ -26615,7 +26875,57 @@ module.exports = self.fetch.bind(self);
   	return isFlat(latlngs);
   }
 
-  var LineUtil = ({
+  /* @function polylineCenter(latlngs: LatLng[], crs: CRS): LatLng
+   * Returns the center ([centroid](http://en.wikipedia.org/wiki/Centroid)) of the passed LatLngs (first ring) from a polyline.
+   */
+  function polylineCenter(latlngs, crs) {
+  	var i, halfDist, segDist, dist, p1, p2, ratio, center;
+
+  	if (!latlngs || latlngs.length === 0) {
+  		throw new Error('latlngs not passed');
+  	}
+
+  	if (!isFlat(latlngs)) {
+  		console.warn('latlngs are not flat! Only the first ring will be used');
+  		latlngs = latlngs[0];
+  	}
+
+  	var points = [];
+  	for (var j in latlngs) {
+  		points.push(crs.project(toLatLng(latlngs[j])));
+  	}
+
+  	var len = points.length;
+
+  	for (i = 0, halfDist = 0; i < len - 1; i++) {
+  		halfDist += points[i].distanceTo(points[i + 1]) / 2;
+  	}
+
+  	// The line is so small in the current view that all points are on the same pixel.
+  	if (halfDist === 0) {
+  		center = points[0];
+  	} else {
+  		for (i = 0, dist = 0; i < len - 1; i++) {
+  			p1 = points[i];
+  			p2 = points[i + 1];
+  			segDist = p1.distanceTo(p2);
+  			dist += segDist;
+
+  			if (dist > halfDist) {
+  				ratio = (dist - halfDist) / segDist;
+  				center = [
+  					p2.x - ratio * (p2.x - p1.x),
+  					p2.y - ratio * (p2.y - p1.y)
+  				];
+  				break;
+  			}
+  		}
+  	}
+  	return crs.unproject(toPoint(center));
+  }
+
+  var LineUtil = {
+    __proto__: null,
     simplify: simplify,
     pointToSegmentDistance: pointToSegmentDistance,
     closestPointOnSegment: closestPointOnSegment,
@@ -26624,8 +26934,9 @@ module.exports = self.fetch.bind(self);
     _getBitCode: _getBitCode,
     _sqClosestPointOnSegment: _sqClosestPointOnSegment,
     isFlat: isFlat,
-    _flat: _flat
-  });
+    _flat: _flat,
+    polylineCenter: polylineCenter
+  };
 
   /*
    * @namespace PolyUtil
@@ -26681,9 +26992,54 @@ module.exports = self.fetch.bind(self);
   	return points;
   }
 
-  var PolyUtil = ({
-    clipPolygon: clipPolygon
-  });
+  /* @function polygonCenter(latlngs: LatLng[] crs: CRS): LatLng
+   * Returns the center ([centroid](http://en.wikipedia.org/wiki/Centroid)) of the passed LatLngs (first ring) from a polygon.
+   */
+  function polygonCenter(latlngs, crs) {
+  	var i, j, p1, p2, f, area, x, y, center;
+
+  	if (!latlngs || latlngs.length === 0) {
+  		throw new Error('latlngs not passed');
+  	}
+
+  	if (!isFlat(latlngs)) {
+  		console.warn('latlngs are not flat! Only the first ring will be used');
+  		latlngs = latlngs[0];
+  	}
+
+  	var points = [];
+  	for (var k in latlngs) {
+  		points.push(crs.project(toLatLng(latlngs[k])));
+  	}
+
+  	var len = points.length;
+  	area = x = y = 0;
+
+  	// polygon centroid algorithm;
+  	for (i = 0, j = len - 1; i < len; j = i++) {
+  		p1 = points[i];
+  		p2 = points[j];
+
+  		f = p1.y * p2.x - p2.y * p1.x;
+  		x += (p1.x + p2.x) * f;
+  		y += (p1.y + p2.y) * f;
+  		area += f * 3;
+  	}
+
+  	if (area === 0) {
+  		// Polygon is so small that all points are on same pixel.
+  		center = points[0];
+  	} else {
+  		center = [x / area, y / area];
+  	}
+  	return crs.unproject(toPoint(center));
+  }
+
+  var PolyUtil = {
+    __proto__: null,
+    clipPolygon: clipPolygon,
+    polygonCenter: polygonCenter
+  };
 
   /*
    * @namespace Projection
@@ -26760,7 +27116,7 @@ module.exports = self.fetch.bind(self);
    * @class Projection
 
    * An object with methods for projecting geographical coordinates of the world onto
-   * a flat surface (and back). See [Map projection](http://en.wikipedia.org/wiki/Map_projection).
+   * a flat surface (and back). See [Map projection](https://en.wikipedia.org/wiki/Map_projection).
 
    * @property bounds: Bounds
    * The bounds (specified in CRS units) where the projection is valid
@@ -26779,11 +27135,12 @@ module.exports = self.fetch.bind(self);
 
    */
 
-  var index = ({
+  var index = {
+    __proto__: null,
     LonLat: LonLat,
     Mercator: Mercator,
     SphericalMercator: SphericalMercator
-  });
+  };
 
   /*
    * @namespace CRS
@@ -26970,10 +27327,6 @@ module.exports = self.fetch.bind(self);
 
   		this.onAdd(map);
 
-  		if (this.getAttribution && map.attributionControl) {
-  			map.attributionControl.addAttribution(this.getAttribution());
-  		}
-
   		this.fire('add');
   		map.fire('layeradd', {layer: this});
   	}
@@ -27046,10 +27399,6 @@ module.exports = self.fetch.bind(self);
   			layer.onRemove(this);
   		}
 
-  		if (layer.getAttribution && this.attributionControl) {
-  			this.attributionControl.removeAttribution(layer.getAttribution());
-  		}
-
   		delete this._layers[id];
 
   		if (this._loaded) {
@@ -27065,7 +27414,7 @@ module.exports = self.fetch.bind(self);
   	// @method hasLayer(layer: Layer): Boolean
   	// Returns `true` if the given layer is currently added to the map
   	hasLayer: function (layer) {
-  		return !!layer && (stamp(layer) in this._layers);
+  		return stamp(layer) in this._layers;
   	},
 
   	/* @method eachLayer(fn: Function, context?: Object): this
@@ -27092,7 +27441,7 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_addZoomLimit: function (layer) {
-  		if (isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom)) {
+  		if (!isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom)) {
   			this._zoomBoundLayers[stamp(layer)] = layer;
   			this._updateZoomLevels();
   		}
@@ -27142,7 +27491,7 @@ module.exports = self.fetch.bind(self);
   /*
    * @class LayerGroup
    * @aka L.LayerGroup
-   * @inherits Layer
+   * @inherits Interactive layer
    *
    * Used to group several layers and handle them as one. If you add it to the map,
    * any layers added or removed from the group will be added/removed on the map as
@@ -27210,7 +27559,6 @@ module.exports = self.fetch.bind(self);
   	// @method hasLayer(id: Number): Boolean
   	// Returns `true` if the given internal ID is currently added to the group.
   	hasLayer: function (layer) {
-  		if (!layer) { return false; }
   		var layerId = typeof layer === 'number' ? layer : this.getLayerId(layer);
   		return layerId in this._layers;
   	},
@@ -27460,7 +27808,13 @@ module.exports = self.fetch.bind(self);
 
   	options: {
   		popupAnchor: [0, 0],
-  		tooltipAnchor: [0, 0]
+  		tooltipAnchor: [0, 0],
+
+  		// @option crossOrigin: Boolean|String = false
+  		// Whether the crossOrigin attribute will be added to the tiles.
+  		// If a String is provided, all tiles will have their crossOrigin attribute set to the String provided. This is needed if you want to access tile pixel data.
+  		// Refer to [CORS Settings](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for valid String values.
+  		crossOrigin: false
   	},
 
   	initialize: function (options) {
@@ -27492,6 +27846,10 @@ module.exports = self.fetch.bind(self);
 
   		var img = this._createImg(src, oldIcon && oldIcon.tagName === 'IMG' ? oldIcon : null);
   		this._setIconStyles(img, name);
+
+  		if (this.options.crossOrigin || this.options.crossOrigin === '') {
+  			img.crossOrigin = this.options.crossOrigin === true ? '' : this.options.crossOrigin;
+  		}
 
   		return img;
   	},
@@ -27528,7 +27886,7 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_getIconUrl: function (name) {
-  		return retina && this.options[name + 'RetinaUrl'] || this.options[name + 'Url'];
+  		return Browser.retina && this.options[name + 'RetinaUrl'] || this.options[name + 'Url'];
   	}
   });
 
@@ -27569,7 +27927,7 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_getIconUrl: function (name) {
-  		if (!IconDefault.imagePath) {	// Deprecated, backwards-compatibility only
+  		if (typeof IconDefault.imagePath !== 'string') {	// Deprecated, backwards-compatibility only
   			IconDefault.imagePath = this._detectIconPath();
   		}
 
@@ -27580,20 +27938,26 @@ module.exports = self.fetch.bind(self);
   		return (this.options.imagePath || IconDefault.imagePath) + Icon.prototype._getIconUrl.call(this, name);
   	},
 
+  	_stripUrl: function (path) {	// separate function to use in tests
+  		var strip = function (str, re, idx) {
+  			var match = re.exec(str);
+  			return match && match[idx];
+  		};
+  		path = strip(path, /^url\((['"])?(.+)\1\)$/, 2);
+  		return path && strip(path, /^(.*)marker-icon\.png$/, 1);
+  	},
+
   	_detectIconPath: function () {
   		var el = create$1('div',  'leaflet-default-icon-path', document.body);
   		var path = getStyle(el, 'background-image') ||
   		           getStyle(el, 'backgroundImage');	// IE8
 
   		document.body.removeChild(el);
-
-  		if (path === null || path.indexOf('url') !== 0) {
-  			path = '';
-  		} else {
-  			path = path.replace(/^url\(["']?/, '').replace(/marker-icon\.png["']?\)$/, '');
-  		}
-
-  		return path;
+  		path = this._stripUrl(path);
+  		if (path) { return path; }
+  		var link = document.querySelector('link[href$="leaflet.css"]');
+  		if (!link) { return ''; }
+  		return link.href.substring(0, link.href.length - 'leaflet.css'.length - 1);
   	}
   });
 
@@ -27785,11 +28149,13 @@ module.exports = self.fetch.bind(self);
 
   		// @option title: String = ''
   		// Text for the browser tooltip that appear on marker hover (no tooltip by default).
+  		// [Useful for accessibility](https://leafletjs.com/examples/accessibility/#markers-must-be-labelled).
   		title: '',
 
-  		// @option alt: String = ''
-  		// Text for the `alt` attribute of the icon image (useful for accessibility).
-  		alt: '',
+  		// @option alt: String = 'Marker'
+  		// Text for the `alt` attribute of the icon image.
+  		// [Useful for accessibility](https://leafletjs.com/examples/accessibility/#markers-must-be-labelled).
+  		alt: 'Marker',
 
   		// @option zIndexOffset: Number = 0
   		// By default, marker images zIndex is set automatically based on its latitude. Use this option if you want to put the marker on top of all others (or below), specifying a high value like `1000` (or high negative value, respectively).
@@ -27819,6 +28185,12 @@ module.exports = self.fetch.bind(self);
   		// When `true`, a mouse event on this marker will trigger the same event on the map
   		// (unless [`L.DomEvent.stopPropagation`](#domevent-stoppropagation) is used).
   		bubblingMouseEvents: false,
+
+  		// @option autoPanOnFocus: Boolean = true
+  		// When `true`, the map will pan whenever the marker is focused (via
+  		// e.g. pressing `tab` on the keyboard) to ensure the marker is
+  		// visible within the map's bounds
+  		autoPanOnFocus: true,
 
   		// @section Draggable marker options
   		// @option draggable: Boolean = false
@@ -27972,6 +28344,7 @@ module.exports = self.fetch.bind(self);
 
   		if (options.keyboard) {
   			icon.tabIndex = '0';
+  			icon.setAttribute('role', 'button');
   		}
 
   		this._icon = icon;
@@ -27981,6 +28354,10 @@ module.exports = self.fetch.bind(self);
   				mouseover: this._bringToFront,
   				mouseout: this._resetZIndex
   			});
+  		}
+
+  		if (this.options.autoPanOnFocus) {
+  			on(icon, 'focus', this._panOnFocus, this);
   		}
 
   		var newShadow = options.icon.createShadow(this._shadow),
@@ -28018,6 +28395,10 @@ module.exports = self.fetch.bind(self);
   				mouseover: this._bringToFront,
   				mouseout: this._resetZIndex
   			});
+  		}
+
+  		if (this.options.autoPanOnFocus) {
+  			off(this._icon, 'focus', this._panOnFocus, this);
   		}
 
   		remove(this._icon);
@@ -28112,6 +28493,20 @@ module.exports = self.fetch.bind(self);
 
   	_resetZIndex: function () {
   		this._updateZIndex(0);
+  	},
+
+  	_panOnFocus: function () {
+  		var map = this._map;
+  		if (!map) { return; }
+
+  		var iconOpts = this.options.icon.options;
+  		var size = iconOpts.iconSize ? toPoint(iconOpts.iconSize) : toPoint(0, 0);
+  		var anchor = iconOpts.iconAnchor ? toPoint(iconOpts.iconAnchor) : toPoint(0, 0);
+
+  		map.panInside(this._latlng, {
+  			paddingTopLeft: anchor,
+  			paddingBottomRight: size.subtract(anchor)
+  		});
   	},
 
   	_getPopupAnchor: function () {
@@ -28273,7 +28668,8 @@ module.exports = self.fetch.bind(self);
 
   	_clickTolerance: function () {
   		// used when doing hit detection for Canvas layers
-  		return (this.options.stroke ? this.options.weight / 2 : 0) + this._renderer.options.tolerance;
+  		return (this.options.stroke ? this.options.weight / 2 : 0) +
+  		  (this._renderer.options.tolerance || 0);
   	}
   });
 
@@ -28595,44 +28991,13 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// @method getCenter(): LatLng
-  	// Returns the center ([centroid](http://en.wikipedia.org/wiki/Centroid)) of the polyline.
+  	// Returns the center ([centroid](https://en.wikipedia.org/wiki/Centroid)) of the polyline.
   	getCenter: function () {
   		// throws error when not yet added to map as this center calculation requires projected coordinates
   		if (!this._map) {
   			throw new Error('Must add layer to map before using getCenter()');
   		}
-
-  		var i, halfDist, segDist, dist, p1, p2, ratio,
-  		    points = this._rings[0],
-  		    len = points.length;
-
-  		if (!len) { return null; }
-
-  		// polyline centroid algorithm; only uses the first ring if there are multiple
-
-  		for (i = 0, halfDist = 0; i < len - 1; i++) {
-  			halfDist += points[i].distanceTo(points[i + 1]) / 2;
-  		}
-
-  		// The line is so small in the current view that all points are on the same pixel.
-  		if (halfDist === 0) {
-  			return this._map.layerPointToLatLng(points[0]);
-  		}
-
-  		for (i = 0, dist = 0; i < len - 1; i++) {
-  			p1 = points[i];
-  			p2 = points[i + 1];
-  			segDist = p1.distanceTo(p2);
-  			dist += segDist;
-
-  			if (dist > halfDist) {
-  				ratio = (dist - halfDist) / segDist;
-  				return this._map.layerPointToLatLng([
-  					p2.x - ratio * (p2.x - p1.x),
-  					p2.y - ratio * (p2.y - p1.y)
-  				]);
-  			}
-  		}
+  		return polylineCenter(this._defaultShape(), this._map.options.crs);
   	},
 
   	// @method getBounds(): LatLngBounds
@@ -28693,6 +29058,11 @@ module.exports = self.fetch.bind(self);
   	_updateBounds: function () {
   		var w = this._clickTolerance(),
   		    p = new Point(w, w);
+
+  		if (!this._rawPxBounds) {
+  			return;
+  		}
+
   		this._pxBounds = new Bounds([
   			this._rawPxBounds.min.subtract(p),
   			this._rawPxBounds.max.add(p)
@@ -28869,39 +29239,14 @@ module.exports = self.fetch.bind(self);
   		return !this._latlngs.length || !this._latlngs[0].length;
   	},
 
+  	// @method getCenter(): LatLng
+  	// Returns the center ([centroid](http://en.wikipedia.org/wiki/Centroid)) of the Polygon.
   	getCenter: function () {
   		// throws error when not yet added to map as this center calculation requires projected coordinates
   		if (!this._map) {
   			throw new Error('Must add layer to map before using getCenter()');
   		}
-
-  		var i, j, p1, p2, f, area, x, y, center,
-  		    points = this._rings[0],
-  		    len = points.length;
-
-  		if (!len) { return null; }
-
-  		// polygon centroid algorithm; only uses the first ring if there are multiple
-
-  		area = x = y = 0;
-
-  		for (i = 0, j = len - 1; i < len; j = i++) {
-  			p1 = points[i];
-  			p2 = points[j];
-
-  			f = p1.y * p2.x - p2.y * p1.x;
-  			x += (p1.x + p2.x) * f;
-  			y += (p1.y + p2.y) * f;
-  			area += f * 3;
-  		}
-
-  		if (area === 0) {
-  			// Polygon is so small that all points are on same pixel.
-  			center = points[0];
-  		} else {
-  			center = [x / area, y / area];
-  		}
-  		return this._map.layerPointToLatLng(center);
+  		return polygonCenter(this._defaultShape(), this._map.options.crs);
   	},
 
   	_convertLatLngs: function (latlngs) {
@@ -29186,14 +29531,24 @@ module.exports = self.fetch.bind(self);
 
   	case 'GeometryCollection':
   		for (i = 0, len = geometry.geometries.length; i < len; i++) {
-  			var layer = geometryToLayer({
+  			var geoLayer = geometryToLayer({
   				geometry: geometry.geometries[i],
   				type: 'Feature',
   				properties: geojson.properties
   			}, options);
 
-  			if (layer) {
-  				layers.push(layer);
+  			if (geoLayer) {
+  				layers.push(geoLayer);
+  			}
+  		}
+  		return new FeatureGroup(layers);
+
+  	case 'FeatureCollection':
+  		for (i = 0, len = geometry.features.length; i < len; i++) {
+  			var featureLayer = geometryToLayer(geometry.features[i], options);
+
+  			if (featureLayer) {
+  				layers.push(featureLayer);
   			}
   		}
   		return new FeatureGroup(layers);
@@ -29234,29 +29589,32 @@ module.exports = self.fetch.bind(self);
   	return latlngs;
   }
 
-  // @function latLngToCoords(latlng: LatLng, precision?: Number): Array
+  // @function latLngToCoords(latlng: LatLng, precision?: Number|false): Array
   // Reverse of [`coordsToLatLng`](#geojson-coordstolatlng)
+  // Coordinates values are rounded with [`formatNum`](#util-formatnum) function.
   function latLngToCoords(latlng, precision) {
-  	precision = typeof precision === 'number' ? precision : 6;
+  	latlng = toLatLng(latlng);
   	return latlng.alt !== undefined ?
   		[formatNum(latlng.lng, precision), formatNum(latlng.lat, precision), formatNum(latlng.alt, precision)] :
   		[formatNum(latlng.lng, precision), formatNum(latlng.lat, precision)];
   }
 
-  // @function latLngsToCoords(latlngs: Array, levelsDeep?: Number, closed?: Boolean): Array
+  // @function latLngsToCoords(latlngs: Array, levelsDeep?: Number, closed?: Boolean, precision?: Number|false): Array
   // Reverse of [`coordsToLatLngs`](#geojson-coordstolatlngs)
   // `closed` determines whether the first point should be appended to the end of the array to close the feature, only used when `levelsDeep` is 0. False by default.
+  // Coordinates values are rounded with [`formatNum`](#util-formatnum) function.
   function latLngsToCoords(latlngs, levelsDeep, closed, precision) {
   	var coords = [];
 
   	for (var i = 0, len = latlngs.length; i < len; i++) {
+  		// Check for flat arrays required to ensure unbalanced arrays are correctly converted in recursion
   		coords.push(levelsDeep ?
-  			latLngsToCoords(latlngs[i], levelsDeep - 1, closed, precision) :
+  			latLngsToCoords(latlngs[i], isFlat(latlngs[i]) ? 0 : levelsDeep - 1, closed, precision) :
   			latLngToCoords(latlngs[i], precision));
   	}
 
   	if (!levelsDeep && closed) {
-  		coords.push(coords[0]);
+  		coords.push(coords[0].slice());
   	}
 
   	return coords;
@@ -29293,26 +29651,23 @@ module.exports = self.fetch.bind(self);
 
   // @namespace Marker
   // @section Other methods
-  // @method toGeoJSON(precision?: Number): Object
-  // `precision` is the number of decimal places for coordinates.
-  // The default value is 6 places.
-  // Returns a [`GeoJSON`](http://en.wikipedia.org/wiki/GeoJSON) representation of the marker (as a GeoJSON `Point` Feature).
+  // @method toGeoJSON(precision?: Number|false): Object
+  // Coordinates values are rounded with [`formatNum`](#util-formatnum) function with given `precision`.
+  // Returns a [`GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON) representation of the marker (as a GeoJSON `Point` Feature).
   Marker.include(PointToGeoJSON);
 
   // @namespace CircleMarker
-  // @method toGeoJSON(precision?: Number): Object
-  // `precision` is the number of decimal places for coordinates.
-  // The default value is 6 places.
-  // Returns a [`GeoJSON`](http://en.wikipedia.org/wiki/GeoJSON) representation of the circle marker (as a GeoJSON `Point` Feature).
+  // @method toGeoJSON(precision?: Number|false): Object
+  // Coordinates values are rounded with [`formatNum`](#util-formatnum) function with given `precision`.
+  // Returns a [`GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON) representation of the circle marker (as a GeoJSON `Point` Feature).
   Circle.include(PointToGeoJSON);
   CircleMarker.include(PointToGeoJSON);
 
 
   // @namespace Polyline
-  // @method toGeoJSON(precision?: Number): Object
-  // `precision` is the number of decimal places for coordinates.
-  // The default value is 6 places.
-  // Returns a [`GeoJSON`](http://en.wikipedia.org/wiki/GeoJSON) representation of the polyline (as a GeoJSON `LineString` or `MultiLineString` Feature).
+  // @method toGeoJSON(precision?: Number|false): Object
+  // Coordinates values are rounded with [`formatNum`](#util-formatnum) function with given `precision`.
+  // Returns a [`GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON) representation of the polyline (as a GeoJSON `LineString` or `MultiLineString` Feature).
   Polyline.include({
   	toGeoJSON: function (precision) {
   		var multi = !isFlat(this._latlngs);
@@ -29327,10 +29682,9 @@ module.exports = self.fetch.bind(self);
   });
 
   // @namespace Polygon
-  // @method toGeoJSON(precision?: Number): Object
-  // `precision` is the number of decimal places for coordinates.
-  // The default value is 6 places.
-  // Returns a [`GeoJSON`](http://en.wikipedia.org/wiki/GeoJSON) representation of the polygon (as a GeoJSON `Polygon` or `MultiPolygon` Feature).
+  // @method toGeoJSON(precision?: Number|false): Object
+  // Coordinates values are rounded with [`formatNum`](#util-formatnum) function with given `precision`.
+  // Returns a [`GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON) representation of the polygon (as a GeoJSON `Polygon` or `MultiPolygon` Feature).
   Polygon.include({
   	toGeoJSON: function (precision) {
   		var holes = !isFlat(this._latlngs),
@@ -29365,10 +29719,9 @@ module.exports = self.fetch.bind(self);
   		});
   	},
 
-  	// @method toGeoJSON(precision?: Number): Object
-  	// `precision` is the number of decimal places for coordinates.
-  	// The default value is 6 places.
-  	// Returns a [`GeoJSON`](http://en.wikipedia.org/wiki/GeoJSON) representation of the layer group (as a GeoJSON `FeatureCollection`, `GeometryCollection`, or `MultiPoint`).
+  	// @method toGeoJSON(precision?: Number|false): Object
+  	// Coordinates values are rounded with [`formatNum`](#util-formatnum) function with given `precision`.
+  	// Returns a [`GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON) representation of the layer group (as a GeoJSON `FeatureCollection`, `GeometryCollection`, or `MultiPoint`).
   	toGeoJSON: function (precision) {
 
   		var type = this.feature && this.feature.geometry && this.feature.geometry.type;
@@ -29433,7 +29786,7 @@ module.exports = self.fetch.bind(self);
    * @example
    *
    * ```js
-   * var imageUrl = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg',
+   * var imageUrl = 'https://maps.lib.utexas.edu/maps/historical/newark_nj_1922.jpg',
    * 	imageBounds = [[40.712216, -74.22655], [40.773941, -74.12544]];
    * L.imageOverlay(imageUrl, imageBounds).addTo(map);
    * ```
@@ -29672,6 +30025,12 @@ module.exports = self.fetch.bind(self);
   			this._url = errorUrl;
   			this._image.src = errorUrl;
   		}
+  	},
+
+  	// @method getCenter(): LatLng
+  	// Returns the center of the ImageOverlay.
+  	getCenter: function () {
+  		return this._bounds.getCenter();
   	}
   });
 
@@ -29708,6 +30067,7 @@ module.exports = self.fetch.bind(self);
   	options: {
   		// @option autoplay: Boolean = true
   		// Whether the video starts playing automatically when loaded.
+  		// On some browsers autoplay will only work with `muted: true`
   		autoplay: true,
 
   		// @option loop: Boolean = true
@@ -29716,12 +30076,16 @@ module.exports = self.fetch.bind(self);
 
   		// @option keepAspectRatio: Boolean = true
   		// Whether the video will save aspect ratio after the projection.
-  		// Relevant for supported browsers. Browser compatibility- https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit
+  		// Relevant for supported browsers. See [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit)
   		keepAspectRatio: true,
 
   		// @option muted: Boolean = false
   		// Whether the video starts on mute when loaded.
-  		muted: false
+  		muted: false,
+
+  		// @option playsInline: Boolean = true
+  		// Mobile browsers will play the video right where it is instead of open it up in fullscreen mode.
+  		playsInline: true
   	},
 
   	_initImage: function () {
@@ -29758,6 +30122,7 @@ module.exports = self.fetch.bind(self);
   		vid.autoplay = !!this.options.autoplay;
   		vid.loop = !!this.options.loop;
   		vid.muted = !!this.options.muted;
+  		vid.playsInline = !!this.options.playsInline;
   		for (var i = 0; i < this._url.length; i++) {
   			var source = create$1('source');
   			source.src = this._url[i];
@@ -29828,9 +30193,9 @@ module.exports = self.fetch.bind(self);
 
   /*
    * @class DivOverlay
-   * @inherits Layer
+   * @inherits Interactive layer
    * @aka L.DivOverlay
-   * Base model for L.Popup and L.Tooltip. Inherit from it for custom popup like plugins.
+   * Base model for L.Popup and L.Tooltip. Inherit from it for custom overlays like plugins.
    */
 
   // @namespace DivOverlay
@@ -29839,24 +30204,82 @@ module.exports = self.fetch.bind(self);
   	// @section
   	// @aka DivOverlay options
   	options: {
-  		// @option offset: Point = Point(0, 7)
-  		// The offset of the popup position. Useful to control the anchor
-  		// of the popup when opening it on some overlays.
-  		offset: [0, 7],
+  		// @option interactive: Boolean = false
+  		// If true, the popup/tooltip will listen to the mouse events.
+  		interactive: false,
+
+  		// @option offset: Point = Point(0, 0)
+  		// The offset of the overlay position.
+  		offset: [0, 0],
 
   		// @option className: String = ''
-  		// A custom CSS class name to assign to the popup.
+  		// A custom CSS class name to assign to the overlay.
   		className: '',
 
-  		// @option pane: String = 'popupPane'
-  		// `Map pane` where the popup will be added.
-  		pane: 'popupPane'
+  		// @option pane: String = undefined
+  		// `Map pane` where the overlay will be added.
+  		pane: undefined,
+
+  		// @option content: String|HTMLElement|Function = ''
+  		// Sets the HTML content of the overlay while initializing. If a function is passed the source layer will be
+  		// passed to the function. The function should return a `String` or `HTMLElement` to be used in the overlay.
+  		content: ''
   	},
 
   	initialize: function (options, source) {
-  		setOptions(this, options);
+  		if (options && (options instanceof LatLng || isArray(options))) {
+  			this._latlng = toLatLng(options);
+  			setOptions(this, source);
+  		} else {
+  			setOptions(this, options);
+  			this._source = source;
+  		}
+  		if (this.options.content) {
+  			this._content = this.options.content;
+  		}
+  	},
 
-  		this._source = source;
+  	// @method openOn(map: Map): this
+  	// Adds the overlay to the map.
+  	// Alternative to `map.openPopup(popup)`/`.openTooltip(tooltip)`.
+  	openOn: function (map) {
+  		map = arguments.length ? map : this._source._map; // experimental, not the part of public api
+  		if (!map.hasLayer(this)) {
+  			map.addLayer(this);
+  		}
+  		return this;
+  	},
+
+  	// @method close(): this
+  	// Closes the overlay.
+  	// Alternative to `map.closePopup(popup)`/`.closeTooltip(tooltip)`
+  	// and `layer.closePopup()`/`.closeTooltip()`.
+  	close: function () {
+  		if (this._map) {
+  			this._map.removeLayer(this);
+  		}
+  		return this;
+  	},
+
+  	// @method toggle(layer?: Layer): this
+  	// Opens or closes the overlay bound to layer depending on its current state.
+  	// Argument may be omitted only for overlay bound to layer.
+  	// Alternative to `layer.togglePopup()`/`.toggleTooltip()`.
+  	toggle: function (layer) {
+  		if (this._map) {
+  			this.close();
+  		} else {
+  			if (arguments.length) {
+  				this._source = layer;
+  			} else {
+  				layer = this._source;
+  			}
+  			this._prepareOpen();
+
+  			// open the overlay on the map
+  			this.openOn(layer._map);
+  		}
+  		return this;
   	},
 
   	onAdd: function (map) {
@@ -29879,6 +30302,11 @@ module.exports = self.fetch.bind(self);
   		}
 
   		this.bringToFront();
+
+  		if (this.options.interactive) {
+  			addClass(this._container, 'leaflet-interactive');
+  			this.addInteractiveTarget(this._container);
+  		}
   	},
 
   	onRemove: function (map) {
@@ -29888,17 +30316,22 @@ module.exports = self.fetch.bind(self);
   		} else {
   			remove(this._container);
   		}
+
+  		if (this.options.interactive) {
+  			removeClass(this._container, 'leaflet-interactive');
+  			this.removeInteractiveTarget(this._container);
+  		}
   	},
 
-  	// @namespace Popup
+  	// @namespace DivOverlay
   	// @method getLatLng: LatLng
-  	// Returns the geographical point of popup.
+  	// Returns the geographical point of the overlay.
   	getLatLng: function () {
   		return this._latlng;
   	},
 
   	// @method setLatLng(latlng: LatLng): this
-  	// Sets the geographical point where the popup will open.
+  	// Sets the geographical point where the overlay will open.
   	setLatLng: function (latlng) {
   		this._latlng = toLatLng(latlng);
   		if (this._map) {
@@ -29909,13 +30342,14 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// @method getContent: String|HTMLElement
-  	// Returns the content of the popup.
+  	// Returns the content of the overlay.
   	getContent: function () {
   		return this._content;
   	},
 
   	// @method setContent(htmlContent: String|HTMLElement|Function): this
-  	// Sets the HTML content of the popup. If a function is passed the source layer will be passed to the function. The function should return a `String` or `HTMLElement` to be used in the popup.
+  	// Sets the HTML content of the overlay. If a function is passed the source layer will be passed to the function.
+  	// The function should return a `String` or `HTMLElement` to be used in the overlay.
   	setContent: function (content) {
   		this._content = content;
   		this.update();
@@ -29923,13 +30357,13 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// @method getElement: String|HTMLElement
-  	// Returns the HTML container of the popup.
+  	// Returns the HTML container of the overlay.
   	getElement: function () {
   		return this._container;
   	},
 
   	// @method update: null
-  	// Updates the popup content, layout and position. Useful for updating the popup after something inside changed, e.g. image loaded.
+  	// Updates the overlay content, layout and position. Useful for updating the overlay after something inside changed, e.g. image loaded.
   	update: function () {
   		if (!this._map) { return; }
 
@@ -29957,13 +30391,13 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// @method isOpen: Boolean
-  	// Returns `true` when the popup is visible on the map.
+  	// Returns `true` when the overlay is visible on the map.
   	isOpen: function () {
   		return !!this._map && this._map.hasLayer(this);
   	},
 
   	// @method bringToFront: this
-  	// Brings this popup in front of other popups (in the same map pane).
+  	// Brings this overlay in front of other overlays (in the same map pane).
   	bringToFront: function () {
   		if (this._map) {
   			toFront(this._container);
@@ -29972,7 +30406,7 @@ module.exports = self.fetch.bind(self);
   	},
 
   	// @method bringToBack: this
-  	// Brings this popup to the back of other popups (in the same map pane).
+  	// Brings this overlay to the back of other overlays (in the same map pane).
   	bringToBack: function () {
   		if (this._map) {
   			toBack(this._container);
@@ -29980,36 +30414,45 @@ module.exports = self.fetch.bind(self);
   		return this;
   	},
 
-  	_prepareOpen: function (parent, layer, latlng) {
-  		if (!(layer instanceof Layer)) {
-  			latlng = layer;
-  			layer = parent;
-  		}
+  	// prepare bound overlay to open: update latlng pos / content source (for FeatureGroup)
+  	_prepareOpen: function (latlng) {
+  		var source = this._source;
+  		if (!source._map) { return false; }
 
-  		if (layer instanceof FeatureGroup) {
-  			for (var id in parent._layers) {
-  				layer = parent._layers[id];
-  				break;
+  		if (source instanceof FeatureGroup) {
+  			source = null;
+  			var layers = this._source._layers;
+  			for (var id in layers) {
+  				if (layers[id]._map) {
+  					source = layers[id];
+  					break;
+  				}
   			}
+  			if (!source) { return false; } // Unable to get source layer.
+
+  			// set overlay source to this layer
+  			this._source = source;
   		}
 
   		if (!latlng) {
-  			if (layer.getCenter) {
-  				latlng = layer.getCenter();
-  			} else if (layer.getLatLng) {
-  				latlng = layer.getLatLng();
+  			if (source.getCenter) {
+  				latlng = source.getCenter();
+  			} else if (source.getLatLng) {
+  				latlng = source.getLatLng();
+  			} else if (source.getBounds) {
+  				latlng = source.getBounds().getCenter();
   			} else {
   				throw new Error('Unable to get source layer LatLng.');
   			}
   		}
+  		this.setLatLng(latlng);
 
-  		// set overlay source to this layer
-  		this._source = layer;
+  		if (this._map) {
+  			// update the overlay (content, layout, etc...)
+  			this.update();
+  		}
 
-  		// update the overlay (content, layout, ect...)
-  		this.update();
-
-  		return latlng;
+  		return true;
   	},
 
   	_updateContent: function () {
@@ -30026,6 +30469,11 @@ module.exports = self.fetch.bind(self);
   			}
   			node.appendChild(content);
   		}
+
+  		// @namespace DivOverlay
+  		// @section DivOverlay events
+  		// @event contentupdate: Event
+  		// Fired when the content of the overlay is updated
   		this.fire('contentupdate');
   	},
 
@@ -30045,7 +30493,7 @@ module.exports = self.fetch.bind(self);
   		var bottom = this._containerBottom = -offset.y,
   		    left = this._containerLeft = -Math.round(this._containerWidth / 2) + offset.x;
 
-  		// bottom position the popup in case the height of the popup changes (images loading etc)
+  		// bottom position the overlay in case the height of the overlay changes (images loading etc)
   		this._container.style.bottom = bottom + 'px';
   		this._container.style.left = left + 'px';
   	},
@@ -30054,6 +30502,34 @@ module.exports = self.fetch.bind(self);
   		return [0, 0];
   	}
 
+  });
+
+  Map.include({
+  	_initOverlay: function (OverlayClass, content, latlng, options) {
+  		var overlay = content;
+  		if (!(overlay instanceof OverlayClass)) {
+  			overlay = new OverlayClass(options).setContent(content);
+  		}
+  		if (latlng) {
+  			overlay.setLatLng(latlng);
+  		}
+  		return overlay;
+  	}
+  });
+
+
+  Layer.include({
+  	_initOverlay: function (OverlayClass, old, content, options) {
+  		var overlay = content;
+  		if (overlay instanceof OverlayClass) {
+  			setOptions(overlay, options);
+  			overlay._source = this;
+  		} else {
+  			overlay = (old && !options) ? old : new OverlayClass(options, this);
+  			overlay.setContent(content);
+  		}
+  		return overlay;
+  	}
   });
 
   /*
@@ -30072,12 +30548,18 @@ module.exports = self.fetch.bind(self);
    * marker.bindPopup(popupContent).openPopup();
    * ```
    * Path overlays like polylines also have a `bindPopup` method.
-   * Here's a more complicated way to open a popup on a map:
+   *
+   * A popup can be also standalone:
    *
    * ```js
    * var popup = L.popup()
    * 	.setLatLng(latlng)
    * 	.setContent('<p>Hello world!<br />This is a nice popup.</p>')
+   * 	.openOn(map);
+   * ```
+   * or
+   * ```js
+   * var popup = L.popup(latlng, {content: '<p>Hello world!<br />This is a nice popup.</p>')
    * 	.openOn(map);
    * ```
    */
@@ -30089,6 +30571,14 @@ module.exports = self.fetch.bind(self);
   	// @section
   	// @aka Popup options
   	options: {
+  		// @option pane: String = 'popupPane'
+  		// `Map pane` where the popup will be added.
+  		pane: 'popupPane',
+
+  		// @option offset: Point = Point(0, 7)
+  		// The offset of the popup position.
+  		offset: [0, 7],
+
   		// @option maxWidth: Number = 300
   		// Max width of the popup, in pixels.
   		maxWidth: 300,
@@ -30100,6 +30590,8 @@ module.exports = self.fetch.bind(self);
   		// @option maxHeight: Number = null
   		// If set, creates a scrollable container of the given height
   		// inside a popup if its content exceeds it.
+  		// The scrollable container can be styled using the
+  		// `leaflet-popup-scrolled` CSS class selector.
   		maxHeight: null,
 
   		// @option autoPan: Boolean = true
@@ -30151,10 +30643,17 @@ module.exports = self.fetch.bind(self);
 
   	// @namespace Popup
   	// @method openOn(map: Map): this
-  	// Adds the popup to the map and closes the previous one. The same as `map.openPopup(popup)`.
+  	// Alternative to `map.openPopup(popup)`.
+  	// Adds the popup to the map and closes the previous one.
   	openOn: function (map) {
-  		map.openPopup(this);
-  		return this;
+  		map = arguments.length ? map : this._source._map; // experimental, not the part of public api
+
+  		if (!map.hasLayer(this) && map._popup && map._popup.options.autoClose) {
+  			map.removeLayer(map._popup);
+  		}
+  		map._popup = this;
+
+  		return DivOverlay.prototype.openOn.call(this, map);
   	},
 
   	onAdd: function (map) {
@@ -30205,7 +30704,7 @@ module.exports = self.fetch.bind(self);
   		var events = DivOverlay.prototype.getEvents.call(this);
 
   		if (this.options.closeOnClick !== undefined ? this.options.closeOnClick : this._map.options.closePopupOnClick) {
-  			events.preclick = this._close;
+  			events.preclick = this.close;
   		}
 
   		if (this.options.keepInView) {
@@ -30213,12 +30712,6 @@ module.exports = self.fetch.bind(self);
   		}
 
   		return events;
-  	},
-
-  	_close: function () {
-  		if (this._map) {
-  			this._map.closePopup(this);
-  		}
   	},
 
   	_initLayout: function () {
@@ -30239,10 +30732,15 @@ module.exports = self.fetch.bind(self);
 
   		if (this.options.closeButton) {
   			var closeButton = this._closeButton = create$1('a', prefix + '-close-button', container);
+  			closeButton.setAttribute('role', 'button'); // overrides the implicit role=link of <a> elements #7399
+  			closeButton.setAttribute('aria-label', 'Close popup');
   			closeButton.href = '#close';
-  			closeButton.innerHTML = '&#215;';
+  			closeButton.innerHTML = '<span aria-hidden="true">&#215;</span>';
 
-  			on(closeButton, 'click', this._onCloseButtonClick, this);
+  			on(closeButton, 'click', function (ev) {
+  				preventDefault(ev);
+  				this.close();
+  			}, this);
   		}
   	},
 
@@ -30286,6 +30784,13 @@ module.exports = self.fetch.bind(self);
   		if (!this.options.autoPan) { return; }
   		if (this._map._panAnim) { this._map._panAnim.stop(); }
 
+  		// We can endlessly recurse if keepInView is set and the view resets.
+  		// Let's guard against that by exiting early if we're responding to our own autopan.
+  		if (this._autopanning) {
+  			this._autopanning = false;
+  			return;
+  		}
+
   		var map = this._map,
   		    marginBottom = parseInt(getStyle(this._container, 'marginBottom'), 10) || 0,
   		    containerHeight = this._container.offsetHeight + marginBottom,
@@ -30320,15 +30825,15 @@ module.exports = self.fetch.bind(self);
   		// @event autopanstart: Event
   		// Fired when the map starts autopanning when opening a popup.
   		if (dx || dy) {
+  			// Track that we're autopanning, as this function will be re-ran on moveend
+  			if (this.options.keepInView) {
+  				this._autopanning = true;
+  			}
+
   			map
   			    .fire('autopanstart')
   			    .panBy([dx, dy]);
   		}
-  	},
-
-  	_onCloseButtonClick: function (e) {
-  		this._close();
-  		stop(e);
   	},
 
   	_getAnchor: function () {
@@ -30341,6 +30846,9 @@ module.exports = self.fetch.bind(self);
   // @namespace Popup
   // @factory L.popup(options?: Popup options, source?: Layer)
   // Instantiates a `Popup` object given an optional `options` object that describes its appearance and location and an optional `source` object that is used to tag the popup with a reference to the Layer to which it refers.
+  // @alternative
+  // @factory L.popup(latlng: LatLng, options?: Popup options)
+  // Instantiates a `Popup` object given `latlng` where the popup will open and an optional `options` object that describes its appearance and location.
   var popup = function (options, source) {
   	return new Popup(options, source);
   };
@@ -30365,35 +30873,18 @@ module.exports = self.fetch.bind(self);
   	// @method openPopup(content: String|HTMLElement, latlng: LatLng, options?: Popup options): this
   	// Creates a popup with the specified content and options and opens it in the given point on a map.
   	openPopup: function (popup, latlng, options) {
-  		if (!(popup instanceof Popup)) {
-  			popup = new Popup(options).setContent(popup);
-  		}
+  		this._initOverlay(Popup, popup, latlng, options)
+  		  .openOn(this);
 
-  		if (latlng) {
-  			popup.setLatLng(latlng);
-  		}
-
-  		if (this.hasLayer(popup)) {
-  			return this;
-  		}
-
-  		if (this._popup && this._popup.options.autoClose) {
-  			this.closePopup();
-  		}
-
-  		this._popup = popup;
-  		return this.addLayer(popup);
+  		return this;
   	},
 
   	// @method closePopup(popup?: Popup): this
   	// Closes the popup previously opened with [openPopup](#map-openpopup) (or the given one).
   	closePopup: function (popup) {
-  		if (!popup || popup === this._popup) {
-  			popup = this._popup;
-  			this._popup = null;
-  		}
+  		popup = arguments.length ? popup : this._popup;
   		if (popup) {
-  			this.removeLayer(popup);
+  			popup.close();
   		}
   		return this;
   	}
@@ -30422,18 +30913,7 @@ module.exports = self.fetch.bind(self);
   	// necessary event listeners. If a `Function` is passed it will receive
   	// the layer as the first argument and should return a `String` or `HTMLElement`.
   	bindPopup: function (content, options) {
-
-  		if (content instanceof Popup) {
-  			setOptions(content, options);
-  			this._popup = content;
-  			content._source = this;
-  		} else {
-  			if (!this._popup || options) {
-  				this._popup = new Popup(options, this);
-  			}
-  			this._popup.setContent(content);
-  		}
-
+  		this._popup = this._initOverlay(Popup, this._popup, content, options);
   		if (!this._popupHandlersAdded) {
   			this.on({
   				click: this._openPopup,
@@ -30465,14 +30945,16 @@ module.exports = self.fetch.bind(self);
 
   	// @method openPopup(latlng?: LatLng): this
   	// Opens the bound popup at the specified `latlng` or at the default popup anchor if no `latlng` is passed.
-  	openPopup: function (layer, latlng) {
-  		if (this._popup && this._map) {
-  			latlng = this._popup._prepareOpen(this, layer, latlng);
-
-  			// open the popup on the map
-  			this._map.openPopup(this._popup, latlng);
+  	openPopup: function (latlng) {
+  		if (this._popup) {
+  			if (!(this instanceof FeatureGroup)) {
+  				this._popup._source = this;
+  			}
+  			if (this._popup._prepareOpen(latlng || this._latlng)) {
+  				// open the popup on the map
+  				this._popup.openOn(this._map);
+  			}
   		}
-
   		return this;
   	},
 
@@ -30480,20 +30962,16 @@ module.exports = self.fetch.bind(self);
   	// Closes the popup bound to this layer if it is open.
   	closePopup: function () {
   		if (this._popup) {
-  			this._popup._close();
+  			this._popup.close();
   		}
   		return this;
   	},
 
   	// @method togglePopup(): this
   	// Opens or closes the popup bound to this layer depending on its current state.
-  	togglePopup: function (target) {
+  	togglePopup: function () {
   		if (this._popup) {
-  			if (this._popup._map) {
-  				this.closePopup();
-  			} else {
-  				this.openPopup(target);
-  			}
+  			this._popup.toggle(this);
   		}
   		return this;
   	},
@@ -30520,33 +30998,25 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_openPopup: function (e) {
-  		var layer = e.layer || e.target;
-
-  		if (!this._popup) {
+  		if (!this._popup || !this._map) {
   			return;
   		}
-
-  		if (!this._map) {
-  			return;
-  		}
-
   		// prevent map click
   		stop(e);
 
-  		// if this inherits from Path its a vector and we can just
-  		// open the popup at the new location
-  		if (layer instanceof Path) {
-  			this.openPopup(e.layer || e.target, e.latlng);
+  		var target = e.layer || e.target;
+  		if (this._popup._source === target && !(target instanceof Path)) {
+  			// treat it like a marker and figure out
+  			// if we should toggle it open/closed
+  			if (this._map.hasLayer(this._popup)) {
+  				this.closePopup();
+  			} else {
+  				this.openPopup(e.latlng);
+  			}
   			return;
   		}
-
-  		// otherwise treat it like a marker and figure out
-  		// if we should toggle it open/closed
-  		if (this._map.hasLayer(this._popup) && this._popup._source === layer) {
-  			this.closePopup();
-  		} else {
-  			this.openPopup(layer, e.latlng);
-  		}
+  		this._popup._source = target;
+  		this.openPopup(e.latlng);
   	},
 
   	_movePopup: function (e) {
@@ -30567,10 +31037,28 @@ module.exports = self.fetch.bind(self);
    * Used to display small texts on top of map layers.
    *
    * @example
+   * If you want to just bind a tooltip to marker:
    *
    * ```js
    * marker.bindTooltip("my tooltip text").openTooltip();
    * ```
+   * Path overlays like polylines also have a `bindTooltip` method.
+   *
+   * A tooltip can be also standalone:
+   *
+   * ```js
+   * var tooltip = L.tooltip()
+   * 	.setLatLng(latlng)
+   * 	.setContent('Hello world!<br />This is a nice tooltip.')
+   * 	.addTo(map);
+   * ```
+   * or
+   * ```js
+   * var tooltip = L.tooltip(latlng, {content: 'Hello world!<br />This is a nice tooltip.'})
+   * 	.addTo(map);
+   * ```
+   *
+   *
    * Note about tooltip offset. Leaflet takes two options in consideration
    * for computing tooltip offsetting:
    * - the `offset` Tooltip option: it defaults to [0, 0], and it's specific to one tooltip.
@@ -30610,10 +31098,6 @@ module.exports = self.fetch.bind(self);
   		// If true, the tooltip will follow the mouse instead of being fixed at the feature center.
   		sticky: false,
 
-  		// @option interactive: Boolean = false
-  		// If true, the tooltip will listen to the feature events.
-  		interactive: false,
-
   		// @option opacity: Number = 0.9
   		// Tooltip container opacity.
   		opacity: 0.9
@@ -30630,6 +31114,8 @@ module.exports = self.fetch.bind(self);
   		map.fire('tooltipopen', {tooltip: this});
 
   		if (this._source) {
+  			this.addEventParent(this._source);
+
   			// @namespace Layer
   			// @section Tooltip events
   			// @event tooltipopen: TooltipEvent
@@ -30648,6 +31134,8 @@ module.exports = self.fetch.bind(self);
   		map.fire('tooltipclose', {tooltip: this});
 
   		if (this._source) {
+  			this.removeEventParent(this._source);
+
   			// @namespace Layer
   			// @section Tooltip events
   			// @event tooltipclose: TooltipEvent
@@ -30659,17 +31147,11 @@ module.exports = self.fetch.bind(self);
   	getEvents: function () {
   		var events = DivOverlay.prototype.getEvents.call(this);
 
-  		if (touch && !this.options.permanent) {
-  			events.preclick = this._close;
+  		if (!this.options.permanent) {
+  			events.preclick = this.close;
   		}
 
   		return events;
-  	},
-
-  	_close: function () {
-  		if (this._map) {
-  			this._map.closeTooltip(this);
-  		}
   	},
 
   	_initLayout: function () {
@@ -30677,6 +31159,9 @@ module.exports = self.fetch.bind(self);
   		    className = prefix + ' ' + (this.options.className || '') + ' leaflet-zoom-' + (this._zoomAnimated ? 'animated' : 'hide');
 
   		this._contentNode = this._container = create$1('div', className);
+
+  		this._container.setAttribute('role', 'tooltip');
+  		this._container.setAttribute('id', 'leaflet-tooltip-' + stamp(this));
   	},
 
   	_updateLayout: function () {},
@@ -30757,7 +31242,10 @@ module.exports = self.fetch.bind(self);
 
   // @namespace Tooltip
   // @factory L.tooltip(options?: Tooltip options, source?: Layer)
-  // Instantiates a Tooltip object given an optional `options` object that describes its appearance and location and an optional `source` object that is used to tag the tooltip with a reference to the Layer to which it refers.
+  // Instantiates a `Tooltip` object given an optional `options` object that describes its appearance and location and an optional `source` object that is used to tag the tooltip with a reference to the Layer to which it refers.
+  // @alternative
+  // @factory L.tooltip(latlng: LatLng, options?: Tooltip options)
+  // Instantiates a `Tooltip` object given `latlng` where the tooltip will open and an optional `options` object that describes its appearance and location.
   var tooltip = function (options, source) {
   	return new Tooltip(options, source);
   };
@@ -30772,27 +31260,16 @@ module.exports = self.fetch.bind(self);
   	// @method openTooltip(content: String|HTMLElement, latlng: LatLng, options?: Tooltip options): this
   	// Creates a tooltip with the specified content and options and open it.
   	openTooltip: function (tooltip, latlng, options) {
-  		if (!(tooltip instanceof Tooltip)) {
-  			tooltip = new Tooltip(options).setContent(tooltip);
-  		}
+  		this._initOverlay(Tooltip, tooltip, latlng, options)
+  		  .openOn(this);
 
-  		if (latlng) {
-  			tooltip.setLatLng(latlng);
-  		}
-
-  		if (this.hasLayer(tooltip)) {
-  			return this;
-  		}
-
-  		return this.addLayer(tooltip);
+  		return this;
   	},
 
-  	// @method closeTooltip(tooltip?: Tooltip): this
+  	// @method closeTooltip(tooltip: Tooltip): this
   	// Closes the tooltip given as parameter.
   	closeTooltip: function (tooltip) {
-  		if (tooltip) {
-  			this.removeLayer(tooltip);
-  		}
+  		tooltip.close();
   		return this;
   	}
 
@@ -30820,18 +31297,11 @@ module.exports = self.fetch.bind(self);
   	// the layer as the first argument and should return a `String` or `HTMLElement`.
   	bindTooltip: function (content, options) {
 
-  		if (content instanceof Tooltip) {
-  			setOptions(content, options);
-  			this._tooltip = content;
-  			content._source = this;
-  		} else {
-  			if (!this._tooltip || options) {
-  				this._tooltip = new Tooltip(options, this);
-  			}
-  			this._tooltip.setContent(content);
-
+  		if (this._tooltip && this.isTooltipOpen()) {
+  			this.unbindTooltip();
   		}
 
+  		this._tooltip = this._initOverlay(Tooltip, this._tooltip, content, options);
   		this._initTooltipInteractions();
 
   		if (this._tooltip.options.permanent && this._map && this._map.hasLayer(this)) {
@@ -30852,9 +31322,9 @@ module.exports = self.fetch.bind(self);
   		return this;
   	},
 
-  	_initTooltipInteractions: function (remove$$1) {
-  		if (!remove$$1 && this._tooltipHandlersAdded) { return; }
-  		var onOff = remove$$1 ? 'off' : 'on',
+  	_initTooltipInteractions: function (remove) {
+  		if (!remove && this._tooltipHandlersAdded) { return; }
+  		var onOff = remove ? 'off' : 'on',
   		    events = {
   			remove: this.closeTooltip,
   			move: this._moveTooltip
@@ -30862,36 +31332,40 @@ module.exports = self.fetch.bind(self);
   		if (!this._tooltip.options.permanent) {
   			events.mouseover = this._openTooltip;
   			events.mouseout = this.closeTooltip;
-  			if (this._tooltip.options.sticky) {
-  				events.mousemove = this._moveTooltip;
-  			}
-  			if (touch) {
-  				events.click = this._openTooltip;
+  			events.click = this._openTooltip;
+  			if (this._map) {
+  				this._addFocusListeners();
+  			} else {
+  				events.add = this._addFocusListeners;
   			}
   		} else {
   			events.add = this._openTooltip;
   		}
+  		if (this._tooltip.options.sticky) {
+  			events.mousemove = this._moveTooltip;
+  		}
   		this[onOff](events);
-  		this._tooltipHandlersAdded = !remove$$1;
+  		this._tooltipHandlersAdded = !remove;
   	},
 
   	// @method openTooltip(latlng?: LatLng): this
   	// Opens the bound tooltip at the specified `latlng` or at the default tooltip anchor if no `latlng` is passed.
-  	openTooltip: function (layer, latlng) {
-  		if (this._tooltip && this._map) {
-  			latlng = this._tooltip._prepareOpen(this, layer, latlng);
+  	openTooltip: function (latlng) {
+  		if (this._tooltip) {
+  			if (!(this instanceof FeatureGroup)) {
+  				this._tooltip._source = this;
+  			}
+  			if (this._tooltip._prepareOpen(latlng)) {
+  				// open the tooltip on the map
+  				this._tooltip.openOn(this._map);
 
-  			// open the tooltip on the map
-  			this._map.openTooltip(this._tooltip, latlng);
-
-  			// Tooltip container may not be defined if not permanent and never
-  			// opened.
-  			if (this._tooltip.options.interactive && this._tooltip._container) {
-  				addClass(this._tooltip._container, 'leaflet-clickable');
-  				this.addInteractiveTarget(this._tooltip._container);
+  				if (this.getElement) {
+  					this._setAriaDescribedByOnLayer(this);
+  				} else if (this.eachLayer) {
+  					this.eachLayer(this._setAriaDescribedByOnLayer, this);
+  				}
   			}
   		}
-
   		return this;
   	},
 
@@ -30899,24 +31373,15 @@ module.exports = self.fetch.bind(self);
   	// Closes the tooltip bound to this layer if it is open.
   	closeTooltip: function () {
   		if (this._tooltip) {
-  			this._tooltip._close();
-  			if (this._tooltip.options.interactive && this._tooltip._container) {
-  				removeClass(this._tooltip._container, 'leaflet-clickable');
-  				this.removeInteractiveTarget(this._tooltip._container);
-  			}
+  			return this._tooltip.close();
   		}
-  		return this;
   	},
 
   	// @method toggleTooltip(): this
   	// Opens or closes the tooltip bound to this layer depending on its current state.
-  	toggleTooltip: function (target) {
+  	toggleTooltip: function () {
   		if (this._tooltip) {
-  			if (this._tooltip._map) {
-  				this.closeTooltip();
-  			} else {
-  				this.openTooltip(target);
-  			}
+  			this._tooltip.toggle(this);
   		}
   		return this;
   	},
@@ -30942,13 +31407,40 @@ module.exports = self.fetch.bind(self);
   		return this._tooltip;
   	},
 
-  	_openTooltip: function (e) {
-  		var layer = e.layer || e.target;
+  	_addFocusListeners: function () {
+  		if (this.getElement) {
+  			this._addFocusListenersOnLayer(this);
+  		} else if (this.eachLayer) {
+  			this.eachLayer(this._addFocusListenersOnLayer, this);
+  		}
+  	},
 
-  		if (!this._tooltip || !this._map) {
+  	_addFocusListenersOnLayer: function (layer) {
+  		var el = layer.getElement();
+  		if (el) {
+  			on(el, 'focus', function () {
+  				this._tooltip._source = layer;
+  				this.openTooltip();
+  			}, this);
+  			on(el, 'blur', this.closeTooltip, this);
+  		}
+  	},
+
+  	_setAriaDescribedByOnLayer: function (layer) {
+  		var el = layer.getElement();
+  		if (el) {
+  			el.setAttribute('aria-describedby', this._tooltip._container.id);
+  		}
+  	},
+
+
+  	_openTooltip: function (e) {
+  		if (!this._tooltip || !this._map || (this._map.dragging && this._map.dragging.moving())) {
   			return;
   		}
-  		this.openTooltip(layer, this._tooltip.options.sticky ? e.latlng : undefined);
+  		this._tooltip._source = e.layer || e.target;
+
+  		this.openTooltip(this._tooltip.options.sticky ? e.latlng : undefined);
   	},
 
   	_moveTooltip: function (e) {
@@ -31119,7 +31611,7 @@ module.exports = self.fetch.bind(self);
   		// `true` by default on mobile browsers, in order to avoid too many requests and keep smooth navigation.
   		// `false` otherwise in order to display new tiles _during_ panning, since it is easy to pan outside the
   		// [`keepBuffer`](#gridlayer-keepbuffer) option in desktop browsers.
-  		updateWhenIdle: mobile,
+  		updateWhenIdle: Browser.mobile,
 
   		// @option updateWhenZooming: Boolean = true
   		// By default, a smooth zoom animation (during a [touch zoom](#map-touchzoom) or a [`flyTo()`](#map-flyto)) will update grid layers every integer zoom level. Setting this option to `false` will update the grid layer only when the smooth animation ends.
@@ -31188,8 +31680,7 @@ module.exports = self.fetch.bind(self);
   		this._levels = {};
   		this._tiles = {};
 
-  		this._resetView();
-  		this._update();
+  		this._resetView(); // implicit _update() call
   	},
 
   	beforeAdd: function (map) {
@@ -31258,6 +31749,11 @@ module.exports = self.fetch.bind(self);
   	redraw: function () {
   		if (this._map) {
   			this._removeAllTiles();
+  			var tileZoom = this._clampZoom(this._map.getZoom());
+  			if (tileZoom !== this._tileZoom) {
+  				this._tileZoom = tileZoom;
+  				this._updateLevels();
+  			}
   			this._update();
   		}
   		return this;
@@ -31336,7 +31832,7 @@ module.exports = self.fetch.bind(self);
   		if (!this._map) { return; }
 
   		// IE doesn't inherit filter opacity properly, so we're forced to set it on tiles
-  		if (ielt9) { return; }
+  		if (Browser.ielt9) { return; }
 
   		setOpacity(this._container, this.options.opacity);
 
@@ -31622,7 +32118,7 @@ module.exports = self.fetch.bind(self);
   		    translate = level.origin.multiplyBy(scale)
   		        .subtract(this._map._getNewPixelOrigin(center, zoom)).round();
 
-  		if (any3d) {
+  		if (Browser.any3d) {
   			setTransform(level.el, translate, scale);
   		} else {
   			setPosition(level.el, translate);
@@ -31823,14 +32319,8 @@ module.exports = self.fetch.bind(self);
   		tile.onmousemove = falseFn;
 
   		// update opacity on tiles in IE7-8 because of filter inheritance problems
-  		if (ielt9 && this.options.opacity < 1) {
+  		if (Browser.ielt9 && this.options.opacity < 1) {
   			setOpacity(tile, this.options.opacity);
-  		}
-
-  		// without this hack, tiles disappear after zoom on Chrome for Android
-  		// https://github.com/Leaflet/Leaflet/issues/2078
-  		if (android && !android23) {
-  			tile.style.WebkitBackfaceVisibility = 'hidden';
   		}
   	},
 
@@ -31910,7 +32400,7 @@ module.exports = self.fetch.bind(self);
   			// Fired when the grid layer loaded all visible tiles.
   			this.fire('load');
 
-  			if (ielt9 || !this._map._fadeAnimated) {
+  			if (Browser.ielt9 || !this._map._fadeAnimated) {
   				requestAnimFrame(this._pruneTiles, this);
   			} else {
   				// Wait a bit more than 0.2 secs (the duration of the tile fade-in)
@@ -31962,7 +32452,7 @@ module.exports = self.fetch.bind(self);
    * @example
    *
    * ```js
-   * L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
+   * L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
    * ```
    *
    * @section URL template
@@ -31971,7 +32461,7 @@ module.exports = self.fetch.bind(self);
    * A string of the following form:
    *
    * ```
-   * 'http://{s}.somedomain.com/blabla/{z}/{x}/{y}{r}.png'
+   * 'https://{s}.somedomain.com/blabla/{z}/{x}/{y}{r}.png'
    * ```
    *
    * `{s}` means one of the available subdomains (used sequentially to help with browser parallel requests per domain limitation; subdomain values are specified in options; `a`, `b` or `c` by default, can be omitted), `{z}` — zoom level, `{x}` and `{y}` — tile coordinates. `{r}` can be used to add "&commat;2x" to the URL to load retina tiles.
@@ -31979,7 +32469,7 @@ module.exports = self.fetch.bind(self);
    * You can use custom keys in the template, which will be [evaluated](#util-template) from TileLayer options, like this:
    *
    * ```
-   * L.tileLayer('http://{s}.somedomain.com/{foo}/{z}/{x}/{y}.png', {foo: 'bar'});
+   * L.tileLayer('https://{s}.somedomain.com/{foo}/{z}/{x}/{y}.png', {foo: 'bar'});
    * ```
    */
 
@@ -32025,7 +32515,15 @@ module.exports = self.fetch.bind(self);
   		// Whether the crossOrigin attribute will be added to the tiles.
   		// If a String is provided, all tiles will have their crossOrigin attribute set to the String provided. This is needed if you want to access tile pixel data.
   		// Refer to [CORS Settings](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for valid String values.
-  		crossOrigin: false
+  		crossOrigin: false,
+
+  		// @option referrerPolicy: Boolean|String = false
+  		// Whether the referrerPolicy attribute will be added to the tiles.
+  		// If a String is provided, all tiles will have their referrerPolicy attribute set to the String provided.
+  		// This may be needed if your map's rendering context has a strict default but your tile provider expects a valid referrer
+  		// (e.g. to validate an API token).
+  		// Refer to [HTMLImageElement.referrerPolicy](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/referrerPolicy) for valid String values.
+  		referrerPolicy: false
   	},
 
   	initialize: function (url, options) {
@@ -32035,29 +32533,32 @@ module.exports = self.fetch.bind(self);
   		options = setOptions(this, options);
 
   		// detecting retina displays, adjusting tileSize and zoom levels
-  		if (options.detectRetina && retina && options.maxZoom > 0) {
+  		if (options.detectRetina && Browser.retina && options.maxZoom > 0) {
 
   			options.tileSize = Math.floor(options.tileSize / 2);
 
   			if (!options.zoomReverse) {
   				options.zoomOffset++;
-  				options.maxZoom--;
+  				options.maxZoom = Math.max(options.minZoom, options.maxZoom - 1);
   			} else {
   				options.zoomOffset--;
-  				options.minZoom++;
+  				options.minZoom = Math.min(options.maxZoom, options.minZoom + 1);
   			}
 
   			options.minZoom = Math.max(0, options.minZoom);
+  		} else if (!options.zoomReverse) {
+  			// make sure maxZoom is gte minZoom
+  			options.maxZoom = Math.max(options.minZoom, options.maxZoom);
+  		} else {
+  			// make sure minZoom is lte maxZoom
+  			options.minZoom = Math.min(options.maxZoom, options.minZoom);
   		}
 
   		if (typeof options.subdomains === 'string') {
   			options.subdomains = options.subdomains.split('');
   		}
 
-  		// for https://github.com/Leaflet/Leaflet/issues/137
-  		if (!android) {
-  			this.on('tileunload', this._onTileRemove);
-  		}
+  		this.on('tileunload', this._onTileRemove);
   	},
 
   	// @method setUrl(url: String, noRedraw?: Boolean): this
@@ -32091,17 +32592,17 @@ module.exports = self.fetch.bind(self);
   			tile.crossOrigin = this.options.crossOrigin === true ? '' : this.options.crossOrigin;
   		}
 
-  		/*
-  		 Alt tag is set to empty string to keep screen readers from reading URL and for compliance reasons
-  		 http://www.w3.org/TR/WCAG20-TECHS/H67
-  		*/
-  		tile.alt = '';
+  		// for this new option we follow the documented behavior
+  		// more closely by only setting the property when string
+  		if (typeof this.options.referrerPolicy === 'string') {
+  			tile.referrerPolicy = this.options.referrerPolicy;
+  		}
 
-  		/*
-  		 Set role="presentation" to force screen readers to ignore this
-  		 https://www.w3.org/TR/wai-aria/roles#textalternativecomputation
-  		*/
-  		tile.setAttribute('role', 'presentation');
+  		// The alt attribute is set to the empty string,
+  		// allowing screen readers to ignore the decorative image tiles.
+  		// https://www.w3.org/WAI/tutorials/images/decorative/
+  		// https://www.w3.org/TR/html-aria/#el-img-empty-alt
+  		tile.alt = '';
 
   		tile.src = this.getTileUrl(coords);
 
@@ -32116,7 +32617,7 @@ module.exports = self.fetch.bind(self);
   	// Classes extending `TileLayer` can override this function to provide custom tile URL naming schemes.
   	getTileUrl: function (coords) {
   		var data = {
-  			r: retina ? '@2x' : '',
+  			r: Browser.retina ? '@2x' : '',
   			s: this._getSubdomain(coords),
   			x: coords.x,
   			y: coords.y,
@@ -32135,7 +32636,7 @@ module.exports = self.fetch.bind(self);
 
   	_tileOnLoad: function (done, tile) {
   		// For https://github.com/Leaflet/Leaflet/issues/3332
-  		if (ielt9) {
+  		if (Browser.ielt9) {
   			setTimeout(bind(done, this, null, tile), 0);
   		} else {
   			done(null, tile);
@@ -32184,8 +32685,15 @@ module.exports = self.fetch.bind(self);
 
   				if (!tile.complete) {
   					tile.src = emptyImageUrl;
+  					var coords = this._tiles[i].coords;
   					remove(tile);
   					delete this._tiles[i];
+  					// @event tileabort: TileEvent
+  					// Fired when a tile was loading but is now not wanted.
+  					this.fire('tileabort', {
+  						tile: tile,
+  						coords: coords
+  					});
   				}
   			}
   		}
@@ -32196,11 +32704,7 @@ module.exports = self.fetch.bind(self);
   		if (!tile) { return; }
 
   		// Cancels any pending http requests associated with the tile
-  		// unless we're on Android's stock browser,
-  		// see https://github.com/Leaflet/Leaflet/issues/137
-  		if (!androidStock) {
-  			tile.el.setAttribute('src', emptyImageUrl);
-  		}
+  		tile.el.setAttribute('src', emptyImageUrl);
 
   		return GridLayer.prototype._removeTile.call(this, key);
   	},
@@ -32246,7 +32750,7 @@ module.exports = self.fetch.bind(self);
   	// @aka TileLayer.WMS options
   	// If any custom options not documented here are used, they will be sent to the
   	// WMS server as extra parameters in each request URL. This can be useful for
-  	// [non-standard vendor WMS parameters](http://docs.geoserver.org/stable/en/user/services/wms/vendor.html).
+  	// [non-standard vendor WMS parameters](https://docs.geoserver.org/stable/en/user/services/wms/vendor.html).
   	defaultWmsParams: {
   		service: 'WMS',
   		request: 'GetMap',
@@ -32298,7 +32802,7 @@ module.exports = self.fetch.bind(self);
 
   		options = setOptions(this, options);
 
-  		var realRetina = options.detectRetina && retina ? 2 : 1;
+  		var realRetina = options.detectRetina && Browser.retina ? 2 : 1;
   		var tileSize = this.getTileSize();
   		wmsParams.width = tileSize.x * realRetina;
   		wmsParams.height = tileSize.y * realRetina;
@@ -32385,11 +32889,7 @@ module.exports = self.fetch.bind(self);
   		// @option padding: Number = 0.1
   		// How much to extend the clip area around the map view (relative to its size)
   		// e.g. 0.1 would be 10% of map view in each direction
-  		padding: 0.1,
-
-  		// @option tolerance: Number = 0
-  		// How much to extend click tolerance round a path/object on the map
-  		tolerance : 0
+  		padding: 0.1
   	},
 
   	initialize: function (options) {
@@ -32440,15 +32940,13 @@ module.exports = self.fetch.bind(self);
 
   	_updateTransform: function (center, zoom) {
   		var scale = this._map.getZoomScale(zoom, this._zoom),
-  		    position = getPosition(this._container),
   		    viewHalf = this._map.getSize().multiplyBy(0.5 + this.options.padding),
   		    currentCenterPoint = this._map.project(this._center, zoom),
-  		    destCenterPoint = this._map.project(center, zoom),
-  		    centerOffset = destCenterPoint.subtract(currentCenterPoint),
 
-  		    topLeftOffset = viewHalf.multiplyBy(-scale).add(position).add(viewHalf).subtract(centerOffset);
+  		    topLeftOffset = viewHalf.multiplyBy(-scale).add(currentCenterPoint)
+  				  .subtract(this._map._getNewPixelOrigin(center, zoom));
 
-  		if (any3d) {
+  		if (Browser.any3d) {
   			setTransform(this._container, topLeftOffset, scale);
   		} else {
   			setPosition(this._container, topLeftOffset);
@@ -32498,7 +32996,7 @@ module.exports = self.fetch.bind(self);
    * Allows vector layers to be displayed with [`<canvas>`](https://developer.mozilla.org/docs/Web/API/Canvas_API).
    * Inherits `Renderer`.
    *
-   * Due to [technical limitations](http://caniuse.com/#search=canvas), Canvas is not
+   * Due to [technical limitations](https://caniuse.com/canvas), Canvas is not
    * available in all web browsers, notably IE8, and overlapping geometries might
    * not display properly in some edge cases.
    *
@@ -32523,6 +33021,15 @@ module.exports = self.fetch.bind(self);
    */
 
   var Canvas = Renderer.extend({
+
+  	// @section
+  	// @aka Canvas options
+  	options: {
+  		// @option tolerance: Number = 0
+  		// How much to extend the click tolerance around a path/object on the map.
+  		tolerance: 0
+  	},
+
   	getEvents: function () {
   		var events = Renderer.prototype.getEvents.call(this);
   		events.viewprereset = this._onViewPreReset;
@@ -32548,6 +33055,7 @@ module.exports = self.fetch.bind(self);
   		on(container, 'mousemove', this._onMouseMove, this);
   		on(container, 'click dblclick mousedown mouseup contextmenu', this._onClick, this);
   		on(container, 'mouseout', this._handleMouseOut, this);
+  		container['_leaflet_disable_events'] = true;
 
   		this._ctx = container.getContext('2d');
   	},
@@ -32580,7 +33088,7 @@ module.exports = self.fetch.bind(self);
   		var b = this._bounds,
   		    container = this._container,
   		    size = b.getSize(),
-  		    m = retina ? 2 : 1;
+  		    m = Browser.retina ? 2 : 1;
 
   		setPosition(container, b.min);
 
@@ -32590,7 +33098,7 @@ module.exports = self.fetch.bind(self);
   		container.style.width = size.x + 'px';
   		container.style.height = size.y + 'px';
 
-  		if (retina) {
+  		if (Browser.retina) {
   			this._ctx.scale(2, 2);
   		}
 
@@ -32834,15 +33342,12 @@ module.exports = self.fetch.bind(self);
   		for (var order = this._drawFirst; order; order = order.next) {
   			layer = order.layer;
   			if (layer.options.interactive && layer._containsPoint(point)) {
-  				if (!(e.type === 'click' || e.type !== 'preclick') || !this._map._draggableMoved(layer)) {
+  				if (!(e.type === 'click' || e.type === 'preclick') || !this._map._draggableMoved(layer)) {
   					clickedLayer = layer;
   				}
   			}
   		}
-  		if (clickedLayer)  {
-  			fakeStop(e);
-  			this._fireEvent([clickedLayer], e);
-  		}
+  		this._fireEvent(clickedLayer ? [clickedLayer] : false, e);
   	},
 
   	_onMouseMove: function (e) {
@@ -32888,9 +33393,7 @@ module.exports = self.fetch.bind(self);
   			}
   		}
 
-  		if (this._hoveredLayer) {
-  			this._fireEvent([this._hoveredLayer], e);
-  		}
+  		this._fireEvent(this._hoveredLayer ? [this._hoveredLayer] : false, e);
 
   		this._mouseHoverThrottled = true;
   		setTimeout(bind(function () {
@@ -32967,8 +33470,8 @@ module.exports = self.fetch.bind(self);
 
   // @factory L.canvas(options?: Renderer options)
   // Creates a Canvas renderer with the given options.
-  function canvas$1(options) {
-  	return canvas ? new Canvas(options) : null;
+  function canvas(options) {
+  	return Browser.canvas ? new Canvas(options) : null;
   }
 
   /*
@@ -32983,10 +33486,12 @@ module.exports = self.fetch.bind(self);
   			return document.createElement('<lvml:' + name + ' class="lvml">');
   		};
   	} catch (e) {
-  		return function (name) {
-  			return document.createElement('<' + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
-  		};
+  		// Do not return fn from catch block so `e` can be garbage collected
+  		// See https://github.com/Leaflet/Leaflet/pull/7279
   	}
+  	return function (name) {
+  		return document.createElement('<' + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
+  	};
   })();
 
 
@@ -33110,7 +33615,7 @@ module.exports = self.fetch.bind(self);
   	}
   };
 
-  var create$2 = vml ? vmlCreate : svgCreate;
+  var create = Browser.vml ? vmlCreate : svgCreate;
 
   /*
    * @class SVG
@@ -33120,7 +33625,7 @@ module.exports = self.fetch.bind(self);
    * Allows vector layers to be displayed with [SVG](https://developer.mozilla.org/docs/Web/SVG).
    * Inherits `Renderer`.
    *
-   * Due to [technical limitations](http://caniuse.com/#search=svg), SVG is not
+   * Due to [technical limitations](https://caniuse.com/svg), SVG is not
    * available in all web browsers, notably Android 2.x and 3.x.
    *
    * Although SVG is not available on IE7 and IE8, these browsers support
@@ -33150,19 +33655,13 @@ module.exports = self.fetch.bind(self);
 
   var SVG = Renderer.extend({
 
-  	getEvents: function () {
-  		var events = Renderer.prototype.getEvents.call(this);
-  		events.zoomstart = this._onZoomStart;
-  		return events;
-  	},
-
   	_initContainer: function () {
-  		this._container = create$2('svg');
+  		this._container = create('svg');
 
   		// makes it possible to click through svg root; we'll reset it back in individual paths
   		this._container.setAttribute('pointer-events', 'none');
 
-  		this._rootGroup = create$2('g');
+  		this._rootGroup = create('g');
   		this._container.appendChild(this._rootGroup);
   	},
 
@@ -33172,13 +33671,6 @@ module.exports = self.fetch.bind(self);
   		delete this._container;
   		delete this._rootGroup;
   		delete this._svgSize;
-  	},
-
-  	_onZoomStart: function () {
-  		// Drag-then-pinch interactions might mess up the center and zoom.
-  		// In this case, the easiest way to prevent this is re-do the renderer
-  		//   bounds and padding when the zooming starts.
-  		this._update();
   	},
 
   	_update: function () {
@@ -33207,7 +33699,7 @@ module.exports = self.fetch.bind(self);
   	// methods below are called by vector layers implementations
 
   	_initPath: function (layer) {
-  		var path = layer._path = create$2('path');
+  		var path = layer._path = create('path');
 
   		// @namespace Path
   		// @option className: String = null
@@ -33311,15 +33803,15 @@ module.exports = self.fetch.bind(self);
   	}
   });
 
-  if (vml) {
+  if (Browser.vml) {
   	SVG.include(vmlMixin);
   }
 
   // @namespace SVG
   // @factory L.svg(options?: Renderer options)
   // Creates a SVG renderer with the given options.
-  function svg$1(options) {
-  	return svg || vml ? new SVG(options) : null;
+  function svg(options) {
+  	return Browser.svg || Browser.vml ? new SVG(options) : null;
   }
 
   Map.include({
@@ -33360,7 +33852,7 @@ module.exports = self.fetch.bind(self);
   		// @namespace Map; @option preferCanvas: Boolean = false
   		// Whether `Path`s should be rendered on a `Canvas` renderer.
   		// By default, all `Path`s are rendered in a `SVG` renderer.
-  		return (this.options.preferCanvas && canvas$1(options)) || svg$1(options);
+  		return (this.options.preferCanvas && canvas(options)) || svg(options);
   	}
   });
 
@@ -33419,7 +33911,7 @@ module.exports = self.fetch.bind(self);
   	return new Rectangle(latLngBounds, options);
   }
 
-  SVG.create = create$2;
+  SVG.create = create;
   SVG.pointsToPath = pointsToPath;
 
   GeoJSON.geometryToLayer = geometryToLayer;
@@ -33564,6 +34056,8 @@ module.exports = self.fetch.bind(self);
   	_onKeyDown: function (e) {
   		if (e.keyCode === 27) {
   			this._finish();
+  			this._clearDeferredResetState();
+  			this._resetState();
   		}
   	}
   });
@@ -33634,7 +34128,7 @@ module.exports = self.fetch.bind(self);
   // @section Interaction Options
   Map.mergeOptions({
   	// @option dragging: Boolean = true
-  	// Whether the map be draggable with mouse/touch or not.
+  	// Whether the map is draggable with mouse/touch or not.
   	dragging: true,
 
   	// @section Panning Inertia Options
@@ -33642,8 +34136,8 @@ module.exports = self.fetch.bind(self);
   	// If enabled, panning of the map will have an inertia effect where
   	// the map builds momentum while dragging and continues moving in
   	// the same direction for some time. Feels especially nice on touch
-  	// devices. Enabled by default unless running on old Android devices.
-  	inertia: !android23,
+  	// devices. Enabled by default.
+  	inertia: true,
 
   	// @option inertiaDeceleration: Number = 3000
   	// The rate with which the inertial movement slows down, in pixels/second².
@@ -33807,7 +34301,7 @@ module.exports = self.fetch.bind(self);
   		var map = this._map,
   		    options = map.options,
 
-  		    noInertia = !options.inertia || this._times.length < 2;
+  		    noInertia = !options.inertia || e.noInertia || this._times.length < 2;
 
   		map.fire('dragend', e);
 
@@ -34001,10 +34495,15 @@ module.exports = self.fetch.bind(self);
   					offset = toPoint(offset).multiplyBy(3);
   				}
 
-  				map.panBy(offset);
-
   				if (map.options.maxBounds) {
-  					map.panInsideBounds(map.options.maxBounds);
+  					offset = map._limitOffset(toPoint(offset), map.options.maxBounds);
+  				}
+
+  				if (map.options.worldCopyJump) {
+  					var newLatLng = map.wrapLatLng(map.unproject(map.project(map.getCenter()).add(offset)));
+  					map.panTo(newLatLng);
+  				} else {
+  					map.panBy(offset);
   				}
   			}
   		} else if (key in this._zoomKeys) {
@@ -34115,17 +34614,19 @@ module.exports = self.fetch.bind(self);
   Map.addInitHook('addHandler', 'scrollWheelZoom', ScrollWheelZoom);
 
   /*
-   * L.Map.Tap is used to enable mobile hacks like quick taps and long hold.
+   * L.Map.TapHold is used to simulate `contextmenu` event on long hold,
+   * which otherwise is not fired by mobile Safari.
    */
+
+  var tapHoldDelay = 600;
 
   // @namespace Map
   // @section Interaction Options
   Map.mergeOptions({
   	// @section Touch interaction options
-  	// @option tap: Boolean = true
-  	// Enables mobile hacks for supporting instant taps (fixing 200ms click
-  	// delay on iOS/Android) and touch holds (fired as `contextmenu` events).
-  	tap: true,
+  	// @option tapHold: Boolean
+  	// Enables simulation of `contextmenu` event, default is `true` for mobile Safari.
+  	tapHold: Browser.touchNative && Browser.safari && Browser.mobile,
 
   	// @option tapTolerance: Number = 15
   	// The max number of pixels a user can shift his finger during touch
@@ -34133,7 +34634,7 @@ module.exports = self.fetch.bind(self);
   	tapTolerance: 15
   });
 
-  var Tap = Handler.extend({
+  var TapHold = Handler.extend({
   	addHooks: function () {
   		on(this._map._container, 'touchstart', this._onDown, this);
   	},
@@ -34143,104 +34644,70 @@ module.exports = self.fetch.bind(self);
   	},
 
   	_onDown: function (e) {
-  		if (!e.touches) { return; }
+  		clearTimeout(this._holdTimeout);
+  		if (e.touches.length !== 1) { return; }
 
-  		preventDefault(e);
-
-  		this._fireClick = true;
-
-  		// don't simulate click or track longpress if more than 1 touch
-  		if (e.touches.length > 1) {
-  			this._fireClick = false;
-  			clearTimeout(this._holdTimeout);
-  			return;
-  		}
-
-  		var first = e.touches[0],
-  		    el = first.target;
-
+  		var first = e.touches[0];
   		this._startPos = this._newPos = new Point(first.clientX, first.clientY);
 
-  		// if touching a link, highlight it
-  		if (el.tagName && el.tagName.toLowerCase() === 'a') {
-  			addClass(el, 'leaflet-active');
-  		}
-
-  		// simulate long hold but setting a timeout
   		this._holdTimeout = setTimeout(bind(function () {
-  			if (this._isTapValid()) {
-  				this._fireClick = false;
-  				this._onUp();
-  				this._simulateEvent('contextmenu', first);
-  			}
-  		}, this), 1000);
+  			this._cancel();
+  			if (!this._isTapValid()) { return; }
 
-  		this._simulateEvent('mousedown', first);
+  			// prevent simulated mouse events https://w3c.github.io/touch-events/#mouse-events
+  			on(document, 'touchend', preventDefault);
+  			on(document, 'touchend touchcancel', this._cancelClickPrevent);
+  			this._simulateEvent('contextmenu', first);
+  		}, this), tapHoldDelay);
 
-  		on(document, {
-  			touchmove: this._onMove,
-  			touchend: this._onUp
-  		}, this);
+  		on(document, 'touchend touchcancel contextmenu', this._cancel, this);
+  		on(document, 'touchmove', this._onMove, this);
   	},
 
-  	_onUp: function (e) {
+  	_cancelClickPrevent: function cancelClickPrevent() {
+  		off(document, 'touchend', preventDefault);
+  		off(document, 'touchend touchcancel', cancelClickPrevent);
+  	},
+
+  	_cancel: function () {
   		clearTimeout(this._holdTimeout);
+  		off(document, 'touchend touchcancel contextmenu', this._cancel, this);
+  		off(document, 'touchmove', this._onMove, this);
+  	},
 
-  		off(document, {
-  			touchmove: this._onMove,
-  			touchend: this._onUp
-  		}, this);
-
-  		if (this._fireClick && e && e.changedTouches) {
-
-  			var first = e.changedTouches[0],
-  			    el = first.target;
-
-  			if (el && el.tagName && el.tagName.toLowerCase() === 'a') {
-  				removeClass(el, 'leaflet-active');
-  			}
-
-  			this._simulateEvent('mouseup', first);
-
-  			// simulate click if the touch didn't move too much
-  			if (this._isTapValid()) {
-  				this._simulateEvent('click', first);
-  			}
-  		}
+  	_onMove: function (e) {
+  		var first = e.touches[0];
+  		this._newPos = new Point(first.clientX, first.clientY);
   	},
 
   	_isTapValid: function () {
   		return this._newPos.distanceTo(this._startPos) <= this._map.options.tapTolerance;
   	},
 
-  	_onMove: function (e) {
-  		var first = e.touches[0];
-  		this._newPos = new Point(first.clientX, first.clientY);
-  		this._simulateEvent('mousemove', first);
-  	},
-
   	_simulateEvent: function (type, e) {
-  		var simulatedEvent = document.createEvent('MouseEvents');
+  		var simulatedEvent = new MouseEvent(type, {
+  			bubbles: true,
+  			cancelable: true,
+  			view: window,
+  			// detail: 1,
+  			screenX: e.screenX,
+  			screenY: e.screenY,
+  			clientX: e.clientX,
+  			clientY: e.clientY,
+  			// button: 2,
+  			// buttons: 2
+  		});
 
   		simulatedEvent._simulated = true;
-  		e.target._simulatedClick = true;
-
-  		simulatedEvent.initMouseEvent(
-  		        type, true, true, window, 1,
-  		        e.screenX, e.screenY,
-  		        e.clientX, e.clientY,
-  		        false, false, false, false, 0, null);
 
   		e.target.dispatchEvent(simulatedEvent);
   	}
   });
 
   // @section Handlers
-  // @property tap: Handler
-  // Mobile touch hacks (quick tap and touch hold) handler.
-  if (touch && (!pointer || safari)) {
-  	Map.addInitHook('addHandler', 'tap', Tap);
-  }
+  // @property tapHold: Handler
+  // Long tap handler to simulate `contextmenu` event (useful in mobile Safari).
+  Map.addInitHook('addHandler', 'tapHold', TapHold);
 
   /*
    * L.Handler.TouchZoom is used by L.Map to add pinch zoom on supported mobile browsers.
@@ -34254,8 +34721,8 @@ module.exports = self.fetch.bind(self);
   	// Whether the map can be zoomed by touch-dragging with two fingers. If
   	// passed `'center'`, it will zoom to the center of the view regardless of
   	// where the touch events (fingers) were. Enabled for touch-capable web
-  	// browsers except for old Androids.
-  	touchZoom: touch && !android23,
+  	// browsers.
+  	touchZoom: Browser.touch,
 
   	// @option bounceAtZoomLimits: Boolean = true
   	// Set it to false if you don't want the map to zoom beyond min/max zoom
@@ -34296,7 +34763,7 @@ module.exports = self.fetch.bind(self);
   		map._stop();
 
   		on(document, 'touchmove', this._onTouchMove, this);
-  		on(document, 'touchend', this._onTouchEnd, this);
+  		on(document, 'touchend touchcancel', this._onTouchEnd, this);
 
   		preventDefault(e);
   	},
@@ -34334,7 +34801,7 @@ module.exports = self.fetch.bind(self);
 
   		cancelAnimFrame(this._animRequest);
 
-  		var moveFn = bind(map._move, map, this._center, this._zoom, {pinch: true, round: false});
+  		var moveFn = bind(map._move, map, this._center, this._zoom, {pinch: true, round: false}, undefined);
   		this._animRequest = requestAnimFrame(moveFn, this, true);
 
   		preventDefault(e);
@@ -34350,7 +34817,7 @@ module.exports = self.fetch.bind(self);
   		cancelAnimFrame(this._animRequest);
 
   		off(document, 'touchmove', this._onTouchMove, this);
-  		off(document, 'touchend', this._onTouchEnd, this);
+  		off(document, 'touchend touchcancel', this._onTouchEnd, this);
 
   		// Pinch updates GridLayers' levels only when zoomSnap is off, so zoomSnap becomes noUpdate.
   		if (this._map.options.zoomAnimation) {
@@ -34371,103 +34838,102 @@ module.exports = self.fetch.bind(self);
   Map.Drag = Drag;
   Map.Keyboard = Keyboard;
   Map.ScrollWheelZoom = ScrollWheelZoom;
-  Map.Tap = Tap;
+  Map.TapHold = TapHold;
   Map.TouchZoom = TouchZoom;
 
-  exports.version = version;
-  exports.Control = Control;
-  exports.control = control;
+  exports.Bounds = Bounds;
   exports.Browser = Browser;
-  exports.Evented = Evented;
-  exports.Mixin = Mixin;
-  exports.Util = Util;
+  exports.CRS = CRS;
+  exports.Canvas = Canvas;
+  exports.Circle = Circle;
+  exports.CircleMarker = CircleMarker;
   exports.Class = Class;
-  exports.Handler = Handler;
-  exports.extend = extend;
-  exports.bind = bind;
-  exports.stamp = stamp;
-  exports.setOptions = setOptions;
+  exports.Control = Control;
+  exports.DivIcon = DivIcon;
+  exports.DivOverlay = DivOverlay;
   exports.DomEvent = DomEvent;
   exports.DomUtil = DomUtil;
-  exports.PosAnimation = PosAnimation;
   exports.Draggable = Draggable;
-  exports.LineUtil = LineUtil;
-  exports.PolyUtil = PolyUtil;
-  exports.Point = Point;
-  exports.point = toPoint;
-  exports.Bounds = Bounds;
-  exports.bounds = toBounds;
-  exports.Transformation = Transformation;
-  exports.transformation = toTransformation;
-  exports.Projection = index;
-  exports.LatLng = LatLng;
-  exports.latLng = toLatLng;
-  exports.LatLngBounds = LatLngBounds;
-  exports.latLngBounds = toLatLngBounds;
-  exports.CRS = CRS;
+  exports.Evented = Evented;
+  exports.FeatureGroup = FeatureGroup;
   exports.GeoJSON = GeoJSON;
-  exports.geoJSON = geoJSON;
-  exports.geoJson = geoJson;
+  exports.GridLayer = GridLayer;
+  exports.Handler = Handler;
+  exports.Icon = Icon;
+  exports.ImageOverlay = ImageOverlay;
+  exports.LatLng = LatLng;
+  exports.LatLngBounds = LatLngBounds;
   exports.Layer = Layer;
   exports.LayerGroup = LayerGroup;
-  exports.layerGroup = layerGroup;
-  exports.FeatureGroup = FeatureGroup;
-  exports.featureGroup = featureGroup;
-  exports.ImageOverlay = ImageOverlay;
-  exports.imageOverlay = imageOverlay;
-  exports.VideoOverlay = VideoOverlay;
-  exports.videoOverlay = videoOverlay;
-  exports.SVGOverlay = SVGOverlay;
-  exports.svgOverlay = svgOverlay;
-  exports.DivOverlay = DivOverlay;
-  exports.Popup = Popup;
-  exports.popup = popup;
-  exports.Tooltip = Tooltip;
-  exports.tooltip = tooltip;
-  exports.Icon = Icon;
-  exports.icon = icon;
-  exports.DivIcon = DivIcon;
-  exports.divIcon = divIcon;
-  exports.Marker = Marker;
-  exports.marker = marker;
-  exports.TileLayer = TileLayer;
-  exports.tileLayer = tileLayer;
-  exports.GridLayer = GridLayer;
-  exports.gridLayer = gridLayer;
-  exports.SVG = SVG;
-  exports.svg = svg$1;
-  exports.Renderer = Renderer;
-  exports.Canvas = Canvas;
-  exports.canvas = canvas$1;
-  exports.Path = Path;
-  exports.CircleMarker = CircleMarker;
-  exports.circleMarker = circleMarker;
-  exports.Circle = Circle;
-  exports.circle = circle;
-  exports.Polyline = Polyline;
-  exports.polyline = polyline;
-  exports.Polygon = Polygon;
-  exports.polygon = polygon;
-  exports.Rectangle = Rectangle;
-  exports.rectangle = rectangle;
+  exports.LineUtil = LineUtil;
   exports.Map = Map;
+  exports.Marker = Marker;
+  exports.Mixin = Mixin;
+  exports.Path = Path;
+  exports.Point = Point;
+  exports.PolyUtil = PolyUtil;
+  exports.Polygon = Polygon;
+  exports.Polyline = Polyline;
+  exports.Popup = Popup;
+  exports.PosAnimation = PosAnimation;
+  exports.Projection = index;
+  exports.Rectangle = Rectangle;
+  exports.Renderer = Renderer;
+  exports.SVG = SVG;
+  exports.SVGOverlay = SVGOverlay;
+  exports.TileLayer = TileLayer;
+  exports.Tooltip = Tooltip;
+  exports.Transformation = Transformation;
+  exports.Util = Util;
+  exports.VideoOverlay = VideoOverlay;
+  exports.bind = bind;
+  exports.bounds = toBounds;
+  exports.canvas = canvas;
+  exports.circle = circle;
+  exports.circleMarker = circleMarker;
+  exports.control = control;
+  exports.divIcon = divIcon;
+  exports.extend = extend;
+  exports.featureGroup = featureGroup;
+  exports.geoJSON = geoJSON;
+  exports.geoJson = geoJson;
+  exports.gridLayer = gridLayer;
+  exports.icon = icon;
+  exports.imageOverlay = imageOverlay;
+  exports.latLng = toLatLng;
+  exports.latLngBounds = toLatLngBounds;
+  exports.layerGroup = layerGroup;
   exports.map = createMap;
+  exports.marker = marker;
+  exports.point = toPoint;
+  exports.polygon = polygon;
+  exports.polyline = polyline;
+  exports.popup = popup;
+  exports.rectangle = rectangle;
+  exports.setOptions = setOptions;
+  exports.stamp = stamp;
+  exports.svg = svg;
+  exports.svgOverlay = svgOverlay;
+  exports.tileLayer = tileLayer;
+  exports.tooltip = tooltip;
+  exports.transformation = toTransformation;
+  exports.version = version;
+  exports.videoOverlay = videoOverlay;
 
   var oldL = window.L;
   exports.noConflict = function() {
   	window.L = oldL;
   	return this;
   }
-
   // Always export us to window global (see #2364)
   window.L = exports;
 
-})));
+}));
 
 
-},{}],65:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 //! moment.js
-//! version : 2.29.1
+//! version : 2.29.4
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -34544,8 +35010,9 @@ module.exports = self.fetch.bind(self);
 
     function map(arr, fn) {
         var res = [],
-            i;
-        for (i = 0; i < arr.length; ++i) {
+            i,
+            arrLen = arr.length;
+        for (i = 0; i < arrLen; ++i) {
             res.push(fn(arr[i], i));
         }
         return res;
@@ -34674,7 +35141,10 @@ module.exports = self.fetch.bind(self);
         updateInProgress = false;
 
     function copyConfig(to, from) {
-        var i, prop, val;
+        var i,
+            prop,
+            val,
+            momentPropertiesLen = momentProperties.length;
 
         if (!isUndefined(from._isAMomentObject)) {
             to._isAMomentObject = from._isAMomentObject;
@@ -34707,8 +35177,8 @@ module.exports = self.fetch.bind(self);
             to._locale = from._locale;
         }
 
-        if (momentProperties.length > 0) {
-            for (i = 0; i < momentProperties.length; i++) {
+        if (momentPropertiesLen > 0) {
+            for (i = 0; i < momentPropertiesLen; i++) {
                 prop = momentProperties[i];
                 val = from[prop];
                 if (!isUndefined(val)) {
@@ -34763,8 +35233,9 @@ module.exports = self.fetch.bind(self);
                 var args = [],
                     arg,
                     i,
-                    key;
-                for (i = 0; i < arguments.length; i++) {
+                    key,
+                    argLen = arguments.length;
+                for (i = 0; i < argLen; i++) {
                     arg = '';
                     if (typeof arguments[i] === 'object') {
                         arg += '\n[' + i + '] ';
@@ -34914,7 +35385,8 @@ module.exports = self.fetch.bind(self);
         );
     }
 
-    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|N{1,5}|YYYYYY|YYYYY|YYYY|YY|y{2,4}|yo?|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g,
+    var formattingTokens =
+            /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|N{1,5}|YYYYYY|YYYYY|YYYY|YY|y{2,4}|yo?|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g,
         localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,
         formatFunctions = {},
         formatTokenFunctions = {};
@@ -35218,8 +35690,9 @@ module.exports = self.fetch.bind(self);
         if (typeof units === 'object') {
             units = normalizeObjectUnits(units);
             var prioritized = getPrioritizedUnits(units),
-                i;
-            for (i = 0; i < prioritized.length; i++) {
+                i,
+                prioritizedLen = prioritized.length;
+            for (i = 0; i < prioritizedLen; i++) {
                 this[prioritized[i].unit](units[prioritized[i].unit]);
             }
         } else {
@@ -35249,7 +35722,8 @@ module.exports = self.fetch.bind(self);
         matchTimestamp = /[+-]?\d+(\.\d{1,3})?/, // 123456789 123456789.123
         // any word (or two) characters or numbers including two/three word month in arabic.
         // includes scottish gaelic two word and hyphenated months
-        matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i,
+        matchWord =
+            /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i,
         regexes;
 
     regexes = {};
@@ -35275,15 +35749,12 @@ module.exports = self.fetch.bind(self);
         return regexEscape(
             s
                 .replace('\\', '')
-                .replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (
-                    matched,
-                    p1,
-                    p2,
-                    p3,
-                    p4
-                ) {
-                    return p1 || p2 || p3 || p4;
-                })
+                .replace(
+                    /\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g,
+                    function (matched, p1, p2, p3, p4) {
+                        return p1 || p2 || p3 || p4;
+                    }
+                )
         );
     }
 
@@ -35295,7 +35766,8 @@ module.exports = self.fetch.bind(self);
 
     function addParseToken(token, callback) {
         var i,
-            func = callback;
+            func = callback,
+            tokenLen;
         if (typeof token === 'string') {
             token = [token];
         }
@@ -35304,7 +35776,8 @@ module.exports = self.fetch.bind(self);
                 array[callback] = toInt(input);
             };
         }
-        for (i = 0; i < token.length; i++) {
+        tokenLen = token.length;
+        for (i = 0; i < tokenLen; i++) {
             tokens[token[i]] = func;
         }
     }
@@ -35415,12 +35888,12 @@ module.exports = self.fetch.bind(self);
 
     // LOCALES
 
-    var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split(
-            '_'
-        ),
-        defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split(
-            '_'
-        ),
+    var defaultLocaleMonths =
+            'January_February_March_April_May_June_July_August_September_October_November_December'.split(
+                '_'
+            ),
+        defaultLocaleMonthsShort =
+            'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
         MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/,
         defaultMonthsShortRegex = matchWord,
         defaultMonthsRegex = matchWord;
@@ -35862,14 +36335,12 @@ module.exports = self.fetch.bind(self);
     addRegexToken('W', match1to2);
     addRegexToken('WW', match1to2, match2);
 
-    addWeekParseToken(['w', 'ww', 'W', 'WW'], function (
-        input,
-        week,
-        config,
-        token
-    ) {
-        week[token.substr(0, 1)] = toInt(input);
-    });
+    addWeekParseToken(
+        ['w', 'ww', 'W', 'WW'],
+        function (input, week, config, token) {
+            week[token.substr(0, 1)] = toInt(input);
+        }
+    );
 
     // HELPERS
 
@@ -35994,9 +36465,8 @@ module.exports = self.fetch.bind(self);
         return ws.slice(n, 7).concat(ws.slice(0, n));
     }
 
-    var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split(
-            '_'
-        ),
+    var defaultLocaleWeekdays =
+            'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
         defaultLocaleWeekdaysShort = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
         defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_'),
         defaultWeekdaysRegex = matchWord,
@@ -36544,6 +37014,11 @@ module.exports = self.fetch.bind(self);
         return globalLocale;
     }
 
+    function isLocaleNameSane(name) {
+        // Prevent names that look like filesystem paths, i.e contain '/' or '\'
+        return name.match('^[^/\\\\]*$') != null;
+    }
+
     function loadLocale(name) {
         var oldLocale = null,
             aliasedRequire;
@@ -36552,7 +37027,8 @@ module.exports = self.fetch.bind(self);
             locales[name] === undefined &&
             typeof module !== 'undefined' &&
             module &&
-            module.exports
+            module.exports &&
+            isLocaleNameSane(name)
         ) {
             try {
                 oldLocale = globalLocale._abbr;
@@ -36769,8 +37245,10 @@ module.exports = self.fetch.bind(self);
 
     // iso 8601 regex
     // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
-    var extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,
-        basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d|))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,
+    var extendedIsoRegex =
+            /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,
+        basicIsoRegex =
+            /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d|))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,
         tzRegex = /Z|[+-]\d\d(?::?\d\d)?/,
         isoDates = [
             ['YYYYYY-MM-DD', /[+-]\d{6}-\d\d-\d\d/],
@@ -36801,7 +37279,8 @@ module.exports = self.fetch.bind(self);
         ],
         aspNetJsonRegex = /^\/?Date\((-?\d+)/i,
         // RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-        rfc2822 = /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/,
+        rfc2822 =
+            /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/,
         obsOffsets = {
             UT: 0,
             GMT: 0,
@@ -36824,12 +37303,13 @@ module.exports = self.fetch.bind(self);
             allowTime,
             dateFormat,
             timeFormat,
-            tzFormat;
+            tzFormat,
+            isoDatesLen = isoDates.length,
+            isoTimesLen = isoTimes.length;
 
         if (match) {
             getParsingFlags(config).iso = true;
-
-            for (i = 0, l = isoDates.length; i < l; i++) {
+            for (i = 0, l = isoDatesLen; i < l; i++) {
                 if (isoDates[i][1].exec(match[1])) {
                     dateFormat = isoDates[i][0];
                     allowTime = isoDates[i][2] !== false;
@@ -36841,7 +37321,7 @@ module.exports = self.fetch.bind(self);
                 return;
             }
             if (match[3]) {
-                for (i = 0, l = isoTimes.length; i < l; i++) {
+                for (i = 0, l = isoTimesLen; i < l; i++) {
                     if (isoTimes[i][1].exec(match[3])) {
                         // match[2] should be 'T' or space
                         timeFormat = (match[2] || ' ') + isoTimes[i][0];
@@ -36908,7 +37388,7 @@ module.exports = self.fetch.bind(self);
     function preprocessRFC2822(s) {
         // Remove comments and folding whitespace and replace multiple-spaces with a single space
         return s
-            .replace(/\([^)]*\)|[\n\t]/g, ' ')
+            .replace(/\([^()]*\)|[\n\t]/g, ' ')
             .replace(/(\s\s+)/g, ' ')
             .replace(/^\s\s*/, '')
             .replace(/\s\s*$/, '');
@@ -37221,12 +37701,13 @@ module.exports = self.fetch.bind(self);
             skipped,
             stringLength = string.length,
             totalParsedInputLength = 0,
-            era;
+            era,
+            tokenLen;
 
         tokens =
             expandFormat(config._f, config._locale).match(formattingTokens) || [];
-
-        for (i = 0; i < tokens.length; i++) {
+        tokenLen = tokens.length;
+        for (i = 0; i < tokenLen; i++) {
             token = tokens[i];
             parsedInput = (string.match(getParseRegexForToken(token, config)) ||
                 [])[0];
@@ -37321,15 +37802,16 @@ module.exports = self.fetch.bind(self);
             i,
             currentScore,
             validFormatFound,
-            bestFormatIsValid = false;
+            bestFormatIsValid = false,
+            configfLen = config._f.length;
 
-        if (config._f.length === 0) {
+        if (configfLen === 0) {
             getParsingFlags(config).invalidFormat = true;
             config._d = new Date(NaN);
             return;
         }
 
-        for (i = 0; i < config._f.length; i++) {
+        for (i = 0; i < configfLen; i++) {
             currentScore = 0;
             validFormatFound = false;
             tempConfig = copyConfig({}, config);
@@ -37570,7 +38052,8 @@ module.exports = self.fetch.bind(self);
     function isDurationValid(m) {
         var key,
             unitHasDecimal = false,
-            i;
+            i,
+            orderLen = ordering.length;
         for (key in m) {
             if (
                 hasOwnProp(m, key) &&
@@ -37583,7 +38066,7 @@ module.exports = self.fetch.bind(self);
             }
         }
 
-        for (i = 0; i < ordering.length; ++i) {
+        for (i = 0; i < orderLen; ++i) {
             if (m[ordering[i]]) {
                 if (unitHasDecimal) {
                     return false; // only allow non-integers for smallest unit
@@ -37908,7 +38391,8 @@ module.exports = self.fetch.bind(self);
         // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
         // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
         // and further modified to allow for strings containing both week and day
-        isoRegex = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
+        isoRegex =
+            /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 
     function createDuration(input, key) {
         var duration = input,
@@ -38129,9 +38613,10 @@ module.exports = self.fetch.bind(self);
                 'ms',
             ],
             i,
-            property;
+            property,
+            propertyLen = properties.length;
 
-        for (i = 0; i < properties.length; i += 1) {
+        for (i = 0; i < propertyLen; i += 1) {
             property = properties[i];
             propertyTest = propertyTest || hasOwnProp(input, property);
         }
@@ -38754,19 +39239,17 @@ module.exports = self.fetch.bind(self);
     addRegexToken('NNNN', matchEraName);
     addRegexToken('NNNNN', matchEraNarrow);
 
-    addParseToken(['N', 'NN', 'NNN', 'NNNN', 'NNNNN'], function (
-        input,
-        array,
-        config,
-        token
-    ) {
-        var era = config._locale.erasParse(input, token, config._strict);
-        if (era) {
-            getParsingFlags(config).era = era;
-        } else {
-            getParsingFlags(config).invalidEra = input;
+    addParseToken(
+        ['N', 'NN', 'NNN', 'NNNN', 'NNNNN'],
+        function (input, array, config, token) {
+            var era = config._locale.erasParse(input, token, config._strict);
+            if (era) {
+                getParsingFlags(config).era = era;
+            } else {
+                getParsingFlags(config).invalidEra = input;
+            }
         }
-    });
+    );
 
     addRegexToken('y', matchUnsigned);
     addRegexToken('yy', matchUnsigned);
@@ -39058,14 +39541,12 @@ module.exports = self.fetch.bind(self);
     addRegexToken('GGGGG', match1to6, match6);
     addRegexToken('ggggg', match1to6, match6);
 
-    addWeekParseToken(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (
-        input,
-        week,
-        config,
-        token
-    ) {
-        week[token.substr(0, 2)] = toInt(input);
-    });
+    addWeekParseToken(
+        ['gggg', 'ggggg', 'GGGG', 'GGGGG'],
+        function (input, week, config, token) {
+            week[token.substr(0, 2)] = toInt(input);
+        }
+    );
 
     addWeekParseToken(['gg', 'GG'], function (input, week, config, token) {
         week[token] = hooks.parseTwoDigitYear(input);
@@ -40088,7 +40569,7 @@ module.exports = self.fetch.bind(self);
 
     //! moment.js
 
-    hooks.version = '2.29.1';
+    hooks.version = '2.29.4';
 
     setHookCallback(createLocal);
 
@@ -40137,7 +40618,7 @@ module.exports = self.fetch.bind(self);
 
 })));
 
-},{}],66:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 'use strict';
 
 var numberIsNaN = function (value) {
@@ -40158,7 +40639,7 @@ module.exports = function is(a, b) {
 };
 
 
-},{}],67:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -40178,7 +40659,7 @@ define(polyfill, {
 
 module.exports = polyfill;
 
-},{"./implementation":66,"./polyfill":68,"./shim":69,"call-bind":5,"define-properties":9}],68:[function(require,module,exports){
+},{"./implementation":69,"./polyfill":71,"./shim":72,"call-bind":5,"define-properties":9}],71:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
@@ -40187,7 +40668,7 @@ module.exports = function getPolyfill() {
 	return typeof Object.is === 'function' ? Object.is : implementation;
 };
 
-},{"./implementation":66}],69:[function(require,module,exports){
+},{"./implementation":69}],72:[function(require,module,exports){
 'use strict';
 
 var getPolyfill = require('./polyfill');
@@ -40203,7 +40684,7 @@ module.exports = function shimObjectIs() {
 	return polyfill;
 };
 
-},{"./polyfill":68,"define-properties":9}],70:[function(require,module,exports){
+},{"./polyfill":71,"define-properties":9}],73:[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -40327,7 +40808,7 @@ if (!Object.keys) {
 }
 module.exports = keysShim;
 
-},{"./isArguments":72}],71:[function(require,module,exports){
+},{"./isArguments":75}],74:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice;
@@ -40361,7 +40842,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./implementation":70,"./isArguments":72}],72:[function(require,module,exports){
+},{"./implementation":73,"./isArguments":75}],75:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -40380,7 +40861,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -40566,7 +41047,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],74:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 var strictUriEncode = require('strict-uri-encode');
 
@@ -40634,7 +41115,7 @@ exports.stringify = function (obj) {
 	}).join('&') : '';
 };
 
-},{"strict-uri-encode":243}],75:[function(require,module,exports){
+},{"strict-uri-encode":246}],78:[function(require,module,exports){
 //  Ramda v0.19.1
 //  https://github.com/ramda/ramda
 //  (c) 2013-2016 Scott Sauyet, Michael Hurley, and David Chambers
@@ -49082,7 +49563,7 @@ exports.stringify = function (obj) {
 
 }.call(this));
 
-},{}],76:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = {
   Bar: require('./lib/bar'),
   Doughnut: require('./lib/doughnut'),
@@ -49093,12 +49574,12 @@ module.exports = {
   createClass: require('./lib/core').createClass
 };
 
-},{"./lib/bar":77,"./lib/core":78,"./lib/doughnut":79,"./lib/line":80,"./lib/pie":81,"./lib/polar-area":82,"./lib/radar":83}],77:[function(require,module,exports){
+},{"./lib/bar":80,"./lib/core":81,"./lib/doughnut":82,"./lib/line":83,"./lib/pie":84,"./lib/polar-area":85,"./lib/radar":86}],80:[function(require,module,exports){
 var vars = require('./core');
 
 module.exports = vars.createClass('Bar', ['getBarsAtEvent']);
 
-},{"./core":78}],78:[function(require,module,exports){
+},{"./core":81}],81:[function(require,module,exports){
 module.exports = {
   createClass: function(chartType, methodNames, dataKey) {
     var classData = {
@@ -49204,37 +49685,37 @@ var updatePoints = function(nextProps, chart, dataKey) {
 
 
 
-},{"chart.js":6,"react":237}],79:[function(require,module,exports){
+},{"chart.js":6,"react":240}],82:[function(require,module,exports){
 var vars = require('./core');
 
 module.exports = vars.createClass('Doughnut', ['getSegmentsAtEvent']);
 
-},{"./core":78}],80:[function(require,module,exports){
+},{"./core":81}],83:[function(require,module,exports){
 var vars = require('./core');
 
 module.exports = vars.createClass('Line', ['getPointsAtEvent']);
 
-},{"./core":78}],81:[function(require,module,exports){
+},{"./core":81}],84:[function(require,module,exports){
 var vars = require('./core');
 
 module.exports = vars.createClass('Pie', ['getSegmentsAtEvent']);
 
-},{"./core":78}],82:[function(require,module,exports){
+},{"./core":81}],85:[function(require,module,exports){
 var vars = require('./core');
 
 module.exports = vars.createClass('PolarArea', ['getSegmentsAtEvent']);
 
-},{"./core":78}],83:[function(require,module,exports){
+},{"./core":81}],86:[function(require,module,exports){
 var vars = require('./core');
 
 module.exports = vars.createClass('Radar', ['getPointsAtEvent']);
 
-},{"./core":78}],84:[function(require,module,exports){
+},{"./core":81}],87:[function(require,module,exports){
 'use strict';
 
 module.exports = require('react/lib/ReactDOM');
 
-},{"react/lib/ReactDOM":143}],85:[function(require,module,exports){
+},{"react/lib/ReactDOM":146}],88:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -49293,7 +49774,7 @@ function mapAsync(array, work, callback) {
     });
   });
 }
-},{}],86:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49317,7 +49798,7 @@ var History = {
 
 exports['default'] = History;
 module.exports = exports['default'];
-},{"./PropTypes":93}],87:[function(require,module,exports){
+},{"./PropTypes":96}],90:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49360,7 +49841,7 @@ var IndexLink = (function (_Component) {
 
 exports['default'] = IndexLink;
 module.exports = exports['default'];
-},{"./Link":91,"react":237}],88:[function(require,module,exports){
+},{"./Link":94,"react":240}],91:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -49436,7 +49917,7 @@ IndexRedirect.createRouteFromReactElement = function (element, parentRoute) {
 exports['default'] = IndexRedirect;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./PropTypes":93,"./Redirect":94,"_process":73,"invariant":59,"react":237,"warning":248}],89:[function(require,module,exports){
+},{"./PropTypes":96,"./Redirect":97,"_process":76,"invariant":62,"react":240,"warning":251}],92:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -49509,7 +49990,7 @@ IndexRoute.createRouteFromReactElement = function (element, parentRoute) {
 exports['default'] = IndexRoute;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./PropTypes":93,"./RouteUtils":97,"_process":73,"invariant":59,"react":237,"warning":248}],90:[function(require,module,exports){
+},{"./PropTypes":96,"./RouteUtils":100,"_process":76,"invariant":62,"react":240,"warning":251}],93:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -49576,7 +50057,7 @@ var Lifecycle = {
 exports['default'] = Lifecycle;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"_process":73,"invariant":59,"react":237}],91:[function(require,module,exports){
+},{"_process":76,"invariant":62,"react":240}],94:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49740,7 +50221,7 @@ Link.defaultProps = {
 
 exports['default'] = Link;
 module.exports = exports['default'];
-},{"react":237}],92:[function(require,module,exports){
+},{"react":240}],95:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -49970,7 +50451,7 @@ function formatPattern(pattern, params) {
   return pathname.replace(/\/+/g, '/');
 }
 }).call(this)}).call(this,require('_process'))
-},{"_process":73,"invariant":59}],93:[function(require,module,exports){
+},{"_process":76,"invariant":62}],96:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50024,7 +50505,7 @@ exports['default'] = {
   components: components,
   route: route
 };
-},{"react":237}],94:[function(require,module,exports){
+},{"react":240}],97:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -50134,7 +50615,7 @@ Redirect.propTypes = {
 exports['default'] = Redirect;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./PatternUtils":92,"./PropTypes":93,"./RouteUtils":97,"_process":73,"invariant":59,"react":237}],95:[function(require,module,exports){
+},{"./PatternUtils":95,"./PropTypes":96,"./RouteUtils":100,"_process":76,"invariant":62,"react":240}],98:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -50204,7 +50685,7 @@ Route.propTypes = {
 exports['default'] = Route;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./PropTypes":93,"./RouteUtils":97,"_process":73,"invariant":59,"react":237}],96:[function(require,module,exports){
+},{"./PropTypes":96,"./RouteUtils":100,"_process":76,"invariant":62,"react":240}],99:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50243,7 +50724,7 @@ var RouteContext = {
 
 exports['default'] = RouteContext;
 module.exports = exports['default'];
-},{"react":237}],97:[function(require,module,exports){
+},{"react":240}],100:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -50360,7 +50841,7 @@ function createRoutes(routes) {
   return routes;
 }
 }).call(this)}).call(this,require('_process'))
-},{"_process":73,"react":237,"warning":248}],98:[function(require,module,exports){
+},{"_process":76,"react":240,"warning":251}],101:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -50528,7 +51009,7 @@ Router.defaultProps = {
 exports['default'] = Router;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./PropTypes":93,"./RouteUtils":97,"./RoutingContext":99,"./useRoutes":108,"_process":73,"history/lib/createHashHistory":49,"react":237,"warning":248}],99:[function(require,module,exports){
+},{"./PropTypes":96,"./RouteUtils":100,"./RoutingContext":102,"./useRoutes":111,"_process":76,"history/lib/createHashHistory":52,"react":240,"warning":251}],102:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -50671,7 +51152,7 @@ RoutingContext.childContextTypes = {
 exports['default'] = RoutingContext;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./RouteUtils":97,"./getRouteParams":103,"_process":73,"invariant":59,"react":237}],100:[function(require,module,exports){
+},{"./RouteUtils":100,"./getRouteParams":106,"_process":76,"invariant":62,"react":240}],103:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50744,7 +51225,7 @@ function runLeaveHooks(routes) {
     if (routes[i].onLeave) routes[i].onLeave.call(routes[i]);
   }
 }
-},{"./AsyncUtils":85}],101:[function(require,module,exports){
+},{"./AsyncUtils":88}],104:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50801,7 +51282,7 @@ function computeChangedRoutes(prevState, nextState) {
 
 exports['default'] = computeChangedRoutes;
 module.exports = exports['default'];
-},{"./PatternUtils":92}],102:[function(require,module,exports){
+},{"./PatternUtils":95}],105:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50835,7 +51316,7 @@ function getComponents(nextState, callback) {
 
 exports['default'] = getComponents;
 module.exports = exports['default'];
-},{"./AsyncUtils":85}],103:[function(require,module,exports){
+},{"./AsyncUtils":88}],106:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50860,7 +51341,7 @@ function getRouteParams(route, params) {
 
 exports['default'] = getRouteParams;
 module.exports = exports['default'];
-},{"./PatternUtils":92}],104:[function(require,module,exports){
+},{"./PatternUtils":95}],107:[function(require,module,exports){
 /* components */
 'use strict';
 
@@ -50965,7 +51446,7 @@ exports.match = _match3['default'];
 var _Router4 = _interopRequireDefault(_Router2);
 
 exports['default'] = _Router4['default'];
-},{"./History":86,"./IndexLink":87,"./IndexRedirect":88,"./IndexRoute":89,"./Lifecycle":90,"./Link":91,"./PropTypes":93,"./Redirect":94,"./Route":95,"./RouteContext":96,"./RouteUtils":97,"./Router":98,"./RoutingContext":99,"./match":106,"./useRoutes":108}],105:[function(require,module,exports){
+},{"./History":89,"./IndexLink":90,"./IndexRedirect":91,"./IndexRoute":92,"./Lifecycle":93,"./Link":94,"./PropTypes":96,"./Redirect":97,"./Route":98,"./RouteContext":99,"./RouteUtils":100,"./Router":101,"./RoutingContext":102,"./match":109,"./useRoutes":111}],108:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51089,7 +51570,7 @@ function isActive(pathname, query, indexOnly, location, routes, params) {
 
 exports['default'] = isActive;
 module.exports = exports['default'];
-},{"./PatternUtils":92}],106:[function(require,module,exports){
+},{"./PatternUtils":95}],109:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -51155,7 +51636,7 @@ function match(_ref, callback) {
 exports['default'] = match;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./RouteUtils":97,"./useRoutes":108,"_process":73,"history/lib/createMemoryHistory":52,"history/lib/useBasename":57,"invariant":59}],107:[function(require,module,exports){
+},{"./RouteUtils":100,"./useRoutes":111,"_process":76,"history/lib/createMemoryHistory":55,"history/lib/useBasename":60,"invariant":62}],110:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -51346,7 +51827,7 @@ function matchRoutes(routes, location, callback) {
 exports['default'] = matchRoutes;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./AsyncUtils":85,"./PatternUtils":92,"./RouteUtils":97,"_process":73,"warning":248}],108:[function(require,module,exports){
+},{"./AsyncUtils":88,"./PatternUtils":95,"./RouteUtils":100,"_process":76,"warning":251}],111:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -51640,7 +52121,7 @@ function useRoutes(createHistory) {
 exports['default'] = useRoutes;
 module.exports = exports['default'];
 }).call(this)}).call(this,require('_process'))
-},{"./TransitionUtils":100,"./computeChangedRoutes":101,"./getComponents":102,"./isActive":105,"./matchRoutes":107,"_process":73,"history/lib/Actions":43,"history/lib/useQueries":58,"warning":248}],109:[function(require,module,exports){
+},{"./TransitionUtils":103,"./computeChangedRoutes":104,"./getComponents":105,"./isActive":108,"./matchRoutes":110,"_process":76,"history/lib/Actions":46,"history/lib/useQueries":61,"warning":251}],112:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -51677,7 +52158,7 @@ var AutoFocusUtils = {
 };
 
 module.exports = AutoFocusUtils;
-},{"./ReactMount":173,"./findDOMNode":216,"fbjs/lib/focusNode":19}],110:[function(require,module,exports){
+},{"./ReactMount":176,"./findDOMNode":219,"fbjs/lib/focusNode":19}],113:[function(require,module,exports){
 /**
  * Copyright 2013-2015 Facebook, Inc.
  * All rights reserved.
@@ -52083,7 +52564,7 @@ var BeforeInputEventPlugin = {
 };
 
 module.exports = BeforeInputEventPlugin;
-},{"./EventConstants":122,"./EventPropagators":126,"./FallbackCompositionState":127,"./SyntheticCompositionEvent":198,"./SyntheticInputEvent":202,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/keyOf":29}],111:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPropagators":129,"./FallbackCompositionState":130,"./SyntheticCompositionEvent":201,"./SyntheticInputEvent":205,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/keyOf":29}],114:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -52223,7 +52704,7 @@ var CSSProperty = {
 };
 
 module.exports = CSSProperty;
-},{}],112:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -52399,7 +52880,7 @@ ReactPerf.measureMethods(CSSPropertyOperations, 'CSSPropertyOperations', {
 });
 
 module.exports = CSSPropertyOperations;
-},{"./CSSProperty":111,"./ReactPerf":179,"./dangerousStyleValue":213,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/camelizeStyleName":13,"fbjs/lib/hyphenateStyleName":24,"fbjs/lib/memoizeStringOnly":31,"fbjs/lib/warning":36}],113:[function(require,module,exports){
+},{"./CSSProperty":114,"./ReactPerf":182,"./dangerousStyleValue":216,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/camelizeStyleName":13,"fbjs/lib/hyphenateStyleName":24,"fbjs/lib/memoizeStringOnly":31,"fbjs/lib/warning":36}],116:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -52493,7 +52974,7 @@ assign(CallbackQueue.prototype, {
 PooledClass.addPoolingTo(CallbackQueue);
 
 module.exports = CallbackQueue;
-},{"./Object.assign":130,"./PooledClass":131,"fbjs/lib/invariant":25}],114:[function(require,module,exports){
+},{"./Object.assign":133,"./PooledClass":134,"fbjs/lib/invariant":25}],117:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -52815,7 +53296,7 @@ var ChangeEventPlugin = {
 };
 
 module.exports = ChangeEventPlugin;
-},{"./EventConstants":122,"./EventPluginHub":123,"./EventPropagators":126,"./ReactUpdates":191,"./SyntheticEvent":200,"./getEventTarget":222,"./isEventSupported":227,"./isTextInputElement":228,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/keyOf":29}],115:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPluginHub":126,"./EventPropagators":129,"./ReactUpdates":194,"./SyntheticEvent":203,"./getEventTarget":225,"./isEventSupported":230,"./isTextInputElement":231,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/keyOf":29}],118:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -52839,7 +53320,7 @@ var ClientReactRootIndex = {
 };
 
 module.exports = ClientReactRootIndex;
-},{}],116:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -52969,7 +53450,7 @@ ReactPerf.measureMethods(DOMChildrenOperations, 'DOMChildrenOperations', {
 });
 
 module.exports = DOMChildrenOperations;
-},{"./Danger":119,"./ReactMultiChildUpdateTypes":175,"./ReactPerf":179,"./setInnerHTML":232,"./setTextContent":233,"fbjs/lib/invariant":25}],117:[function(require,module,exports){
+},{"./Danger":122,"./ReactMultiChildUpdateTypes":178,"./ReactPerf":182,"./setInnerHTML":235,"./setTextContent":236,"fbjs/lib/invariant":25}],120:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -53204,7 +53685,7 @@ var DOMProperty = {
 };
 
 module.exports = DOMProperty;
-},{"fbjs/lib/invariant":25}],118:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],121:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -53430,7 +53911,7 @@ ReactPerf.measureMethods(DOMPropertyOperations, 'DOMPropertyOperations', {
 });
 
 module.exports = DOMPropertyOperations;
-},{"./DOMProperty":117,"./ReactPerf":179,"./quoteAttributeValueForBrowser":230,"fbjs/lib/warning":36}],119:[function(require,module,exports){
+},{"./DOMProperty":120,"./ReactPerf":182,"./quoteAttributeValueForBrowser":233,"fbjs/lib/warning":36}],122:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -53576,7 +54057,7 @@ var Danger = {
 };
 
 module.exports = Danger;
-},{"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/createNodesFromMarkup":16,"fbjs/lib/emptyFunction":17,"fbjs/lib/getMarkupWrap":21,"fbjs/lib/invariant":25}],120:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/createNodesFromMarkup":16,"fbjs/lib/emptyFunction":17,"fbjs/lib/getMarkupWrap":21,"fbjs/lib/invariant":25}],123:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -53604,7 +54085,7 @@ var keyOf = require('fbjs/lib/keyOf');
 var DefaultEventPluginOrder = [keyOf({ ResponderEventPlugin: null }), keyOf({ SimpleEventPlugin: null }), keyOf({ TapEventPlugin: null }), keyOf({ EnterLeaveEventPlugin: null }), keyOf({ ChangeEventPlugin: null }), keyOf({ SelectEventPlugin: null }), keyOf({ BeforeInputEventPlugin: null })];
 
 module.exports = DefaultEventPluginOrder;
-},{"fbjs/lib/keyOf":29}],121:[function(require,module,exports){
+},{"fbjs/lib/keyOf":29}],124:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -53729,7 +54210,7 @@ var EnterLeaveEventPlugin = {
 };
 
 module.exports = EnterLeaveEventPlugin;
-},{"./EventConstants":122,"./EventPropagators":126,"./ReactMount":173,"./SyntheticMouseEvent":204,"fbjs/lib/keyOf":29}],122:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPropagators":129,"./ReactMount":176,"./SyntheticMouseEvent":207,"fbjs/lib/keyOf":29}],125:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -53822,7 +54303,7 @@ var EventConstants = {
 };
 
 module.exports = EventConstants;
-},{"fbjs/lib/keyMirror":28}],123:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":28}],126:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -54102,7 +54583,7 @@ var EventPluginHub = {
 };
 
 module.exports = EventPluginHub;
-},{"./EventPluginRegistry":124,"./EventPluginUtils":125,"./ReactErrorUtils":164,"./accumulateInto":210,"./forEachAccumulated":218,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],124:[function(require,module,exports){
+},{"./EventPluginRegistry":127,"./EventPluginUtils":128,"./ReactErrorUtils":167,"./accumulateInto":213,"./forEachAccumulated":221,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],127:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -54323,7 +54804,7 @@ var EventPluginRegistry = {
 };
 
 module.exports = EventPluginRegistry;
-},{"fbjs/lib/invariant":25}],125:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],128:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -54526,7 +55007,7 @@ var EventPluginUtils = {
 };
 
 module.exports = EventPluginUtils;
-},{"./EventConstants":122,"./ReactErrorUtils":164,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],126:[function(require,module,exports){
+},{"./EventConstants":125,"./ReactErrorUtils":167,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],129:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -54662,7 +55143,7 @@ var EventPropagators = {
 };
 
 module.exports = EventPropagators;
-},{"./EventConstants":122,"./EventPluginHub":123,"./accumulateInto":210,"./forEachAccumulated":218,"fbjs/lib/warning":36}],127:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPluginHub":126,"./accumulateInto":213,"./forEachAccumulated":221,"fbjs/lib/warning":36}],130:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -54758,7 +55239,7 @@ assign(FallbackCompositionState.prototype, {
 PooledClass.addPoolingTo(FallbackCompositionState);
 
 module.exports = FallbackCompositionState;
-},{"./Object.assign":130,"./PooledClass":131,"./getTextContentAccessor":225}],128:[function(require,module,exports){
+},{"./Object.assign":133,"./PooledClass":134,"./getTextContentAccessor":228}],131:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -54989,7 +55470,7 @@ var HTMLDOMPropertyConfig = {
 };
 
 module.exports = HTMLDOMPropertyConfig;
-},{"./DOMProperty":117,"fbjs/lib/ExecutionEnvironment":11}],129:[function(require,module,exports){
+},{"./DOMProperty":120,"fbjs/lib/ExecutionEnvironment":11}],132:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -55124,7 +55605,7 @@ var LinkedValueUtils = {
 };
 
 module.exports = LinkedValueUtils;
-},{"./ReactPropTypeLocations":181,"./ReactPropTypes":182,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],130:[function(require,module,exports){
+},{"./ReactPropTypeLocations":184,"./ReactPropTypes":185,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],133:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -55172,7 +55653,7 @@ function assign(target, sources) {
 }
 
 module.exports = assign;
-},{}],131:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -55292,7 +55773,7 @@ var PooledClass = {
 };
 
 module.exports = PooledClass;
-},{"fbjs/lib/invariant":25}],132:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],135:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -55333,7 +55814,7 @@ React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
 React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
-},{"./Object.assign":130,"./ReactDOM":143,"./ReactDOMServer":153,"./ReactIsomorphic":171,"./deprecated":214}],133:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactDOM":146,"./ReactDOMServer":156,"./ReactIsomorphic":174,"./deprecated":217}],136:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -55370,7 +55851,7 @@ var ReactBrowserComponentMixin = {
 };
 
 module.exports = ReactBrowserComponentMixin;
-},{"./ReactInstanceMap":170,"./findDOMNode":216,"fbjs/lib/warning":36}],134:[function(require,module,exports){
+},{"./ReactInstanceMap":173,"./findDOMNode":219,"fbjs/lib/warning":36}],137:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -55695,7 +56176,7 @@ ReactPerf.measureMethods(ReactBrowserEventEmitter, 'ReactBrowserEventEmitter', {
 });
 
 module.exports = ReactBrowserEventEmitter;
-},{"./EventConstants":122,"./EventPluginHub":123,"./EventPluginRegistry":124,"./Object.assign":130,"./ReactEventEmitterMixin":165,"./ReactPerf":179,"./ViewportMetrics":209,"./isEventSupported":227}],135:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPluginHub":126,"./EventPluginRegistry":127,"./Object.assign":133,"./ReactEventEmitterMixin":168,"./ReactPerf":182,"./ViewportMetrics":212,"./isEventSupported":230}],138:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -55818,7 +56299,7 @@ var ReactChildReconciler = {
 };
 
 module.exports = ReactChildReconciler;
-},{"./ReactReconciler":184,"./instantiateReactComponent":226,"./shouldUpdateReactComponent":234,"./traverseAllChildren":235,"fbjs/lib/warning":36}],136:[function(require,module,exports){
+},{"./ReactReconciler":187,"./instantiateReactComponent":229,"./shouldUpdateReactComponent":237,"./traverseAllChildren":238,"fbjs/lib/warning":36}],139:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -56001,7 +56482,7 @@ var ReactChildren = {
 };
 
 module.exports = ReactChildren;
-},{"./PooledClass":131,"./ReactElement":160,"./traverseAllChildren":235,"fbjs/lib/emptyFunction":17}],137:[function(require,module,exports){
+},{"./PooledClass":134,"./ReactElement":163,"./traverseAllChildren":238,"fbjs/lib/emptyFunction":17}],140:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -56773,7 +57254,7 @@ var ReactClass = {
 };
 
 module.exports = ReactClass;
-},{"./Object.assign":130,"./ReactComponent":138,"./ReactElement":160,"./ReactNoopUpdateQueue":177,"./ReactPropTypeLocationNames":180,"./ReactPropTypeLocations":181,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/keyMirror":28,"fbjs/lib/keyOf":29,"fbjs/lib/warning":36}],138:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactComponent":141,"./ReactElement":163,"./ReactNoopUpdateQueue":180,"./ReactPropTypeLocationNames":183,"./ReactPropTypeLocations":184,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/keyMirror":28,"fbjs/lib/keyOf":29,"fbjs/lib/warning":36}],141:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -56896,7 +57377,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = ReactComponent;
-},{"./ReactNoopUpdateQueue":177,"./canDefineProperty":212,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],139:[function(require,module,exports){
+},{"./ReactNoopUpdateQueue":180,"./canDefineProperty":215,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],142:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -56938,7 +57419,7 @@ var ReactComponentBrowserEnvironment = {
 };
 
 module.exports = ReactComponentBrowserEnvironment;
-},{"./ReactDOMIDOperations":148,"./ReactMount":173}],140:[function(require,module,exports){
+},{"./ReactDOMIDOperations":151,"./ReactMount":176}],143:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -56990,7 +57471,7 @@ var ReactComponentEnvironment = {
 };
 
 module.exports = ReactComponentEnvironment;
-},{"fbjs/lib/invariant":25}],141:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],144:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -57685,7 +58166,7 @@ var ReactCompositeComponent = {
 };
 
 module.exports = ReactCompositeComponent;
-},{"./Object.assign":130,"./ReactComponentEnvironment":140,"./ReactCurrentOwner":142,"./ReactElement":160,"./ReactInstanceMap":170,"./ReactPerf":179,"./ReactPropTypeLocationNames":180,"./ReactPropTypeLocations":181,"./ReactReconciler":184,"./ReactUpdateQueue":190,"./shouldUpdateReactComponent":234,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],142:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactComponentEnvironment":143,"./ReactCurrentOwner":145,"./ReactElement":163,"./ReactInstanceMap":173,"./ReactPerf":182,"./ReactPropTypeLocationNames":183,"./ReactPropTypeLocations":184,"./ReactReconciler":187,"./ReactUpdateQueue":193,"./shouldUpdateReactComponent":237,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],145:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -57716,7 +58197,7 @@ var ReactCurrentOwner = {
 };
 
 module.exports = ReactCurrentOwner;
-},{}],143:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -57809,7 +58290,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = React;
-},{"./ReactCurrentOwner":142,"./ReactDOMTextComponent":154,"./ReactDefaultInjection":157,"./ReactInstanceHandles":169,"./ReactMount":173,"./ReactPerf":179,"./ReactReconciler":184,"./ReactUpdates":191,"./ReactVersion":192,"./findDOMNode":216,"./renderSubtreeIntoContainer":231,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/warning":36}],144:[function(require,module,exports){
+},{"./ReactCurrentOwner":145,"./ReactDOMTextComponent":157,"./ReactDefaultInjection":160,"./ReactInstanceHandles":172,"./ReactMount":176,"./ReactPerf":182,"./ReactReconciler":187,"./ReactUpdates":194,"./ReactVersion":195,"./findDOMNode":219,"./renderSubtreeIntoContainer":234,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/warning":36}],147:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -57860,7 +58341,7 @@ var ReactDOMButton = {
 };
 
 module.exports = ReactDOMButton;
-},{}],145:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -58823,7 +59304,7 @@ ReactPerf.measureMethods(ReactDOMComponent, 'ReactDOMComponent', {
 assign(ReactDOMComponent.prototype, ReactDOMComponent.Mixin, ReactMultiChild.Mixin);
 
 module.exports = ReactDOMComponent;
-},{"./AutoFocusUtils":109,"./CSSPropertyOperations":112,"./DOMProperty":117,"./DOMPropertyOperations":118,"./EventConstants":122,"./Object.assign":130,"./ReactBrowserEventEmitter":134,"./ReactComponentBrowserEnvironment":139,"./ReactDOMButton":144,"./ReactDOMInput":149,"./ReactDOMOption":150,"./ReactDOMSelect":151,"./ReactDOMTextarea":155,"./ReactMount":173,"./ReactMultiChild":174,"./ReactPerf":179,"./ReactUpdateQueue":190,"./canDefineProperty":212,"./escapeTextContentForBrowser":215,"./isEventSupported":227,"./setInnerHTML":232,"./setTextContent":233,"./validateDOMNesting":236,"fbjs/lib/invariant":25,"fbjs/lib/keyOf":29,"fbjs/lib/shallowEqual":34,"fbjs/lib/warning":36}],146:[function(require,module,exports){
+},{"./AutoFocusUtils":112,"./CSSPropertyOperations":115,"./DOMProperty":120,"./DOMPropertyOperations":121,"./EventConstants":125,"./Object.assign":133,"./ReactBrowserEventEmitter":137,"./ReactComponentBrowserEnvironment":142,"./ReactDOMButton":147,"./ReactDOMInput":152,"./ReactDOMOption":153,"./ReactDOMSelect":154,"./ReactDOMTextarea":158,"./ReactMount":176,"./ReactMultiChild":177,"./ReactPerf":182,"./ReactUpdateQueue":193,"./canDefineProperty":215,"./escapeTextContentForBrowser":218,"./isEventSupported":230,"./setInnerHTML":235,"./setTextContent":236,"./validateDOMNesting":239,"fbjs/lib/invariant":25,"fbjs/lib/keyOf":29,"fbjs/lib/shallowEqual":34,"fbjs/lib/warning":36}],149:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59001,7 +59482,7 @@ var ReactDOMFactories = mapObject({
 }, createDOMFactory);
 
 module.exports = ReactDOMFactories;
-},{"./ReactElement":160,"./ReactElementValidator":161,"fbjs/lib/mapObject":30}],147:[function(require,module,exports){
+},{"./ReactElement":163,"./ReactElementValidator":164,"fbjs/lib/mapObject":30}],150:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59020,7 +59501,7 @@ var ReactDOMFeatureFlags = {
 };
 
 module.exports = ReactDOMFeatureFlags;
-},{}],148:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59115,7 +59596,7 @@ ReactPerf.measureMethods(ReactDOMIDOperations, 'ReactDOMIDOperations', {
 });
 
 module.exports = ReactDOMIDOperations;
-},{"./DOMChildrenOperations":116,"./DOMPropertyOperations":118,"./ReactMount":173,"./ReactPerf":179,"fbjs/lib/invariant":25}],149:[function(require,module,exports){
+},{"./DOMChildrenOperations":119,"./DOMPropertyOperations":121,"./ReactMount":176,"./ReactPerf":182,"fbjs/lib/invariant":25}],152:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59269,7 +59750,7 @@ function _handleChange(event) {
 }
 
 module.exports = ReactDOMInput;
-},{"./LinkedValueUtils":129,"./Object.assign":130,"./ReactDOMIDOperations":148,"./ReactMount":173,"./ReactUpdates":191,"fbjs/lib/invariant":25}],150:[function(require,module,exports){
+},{"./LinkedValueUtils":132,"./Object.assign":133,"./ReactDOMIDOperations":151,"./ReactMount":176,"./ReactUpdates":194,"fbjs/lib/invariant":25}],153:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59359,7 +59840,7 @@ var ReactDOMOption = {
 };
 
 module.exports = ReactDOMOption;
-},{"./Object.assign":130,"./ReactChildren":136,"./ReactDOMSelect":151,"fbjs/lib/warning":36}],151:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactChildren":139,"./ReactDOMSelect":154,"fbjs/lib/warning":36}],154:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59548,7 +60029,7 @@ function _handleChange(event) {
 }
 
 module.exports = ReactDOMSelect;
-},{"./LinkedValueUtils":129,"./Object.assign":130,"./ReactMount":173,"./ReactUpdates":191,"fbjs/lib/warning":36}],152:[function(require,module,exports){
+},{"./LinkedValueUtils":132,"./Object.assign":133,"./ReactMount":176,"./ReactUpdates":194,"fbjs/lib/warning":36}],155:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59761,7 +60242,7 @@ var ReactDOMSelection = {
 };
 
 module.exports = ReactDOMSelection;
-},{"./getNodeForCharacterOffset":224,"./getTextContentAccessor":225,"fbjs/lib/ExecutionEnvironment":11}],153:[function(require,module,exports){
+},{"./getNodeForCharacterOffset":227,"./getTextContentAccessor":228,"fbjs/lib/ExecutionEnvironment":11}],156:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59788,7 +60269,7 @@ var ReactDOMServer = {
 };
 
 module.exports = ReactDOMServer;
-},{"./ReactDefaultInjection":157,"./ReactServerRendering":188,"./ReactVersion":192}],154:[function(require,module,exports){
+},{"./ReactDefaultInjection":160,"./ReactServerRendering":191,"./ReactVersion":195}],157:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -59916,7 +60397,7 @@ assign(ReactDOMTextComponent.prototype, {
 });
 
 module.exports = ReactDOMTextComponent;
-},{"./DOMChildrenOperations":116,"./DOMPropertyOperations":118,"./Object.assign":130,"./ReactComponentBrowserEnvironment":139,"./ReactMount":173,"./escapeTextContentForBrowser":215,"./setTextContent":233,"./validateDOMNesting":236}],155:[function(require,module,exports){
+},{"./DOMChildrenOperations":119,"./DOMPropertyOperations":121,"./Object.assign":133,"./ReactComponentBrowserEnvironment":142,"./ReactMount":176,"./escapeTextContentForBrowser":218,"./setTextContent":236,"./validateDOMNesting":239}],158:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -60030,7 +60511,7 @@ function _handleChange(event) {
 }
 
 module.exports = ReactDOMTextarea;
-},{"./LinkedValueUtils":129,"./Object.assign":130,"./ReactDOMIDOperations":148,"./ReactUpdates":191,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],156:[function(require,module,exports){
+},{"./LinkedValueUtils":132,"./Object.assign":133,"./ReactDOMIDOperations":151,"./ReactUpdates":194,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],159:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -60098,7 +60579,7 @@ var ReactDefaultBatchingStrategy = {
 };
 
 module.exports = ReactDefaultBatchingStrategy;
-},{"./Object.assign":130,"./ReactUpdates":191,"./Transaction":208,"fbjs/lib/emptyFunction":17}],157:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactUpdates":194,"./Transaction":211,"fbjs/lib/emptyFunction":17}],160:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -60196,7 +60677,7 @@ function inject() {
 module.exports = {
   inject: inject
 };
-},{"./BeforeInputEventPlugin":110,"./ChangeEventPlugin":114,"./ClientReactRootIndex":115,"./DefaultEventPluginOrder":120,"./EnterLeaveEventPlugin":121,"./HTMLDOMPropertyConfig":128,"./ReactBrowserComponentMixin":133,"./ReactComponentBrowserEnvironment":139,"./ReactDOMComponent":145,"./ReactDOMTextComponent":154,"./ReactDefaultBatchingStrategy":156,"./ReactDefaultPerf":158,"./ReactEventListener":166,"./ReactInjection":167,"./ReactInstanceHandles":169,"./ReactMount":173,"./ReactReconcileTransaction":183,"./SVGDOMPropertyConfig":193,"./SelectEventPlugin":194,"./ServerReactRootIndex":195,"./SimpleEventPlugin":196,"fbjs/lib/ExecutionEnvironment":11}],158:[function(require,module,exports){
+},{"./BeforeInputEventPlugin":113,"./ChangeEventPlugin":117,"./ClientReactRootIndex":118,"./DefaultEventPluginOrder":123,"./EnterLeaveEventPlugin":124,"./HTMLDOMPropertyConfig":131,"./ReactBrowserComponentMixin":136,"./ReactComponentBrowserEnvironment":142,"./ReactDOMComponent":148,"./ReactDOMTextComponent":157,"./ReactDefaultBatchingStrategy":159,"./ReactDefaultPerf":161,"./ReactEventListener":169,"./ReactInjection":170,"./ReactInstanceHandles":172,"./ReactMount":176,"./ReactReconcileTransaction":186,"./SVGDOMPropertyConfig":196,"./SelectEventPlugin":197,"./ServerReactRootIndex":198,"./SimpleEventPlugin":199,"fbjs/lib/ExecutionEnvironment":11}],161:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -60434,7 +60915,7 @@ var ReactDefaultPerf = {
 };
 
 module.exports = ReactDefaultPerf;
-},{"./DOMProperty":117,"./ReactDefaultPerfAnalysis":159,"./ReactMount":173,"./ReactPerf":179,"fbjs/lib/performanceNow":33}],159:[function(require,module,exports){
+},{"./DOMProperty":120,"./ReactDefaultPerfAnalysis":162,"./ReactMount":176,"./ReactPerf":182,"fbjs/lib/performanceNow":33}],162:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -60636,7 +61117,7 @@ var ReactDefaultPerfAnalysis = {
 };
 
 module.exports = ReactDefaultPerfAnalysis;
-},{"./Object.assign":130}],160:[function(require,module,exports){
+},{"./Object.assign":133}],163:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -60884,7 +61365,7 @@ ReactElement.isValidElement = function (object) {
 };
 
 module.exports = ReactElement;
-},{"./Object.assign":130,"./ReactCurrentOwner":142,"./canDefineProperty":212}],161:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactCurrentOwner":145,"./canDefineProperty":215}],164:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -61166,7 +61647,7 @@ var ReactElementValidator = {
 };
 
 module.exports = ReactElementValidator;
-},{"./ReactCurrentOwner":142,"./ReactElement":160,"./ReactPropTypeLocationNames":180,"./ReactPropTypeLocations":181,"./canDefineProperty":212,"./getIteratorFn":223,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],162:[function(require,module,exports){
+},{"./ReactCurrentOwner":145,"./ReactElement":163,"./ReactPropTypeLocationNames":183,"./ReactPropTypeLocations":184,"./canDefineProperty":215,"./getIteratorFn":226,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],165:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -61222,7 +61703,7 @@ assign(ReactEmptyComponent.prototype, {
 ReactEmptyComponent.injection = ReactEmptyComponentInjection;
 
 module.exports = ReactEmptyComponent;
-},{"./Object.assign":130,"./ReactElement":160,"./ReactEmptyComponentRegistry":163,"./ReactReconciler":184}],163:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactElement":163,"./ReactEmptyComponentRegistry":166,"./ReactReconciler":187}],166:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -61271,7 +61752,7 @@ var ReactEmptyComponentRegistry = {
 };
 
 module.exports = ReactEmptyComponentRegistry;
-},{}],164:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -61349,7 +61830,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = ReactErrorUtils;
-},{}],165:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -61388,7 +61869,7 @@ var ReactEventEmitterMixin = {
 };
 
 module.exports = ReactEventEmitterMixin;
-},{"./EventPluginHub":123}],166:[function(require,module,exports){
+},{"./EventPluginHub":126}],169:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -61600,7 +62081,7 @@ var ReactEventListener = {
 };
 
 module.exports = ReactEventListener;
-},{"./Object.assign":130,"./PooledClass":131,"./ReactInstanceHandles":169,"./ReactMount":173,"./ReactUpdates":191,"./getEventTarget":222,"fbjs/lib/EventListener":10,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/getUnboundedScrollPosition":22}],167:[function(require,module,exports){
+},{"./Object.assign":133,"./PooledClass":134,"./ReactInstanceHandles":172,"./ReactMount":176,"./ReactUpdates":194,"./getEventTarget":225,"fbjs/lib/EventListener":10,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/getUnboundedScrollPosition":22}],170:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -61639,7 +62120,7 @@ var ReactInjection = {
 };
 
 module.exports = ReactInjection;
-},{"./DOMProperty":117,"./EventPluginHub":123,"./ReactBrowserEventEmitter":134,"./ReactClass":137,"./ReactComponentEnvironment":140,"./ReactEmptyComponent":162,"./ReactNativeComponent":176,"./ReactPerf":179,"./ReactRootIndex":186,"./ReactUpdates":191}],168:[function(require,module,exports){
+},{"./DOMProperty":120,"./EventPluginHub":126,"./ReactBrowserEventEmitter":137,"./ReactClass":140,"./ReactComponentEnvironment":143,"./ReactEmptyComponent":165,"./ReactNativeComponent":179,"./ReactPerf":182,"./ReactRootIndex":189,"./ReactUpdates":194}],171:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -61764,7 +62245,7 @@ var ReactInputSelection = {
 };
 
 module.exports = ReactInputSelection;
-},{"./ReactDOMSelection":152,"fbjs/lib/containsNode":14,"fbjs/lib/focusNode":19,"fbjs/lib/getActiveElement":20}],169:[function(require,module,exports){
+},{"./ReactDOMSelection":155,"fbjs/lib/containsNode":14,"fbjs/lib/focusNode":19,"fbjs/lib/getActiveElement":20}],172:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -62067,7 +62548,7 @@ var ReactInstanceHandles = {
 };
 
 module.exports = ReactInstanceHandles;
-},{"./ReactRootIndex":186,"fbjs/lib/invariant":25}],170:[function(require,module,exports){
+},{"./ReactRootIndex":189,"fbjs/lib/invariant":25}],173:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -62115,7 +62596,7 @@ var ReactInstanceMap = {
 };
 
 module.exports = ReactInstanceMap;
-},{}],171:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -62190,7 +62671,7 @@ var React = {
 };
 
 module.exports = React;
-},{"./Object.assign":130,"./ReactChildren":136,"./ReactClass":137,"./ReactComponent":138,"./ReactDOMFactories":146,"./ReactElement":160,"./ReactElementValidator":161,"./ReactPropTypes":182,"./ReactVersion":192,"./onlyChild":229}],172:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactChildren":139,"./ReactClass":140,"./ReactComponent":141,"./ReactDOMFactories":149,"./ReactElement":163,"./ReactElementValidator":164,"./ReactPropTypes":185,"./ReactVersion":195,"./onlyChild":232}],175:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -62236,7 +62717,7 @@ var ReactMarkupChecksum = {
 };
 
 module.exports = ReactMarkupChecksum;
-},{"./adler32":211}],173:[function(require,module,exports){
+},{"./adler32":214}],176:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -63087,7 +63568,7 @@ ReactPerf.measureMethods(ReactMount, 'ReactMount', {
 });
 
 module.exports = ReactMount;
-},{"./DOMProperty":117,"./Object.assign":130,"./ReactBrowserEventEmitter":134,"./ReactCurrentOwner":142,"./ReactDOMFeatureFlags":147,"./ReactElement":160,"./ReactEmptyComponentRegistry":163,"./ReactInstanceHandles":169,"./ReactInstanceMap":170,"./ReactMarkupChecksum":172,"./ReactPerf":179,"./ReactReconciler":184,"./ReactUpdateQueue":190,"./ReactUpdates":191,"./instantiateReactComponent":226,"./setInnerHTML":232,"./shouldUpdateReactComponent":234,"./validateDOMNesting":236,"fbjs/lib/containsNode":14,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],174:[function(require,module,exports){
+},{"./DOMProperty":120,"./Object.assign":133,"./ReactBrowserEventEmitter":137,"./ReactCurrentOwner":145,"./ReactDOMFeatureFlags":150,"./ReactElement":163,"./ReactEmptyComponentRegistry":166,"./ReactInstanceHandles":172,"./ReactInstanceMap":173,"./ReactMarkupChecksum":175,"./ReactPerf":182,"./ReactReconciler":187,"./ReactUpdateQueue":193,"./ReactUpdates":194,"./instantiateReactComponent":229,"./setInnerHTML":235,"./shouldUpdateReactComponent":237,"./validateDOMNesting":239,"fbjs/lib/containsNode":14,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],177:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -63584,7 +64065,7 @@ var ReactMultiChild = {
 };
 
 module.exports = ReactMultiChild;
-},{"./ReactChildReconciler":135,"./ReactComponentEnvironment":140,"./ReactCurrentOwner":142,"./ReactMultiChildUpdateTypes":175,"./ReactReconciler":184,"./flattenChildren":217}],175:[function(require,module,exports){
+},{"./ReactChildReconciler":138,"./ReactComponentEnvironment":143,"./ReactCurrentOwner":145,"./ReactMultiChildUpdateTypes":178,"./ReactReconciler":187,"./flattenChildren":220}],178:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -63617,7 +64098,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 });
 
 module.exports = ReactMultiChildUpdateTypes;
-},{"fbjs/lib/keyMirror":28}],176:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":28}],179:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -63712,7 +64193,7 @@ var ReactNativeComponent = {
 };
 
 module.exports = ReactNativeComponent;
-},{"./Object.assign":130,"fbjs/lib/invariant":25}],177:[function(require,module,exports){
+},{"./Object.assign":133,"fbjs/lib/invariant":25}],180:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -63831,7 +64312,7 @@ var ReactNoopUpdateQueue = {
 };
 
 module.exports = ReactNoopUpdateQueue;
-},{"fbjs/lib/warning":36}],178:[function(require,module,exports){
+},{"fbjs/lib/warning":36}],181:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -63923,7 +64404,7 @@ var ReactOwner = {
 };
 
 module.exports = ReactOwner;
-},{"fbjs/lib/invariant":25}],179:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],182:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64020,7 +64501,7 @@ function _noMeasure(objName, fnName, func) {
 }
 
 module.exports = ReactPerf;
-},{}],180:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64045,7 +64526,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = ReactPropTypeLocationNames;
-},{}],181:[function(require,module,exports){
+},{}],184:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64068,7 +64549,7 @@ var ReactPropTypeLocations = keyMirror({
 });
 
 module.exports = ReactPropTypeLocations;
-},{"fbjs/lib/keyMirror":28}],182:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":28}],185:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64425,7 +64906,7 @@ function getClassName(propValue) {
 }
 
 module.exports = ReactPropTypes;
-},{"./ReactElement":160,"./ReactPropTypeLocationNames":180,"./getIteratorFn":223,"fbjs/lib/emptyFunction":17}],183:[function(require,module,exports){
+},{"./ReactElement":163,"./ReactPropTypeLocationNames":183,"./getIteratorFn":226,"fbjs/lib/emptyFunction":17}],186:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64577,7 +65058,7 @@ assign(ReactReconcileTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
-},{"./CallbackQueue":113,"./Object.assign":130,"./PooledClass":131,"./ReactBrowserEventEmitter":134,"./ReactDOMFeatureFlags":147,"./ReactInputSelection":168,"./Transaction":208}],184:[function(require,module,exports){
+},{"./CallbackQueue":116,"./Object.assign":133,"./PooledClass":134,"./ReactBrowserEventEmitter":137,"./ReactDOMFeatureFlags":150,"./ReactInputSelection":171,"./Transaction":211}],187:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64685,7 +65166,7 @@ var ReactReconciler = {
 };
 
 module.exports = ReactReconciler;
-},{"./ReactRef":185}],185:[function(require,module,exports){
+},{"./ReactRef":188}],188:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64764,7 +65245,7 @@ ReactRef.detachRefs = function (instance, element) {
 };
 
 module.exports = ReactRef;
-},{"./ReactOwner":178}],186:[function(require,module,exports){
+},{"./ReactOwner":181}],189:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64794,7 +65275,7 @@ var ReactRootIndex = {
 };
 
 module.exports = ReactRootIndex;
-},{}],187:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -64818,7 +65299,7 @@ var ReactServerBatchingStrategy = {
 };
 
 module.exports = ReactServerBatchingStrategy;
-},{}],188:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -64902,7 +65383,7 @@ module.exports = {
   renderToString: renderToString,
   renderToStaticMarkup: renderToStaticMarkup
 };
-},{"./ReactDefaultBatchingStrategy":156,"./ReactElement":160,"./ReactInstanceHandles":169,"./ReactMarkupChecksum":172,"./ReactServerBatchingStrategy":187,"./ReactServerRenderingTransaction":189,"./ReactUpdates":191,"./instantiateReactComponent":226,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25}],189:[function(require,module,exports){
+},{"./ReactDefaultBatchingStrategy":159,"./ReactElement":163,"./ReactInstanceHandles":172,"./ReactMarkupChecksum":175,"./ReactServerBatchingStrategy":190,"./ReactServerRenderingTransaction":192,"./ReactUpdates":194,"./instantiateReactComponent":229,"fbjs/lib/emptyObject":18,"fbjs/lib/invariant":25}],192:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -64990,7 +65471,7 @@ assign(ReactServerRenderingTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
-},{"./CallbackQueue":113,"./Object.assign":130,"./PooledClass":131,"./Transaction":208,"fbjs/lib/emptyFunction":17}],190:[function(require,module,exports){
+},{"./CallbackQueue":116,"./Object.assign":133,"./PooledClass":134,"./Transaction":211,"fbjs/lib/emptyFunction":17}],193:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -65248,7 +65729,7 @@ var ReactUpdateQueue = {
 };
 
 module.exports = ReactUpdateQueue;
-},{"./Object.assign":130,"./ReactCurrentOwner":142,"./ReactElement":160,"./ReactInstanceMap":170,"./ReactUpdates":191,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],191:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactCurrentOwner":145,"./ReactElement":163,"./ReactInstanceMap":173,"./ReactUpdates":194,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],194:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -65472,7 +65953,7 @@ var ReactUpdates = {
 };
 
 module.exports = ReactUpdates;
-},{"./CallbackQueue":113,"./Object.assign":130,"./PooledClass":131,"./ReactPerf":179,"./ReactReconciler":184,"./Transaction":208,"fbjs/lib/invariant":25}],192:[function(require,module,exports){
+},{"./CallbackQueue":116,"./Object.assign":133,"./PooledClass":134,"./ReactPerf":182,"./ReactReconciler":187,"./Transaction":211,"fbjs/lib/invariant":25}],195:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -65488,7 +65969,7 @@ module.exports = ReactUpdates;
 
 module.exports = '0.14.10';
 
-},{}],193:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -65616,7 +66097,7 @@ var SVGDOMPropertyConfig = {
 };
 
 module.exports = SVGDOMPropertyConfig;
-},{"./DOMProperty":117}],194:[function(require,module,exports){
+},{"./DOMProperty":120}],197:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -65818,7 +66299,7 @@ var SelectEventPlugin = {
 };
 
 module.exports = SelectEventPlugin;
-},{"./EventConstants":122,"./EventPropagators":126,"./ReactInputSelection":168,"./SyntheticEvent":200,"./isTextInputElement":228,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/getActiveElement":20,"fbjs/lib/keyOf":29,"fbjs/lib/shallowEqual":34}],195:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPropagators":129,"./ReactInputSelection":171,"./SyntheticEvent":203,"./isTextInputElement":231,"fbjs/lib/ExecutionEnvironment":11,"fbjs/lib/getActiveElement":20,"fbjs/lib/keyOf":29,"fbjs/lib/shallowEqual":34}],198:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -65848,7 +66329,7 @@ var ServerReactRootIndex = {
 };
 
 module.exports = ServerReactRootIndex;
-},{}],196:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66436,7 +66917,7 @@ var SimpleEventPlugin = {
 };
 
 module.exports = SimpleEventPlugin;
-},{"./EventConstants":122,"./EventPropagators":126,"./ReactMount":173,"./SyntheticClipboardEvent":197,"./SyntheticDragEvent":199,"./SyntheticEvent":200,"./SyntheticFocusEvent":201,"./SyntheticKeyboardEvent":203,"./SyntheticMouseEvent":204,"./SyntheticTouchEvent":205,"./SyntheticUIEvent":206,"./SyntheticWheelEvent":207,"./getEventCharCode":219,"fbjs/lib/EventListener":10,"fbjs/lib/emptyFunction":17,"fbjs/lib/invariant":25,"fbjs/lib/keyOf":29}],197:[function(require,module,exports){
+},{"./EventConstants":125,"./EventPropagators":129,"./ReactMount":176,"./SyntheticClipboardEvent":200,"./SyntheticDragEvent":202,"./SyntheticEvent":203,"./SyntheticFocusEvent":204,"./SyntheticKeyboardEvent":206,"./SyntheticMouseEvent":207,"./SyntheticTouchEvent":208,"./SyntheticUIEvent":209,"./SyntheticWheelEvent":210,"./getEventCharCode":222,"fbjs/lib/EventListener":10,"fbjs/lib/emptyFunction":17,"fbjs/lib/invariant":25,"fbjs/lib/keyOf":29}],200:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66476,7 +66957,7 @@ function SyntheticClipboardEvent(dispatchConfig, dispatchMarker, nativeEvent, na
 SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 
 module.exports = SyntheticClipboardEvent;
-},{"./SyntheticEvent":200}],198:[function(require,module,exports){
+},{"./SyntheticEvent":203}],201:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66514,7 +66995,7 @@ function SyntheticCompositionEvent(dispatchConfig, dispatchMarker, nativeEvent, 
 SyntheticEvent.augmentClass(SyntheticCompositionEvent, CompositionEventInterface);
 
 module.exports = SyntheticCompositionEvent;
-},{"./SyntheticEvent":200}],199:[function(require,module,exports){
+},{"./SyntheticEvent":203}],202:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66552,7 +67033,7 @@ function SyntheticDragEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeE
 SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
-},{"./SyntheticMouseEvent":204}],200:[function(require,module,exports){
+},{"./SyntheticMouseEvent":207}],203:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66733,7 +67214,7 @@ SyntheticEvent.augmentClass = function (Class, Interface) {
 PooledClass.addPoolingTo(SyntheticEvent, PooledClass.fourArgumentPooler);
 
 module.exports = SyntheticEvent;
-},{"./Object.assign":130,"./PooledClass":131,"fbjs/lib/emptyFunction":17,"fbjs/lib/warning":36}],201:[function(require,module,exports){
+},{"./Object.assign":133,"./PooledClass":134,"fbjs/lib/emptyFunction":17,"fbjs/lib/warning":36}],204:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66771,7 +67252,7 @@ function SyntheticFocusEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
-},{"./SyntheticUIEvent":206}],202:[function(require,module,exports){
+},{"./SyntheticUIEvent":209}],205:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66810,7 +67291,7 @@ function SyntheticInputEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticEvent.augmentClass(SyntheticInputEvent, InputEventInterface);
 
 module.exports = SyntheticInputEvent;
-},{"./SyntheticEvent":200}],203:[function(require,module,exports){
+},{"./SyntheticEvent":203}],206:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66896,7 +67377,7 @@ function SyntheticKeyboardEvent(dispatchConfig, dispatchMarker, nativeEvent, nat
 SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
-},{"./SyntheticUIEvent":206,"./getEventCharCode":219,"./getEventKey":220,"./getEventModifierState":221}],204:[function(require,module,exports){
+},{"./SyntheticUIEvent":209,"./getEventCharCode":222,"./getEventKey":223,"./getEventModifierState":224}],207:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -66970,7 +67451,7 @@ function SyntheticMouseEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
-},{"./SyntheticUIEvent":206,"./ViewportMetrics":209,"./getEventModifierState":221}],205:[function(require,module,exports){
+},{"./SyntheticUIEvent":209,"./ViewportMetrics":212,"./getEventModifierState":224}],208:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67017,7 +67498,7 @@ function SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
-},{"./SyntheticUIEvent":206,"./getEventModifierState":221}],206:[function(require,module,exports){
+},{"./SyntheticUIEvent":209,"./getEventModifierState":224}],209:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67078,7 +67559,7 @@ function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEve
 SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
-},{"./SyntheticEvent":200,"./getEventTarget":222}],207:[function(require,module,exports){
+},{"./SyntheticEvent":203,"./getEventTarget":225}],210:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67134,7 +67615,7 @@ function SyntheticWheelEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
-},{"./SyntheticMouseEvent":204}],208:[function(require,module,exports){
+},{"./SyntheticMouseEvent":207}],211:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67366,7 +67847,7 @@ var Transaction = {
 };
 
 module.exports = Transaction;
-},{"fbjs/lib/invariant":25}],209:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],212:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67394,7 +67875,7 @@ var ViewportMetrics = {
 };
 
 module.exports = ViewportMetrics;
-},{}],210:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -67454,7 +67935,7 @@ function accumulateInto(current, next) {
 }
 
 module.exports = accumulateInto;
-},{"fbjs/lib/invariant":25}],211:[function(require,module,exports){
+},{"fbjs/lib/invariant":25}],214:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67497,7 +67978,7 @@ function adler32(data) {
 }
 
 module.exports = adler32;
-},{}],212:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67522,7 +68003,7 @@ if ("production" !== 'production') {
 }
 
 module.exports = canDefineProperty;
-},{}],213:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67578,7 +68059,7 @@ function dangerousStyleValue(name, value) {
 }
 
 module.exports = dangerousStyleValue;
-},{"./CSSProperty":111}],214:[function(require,module,exports){
+},{"./CSSProperty":114}],217:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67627,7 +68108,7 @@ function deprecated(fnName, newModule, newPackage, ctx, fn) {
 }
 
 module.exports = deprecated;
-},{"./Object.assign":130,"fbjs/lib/warning":36}],215:[function(require,module,exports){
+},{"./Object.assign":133,"fbjs/lib/warning":36}],218:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67666,7 +68147,7 @@ function escapeTextContentForBrowser(text) {
 }
 
 module.exports = escapeTextContentForBrowser;
-},{}],216:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67716,7 +68197,7 @@ function findDOMNode(componentOrElement) {
 }
 
 module.exports = findDOMNode;
-},{"./ReactCurrentOwner":142,"./ReactInstanceMap":170,"./ReactMount":173,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],217:[function(require,module,exports){
+},{"./ReactCurrentOwner":145,"./ReactInstanceMap":173,"./ReactMount":176,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],220:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67765,7 +68246,7 @@ function flattenChildren(children) {
 }
 
 module.exports = flattenChildren;
-},{"./traverseAllChildren":235,"fbjs/lib/warning":36}],218:[function(require,module,exports){
+},{"./traverseAllChildren":238,"fbjs/lib/warning":36}],221:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67795,7 +68276,7 @@ var forEachAccumulated = function (arr, cb, scope) {
 };
 
 module.exports = forEachAccumulated;
-},{}],219:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67846,7 +68327,7 @@ function getEventCharCode(nativeEvent) {
 }
 
 module.exports = getEventCharCode;
-},{}],220:[function(require,module,exports){
+},{}],223:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67950,7 +68431,7 @@ function getEventKey(nativeEvent) {
 }
 
 module.exports = getEventKey;
-},{"./getEventCharCode":219}],221:[function(require,module,exports){
+},{"./getEventCharCode":222}],224:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -67995,7 +68476,7 @@ function getEventModifierState(nativeEvent) {
 }
 
 module.exports = getEventModifierState;
-},{}],222:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68025,7 +68506,7 @@ function getEventTarget(nativeEvent) {
 }
 
 module.exports = getEventTarget;
-},{}],223:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68066,7 +68547,7 @@ function getIteratorFn(maybeIterable) {
 }
 
 module.exports = getIteratorFn;
-},{}],224:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68140,7 +68621,7 @@ function getNodeForCharacterOffset(root, offset) {
 }
 
 module.exports = getNodeForCharacterOffset;
-},{}],225:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68174,7 +68655,7 @@ function getTextContentAccessor() {
 }
 
 module.exports = getTextContentAccessor;
-},{"fbjs/lib/ExecutionEnvironment":11}],226:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":11}],229:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68287,7 +68768,7 @@ function instantiateReactComponent(node) {
 }
 
 module.exports = instantiateReactComponent;
-},{"./Object.assign":130,"./ReactCompositeComponent":141,"./ReactEmptyComponent":162,"./ReactNativeComponent":176,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],227:[function(require,module,exports){
+},{"./Object.assign":133,"./ReactCompositeComponent":144,"./ReactEmptyComponent":165,"./ReactNativeComponent":179,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],230:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68348,7 +68829,7 @@ function isEventSupported(eventNameSuffix, capture) {
 }
 
 module.exports = isEventSupported;
-},{"fbjs/lib/ExecutionEnvironment":11}],228:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":11}],231:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68389,7 +68870,7 @@ function isTextInputElement(elem) {
 }
 
 module.exports = isTextInputElement;
-},{}],229:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68423,7 +68904,7 @@ function onlyChild(children) {
 }
 
 module.exports = onlyChild;
-},{"./ReactElement":160,"fbjs/lib/invariant":25}],230:[function(require,module,exports){
+},{"./ReactElement":163,"fbjs/lib/invariant":25}],233:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68450,7 +68931,7 @@ function quoteAttributeValueForBrowser(value) {
 }
 
 module.exports = quoteAttributeValueForBrowser;
-},{"./escapeTextContentForBrowser":215}],231:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":218}],234:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68467,7 +68948,7 @@ module.exports = quoteAttributeValueForBrowser;
 var ReactMount = require('./ReactMount');
 
 module.exports = ReactMount.renderSubtreeIntoContainer;
-},{"./ReactMount":173}],232:[function(require,module,exports){
+},{"./ReactMount":176}],235:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68558,7 +69039,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setInnerHTML;
-},{"fbjs/lib/ExecutionEnvironment":11}],233:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":11}],236:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68599,7 +69080,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setTextContent;
-},{"./escapeTextContentForBrowser":215,"./setInnerHTML":232,"fbjs/lib/ExecutionEnvironment":11}],234:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":218,"./setInnerHTML":235,"fbjs/lib/ExecutionEnvironment":11}],237:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68643,7 +69124,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 }
 
 module.exports = shouldUpdateReactComponent;
-},{}],235:[function(require,module,exports){
+},{}],238:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -68833,7 +69314,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 }
 
 module.exports = traverseAllChildren;
-},{"./ReactCurrentOwner":142,"./ReactElement":160,"./ReactInstanceHandles":169,"./getIteratorFn":223,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],236:[function(require,module,exports){
+},{"./ReactCurrentOwner":145,"./ReactElement":163,"./ReactInstanceHandles":172,"./getIteratorFn":226,"fbjs/lib/invariant":25,"fbjs/lib/warning":36}],239:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -69197,13 +69678,15 @@ if ("production" !== 'production') {
 }
 
 module.exports = validateDOMNesting;
-},{"./Object.assign":130,"fbjs/lib/emptyFunction":17,"fbjs/lib/warning":36}],237:[function(require,module,exports){
+},{"./Object.assign":133,"fbjs/lib/emptyFunction":17,"fbjs/lib/warning":36}],240:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":132}],238:[function(require,module,exports){
+},{"./lib/React":135}],241:[function(require,module,exports){
 'use strict';
+
+var functionsHaveConfigurableNames = require('functions-have-names').functionsHaveConfigurableNames();
 
 var $Object = Object;
 var $TypeError = TypeError;
@@ -69213,6 +69696,9 @@ module.exports = function flags() {
 		throw new $TypeError('RegExp.prototype.flags getter called on non-object');
 	}
 	var result = '';
+	if (this.hasIndices) {
+		result += 'd';
+	}
 	if (this.global) {
 		result += 'g';
 	}
@@ -69234,7 +69720,11 @@ module.exports = function flags() {
 	return result;
 };
 
-},{}],239:[function(require,module,exports){
+if (functionsHaveConfigurableNames && Object.defineProperty) {
+	Object.defineProperty(module.exports, 'name', { value: 'get flags' });
+}
+
+},{"functions-have-names":39}],242:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -69244,7 +69734,7 @@ var implementation = require('./implementation');
 var getPolyfill = require('./polyfill');
 var shim = require('./shim');
 
-var flagsBound = callBind(implementation);
+var flagsBound = callBind(getPolyfill());
 
 define(flagsBound, {
 	getPolyfill: getPolyfill,
@@ -69254,29 +69744,45 @@ define(flagsBound, {
 
 module.exports = flagsBound;
 
-},{"./implementation":238,"./polyfill":240,"./shim":241,"call-bind":5,"define-properties":9}],240:[function(require,module,exports){
+},{"./implementation":241,"./polyfill":243,"./shim":244,"call-bind":5,"define-properties":9}],243:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
 var $gOPD = Object.getOwnPropertyDescriptor;
-var $TypeError = TypeError;
 
 module.exports = function getPolyfill() {
-	if (!supportsDescriptors) {
-		throw new $TypeError('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
-	}
-	if ((/a/mig).flags === 'gim') {
+	if (supportsDescriptors && (/a/mig).flags === 'gim') {
 		var descriptor = $gOPD(RegExp.prototype, 'flags');
-		if (descriptor && typeof descriptor.get === 'function' && typeof (/a/).dotAll === 'boolean') {
-			return descriptor.get;
+		if (
+			descriptor
+			&& typeof descriptor.get === 'function'
+			&& typeof RegExp.prototype.dotAll === 'boolean'
+			&& typeof RegExp.prototype.hasIndices === 'boolean'
+		) {
+			/* eslint getter-return: 0 */
+			var calls = '';
+			var o = {};
+			Object.defineProperty(o, 'hasIndices', {
+				get: function () {
+					calls += 'd';
+				}
+			});
+			Object.defineProperty(o, 'sticky', {
+				get: function () {
+					calls += 'y';
+				}
+			});
+			if (calls === 'dy') {
+				return descriptor.get;
+			}
 		}
 	}
 	return implementation;
 };
 
-},{"./implementation":238,"define-properties":9}],241:[function(require,module,exports){
+},{"./implementation":241,"define-properties":9}],244:[function(require,module,exports){
 'use strict';
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
@@ -69304,7 +69810,7 @@ module.exports = function shimFlags() {
 	return polyfill;
 };
 
-},{"./polyfill":240,"define-properties":9}],242:[function(require,module,exports){
+},{"./polyfill":243,"define-properties":9}],245:[function(require,module,exports){
 (function (factory) {
     if (typeof exports === 'object') {
         // Node/CommonJS
@@ -70009,7 +70515,7 @@ module.exports = function shimFlags() {
     return SparkMD5;
 }));
 
-},{}],243:[function(require,module,exports){
+},{}],246:[function(require,module,exports){
 'use strict';
 module.exports = function (str) {
 	return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
@@ -70017,7 +70523,7 @@ module.exports = function (str) {
 	});
 };
 
-},{}],244:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 var each = require('turf-meta').coordEach;
 var point = require('turf-point');
 
@@ -70065,7 +70571,7 @@ module.exports = function(features) {
   return point([xSum / len, ySum / len]);
 };
 
-},{"turf-meta":245,"turf-point":246}],245:[function(require,module,exports){
+},{"turf-meta":248,"turf-point":249}],248:[function(require,module,exports){
 /**
  * Lazily iterate over coordinates in any GeoJSON object, similar to
  * Array.forEach.
@@ -70205,7 +70711,7 @@ function propReduce(layer, callback, memo) {
 }
 module.exports.propReduce = propReduce;
 
-},{}],246:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
  * Takes coordinates and properties (optional) and returns a new {@link Point} feature.
  *
@@ -70237,7 +70743,7 @@ module.exports = function(coordinates, properties) {
   };
 };
 
-},{}],247:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 /**
  * Takes an array of LinearRings and optionally an {@link Object} with properties and returns a GeoJSON {@link Polygon} feature.
  *
@@ -70292,7 +70798,7 @@ module.exports = function(coordinates, properties){
   return polygon;
 };
 
-},{}],248:[function(require,module,exports){
+},{}],251:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -70354,7 +70860,7 @@ if ("production" !== 'production') {
 
 module.exports = warning;
 
-},{}],249:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -70976,7 +71482,7 @@ module.exports = warning;
 
 })));
 
-},{}],250:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 'use strict';
 
 var _sum_check = require('./sum_check');
@@ -71045,7 +71551,7 @@ module.exports.sortBadgeHashtags = function sortBadgeHashtags(user) {
   });
 };
 
-},{"./date_check_sequential":251,"./date_check_total":252,"./sum_check":253,"ramda":75}],251:[function(require,module,exports){
+},{"./date_check_sequential":254,"./date_check_total":255,"./sum_check":256,"ramda":78}],254:[function(require,module,exports){
 'use strict';
 
 var _ramda = require('ramda');
@@ -71147,7 +71653,7 @@ module.exports = function (dates) {
   return userBadges;
 };
 
-},{"ramda":75}],252:[function(require,module,exports){
+},{"ramda":78}],255:[function(require,module,exports){
 'use strict';
 
 var R = require('ramda');
@@ -71210,7 +71716,7 @@ module.exports = function (dates) {
   return userBadges;
 };
 
-},{"ramda":75}],253:[function(require,module,exports){
+},{"ramda":78}],256:[function(require,module,exports){
 'use strict';
 
 module.exports = function (data) {
@@ -71319,7 +71825,7 @@ module.exports = function (data) {
   return userBadges;
 };
 
-},{}],254:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71367,7 +71873,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"react":237}],255:[function(require,module,exports){
+},{"react":240}],258:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71437,7 +71943,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"react":237}],256:[function(require,module,exports){
+},{"react":240}],259:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71558,7 +72064,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"@gitterhq/cal-heatmap":1,"react":237}],257:[function(require,module,exports){
+},{"@gitterhq/cal-heatmap":1,"react":240}],260:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71741,7 +72247,7 @@ exports.default = function (props) {
   );
 };
 
-},{"../components/BadgeCompleted.js":254,"ramda":75,"react":237,"react-router":104}],258:[function(require,module,exports){
+},{"../components/BadgeCompleted.js":257,"ramda":78,"react":240,"react-router":107}],261:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -71774,7 +72280,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"react":237}],259:[function(require,module,exports){
+},{"react":240}],262:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72035,7 +72541,7 @@ exports.default = function (props) {
   );
 };
 
-},{"../components/BadgeCompleted.js":254,"../components/BadgeInProgress.js":255,"ramda":75,"react":237}],260:[function(require,module,exports){
+},{"../components/BadgeCompleted.js":257,"../components/BadgeInProgress.js":258,"ramda":78,"react":240}],263:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -72056,7 +72562,7 @@ exports.default = function () {
           "a",
           { href: "http://missingmaps.org/" },
           _react2.default.createElement("img", {
-            src: "http://www.missingmaps.org/assets/graphics/meta/MM-White.svg",
+            src: "https://www.missingmaps.org/assets/graphics/meta/MM_white_typography.svg",
             width: "94px",
             alt: "Missing Maps logo "
           })
@@ -72354,7 +72860,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"react":237}],261:[function(require,module,exports){
+},{"react":240}],264:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72423,7 +72929,7 @@ exports.default = function (props) {
   );
 };
 
-},{"../badge_logic/badge_cruncher.js":250,"../components/BadgeInProgress.js":255,"react":237,"react-router":104}],262:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":253,"../components/BadgeInProgress.js":258,"react":240,"react-router":107}],265:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72511,7 +73017,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"react":237,"react-chartjs":76}],263:[function(require,module,exports){
+},{"react":240,"react-chartjs":79}],266:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -72609,7 +73115,7 @@ exports.default = function (props) {
   );
 };
 
-},{"moment":65,"react":237}],264:[function(require,module,exports){
+},{"moment":68,"react":240}],267:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -72643,7 +73149,7 @@ var _BadgeCompleted2 = _interopRequireDefault(_BadgeCompleted);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../components/BadgeCompleted":254,"react":237}],265:[function(require,module,exports){
+},{"../components/BadgeCompleted":257,"react":240}],268:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73086,7 +73592,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/ContributionBox.js":256,"../components/PieChart.js":262,"leaflet":64,"ramda":75,"react":237,"turf-centroid":244,"turf-polygon":247}],266:[function(require,module,exports){
+},{"../components/ContributionBox.js":259,"../components/PieChart.js":265,"leaflet":67,"ramda":78,"react":240,"turf-centroid":247,"turf-polygon":250}],269:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73321,7 +73827,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../badge_logic/badge_cruncher.js":250,"binary-xhr":2,"isomorphic-fetch":63,"ramda":75,"react":237,"react-router":104,"spark-md5":242}],267:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":253,"binary-xhr":2,"isomorphic-fetch":66,"ramda":78,"react":240,"react-router":107,"spark-md5":245}],270:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73367,7 +73873,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../badge_logic/badge_cruncher.js":250,"../components/FullBadgeBox.js":259,"react":237}],268:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":253,"../components/FullBadgeBox.js":262,"react":240}],271:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73413,7 +73919,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../badge_logic/badge_cruncher.js":250,"../components/EmbedBadgeBox.js":257,"react":237}],269:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":253,"../components/EmbedBadgeBox.js":260,"react":240}],272:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73558,7 +74064,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/Footer.js":258,"../components/Header.js":260,"isomorphic-fetch":63,"react":237,"react-router":104}],270:[function(require,module,exports){
+},{"../components/Footer.js":261,"../components/Header.js":263,"isomorphic-fetch":66,"react":240,"react-router":107}],273:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73631,7 +74137,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../badge_logic/badge_cruncher.js":250,"../components/Next.js":261,"../components/Recent.js":263,"../components/RecentBadge.js":264,"../components/Stats.js":265,"react":237}],271:[function(require,module,exports){
+},{"../badge_logic/badge_cruncher.js":253,"../components/Next.js":264,"../components/Recent.js":266,"../components/RecentBadge.js":267,"../components/Stats.js":268,"react":240}],274:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73783,7 +74289,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/Footer":258,"../components/Header":260,"../components/UserSubHead":266,"isomorphic-fetch":63,"react":237,"react-router":104}],272:[function(require,module,exports){
+},{"../components/Footer":261,"../components/Header":263,"../components/UserSubHead":269,"isomorphic-fetch":66,"react":240,"react-router":107}],275:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73871,7 +74377,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../components/Footer":258,"../components/Header":260,"react":237}],273:[function(require,module,exports){
+},{"../components/Footer":261,"../components/Header":263,"react":240}],276:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -73939,4 +74445,4 @@ _reactDom2.default.render(_react2.default.createElement(
   )
 ), document.getElementById('app'));
 
-},{"./containers/BadgeView.js":267,"./containers/EmbedBadgeView.js":268,"./containers/EmbedUser.js":269,"./containers/Overview.js":270,"./containers/User":271,"./containers/Users":272,"history/lib/createHashHistory":49,"react":237,"react-dom":84,"react-router":104}]},{},[273]);
+},{"./containers/BadgeView.js":270,"./containers/EmbedBadgeView.js":271,"./containers/EmbedUser.js":272,"./containers/Overview.js":273,"./containers/User":274,"./containers/Users":275,"history/lib/createHashHistory":52,"react":240,"react-dom":87,"react-router":107}]},{},[276]);
