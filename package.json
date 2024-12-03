@@ -53,9 +53,9 @@
   },
   "dependencies": {
     "@gitterhq/cal-heatmap": "^3.6.1",
-    "babel": "^5.8.34",
-    "babel-core": "^5.8.34",
-    "babel-eslint": "^4.1.6",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.1.0",
     "binary-xhr": "0.0.2",
     "browserify": "^12.0.1",
     "chart.js": "^1.0.2",
